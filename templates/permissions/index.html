@@ -1,0 +1,25 @@
+{% extends "base_index.html" %}
+
+{% block title %}Permissions{% endblock %}
+
+{% block new_resource_label %}New Permission{% endblock %}
+
+{% block table_headers %}
+  <th>ID</th>
+  <th>Role</th>
+  <th>Resource type</th>
+  <th>Resource</th>
+  <th>Priority</th>
+  <th>Write</th>
+{% endblock %}
+
+{% block resource_fields %}
+  <td>{{ resource.id }}</td>
+  <td>{{ resource.role.name }}</td>
+  <td>{{ resource.resource.type }}</td>
+  <td>{{ resource.resource.name }}</td>
+  <td>{{ resource.priority }}</td>
+  <td>{{ resource.write }}</td>
+{% endblock %}
+
+{% block delete_resource_confirmation %}Remove permission?{% endblock %}

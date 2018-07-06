@@ -1,0 +1,39 @@
+{% import "bootstrap/utils.html" as utils %}
+{% extends "bootstrap/base.html" %}
+
+{%- block head %}
+  <title>{% block title %}{% endblock title %} - QWC Admin</title>
+
+  {%- block metas %}
+    {{ super() }}
+  {%- endblock metas %}
+
+  {%- block styles %}
+    {{ super() }}
+    <link href="{{ url_for('static', filename='css/application.css') }}" rel="stylesheet">
+  {%- endblock styles %}
+{%- endblock head %}
+
+{% block navbar %}
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <ul class="nav navbar-nav">
+        <li><a href="{{ url_for('home') }}">Home</a></li>
+        <li><a href="{{ url_for('users') }}">Users</a></li>
+        <li><a href="{{ url_for('groups') }}">Groups</a></li>
+        <li><a href="{{ url_for('roles') }}">Roles</a></li>
+        <li><a href="{{ url_for('resources') }}">Resources</a></li>
+        <li><a href="{{ url_for('permissions') }}">Permissions</a></li>
+      </ul>
+    </div>
+  </nav>
+{% endblock %}
+
+{% block content %}
+  {{ utils.flashed_messages() }}
+
+  <div class="container">
+    {% block container %}
+    {% endblock %}
+  </div>
+{% endblock %}

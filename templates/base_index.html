@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Resources{% endblock %}
+{% block container %}
+  <h1>{{ self.title() }}</h1>
+
+  <a href="{{ url_for('new_%s' % endpoint_suffix) }}" class="btn btn-success" role="button">
+    {{ utils.icon('plus') }} {% block new_resource_label %}New resource{% endblock %}
+  </a>
+
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        {% block table_headers %}
+          <th>ID</th>
+        {% endblock %}
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for resource in resources %}
+      <tr>
+        {% block resource_fields scoped %}
+          <td>{{ resource.id }}</td>
+        {% endblock %}
+        <td>
+          <a href="{{ url_for('edit_%s' % endpoint_suffix, id=resource[pkey]) }}" class="btn btn-primary" role="button">
+            {{ utils.icon('pencil') }} Edit
+          </a>
+          <form action="{{ url_for('destroy_%s' % endpoint_suffix, id=resource[pkey]) }}" method="post" style="display: inline;">
+            <input type="hidden" name="_method" value="DELETE" />
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button type="submit" class="btn btn-danger" onclick="return confirm('{% block delete_resource_confirmation %}Remove resource?{% endblock %}');">
+              {{ utils.icon('remove') }} Remove
+            </button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}

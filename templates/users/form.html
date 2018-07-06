@@ -1,0 +1,158 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "base.html" %}
+
+{% block scripts %}
+{{super()}}
+<script type="text/javascript">
+  $(function() {
+    $('table').on('click', 'button.remove-item', function() {
+      // remove item
+      $(this).closest('tr').remove();
+    });
+
+    var nextGroupIndex = {{ form.groups.last_index + 1 }};
+
+    $('#add_group_btn').click(function() {
+      // get selected group
+      var option = $('#group').find('option:selected');
+      var groupId = option.val();
+      var groupName = option.text();
+
+      if (groupId === '0') {
+        // skip empty selection
+        return;
+      }
+
+      // index for new group field
+      var i = nextGroupIndex;
+      nextGroupIndex += 1;
+
+      // add row
+      var html = '';
+      html += '<tr>';
+      html +=   '<td>';
+      html +=     '<input id="groups-' + i + '-layer_id" name="groups-' + i + '-group_id" value="' + groupId + '" type="hidden">';
+      html +=     '<input id="groups-' + i + '-layer_name" name="groups-' + i + '-group_name" value="' + groupName + '" type="hidden">';
+      html +=     groupName;
+      html +=   '</td>';
+      html +=   '<td><button class="btn btn-danger remove-item" type="button">Remove</button></td>';
+      html += '</tr>';
+
+      $('#add_group_row').before(html);
+    });
+
+    var nextRoleIndex = {{ form.roles.last_index + 1 }};
+
+    $('#add_role_btn').click(function() {
+      // get selected role
+      var option = $('#role').find('option:selected');
+      var roleId = option.val();
+      var roleName = option.text();
+
+      if (roleId === '0') {
+        // skip empty selection
+        return;
+      }
+
+      // index for new role field
+      var i = nextRoleIndex;
+      nextRoleIndex += 1;
+
+      // add row
+      var html = '';
+      html += '<tr>';
+      html +=   '<td>';
+      html +=     '<input id="roles-' + i + '-layer_id" name="roles-' + i + '-role_id" value="' + roleId + '" type="hidden">';
+      html +=     '<input id="roles-' + i + '-layer_name" name="roles-' + i + '-role_name" value="' + roleName + '" type="hidden">';
+      html +=     roleName;
+      html +=   '</td>';
+      html +=   '<td><button class="btn btn-danger remove-item" type="button">Remove</button></td>';
+      html += '</tr>';
+
+      $('#add_role_row').before(html);
+    });
+  });
+</script>
+{% endblock %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block container %}
+  <h1>{{ title }}</h1>
+
+  <form class="form form-horizontal" action="{{ action }}" method="post">
+    {% if method != 'POST' %}
+      <input type="hidden" name="_method" value="{{method}}" />
+    {% endif %}
+    {{ form.csrf_token }}
+
+    {{ wtf.form_field(form.name, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.description, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.email, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.password, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.password2, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    <div class="form-group">
+      <label class="control-label col-sm-2">Assigned groups</label>
+      <div class="col-sm-5">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Group</th>
+              <th style="width: 1%"></th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for group in form.groups.entries %}
+            <tr>
+              <td>
+                {{ group.group_id }}
+                {{ group.group_name }}
+                {{ group.group_name.data }}
+              </td>
+              <td><button class='btn btn-danger remove-item' type="button">Remove</button></td>
+            </tr>
+          {% endfor %}
+          {% if form.group.choices %}
+            <tr id="add_group_row">
+              <td>{{ form.group(class='form-control') }}</td>
+              <td><button id='add_group_btn' class='btn btn-success' type="button">Add</button></td>
+            </tr>
+          {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2">Assigned roles</label>
+      <div class="col-sm-5">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Role</th>
+              <th style="width: 1%"></th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for role in form.roles.entries %}
+            <tr>
+              <td>
+                {{ role.role_id }}
+                {{ role.role_name }}
+                {{ role.role_name.data }}
+              </td>
+              <td><button class='btn btn-danger remove-item' type="button">Remove</button></td>
+            </tr>
+          {% endfor %}
+          {% if form.role.choices %}
+            <tr id="add_role_row">
+              <td>{{ form.role(class='form-control') }}</td>
+              <td><button id='add_role_btn' class='btn btn-success' type="button">Add</button></td>
+            </tr>
+          {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {{ wtf.form_field(form.submit, class="col-sm-offset-2 btn btn-primary") }}
+  </form>
+{% endblock %}

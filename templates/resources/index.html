@@ -1,0 +1,21 @@
+{% extends "base_index.html" %}
+
+{% block title %}Resources{% endblock %}
+
+{% block new_resource_label %}New Resource{% endblock %}
+
+{% block table_headers %}
+  <th>ID</th>
+  <th>Type</th>
+  <th>Name</th>
+  <th>Parent</th>
+{% endblock %}
+
+{% block resource_fields %}
+  <td>{{ resource.id }}</td>
+  <td>{{ resource.type }}</td>
+  <td>{{ resource.name }}</td>
+  <td>{{ resource.parent.name if resource.parent }}</td>
+{% endblock %}
+
+{% block delete_resource_confirmation %}Remove resource?{% endblock %}
