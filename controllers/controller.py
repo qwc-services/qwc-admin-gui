@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask import abort, flash, redirect, render_template, request, url_for
 from sqlalchemy.exc import IntegrityError, InternalError
 from wtforms import ValidationError
@@ -123,6 +125,7 @@ class Controller:
                 session = self.session()
                 self.create_or_update_resources(None, form, session)
                 session.commit()
+                self.update_config_timestamp(session)
                 session.close()
                 flash('%s has been created.' % self.resource_name, 'success')
 
@@ -201,6 +204,7 @@ class Controller:
                     # update and commit resource
                     self.create_or_update_resources(resource, form, session)
                     session.commit()
+                    self.update_config_timestamp(session)
                     session.close()
                     flash('%s has been updated.' % self.resource_name,
                           'success')
@@ -256,6 +260,7 @@ class Controller:
                 # update and commit resource
                 self.destroy_resource(resource, session)
                 session.commit()
+                self.update_config_timestamp(session)
                 flash('%s has been deleted.' % self.resource_name, 'success')
             except InternalError as e:
                 flash('InternalError: %s' % e.orig, 'error')
@@ -316,6 +321,24 @@ class Controller:
         error = ValidationError(msg)
         field.errors.append(error)
         raise error
+
+    def update_config_timestamp(self, session):
+        """Update timestamp of last config change to current UTC time.
+
+        :param Session session: DB session
+        """
+        # get first timestamp record
+        LastUpdate = self.config_models.model('last_update')
+        query = session.query(LastUpdate)
+        last_update = query.first()
+        if last_update is None:
+            # create new timestamp record
+            last_update = self.LastUpdate()
+            session.add(last_update)
+
+        # update and commit new timestamp
+        last_update.updated_at = datetime.utcnow()
+        session.commit()
 
     def update_form_collection(
         self, resource, edit_form, subform, select_field, relation_model,
