@@ -18,14 +18,17 @@ class ResourcesController(Controller):
             config_models
         )
         self.Resource = self.config_models.model('resources')
+        self.ResourceType = self.config_models.model('resource_types')
 
     def resources_for_index(self, session):
         """Return resources list.
 
         :param Session session: DB session
         """
-        query = session.query(self.Resource). \
-            order_by(self.Resource.type, self.Resource.name)
+        query = session.query(self.Resource) \
+            .join(self.Resource.resource_type) \
+            .order_by(self.ResourceType.list_order, self.Resource.type,
+                      self.Resource.name)
         # eager load relations
         query = query.options(joinedload(self.Resource.parent))
 
@@ -48,11 +51,23 @@ class ResourcesController(Controller):
         form = ResourceForm(obj=resource)
 
         session = self.session()
+
+        query = session.query(self.ResourceType) \
+            .order_by(self.ResourceType.list_order, self.ResourceType.name)
+        resource_types = query.all()
+
         query = session.query(self.Resource) \
-            .order_by(self.Resource.type, self.Resource.name) \
-            .filter(self.Resource.type != 'attribute')
+            .join(self.Resource.resource_type) \
+            .order_by(self.ResourceType.list_order, self.Resource.type,
+                      self.Resource.name)
         resources = query.all()
+
         session.close()
+
+        # set choices for type select field
+        form.type.choices = [
+            (t.name, t.description) for t in resource_types
+        ]
 
         # set choices for parent select field
         form.parent_id.choices = [(0, "")] + [

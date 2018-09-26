@@ -20,6 +20,7 @@ class PermissionsController(Controller):
         self.Permission = self.config_models.model('permissions')
         self.Role = self.config_models.model('roles')
         self.Resource = self.config_models.model('resources')
+        self.ResourceType = self.config_models.model('resource_types')
 
     def resources_for_index(self, session):
         """Return permissions list.
@@ -60,7 +61,10 @@ class PermissionsController(Controller):
         roles = query.all()
 
         query = session.query(self.Resource) \
-            .order_by(self.Resource.type, self.Resource.name)
+            .join(self.Resource.resource_type) \
+            .order_by(self.ResourceType.list_order, self.Resource.type,
+                      self.Resource.name)
+
         resources = query.all()
 
         session.close()
