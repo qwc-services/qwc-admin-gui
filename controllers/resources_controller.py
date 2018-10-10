@@ -26,7 +26,7 @@ class ResourcesController(Controller):
         :param Session session: DB session
         """
         query = session.query(self.Resource) \
-            .join(self.Resource.resource_type) \
+            .join(self.Resource.resource_types) \
             .order_by(self.ResourceType.list_order, self.Resource.type,
                       self.Resource.name)
         # eager load relations
@@ -57,7 +57,7 @@ class ResourcesController(Controller):
         resource_types = query.all()
 
         query = session.query(self.Resource) \
-            .join(self.Resource.resource_type) \
+            .join(self.Resource.resource_types) \
             .order_by(self.ResourceType.list_order, self.Resource.type,
                       self.Resource.name)
         resources = query.all()
