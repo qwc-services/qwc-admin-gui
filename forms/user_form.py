@@ -63,7 +63,10 @@ class UserForm(FlaskForm):
     def validate_email(self, email):
         session = self.config_models.session()
         query = session.query(self.User).filter_by(email=email.data)
+        if self.obj:
+            # ignore current user
+            query = query.filter(self.User.id != self.obj.id)
         user = query.first()
         session.close()
-        if user is not None and user != current_user:
+        if user is not None:
             raise ValidationError('Please use a different email address.')
