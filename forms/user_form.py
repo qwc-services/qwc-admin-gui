@@ -1,7 +1,10 @@
 from flask_wtf import FlaskForm
-from wtforms import FieldList, FormField, HiddenField, SelectField, \
-    StringField, SubmitField, TextAreaField, ValidationError, PasswordField
-from wtforms.validators import DataRequired, Optional, Email, EqualTo
+from wtforms import FieldList, FormField, HiddenField, IntegerField, \
+    SelectField, StringField, SubmitField, TextAreaField, ValidationError, \
+    PasswordField
+from wtforms.validators import DataRequired, Optional, Email, EqualTo, \
+    NumberRange
+from wtforms.widgets.html5 import NumberInput
 
 
 class GroupForm(FlaskForm):
@@ -24,6 +27,14 @@ class UserForm(FlaskForm):
     password = PasswordField('Password')
     password2 = PasswordField(
         'Repeat Password', validators=[EqualTo('password')])
+    failed_sign_in_count = IntegerField(
+        'Failed login attempts',
+        widget=NumberInput(min=0),
+        validators=[
+            Optional(),
+            NumberRange(min=0, message="Number must be greater or equal 0")
+        ]
+    )
     groups = FieldList(FormField(GroupForm))
     group = SelectField(
         coerce=int, validators=[Optional()]
