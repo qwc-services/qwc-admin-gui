@@ -27,6 +27,7 @@ class UserForm(FlaskForm):
     password = PasswordField('Password')
     password2 = PasswordField(
         'Repeat Password', validators=[EqualTo('password')])
+    last_sign_in_at = StringField('Last sign in', validators=[Optional()])
     failed_sign_in_count = IntegerField(
         'Failed login attempts',
         widget=NumberInput(min=0),

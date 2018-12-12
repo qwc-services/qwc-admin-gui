@@ -90,6 +90,7 @@
     {{ wtf.form_field(form.email, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.form_field(form.password, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.form_field(form.password2, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.last_sign_in_at, form_type="horizontal", horizontal_columns=('sm', 2, 5), disabled=True) }}
     {{ wtf.form_field(form.failed_sign_in_count, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     <div class="form-group">
       <label class="control-label col-sm-2">Assigned groups</label>
