@@ -1,7 +1,7 @@
 import logging
 import os
 
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, request, redirect
 from flask_bootstrap import Bootstrap
 from flask_wtf.csrf import CSRFProtect
 from flask_jwt_extended import jwt_optional, get_jwt_identity
@@ -52,7 +52,11 @@ def assert_admin_role():
         if app.debug:
             pass  # Allow access in debug mode
         else:
-            return redirect('/auth/login')
+            if identity:
+                # Already logged in, but not with admin role
+                return redirect('/auth/logout?url=%s' % request.url)
+            else:
+                return redirect('/auth/login?url=%s' % request.url)
 
 
 # routes
