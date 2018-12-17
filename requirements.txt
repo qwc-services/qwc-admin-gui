@@ -1,6 +1,7 @@
-Flask
-flask-bootstrap
-Flask-WTF
-psycopg2
+Flask==1.0.2
+Flask-Bootstrap==3.3.7.1
+Flask-WTF==0.14.2
+psycopg2==2.7.6.1
+Flask-JWT-Extended==3.5.1
 git+https://github.com/qwc-services/qwc-config-db.git#egg=qwc-config-db
 git+https://github.com/qwc-services/qwc-services-core.git#egg=qwc-services-core
