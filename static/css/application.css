@@ -1,3 +1,8 @@
 body {
   padding-top: 70px;
 }
+
+.form-group.required label.control-label:after {
+  content: "*";
+  color: #d43f3a;
+}
