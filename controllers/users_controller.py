@@ -1,3 +1,7 @@
+import os
+
+from flask import json
+
 from .controller import Controller
 from forms import UserForm
 
@@ -15,8 +19,20 @@ class UsersController(Controller):
             "User", 'users', 'user', 'users', app, config_models
         )
         self.User = self.config_models.model('users')
+        self.UserInfo = self.config_models.model('user_infos')
         self.Group = self.config_models.model('groups')
         self.Role = self.config_models.model('roles')
+
+        # get custom user info fields
+        try:
+            user_info_fields = json.loads(
+                os.environ.get('USER_INFO_FIELDS', '[]')
+            )
+        except Exception as e:
+            app.logger.error("Could not load USER_INFO_FIELDS:\n%s" % e)
+            user_info_fields = []
+
+        UserForm.add_custom_fields(user_info_fields)
 
     def resources_for_index(self, session):
         """Return users list.
@@ -77,6 +93,24 @@ class UsersController(Controller):
         if form.password.data:
             user.set_password(form.password.data)
         user.failed_sign_in_count = form.failed_sign_in_count.data or 0
+
+        # update user info
+        if form.user_info.data:
+            # ignore crsf_token of subform
+            user_info_data = form.user_info.data
+            user_info_data.pop('csrf_token', None)
+
+            if user_info_data:
+                user_info = user.user_info
+                if user_info is None:
+                    # create new user_info
+                    user_info = self.UserInfo()
+                    # assign to user
+                    user_info.user = user
+
+                # update user info fields
+                for field, value in user_info_data.items():
+                    setattr(user_info, field, value)
 
         # update groups
         self.update_collection(

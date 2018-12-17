@@ -88,10 +88,23 @@
     {{ wtf.form_field(form.name, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.form_field(form.description, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.form_field(form.email, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+
+    {% if form.user_info.data | length > 1 %}
+      <legend>User info</legend>
+      {%- for subfield in form.user_info %}
+        {% if not bootstrap_is_hidden_field(subfield) -%}
+          {{ wtf.form_field(subfield, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+        {%- endif %}
+      {%- endfor %}
+    {% endif %}
+
+    <legend>Authentication</legend>
     {{ wtf.form_field(form.password, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.form_field(form.password2, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.form_field(form.last_sign_in_at, form_type="horizontal", horizontal_columns=('sm', 2, 5), disabled=True) }}
     {{ wtf.form_field(form.failed_sign_in_count, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+
+    <legend>Groups and roles</legend>
     <div class="form-group">
       <label class="control-label col-sm-2">Assigned groups</label>
       <div class="col-sm-5">

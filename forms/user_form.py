@@ -7,6 +7,11 @@ from wtforms.validators import DataRequired, Optional, Email, EqualTo, \
 from wtforms.widgets.html5 import NumberInput
 
 
+class UserInfoForm(FlaskForm):
+    """Subform for custom user info fields"""
+    pass
+
+
 class GroupForm(FlaskForm):
     """Subform for groups"""
     group_id = HiddenField(validators=[DataRequired()])
@@ -21,9 +26,13 @@ class RoleForm(FlaskForm):
 
 class UserForm(FlaskForm):
     """Main form for User GUI"""
-    name = StringField('Name', validators=[DataRequired()])
+    name = StringField('User name', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[Optional()])
     email = StringField('Email', validators=[Optional(), Email()])
+
+    # custom user fields
+    user_info = FormField(UserInfoForm, "User info", _meta={'csrf': False})
+
     password = PasswordField('Password')
     password2 = PasswordField(
         'Repeat Password', validators=[EqualTo('password')])
@@ -36,6 +45,7 @@ class UserForm(FlaskForm):
             NumberRange(min=0, message="Number must be greater or equal 0")
         ]
     )
+
     groups = FieldList(FormField(GroupForm))
     group = SelectField(
         coerce=int, validators=[Optional()]
@@ -59,6 +69,34 @@ class UserForm(FlaskForm):
         self.obj = kwargs.get('obj')
 
         super(UserForm, self).__init__(**kwargs)
+
+    def add_custom_fields(user_info_fields):
+        """Add custom user_info fields.
+
+        :param list(obj) user_info_fields: Custom user info fields
+        """
+        for field in user_info_fields:
+            field_class = StringField
+            widget = None
+            if field.get('type') == 'string':
+                field_class = StringField
+            if field.get('type') == 'textarea':
+                field_class = TextAreaField
+            elif field.get('type') == 'integer':
+                field_class = IntegerField
+                widget = NumberInput()
+
+            validators = [Optional()]
+            if field.get('required', False):
+                validators = [DataRequired()]
+
+            form_field = field_class(
+                field['title'],
+                widget=widget,
+                validators=validators
+            )
+            # add custom field to UserInfoForm
+            setattr(UserInfoForm, field['name'], form_field)
 
     def validate_name(self, field):
         # check if role name exists

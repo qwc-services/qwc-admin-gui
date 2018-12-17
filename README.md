@@ -24,8 +24,43 @@ sslmode=disable
 ```
 
 
+Configuration
+-------------
+
+Additional user fields are saved in the table `qwc_config.user_infos` with a a one-to-one relation to `qwc_config.users` via the `user_id` foreign key.
+To add custom user fields, add new columns to your `qwc_config.user_infos` table and set your `USER_INFO_FIELDS` to a JSON with the following structure:
+
+```json
+[
+  {
+    "title": "<field title>",
+    "name": "<column name>",
+    "type": "<field type (text|textarea|integer, default: text)>",
+    "required" "<whether field is required (true|false, default: false)>"
+  }
+]
+```
+
+These fields are then added to the user form.
+
+Example:
+
+```sql
+-- add custom columns
+ALTER TABLE qwc_config.user_infos ADD COLUMN surname character varying NOT NULL;
+ALTER TABLE qwc_config.user_infos ADD COLUMN first_name character varying NOT NULL;
+```
+
+```bash
+# set user info fields config
+USER_INFO_FIELDS='[{"title": "Surname", "name": "surname", "type": "text", "required": true}, {"title": "First name", "name": "first_name", "type": "text", "required": true}]'
+```
+
+
 Usage
 -----
+
+Set the `USER_INFO_FIELDS` environment variable to your custom user info fields JSON (default: `[]`.
 
 Base URL:
 
