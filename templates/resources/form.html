@@ -1,6 +1,63 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% extends "base.html" %}
 
+{% block scripts %}
+{{super()}}
+<script type="text/javascript">
+  $(function() {
+    // filter parent resources according to selected resource type
+    var filterParents = function() {
+      // get selected resource type
+      var resource_type = $('#type').find('option:selected').val();
+
+      // allowed parent types per resource type
+      var parent_filters = {
+        map: [],
+        layer: ['map'],
+        attribute: ['layer', 'data'],
+        print_template: ['map'],
+        data: ['map'],
+        data_create: ['map'],
+        data_read: ['map'],
+        data_update: ['map'],
+        data_delete: ['map'],
+        viewer: []
+      };
+
+      var filter = parent_filters[resource_type];
+      if (filter) {
+        // add empty choice
+        filter.push(null);
+
+        // filter parent resources
+        $('#parent_id option').each(function() {
+          if ($.inArray($(this).data('type'), filter) > -1) {
+            $(this).show();
+          }
+          else {
+            $(this).hide();
+          }
+        });
+
+        // remove selection if hidden by filter
+        var option = $('#parent_id').find('option:selected');
+        if (option && option.is(':hidden')) {
+          $('#parent_id').val('');
+        }
+      }
+      else {
+        // no filter, show all parent resources
+        $('#parent_id option').show();
+      }
+    };
+    $('#type').change(filterParents);
+
+    // initialize
+    filterParents();
+  });
+</script>
+{% endblock %}
+
 {% block title %}{{ title }}{% endblock %}
 {% block container %}
   <h1>{{ title }}</h1>
@@ -14,7 +71,18 @@
     {# disable type selection when editing an existing resource #}
     {{ wtf.form_field(form.type, form_type="horizontal", horizontal_columns=('sm', 2, 5), disabled=(method != 'POST')) }}
     {{ wtf.form_field(form.name, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.form_field(form.parent_id, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+
+    {# custom select field with resource type as data in options for parent resource #}
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="parent_id">Parent resource</label>
+      <div class=" col-sm-5">
+        <select class="form-control" id="parent_id" name="parent_id">
+          {% for value, label, type in form.parent_choices %}
+            <option value="{{ value }}" data-type="{{ type }}" {{ 'selected=""' if value == form.parent_id.data }}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
 
     {{ wtf.form_field(form.submit, class="col-sm-offset-2 btn btn-primary") }}
   </form>

@@ -10,5 +10,7 @@ class ResourceForm(FlaskForm):
     parent_id = SelectField(
         'Parent resource', coerce=int, validators=[Optional()]
     )
+    # list of parent choices with (value, label, resource type)
+    parent_choices = []
 
     submit = SubmitField('Save')

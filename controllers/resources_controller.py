@@ -107,6 +107,11 @@ class ResourcesController(Controller):
             (r.id, "%s: %s" % (r.type, r.name)) for r in resources
         ]
 
+        # set choices for parent select field including resource type
+        form.parent_choices = [(0, "", None)] + [
+            (r.id, "%s: %s" % (r.type, r.name), r.type) for r in resources
+        ]
+
         return form
 
     def create_or_update_resources(self, resource, form, session):
