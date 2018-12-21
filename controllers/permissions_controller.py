@@ -1,3 +1,4 @@
+from flask import render_template, request
 from sqlalchemy.orm import joinedload
 
 from .controller import Controller
@@ -22,14 +23,25 @@ class PermissionsController(Controller):
         self.Resource = self.config_models.model('resources')
         self.ResourceType = self.config_models.model('resource_types')
 
-    def resources_for_index(self, session):
-        """Return permissions list.
+    def resources_for_index(self, session, role, resource_type):
+        """Return permissions list filtered by role or resource type.
 
         :param Session session: DB session
+        :param str role: Optional role filter
+        :param str resource_type: Optional resource type filter
         """
         query = session.query(self.Permission). \
             join(self.Permission.role).join(self.Permission.resource). \
             order_by(self.Role.name, self.Resource.type, self.Resource.name)
+
+        if role is not None:
+            # filter by role name
+            query = query.filter(self.Role.name == role)
+
+        if resource_type is not None:
+            # filter by resource type
+            query = query.filter(self.Resource.type == resource_type)
+
         # eager load relations
         query = query.options(
             joinedload(self.Permission.role),
@@ -37,6 +49,33 @@ class PermissionsController(Controller):
         )
 
         return query.all()
+
+    def index(self):
+        """Show permissions list."""
+
+        session = self.session()
+
+        # get resources filtered by resource type
+        resource_type = request.args.get('type')
+        role = request.args.get('role')
+        resources = self.resources_for_index(session, role, resource_type)
+
+        # query roles
+        roles = session.query(self.Role).order_by(self.Role.name).all()
+
+        # query resource types
+        query = session.query(self.ResourceType) \
+            .order_by(self.ResourceType.list_order, self.ResourceType.name)
+        resource_types = query.all()
+
+        session.close()
+
+        return render_template(
+            '%s/index.html' % self.templates_dir, resources=resources,
+            endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey(),
+            roles=roles, active_role=role,
+            resource_types=resource_types, active_resource_type=resource_type
+        )
 
     def find_resource(self, id, session):
         """Find permission by ID.

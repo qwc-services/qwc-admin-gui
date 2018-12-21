@@ -2,7 +2,45 @@
 
 {% block title %}Permissions{% endblock %}
 
-{% block new_resource_label %}New Permission{% endblock %}
+{% block buttons %}
+  <a href="{{ url_for('new_%s' % endpoint_suffix) }}" class="btn btn-success" role="button">
+    {{ utils.icon('plus') }} New Permission
+  </a>
+
+  <div class="btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Role Filter <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li role="presentation" class="{{ 'active' if active_role is none }}">
+        <a href="{{ url_for('permissions', type=active_resource_type) }}"">All</a>
+      </li>
+      <li role="separator" class="divider"></li>
+      {% for role in roles %}
+        <li class="{{ 'active' if role.name == active_role }}">
+          <a href="{{ url_for('permissions', role=role.name, type=active_resource_type) }}"">{{ role.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Type Filter <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li role="presentation" class="{{ 'active' if active_resource_type is none }}">
+        <a href="{{ url_for('permissions', role=active_role) }}"">All</a>
+      </li>
+      <li role="separator" class="divider"></li>
+      {% for resource_type in resource_types %}
+        <li class="{{ 'active' if resource_type.name == active_resource_type }}">
+          <a href="{{ url_for('permissions', role=active_role, type=resource_type.name) }}"">{{ resource_type.description }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}
 
 {% block table_headers %}
   <th>ID</th>
