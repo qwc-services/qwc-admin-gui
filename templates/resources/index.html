@@ -2,7 +2,28 @@
 
 {% block title %}Resources{% endblock %}
 
-{% block new_resource_label %}New Resource{% endblock %}
+{% block buttons %}
+  <a href="{{ url_for('new_%s' % endpoint_suffix, type=active_resource_type) }}" class="btn btn-success" role="button">
+    {{ utils.icon('plus') }} New Resource
+  </a>
+
+  <div class="btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Type Filter <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li role="presentation" class="{{ 'active' if active_resource_type is none }}">
+        <a href="{{ url_for('resources') }}"">All</a>
+      </li>
+      <li role="separator" class="divider"></li>
+      {% for resource_type in resource_types %}
+        <li class="{{ 'active' if resource_type.name == active_resource_type }}">
+          <a href="{{ url_for('resources', type=resource_type.name) }}"">{{ resource_type.description }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}
 
 {% block table_headers %}
   <th>ID</th>

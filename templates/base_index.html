@@ -3,9 +3,11 @@
 {% block container %}
   <h1>{{ self.title() }}</h1>
 
-  <a href="{{ url_for('new_%s' % endpoint_suffix) }}" class="btn btn-success" role="button">
-    {{ utils.icon('plus') }} {% block new_resource_label %}New resource{% endblock %}
-  </a>
+  {% block buttons %}
+    <a href="{{ url_for('new_%s' % endpoint_suffix) }}" class="btn btn-success" role="button">
+      {{ utils.icon('plus') }} {% block new_resource_label %}New resource{% endblock %}
+    </a>
+  {% endblock %}
 
   <table class="table table-striped">
     <thead>

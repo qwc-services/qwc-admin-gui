@@ -1,3 +1,4 @@
+from flask import render_template, request
 from sqlalchemy.orm import joinedload
 
 from .controller import Controller
@@ -20,19 +21,47 @@ class ResourcesController(Controller):
         self.Resource = self.config_models.model('resources')
         self.ResourceType = self.config_models.model('resource_types')
 
-    def resources_for_index(self, session):
-        """Return resources list.
+    def resources_for_index(self, session, resource_type):
+        """Return resources list filtered by resource type.
 
         :param Session session: DB session
+        :param str resource_type: Optional resource type filter
         """
         query = session.query(self.Resource) \
             .join(self.Resource.resource_types) \
             .order_by(self.ResourceType.list_order, self.Resource.type,
                       self.Resource.name)
+
+        if resource_type is not None:
+            # filter by resource type
+            query = query.filter(self.Resource.type == resource_type)
+
         # eager load relations
         query = query.options(joinedload(self.Resource.parent))
 
         return query.all()
+
+    def index(self):
+        """Show resources list."""
+
+        session = self.session()
+
+        # get resources filtered by resource type
+        resource_type = request.args.get('type')
+        resources = self.resources_for_index(session, resource_type)
+
+        # query resource types
+        query = session.query(self.ResourceType) \
+            .order_by(self.ResourceType.list_order, self.ResourceType.name)
+        resource_types = query.all()
+
+        session.close()
+
+        return render_template(
+            '%s/index.html' % self.templates_dir, resources=resources,
+            endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey(),
+            resource_types=resource_types, active_resource_type=resource_type
+        )
 
     def find_resource(self, id, session):
         """Find resource by ID.
@@ -68,6 +97,10 @@ class ResourcesController(Controller):
         form.type.choices = [
             (t.name, t.description) for t in resource_types
         ]
+
+        resource_type = request.args.get('type')
+        if resource_type is not None:
+            form.type.data = resource_type
 
         # set choices for parent select field
         form.parent_id.choices = [(0, "")] + [
