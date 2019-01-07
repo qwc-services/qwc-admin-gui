@@ -17,8 +17,11 @@
       $('#resource_type_filter a').filter('[data-type="' + resourceType + '"]').parent('li').addClass('active');
 
       if (resourceType) {
+        // hide empty choice
+        $('#resource_id > option').hide();
+
         // filter resources
-        $('#resource_id option').each(function() {
+        $('#resource_id optgroup').each(function() {
           if ($(this).data('type') == resourceType) {
             $(this).show();
           }
@@ -34,8 +37,11 @@
         }
       }
       else {
+        // show empty choice
+        $('#resource_id > option').show();
+
         // no filter, show all resources
-        $('#resource_id option').show();
+        $('#resource_id optgroup').show();
       }
     };
     $('#resource_type_filter a').click(filterResources);
@@ -81,8 +87,13 @@
           {# custom select field with resource type as data in options for resource #}
           <div class="col-sm-9">
             <select class="form-control" id="resource_id" name="resource_id">
-              {% for value, label, type in form.resource_choices %}
-                <option value="{{ value }}" data-type="{{ type }}" {{ 'selected=""' if value == form.resource_id.data }}>{{ label }}</option>
+              <option value=""></option>
+              {% for group in form.resource_choices %}
+                <optgroup label="{{ group['group_label'] }}" data-type="{{ group['resource_type'] }}">
+                  {% for value, label in group['options'] %}
+                    <option value="{{ value }}" {{ 'selected=""' if value == form.resource_id.data }}>{{ label }}</option>
+                  {% endfor %}
+                </optgroup>
               {% endfor %}
             </select>
           </div>

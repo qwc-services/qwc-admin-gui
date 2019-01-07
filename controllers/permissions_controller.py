@@ -110,6 +110,10 @@ class PermissionsController(Controller):
             .join(self.Resource.resource_type) \
             .order_by(self.ResourceType.list_order, self.Resource.type,
                       self.Resource.name)
+        # eager load relations
+        query = query.options(
+            joinedload(self.Resource.resource_type)
+        )
         resources = query.all()
 
         session.close()
@@ -129,10 +133,24 @@ class PermissionsController(Controller):
             (r.id, "%s: %s" % (r.type, r.name)) for r in resources
         ]
 
-        # set choices for resource select field including resource type
-        form.resource_choices = [(0, "", None)] + [
-            (r.id, "%s: %s" % (r.type, r.name), r.type) for r in resources
-        ]
+        # set choices for resource select field, grouped by resource type
+        current_type = None
+        group = {}
+        form.resource_choices = []
+        for r in resources:
+            if r.type != current_type:
+                # add new group
+                current_type = r.type
+                group = {
+                    'resource_type': r.type,
+                    'group_label': r.resource_type.description,
+                    'options': []
+                }
+
+                form.resource_choices.append(group)
+
+            # add resource to group
+            group['options'].append((r.id, r.name))
 
         return form
 

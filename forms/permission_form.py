@@ -14,7 +14,18 @@ class PermissionForm(FlaskForm):
     resource_id = SelectField(
         'Resource', coerce=int, validators=[DataRequired()]
     )
-    # list of resource choices with (value, label, resource type)
+    """ list of resource choices grouped by resource type
+
+        resource_choices = [
+            {
+                'resource_type': '<resource type>',
+                'group_label': '<resource type description>',
+                'options': [
+                    (<resource ID>, '<resource name>')
+                ]
+            }
+        ]
+    """
     resource_choices = []
     priority = IntegerField(
         'Priority',
