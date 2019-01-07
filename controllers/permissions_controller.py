@@ -96,14 +96,20 @@ class PermissionsController(Controller):
         # load related resources from DB
         session = self.session()
 
+        # query roles
         query = session.query(self.Role).order_by(self.Role.name)
         roles = query.all()
 
+        # query resource types
+        query = session.query(self.ResourceType) \
+            .order_by(self.ResourceType.list_order, self.ResourceType.name)
+        resource_types = query.all()
+
+        # query resources
         query = session.query(self.Resource) \
             .join(self.Resource.resource_type) \
             .order_by(self.ResourceType.list_order, self.Resource.type,
                       self.Resource.name)
-
         resources = query.all()
 
         session.close()
@@ -113,9 +119,19 @@ class PermissionsController(Controller):
             (r.id, r.name) for r in roles
         ]
 
+        # set choices for resource type filter
+        form.resource_types = [
+            (r.name, r.description) for r in resource_types
+        ]
+
         # set choices for resource select field
         form.resource_id.choices = [(0, "")] + [
             (r.id, "%s: %s" % (r.type, r.name)) for r in resources
+        ]
+
+        # set choices for resource select field including resource type
+        form.resource_choices = [(0, "", None)] + [
+            (r.id, "%s: %s" % (r.type, r.name), r.type) for r in resources
         ]
 
         return form

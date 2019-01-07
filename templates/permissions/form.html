@@ -1,6 +1,48 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% extends "base.html" %}
 
+{% block scripts %}
+{{super()}}
+<script type="text/javascript">
+  $(function() {
+    // filter resources according to selected resource type
+    var filterResources = function(e) {
+      e.preventDefault();
+
+      // get selected resource type
+      var resourceType = $(this).data('type');
+
+      // mark selected type
+      $('#resource_type_filter li').removeClass('active');
+      $('#resource_type_filter a').filter('[data-type="' + resourceType + '"]').parent('li').addClass('active');
+
+      if (resourceType) {
+        // filter resources
+        $('#resource_id option').each(function() {
+          if ($(this).data('type') == resourceType) {
+            $(this).show();
+          }
+          else {
+            $(this).hide();
+          }
+        });
+
+        // remove selection if hidden by filter
+        var option = $('#resource_id').find('option:selected');
+        if (option && option.is(':hidden')) {
+          $('#resource_id').val('');
+        }
+      }
+      else {
+        // no filter, show all resources
+        $('#resource_id option').show();
+      }
+    };
+    $('#resource_type_filter a').click(filterResources);
+  });
+</script>
+{% endblock %}
+
 {% block title %}{{ title }}{% endblock %}
 {% block container %}
   <h1>{{ title }}</h1>
@@ -12,7 +54,48 @@
     {{ form.csrf_token }}
 
     {{ wtf.form_field(form.role_id, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.form_field(form.resource_id, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+
+    <div class="form-group required{{ ' has-error' if form.resource_id.errors }}">
+      <label class="control-label col-sm-2" for="resource_id">{{ form.resource_id.label }}</label>
+      <div class="col-sm-5">
+        <div class="row">
+
+          {# resource type filter #}
+          <div id="resource_type_filter" class="col-sm-3 btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Type Filter <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+              <li role="presentation" class="active">
+                <a href="#" data-type="">All</a>
+              </li>
+              <li role="separator" class="divider"></li>
+              {% for name, description in form.resource_types %}
+                <li>
+                  <a href="#" data-type="{{ name }}">{{ description }}</a>
+                </li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          {# custom select field with resource type as data in options for resource #}
+          <div class="col-sm-9">
+            <select class="form-control" id="resource_id" name="resource_id">
+              {% for value, label, type in form.resource_choices %}
+                <option value="{{ value }}" data-type="{{ type }}" {{ 'selected=""' if value == form.resource_id.data }}>{{ label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+      </div>
+      {% if form.resource_id.errors %}
+        <div class="col-sm-offset-2 col-sm-5">
+          <p class="help-block">This field is required.</p>
+        </div>
+      {% endif %}
+    </div>
+
     {{ wtf.form_field(form.priority, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.form_field(form.write, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
 

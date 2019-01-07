@@ -9,9 +9,13 @@ class PermissionForm(FlaskForm):
     role_id = SelectField(
         'Role', coerce=int, validators=[DataRequired()]
     )
+    # list of resource types with (name, description)
+    resource_types = []
     resource_id = SelectField(
         'Resource', coerce=int, validators=[DataRequired()]
     )
+    # list of resource choices with (value, label, resource type)
+    resource_choices = []
     priority = IntegerField(
         'Priority',
         validators=[
