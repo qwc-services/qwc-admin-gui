@@ -134,7 +134,7 @@ class ResourcesController(Controller):
         resource.type = form.type.data
         resource.name = form.name.data
 
-        if form.parent_id.data > 0:
+        if form.parent_id.data is not None and form.parent_id.data > 0:
             resource.parent_id = form.parent_id.data
         else:
             resource.parent_id = None
