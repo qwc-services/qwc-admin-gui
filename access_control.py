@@ -25,7 +25,10 @@ class AccessControl:
             username = identity
             group = None
         session = self.config_models.session()
-        return self.admin_role_query(username, group, session)
+        admin_role = self.admin_role_query(username, group, session)
+        session.close()
+
+        return admin_role
 
     def admin_role_query(self, username, group, session):
         """Create base query for all permissions of a user and group.
