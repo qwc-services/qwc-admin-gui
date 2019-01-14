@@ -27,11 +27,17 @@
 
       var filter = parent_filters[resource_type];
       if (filter) {
-        // add empty choice
-        filter.push(null);
+        if (filter.length > 0) {
+          // show empty choice
+          $('#parent_id > option').show();
+        }
+        else {
+          // hide empty choice
+          $('#parent_id > option').hide();
+        }
 
         // filter parent resources
-        $('#parent_id option').each(function() {
+        $('#parent_id optgroup').each(function() {
           if ($.inArray($(this).data('type'), filter) > -1) {
             $(this).show();
           }
@@ -47,8 +53,11 @@
         }
       }
       else {
+        // show empty choice
+        $('#parent_id > option').show();
+
         // no filter, show all parent resources
-        $('#parent_id option').show();
+        $('#parent_id optgroup').show();
       }
     };
     $('#type').change(filterParents);
@@ -78,8 +87,13 @@
       <label class="control-label col-sm-2" for="parent_id">Parent resource</label>
       <div class=" col-sm-5">
         <select class="form-control" id="parent_id" name="parent_id">
-          {% for value, label, type in form.parent_choices %}
-            <option value="{{ value }}" data-type="{{ type }}" {{ 'selected=""' if value == form.parent_id.data }}>{{ label }}</option>
+          <option value="0"></option>
+          {% for group in form.parent_choices %}
+            <optgroup label="{{ group['group_label'] }}" data-type="{{ group['resource_type'] }}">
+              {% for value, label in group['options'] %}
+                <option value="{{ value }}" {{ 'selected=""' if value == form.parent_id.data }}>{{ label }}</option>
+              {% endfor %}
+            </optgroup>
           {% endfor %}
         </select>
       </div>
