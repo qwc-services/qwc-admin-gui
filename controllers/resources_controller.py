@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from flask import render_template, request
 from sqlalchemy.orm import joinedload
 
@@ -47,20 +49,23 @@ class ResourcesController(Controller):
         session = self.session()
 
         # get resources filtered by resource type
-        resource_type = request.args.get('type')
-        resources = self.resources_for_index(session, resource_type)
+        active_resource_type = request.args.get('type')
+        resources = self.resources_for_index(session, active_resource_type)
 
         # query resource types
+        resource_types = OrderedDict()
         query = session.query(self.ResourceType) \
             .order_by(self.ResourceType.list_order, self.ResourceType.name)
-        resource_types = query.all()
+        for resource_type in query.all():
+            resource_types[resource_type.name] = resource_type.description
 
         session.close()
 
         return render_template(
             '%s/index.html' % self.templates_dir, resources=resources,
             endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey(),
-            resource_types=resource_types, active_resource_type=resource_type
+            resource_types=resource_types,
+            active_resource_type=active_resource_type
         )
 
     def find_resource(self, id, session):
