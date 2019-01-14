@@ -289,10 +289,13 @@ based on https://github.com/alxlit/bootstrap-chosen
   border-bottom-left-radius: 0; }
 
 .chosen-disabled {
-  cursor: default;
-  opacity: 0.5 !important; }
+  background-color: #eee;
+  cursor: not-allowed;
+  opacity: 1; }
   .chosen-disabled .chosen-single {
-    cursor: default; }
+    background-color: transparent; }
+    .chosen-disabled .chosen-single span {
+      display: none; }
   .chosen-disabled .chosen-choices .search-choice .search-choice-close {
     cursor: default; }
 

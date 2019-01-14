@@ -31,10 +31,14 @@
         if (filter.length > 0) {
           // show empty choice
           $('#parent_id > option').show();
+          // enable field
+          $('#parent_id').prop('disabled', false);
         }
         else {
           // hide empty choice
           $('#parent_id > option').hide();
+          // disable field
+          $('#parent_id').prop('disabled', true);
         }
 
         // filter parent resources
@@ -60,6 +64,8 @@
       else {
         // show empty choice
         $('#parent_id > option').show();
+        // enable field
+        $('#parent_id').prop('disabled', false);
 
         // no filter, show all parent resources
         $('#parent_id optgroup').show();
