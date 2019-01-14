@@ -34,8 +34,8 @@
       </li>
       <li role="separator" class="divider"></li>
       {% for resource_type in resource_types %}
-        <li class="{{ 'active' if resource_type.name == active_resource_type }}">
-          <a href="{{ url_for('permissions', role=active_role, type=resource_type.name) }}"">{{ resource_type.description }}</a>
+        <li class="{{ 'active' if resource_type == active_resource_type }}">
+          <a href="{{ url_for('permissions', role=active_role, type=resource_type) }}"">{{ resource_types[resource_type] }}</a>
         </li>
       {% endfor %}
     </ul>
@@ -54,7 +54,7 @@
 {% block resource_fields %}
   <td>{{ resource.id }}</td>
   <td>{{ resource.role.name }}</td>
-  <td>{{ resource.resource.type }}</td>
+  <td>{{ resource_types[resource.resource.type] }}</td>
   <td>{{ resource.resource.name }}</td>
   <td>{{ resource.priority }}</td>
   <td>{{ resource.write }}</td>
