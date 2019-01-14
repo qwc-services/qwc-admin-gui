@@ -3,6 +3,7 @@
 
 {% block scripts %}
 {{super()}}
+<script src="{{ url_for('static', filename='js/chosen.jquery.min.js') }}"></script>
 <script type="text/javascript">
   $(function() {
     // filter resources according to selected resource type
@@ -24,15 +25,19 @@
         $('#resource_id optgroup').each(function() {
           if ($(this).data('type') == resourceType) {
             $(this).show();
+            $(this).removeClass('chosen-hidden');
+            $(this).find('option').show();
           }
           else {
             $(this).hide();
+            $(this).addClass('chosen-hidden');
+            $(this).find('option').hide();
           }
         });
 
         // remove selection if hidden by filter
         var option = $('#resource_id').find('option:selected');
-        if (option && option.is(':hidden')) {
+        if (option && option.css('display') == 'none') {
           $('#resource_id').val('');
         }
       }
@@ -42,12 +47,29 @@
 
         // no filter, show all resources
         $('#resource_id optgroup').show();
+        $('#resource_id optgroup').removeClass('chosen-hidden');
+        $('#resource_id optgroup option').show();
       }
+
+      $("#resource_id").trigger("chosen:updated");
     };
     $('#resource_type_filter a').click(filterResources);
+
+    // initialize Chosen jQuery plugin
+    $(".chosen-select").chosen({width: '100%'});
   });
 </script>
 {% endblock %}
+
+{%- block styles %}
+  {{ super() }}
+  <link href="{{ url_for('static', filename='css/bootstrap-chosen.css') }}" rel="stylesheet">
+  <style type="text/css">
+    .chosen-container .chosen-results li.group-result.chosen-hidden {
+      display: none;
+    }
+  </style>
+{%- endblock styles %}
 
 {% block title %}{{ title }}{% endblock %}
 {% block container %}
@@ -86,7 +108,7 @@
 
           {# custom select field with resource type as data in options for resource #}
           <div class="col-sm-9">
-            <select class="form-control" id="resource_id" name="resource_id">
+            <select class="form-control chosen-select" data-placeholder="Select a resource" id="resource_id" name="resource_id">
               <option value=""></option>
               {% for group in form.resource_choices %}
                 <optgroup label="{{ group['group_label'] }}" data-type="{{ group['resource_type'] }}">
