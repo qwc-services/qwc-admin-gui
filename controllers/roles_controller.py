@@ -43,12 +43,12 @@ class RolesController(Controller):
 
         session = self.session()
         self.update_form_collection(
-            resource, edit_form, form.groups, form.group, self.Group,
-            'sorted_groups', 'group_id', 'id', 'group_name', 'name', session
+            resource, edit_form, form.groups, self.Group, 'sorted_groups',
+            'id', 'name', session
         )
         self.update_form_collection(
-            resource, edit_form, form.users, form.user, self.User,
-            'sorted_users', 'user_id', 'id', 'user_name', 'name', session
+            resource, edit_form, form.users, self.User, 'sorted_users', 'id',
+            'name', session
         )
         session.close()
 
@@ -76,11 +76,9 @@ class RolesController(Controller):
 
         # update groups
         self.update_collection(
-            role.groups_collection, form.groups, 'group_id', self.Group, 'id',
-            session
+            role.groups_collection, form.groups, self.Group, 'id', session
         )
         # update users
         self.update_collection(
-            role.users_collection, form.users, 'user_id', self.User, 'id',
-            session
+            role.users_collection, form.users, self.User, 'id', session
         )

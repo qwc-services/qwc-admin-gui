@@ -341,32 +341,28 @@ class Controller:
         session.commit()
 
     def update_form_collection(
-        self, resource, edit_form, subform, select_field, relation_model,
-        collection_attr, id_field, id_attr, name_field, name_attr, session
+        self, resource, edit_form, multi_select, relation_model,
+        collection_attr, id_attr, name_attr, session
     ):
-        """Helper to update collection subform and select field for resource.
+        """Helper to update collection multi-select field for resource.
 
         :param object resource: Optional resource object for edit (e.g. group)
         :param bool edit_form: Set if edit form
-        :param FieldList subform: Subform for relations (e.g. form.users)
-        :param SelectField select_field: Select field for relations
-                                         (e.g. form.user)
+        :param SelectMultipleField multi_select: MultiSelect for relations
+                                                 (e.g. form.users)
         :param object relation_model: ConfigModel for relation (e.g. User)
         :param str collection_attr: Collection attribute for resource
                                     (e.g. 'users_collection')
-        :param str id_field: ID field of subform (e.g. 'user_id')
         :param str id_attr: ID attribute of relation model (e.g. 'id')
-        :param str name_field: Name field of subform (e.g. 'user_name')
         :param str name_attr: Name attribute of relation model (e.g. 'name')
         :param Session session: DB session
         """
         if edit_form:
             # add collection items for resource on edit
-            for item in getattr(resource, collection_attr):
-                subform.append_entry({
-                    id_field: getattr(item, id_attr),
-                    name_field: getattr(item, name_attr)
-                })
+            items = getattr(resource, collection_attr)
+            multi_select.data = [
+                getattr(i, id_attr) for i in items
+            ]
 
         # load related resources from DB
         query = session.query(relation_model). \
@@ -374,18 +370,18 @@ class Controller:
         items = query.all()
 
         # set choices for collection select field
-        select_field.choices = [(0, "")] + [
+        multi_select.choices = [
             (getattr(i, id_attr), getattr(i, name_attr)) for i in items
         ]
 
-    def update_collection(self, collection, subform, id_field, relation_model,
+    def update_collection(self, collection, multi_select, relation_model,
                           id_attr, session):
         """Helper to add or remove relations from a resource collection.
 
         :param object collection: Collection of resource relations
                                   (e.g. Group.user_collection)
-        :param FieldList subform: Subform for relations (e.g. form.users)
-        :param str id_field: ID field of subform (e.g. 'user_id')
+        :param SelectMultipleField multi_select: MultiSelect for relations
+                                                 (e.g. form.users)
         :param object relation_model: ConfigModel for relation (e.g. User)
         :param str id_attr: ID attribute of relation model (e.g. 'id')
         :param Session session: DB session
@@ -397,9 +393,8 @@ class Controller:
 
         # update relations
         relation_ids = []
-        for relation in subform:
+        for relation_id in multi_select.data:
             # get relation from ConfigDB
-            relation_id = int(relation.data[id_field])
             filter = {id_attr: relation_id}
             query = session.query(relation_model).filter_by(**filter)
             relation = query.first()

@@ -1,31 +1,19 @@
 from flask_wtf import FlaskForm
-from wtforms import FieldList, FormField, HiddenField, SelectField, \
-    StringField, SubmitField, TextAreaField, ValidationError
+from wtforms import SelectMultipleField, StringField, SubmitField, \
+    TextAreaField, ValidationError
 from wtforms.validators import DataRequired, Optional
-
-
-class GroupForm(FlaskForm):
-    """Subform for groups"""
-    group_id = HiddenField(validators=[DataRequired()])
-    group_name = HiddenField(validators=[Optional()])
-
-
-class UserForm(FlaskForm):
-    """Subform for users"""
-    user_id = HiddenField(validators=[DataRequired()])
-    user_name = HiddenField(validators=[Optional()])
 
 
 class RoleForm(FlaskForm):
     """Main form for Role GUI"""
     name = StringField('Name', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[Optional()])
-    groups = FieldList(FormField(GroupForm))
-    group = SelectField(
+    groups = SelectMultipleField(
+        'Assigned groups',
         coerce=int, validators=[Optional()]
     )
-    users = FieldList(FormField(UserForm))
-    user = SelectField(
+    users = SelectMultipleField(
+        'Assigned users',
         coerce=int, validators=[Optional()]
     )
 
