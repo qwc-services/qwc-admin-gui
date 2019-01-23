@@ -1,7 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import FieldList, FormField, HiddenField, IntegerField, \
-    SelectField, StringField, SubmitField, TextAreaField, ValidationError, \
-    PasswordField
+from wtforms import FormField, IntegerField, SelectMultipleField, \
+    StringField, SubmitField, TextAreaField, ValidationError, PasswordField
 from wtforms.validators import DataRequired, Optional, Email, EqualTo, \
     NumberRange
 from wtforms.widgets.html5 import NumberInput
@@ -10,18 +9,6 @@ from wtforms.widgets.html5 import NumberInput
 class UserInfoForm(FlaskForm):
     """Subform for custom user info fields"""
     pass
-
-
-class GroupForm(FlaskForm):
-    """Subform for groups"""
-    group_id = HiddenField(validators=[DataRequired()])
-    group_name = HiddenField(validators=[Optional()])
-
-
-class RoleForm(FlaskForm):
-    """Subform for roles"""
-    role_id = HiddenField(validators=[DataRequired()])
-    role_name = HiddenField(validators=[Optional()])
 
 
 class UserForm(FlaskForm):
@@ -46,12 +33,12 @@ class UserForm(FlaskForm):
         ]
     )
 
-    groups = FieldList(FormField(GroupForm))
-    group = SelectField(
+    groups = SelectMultipleField(
+        'Assigned groups',
         coerce=int, validators=[Optional()]
     )
-    roles = FieldList(FormField(RoleForm))
-    role = SelectField(
+    roles = SelectMultipleField(
+        'Assigned roles',
         coerce=int, validators=[Optional()]
     )
 
@@ -65,7 +52,7 @@ class UserForm(FlaskForm):
         self.config_models = config_models
         self.User = self.config_models.model('users')
 
-        # store any provided role object
+        # store any provided user object
         self.obj = kwargs.get('obj')
 
         super(UserForm, self).__init__(**kwargs)
@@ -99,11 +86,11 @@ class UserForm(FlaskForm):
             setattr(UserInfoForm, field['name'], form_field)
 
     def validate_name(self, field):
-        # check if role name exists
+        # check if user name exists
         session = self.config_models.session()
         query = session.query(self.User).filter_by(name=field.data)
         if self.obj:
-            # ignore current role
+            # ignore current user
             query = query.filter(self.User.id != self.obj.id)
         user = query.first()
         session.close()
