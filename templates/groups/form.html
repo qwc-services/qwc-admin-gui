@@ -3,77 +3,26 @@
 
 {% block scripts %}
 {{super()}}
+<script src="{{ url_for('static', filename='js/jquery.multi-select.js') }}"></script>
 <script type="text/javascript">
   $(function() {
-    $('table').on('click', 'button.remove-item', function() {
-      // remove item
-      $(this).closest('tr').remove();
+    // initialize multi-select
+    $('#users').multiSelect({
+      selectableHeader: '<div class="ms-header">Users</div>',
+      selectionHeader: '<div class="ms-header">Group members</div>'
     });
-
-    var nextUserIndex = {{ form.users.last_index + 1 }};
-
-    $('#add_user_btn').click(function() {
-      // get selected user
-      var option = $('#user').find('option:selected');
-      var userId = option.val();
-      var userName = option.text();
-
-      if (userId === '0') {
-        // skip empty selection
-        return;
-      }
-
-      // index for new user field
-      var i = nextUserIndex;
-      nextUserIndex += 1;
-
-      // add row
-      var html = '';
-      html += '<tr>';
-      html +=   '<td>';
-      html +=     '<input id="users-' + i + '-layer_id" name="users-' + i + '-user_id" value="' + userId + '" type="hidden">';
-      html +=     '<input id="users-' + i + '-layer_name" name="users-' + i + '-user_name" value="' + userName + '" type="hidden">';
-      html +=     userName;
-      html +=   '</td>';
-      html +=   '<td><button class="btn btn-danger remove-item" type="button">Remove</button></td>';
-      html += '</tr>';
-
-      $('#add_user_row').before(html);
-    });
-
-    var nextRoleIndex = {{ form.roles.last_index + 1 }};
-
-    $('#add_role_btn').click(function() {
-      // get selected role
-      var option = $('#role').find('option:selected');
-      var roleId = option.val();
-      var roleName = option.text();
-
-      if (roleId === '0') {
-        // skip empty selection
-        return;
-      }
-
-      // index for new role field
-      var i = nextRoleIndex;
-      nextRoleIndex += 1;
-
-      // add row
-      var html = '';
-      html += '<tr>';
-      html +=   '<td>';
-      html +=     '<input id="roles-' + i + '-layer_id" name="roles-' + i + '-role_id" value="' + roleId + '" type="hidden">';
-      html +=     '<input id="roles-' + i + '-layer_name" name="roles-' + i + '-role_name" value="' + roleName + '" type="hidden">';
-      html +=     roleName;
-      html +=   '</td>';
-      html +=   '<td><button class="btn btn-danger remove-item" type="button">Remove</button></td>';
-      html += '</tr>';
-
-      $('#add_role_row').before(html);
+    $('#roles').multiSelect({
+      selectableHeader: '<div class="ms-header">Roles</div>',
+      selectionHeader: '<div class="ms-header">Assigned roles</div>'
     });
   });
 </script>
 {% endblock %}
+
+{%- block styles %}
+  {{ super() }}
+  <link href="{{ url_for('static', filename='css/multi-select.css') }}" rel="stylesheet">
+{%- endblock styles %}
 
 {% block title %}{{ title }}{% endblock %}
 {% block container %}
@@ -87,68 +36,8 @@
 
     {{ wtf.form_field(form.name, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.form_field(form.description, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    <div class="form-group">
-      <label class="control-label col-sm-2">Assigned users</label>
-      <div class="col-sm-5">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>User</th>
-              <th style="width: 1%"></th>
-            </tr>
-          </thead>
-          <tbody>
-          {% for user in form.users.entries %}
-            <tr>
-              <td>
-                {{ user.user_id }}
-                {{ user.user_name }}
-                {{ user.user_name.data }}
-              </td>
-              <td><button class='btn btn-danger remove-item' type="button">Remove</button></td>
-            </tr>
-          {% endfor %}
-          {% if form.user.choices %}
-            <tr id="add_user_row">
-              <td>{{ form.user(class='form-control') }}</td>
-              <td><button id='add_user_btn' class='btn btn-success' type="button">Add</button></td>
-            </tr>
-          {% endif %}
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="control-label col-sm-2">Assigned roles</label>
-      <div class="col-sm-5">
-        <table class="table table-striped">
-          <thead>
-            <tr>
-              <th>Role</th>
-              <th style="width: 1%"></th>
-            </tr>
-          </thead>
-          <tbody>
-          {% for role in form.roles.entries %}
-            <tr>
-              <td>
-                {{ role.role_id }}
-                {{ role.role_name }}
-                {{ role.role_name.data }}
-              </td>
-              <td><button class='btn btn-danger remove-item' type="button">Remove</button></td>
-            </tr>
-          {% endfor %}
-          {% if form.role.choices %}
-            <tr id="add_role_row">
-              <td>{{ form.role(class='form-control') }}</td>
-              <td><button id='add_role_btn' class='btn btn-success' type="button">Add</button></td>
-            </tr>
-          {% endif %}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    {{ wtf.form_field(form.users, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.roles, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
 
     {{ wtf.form_field(form.submit, class="col-sm-offset-2 btn btn-primary") }}
   </form>

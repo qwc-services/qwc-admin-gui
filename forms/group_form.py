@@ -1,31 +1,19 @@
 from flask_wtf import FlaskForm
-from wtforms import FieldList, FormField, HiddenField, SelectField, \
-    StringField, SubmitField, TextAreaField, ValidationError
+from wtforms import SelectMultipleField, StringField, SubmitField, \
+    TextAreaField, ValidationError
 from wtforms.validators import DataRequired, Optional
-
-
-class UserForm(FlaskForm):
-    """Subform for users"""
-    user_id = HiddenField(validators=[DataRequired()])
-    user_name = HiddenField(validators=[Optional()])
-
-
-class RoleForm(FlaskForm):
-    """Subform for roles"""
-    role_id = HiddenField(validators=[DataRequired()])
-    role_name = HiddenField(validators=[Optional()])
 
 
 class GroupForm(FlaskForm):
     """Main form for Group GUI"""
     name = StringField('Name', validators=[DataRequired()])
     description = TextAreaField('Description', validators=[Optional()])
-    users = FieldList(FormField(UserForm))
-    user = SelectField(
+    users = SelectMultipleField(
+        'Assigned users',
         coerce=int, validators=[Optional()]
     )
-    roles = FieldList(FormField(RoleForm))
-    role = SelectField(
+    roles = SelectMultipleField(
+        'Assigned roles',
         coerce=int, validators=[Optional()]
     )
 
@@ -39,17 +27,17 @@ class GroupForm(FlaskForm):
         self.config_models = config_models
         self.Group = self.config_models.model('groups')
 
-        # store any provided role object
+        # store any provided group object
         self.obj = kwargs.get('obj')
 
         super(GroupForm, self).__init__(**kwargs)
 
     def validate_name(self, field):
-        # check if role name exists
+        # check if group name exists
         session = self.config_models.session()
         query = session.query(self.Group).filter_by(name=field.data)
         if self.obj:
-            # ignore current role
+            # ignore current group
             query = query.filter(self.Group.id != self.obj.id)
         group = query.first()
         session.close()
