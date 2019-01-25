@@ -9,6 +9,104 @@
     </a>
   {% endblock %}
 
+  {% block pagination %}
+    {% if pagination and pagination['num_pages'] > 1 %}
+      {% set page = pagination['page'] %}
+      {% set num_pages = pagination['num_pages'] %}
+      {% set per_page = pagination['per_page'] %}
+      {% set params = pagination['params'] or {} %}
+
+      {% set start_page = 1 %}
+      {% set end_page = num_pages %}
+      {% set num_page_buttons = 5 %}
+      {% if num_pages > num_page_buttons %}
+        {% set start_page = [page - 2, 1] | max %}
+        {% set end_page = start_page + num_page_buttons - 1 %}
+        {% if end_page > num_pages %}
+          {% set end_page = num_pages %}
+          {% set start_page = end_page - num_page_buttons + 1 %}
+        {% endif %}
+      {% endif %}
+
+      <nav aria-label="Page navigation">
+        <ul class="pagination pagination-sm">
+          {# previous page #}
+          {% if page > 1 %}
+            <li>
+              <a href="{{ url_for(base_route, page=page-1, per_page=per_page, **params) }}" aria-label="Previous">
+                <span aria-hidden="true" class="glyphicon glyphicon-menu-left"></span>
+              </a>
+            </li>
+          {% else %}
+            <li class="disabled">
+              <span>
+                <span aria-hidden="true" class="glyphicon glyphicon-menu-left"></span>
+              </span>
+            </li>
+          {% endif %}
+
+          {# first page #}
+          {% if start_page > 1 %}
+            <li>
+              <a href="{{ url_for(base_route, page=1, per_page=per_page, **params) }}">1</a>
+            </li>
+          {% endif %}
+
+          {# gap #}
+          {% if start_page > 2 %}
+            <li class="gap">
+              <span aria-hidden="true">&hellip;</span>
+            </li>
+          {% endif %}
+
+          {# pages around current page #}
+          {% for p in range(start_page, end_page + 1) %}
+            {% if p == pagination['page'] %}
+              <li class="active">
+                <a href="{{ url_for(base_route, page=p, per_page=per_page, **params) }}">
+                  {{ p }} <span class="sr-only">(current)</span>
+                </a>
+              </li>
+            {% else %}
+              <li>
+                <a href="{{ url_for(base_route, page=p, per_page=per_page, **params) }}">{{ p }}</a>
+              </li>
+            {% endif %}
+          {% endfor %}
+
+          {# gap #}
+          {% if end_page < num_pages -1 %}
+            <li class="gap">
+              <span aria-hidden="true">&hellip;</span>
+            </li>
+          {% endif %}
+
+          {# last page #}
+          {% if end_page < num_pages %}
+            <li>
+              <a href="{{ url_for(base_route, page=num_pages, per_page=per_page, **params) }}">{{ num_pages }}</a>
+            </li>
+          {% endif %}
+
+          {# next page #}
+          {% if page < num_pages %}
+            <li>
+              <a href="{{ url_for(base_route, page=page+1, per_page=per_page, **params) }}" aria-label="Next">
+                <span aria-hidden="true" class="glyphicon glyphicon-menu-right"></span>
+              </a>
+            </li>
+          {% else %}
+            <li class="disabled">
+              <span>
+                <span aria-hidden="true" class="glyphicon glyphicon-menu-right"></span>
+              </span>
+            </li>
+          {% endif %}
+        </ul>
+      </nav>
+    {% endif %}
+  {% endblock %}
+
   <table class="table table-striped">
     <thead>
       <tr>

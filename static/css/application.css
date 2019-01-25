@@ -6,3 +6,9 @@ body {
   content: "*";
   color: #d43f3a;
 }
+
+.pagination > li.gap > span {
+  border: none;
+  padding: 7px 6px;
+  z-index: -1;
+}

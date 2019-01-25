@@ -11,6 +11,9 @@ class Controller:
     Add routes for specific controller and provide generic RESTful actions.
     """
 
+    # default number of resources shown per page
+    DEFAULT_PER_PAGE = 10
+
     def __init__(self, resource_name, base_route, endpoint_suffix,
                  templates_dir, app, config_models):
         """Constructor
@@ -410,3 +413,27 @@ class Controller:
             if relation.id not in relation_ids:
                 # remove relation from resource
                 collection.remove(relation)
+
+    def pagination_args(self):
+        """Return request args for pagination as (page, per_page)."""
+        page = self.to_int(request.args.get('page'), 1, 1)
+        per_page = self.to_int(
+            request.args.get('per_page'), self.DEFAULT_PER_PAGE, 1
+        )
+        return page, per_page
+
+    def to_int(self, value, default, min_value=None):
+        """Convert string value to int.
+
+        :param str value: Input string
+        :param int default: Default value if blank or not parseable
+        :param int min_value: Optional minimum value
+        """
+        try:
+            result = int(value or default)
+            if min_value is not None and result < min_value:
+                # clamp to min value
+                result = min_value
+            return result
+        except Exception as e:
+            return default
