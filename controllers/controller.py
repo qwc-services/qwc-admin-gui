@@ -1,4 +1,5 @@
 from datetime import datetime
+import math
 
 from flask import abort, flash, redirect, render_template, request, url_for
 from sqlalchemy.exc import IntegrityError, InternalError
@@ -84,8 +85,8 @@ class Controller:
 
     # index
 
-    def resources_for_index(self, session):
-        """Return resources list.
+    def resources_for_index_query(self, session):
+        """Return query for resources list.
 
         Implement in subclass
 
@@ -96,12 +97,30 @@ class Controller:
     def index(self):
         """Show resources list."""
         session = self.session()
-        resources = self.resources_for_index(session)
+
+        # get resources query
+        query = self.resources_for_index_query(session)
+
+        # paginate
+        page, per_page = self.pagination_args()
+        num_pages = math.ceil(query.count() / per_page)
+        resources = query.limit(per_page).offset((page - 1) * per_page).all()
+
+        pagination = {
+            'page': page,
+            'num_pages': num_pages,
+            'per_page': per_page
+        }
+        if per_page == self.DEFAULT_PER_PAGE:
+            # clear default per_page value
+            pagination['per_page'] = None
+
         session.close()
 
         return render_template(
             '%s/index.html' % self.templates_dir, resources=resources,
-            endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey()
+            endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey(),
+            pagination=pagination, base_route=self.base_route
         )
 
     # new

@@ -34,12 +34,12 @@ class UsersController(Controller):
 
         UserForm.add_custom_fields(user_info_fields)
 
-    def resources_for_index(self, session):
-        """Return users list.
+    def resources_for_index_query(self, session):
+        """Return query for users list.
 
         :param Session session: DB session
         """
-        return session.query(self.User).order_by(self.User.name).all()
+        return session.query(self.User).order_by(self.User.name)
 
     def find_resource(self, id, session):
         """Find user by ID.

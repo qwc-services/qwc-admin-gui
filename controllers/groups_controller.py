@@ -18,12 +18,12 @@ class GroupsController(Controller):
         self.User = self.config_models.model('users')
         self.Role = self.config_models.model('roles')
 
-    def resources_for_index(self, session):
-        """Return groups list.
+    def resources_for_index_query(self, session):
+        """Return query for groups list.
 
         :param Session session: DB session
         """
-        return session.query(self.Group).order_by(self.Group.name).all()
+        return session.query(self.Group).order_by(self.Group.name)
 
     def find_resource(self, id, session):
         """Find group by ID.
