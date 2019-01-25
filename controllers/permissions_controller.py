@@ -1,4 +1,5 @@
 from collections import OrderedDict
+import math
 
 from flask import render_template, request
 from sqlalchemy.orm import joinedload
@@ -25,8 +26,8 @@ class PermissionsController(Controller):
         self.Resource = self.config_models.model('resources')
         self.ResourceType = self.config_models.model('resource_types')
 
-    def resources_for_index(self, session, role, resource_type):
-        """Return permissions list filtered by role or resource type.
+    def resources_for_index_query(self, session, role, resource_type):
+        """Return query for permissions list filtered by role or resource type.
 
         :param Session session: DB session
         :param str role: Optional role filter
@@ -50,7 +51,7 @@ class PermissionsController(Controller):
             joinedload(self.Permission.resource)
         )
 
-        return query.all()
+        return query
 
     def index(self):
         """Show permissions list."""
@@ -60,9 +61,27 @@ class PermissionsController(Controller):
         # get resources filtered by resource type
         active_resource_type = request.args.get('type')
         role = request.args.get('role')
-        resources = self.resources_for_index(
+        query = self.resources_for_index_query(
             session, role, active_resource_type
         )
+
+        # paginate
+        page, per_page = self.pagination_args()
+        num_pages = math.ceil(query.count() / per_page)
+        resources = query.limit(per_page).offset((page - 1) * per_page).all()
+
+        pagination = {
+            'page': page,
+            'num_pages': num_pages,
+            'per_page': per_page,
+            'params': {
+                'type': active_resource_type,
+                'role': role
+            }
+        }
+        if per_page == self.DEFAULT_PER_PAGE:
+            # clear default per_page value
+            pagination['per_page'] = None
 
         # query roles
         roles = session.query(self.Role).order_by(self.Role.name).all()
@@ -79,6 +98,7 @@ class PermissionsController(Controller):
         return render_template(
             '%s/index.html' % self.templates_dir, resources=resources,
             endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey(),
+            pagination=pagination, base_route=self.base_route,
             roles=roles, active_role=role,
             resource_types=resource_types,
             active_resource_type=active_resource_type
