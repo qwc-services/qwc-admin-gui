@@ -62,13 +62,12 @@ class ResourcesController(Controller):
             'page': page,
             'num_pages': num_pages,
             'per_page': per_page,
+            'per_page_options': self.PER_PAGE_OPTIONS,
+            'per_page_default': self.DEFAULT_PER_PAGE,
             'params': {
                 'type': active_resource_type
             }
         }
-        if per_page == self.DEFAULT_PER_PAGE:
-            # clear default per_page value
-            pagination['per_page'] = None
 
         # query resource types
         resource_types = OrderedDict()

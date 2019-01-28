@@ -14,6 +14,10 @@
       {% set page = pagination['page'] %}
       {% set num_pages = pagination['num_pages'] %}
       {% set per_page = pagination['per_page'] %}
+      {% if per_page == pagination['per_page_default'] %}
+        {# clear default per_page value #}
+        {% set per_page = none %}
+      {% endif %}
       {% set params = pagination['params'] or {} %}
 
       {% set start_page = 1 %}
@@ -90,16 +94,33 @@
 
           {# next page #}
           {% if page < num_pages %}
-            <li>
+            <li class="last">
               <a href="{{ url_for(base_route, page=page+1, per_page=per_page, **params) }}" aria-label="Next">
                 <span aria-hidden="true" class="glyphicon glyphicon-menu-right"></span>
               </a>
             </li>
           {% else %}
-            <li class="disabled">
+            <li class="last disabled">
               <span>
                 <span aria-hidden="true" class="glyphicon glyphicon-menu-right"></span>
               </span>
+            </li>
+          {% endif %}
+
+          {% if pagination['per_page_options'] %}
+            <li>
+              <div class="btn-group">
+                <button type="button" class="btn btn-default btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <span class="glyphicon glyphicon-list-alt"></span>
+                </button>
+                <ul class="dropdown-menu">
+                  {% for pp in pagination['per_page_options'] %}
+                    <li class="{{ 'active' if pp == pagination['per_page'] }}">
+                      <a href="{{ url_for(base_route, per_page=pp, **params) }}">{{ pp }} per page</a>
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
             </li>
           {% endif %}
         </ul>

@@ -74,14 +74,13 @@ class PermissionsController(Controller):
             'page': page,
             'num_pages': num_pages,
             'per_page': per_page,
+            'per_page_options': self.PER_PAGE_OPTIONS,
+            'per_page_default': self.DEFAULT_PER_PAGE,
             'params': {
                 'type': active_resource_type,
                 'role': role
             }
         }
-        if per_page == self.DEFAULT_PER_PAGE:
-            # clear default per_page value
-            pagination['per_page'] = None
 
         # query roles
         roles = session.query(self.Role).order_by(self.Role.name).all()

@@ -12,3 +12,12 @@ body {
   padding: 7px 6px;
   z-index: -1;
 }
+
+.pagination > li.last {
+  padding-right: 4px;
+}
+.pagination > li.last > a,
+.pagination > li.last > span {
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}

@@ -12,6 +12,8 @@ class Controller:
     Add routes for specific controller and provide generic RESTful actions.
     """
 
+    # available options for number of resources shown per page
+    PER_PAGE_OPTIONS = [10, 25, 50, 100]
     # default number of resources shown per page
     DEFAULT_PER_PAGE = 10
 
@@ -109,11 +111,10 @@ class Controller:
         pagination = {
             'page': page,
             'num_pages': num_pages,
-            'per_page': per_page
+            'per_page': per_page,
+            'per_page_options': self.PER_PAGE_OPTIONS,
+            'per_page_default': self.DEFAULT_PER_PAGE
         }
-        if per_page == self.DEFAULT_PER_PAGE:
-            # clear default per_page value
-            pagination['per_page'] = None
 
         session.close()
 
