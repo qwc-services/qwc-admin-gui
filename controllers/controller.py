@@ -101,12 +101,8 @@ class Controller:
         """Show resources list."""
         session = self.session()
 
-        # get search string
-        search_text = request.args.get('search')
-        if not search_text:
-            search_text = None
-
         # get resources query
+        search_text = self.search_text_arg()
         query = self.resources_for_index_query(search_text, session)
 
         # paginate
@@ -130,7 +126,7 @@ class Controller:
         return render_template(
             '%s/index.html' % self.templates_dir, resources=resources,
             endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey(),
-            pagination=pagination, search_text=search_text,
+            search_text=search_text, pagination=pagination,
             base_route=self.base_route
         )
 
@@ -443,6 +439,14 @@ class Controller:
             if relation.id not in relation_ids:
                 # remove relation from resource
                 collection.remove(relation)
+
+    def search_text_arg(self):
+        """Return request arg for search string."""
+        search_text = request.args.get('search')
+        if not search_text:
+            search_text = None
+
+        return search_text
 
     def pagination_args(self):
         """Return request args for pagination as (page, per_page)."""

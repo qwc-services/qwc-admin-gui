@@ -24,16 +24,22 @@ class ResourcesController(Controller):
         self.Resource = self.config_models.model('resources')
         self.ResourceType = self.config_models.model('resource_types')
 
-    def resources_for_index_query(self, session, resource_type):
+    def resources_for_index_query(self, search_text, resource_type, session):
         """Return query for resources list filtered by resource type.
 
-        :param Session session: DB session
+        :param str search_text: Search string for filtering
         :param str resource_type: Optional resource type filter
+        :param Session session: DB session
         """
         query = session.query(self.Resource) \
             .join(self.Resource.resource_types) \
             .order_by(self.ResourceType.list_order, self.Resource.type,
                       self.Resource.name)
+
+        if search_text:
+            query = query.filter(
+                self.Resource.name.ilike("%%%s%%" % search_text)
+            )
 
         if resource_type is not None:
             # filter by resource type
@@ -50,8 +56,11 @@ class ResourcesController(Controller):
         session = self.session()
 
         # get resources filtered by resource type
+        search_text = self.search_text_arg()
         active_resource_type = request.args.get('type')
-        query = self.resources_for_index_query(session, active_resource_type)
+        query = self.resources_for_index_query(
+            search_text, active_resource_type, session
+        )
 
         # paginate
         page, per_page = self.pagination_args()
@@ -65,6 +74,7 @@ class ResourcesController(Controller):
             'per_page_options': self.PER_PAGE_OPTIONS,
             'per_page_default': self.DEFAULT_PER_PAGE,
             'params': {
+                'search': search_text,
                 'type': active_resource_type
             }
         }
@@ -81,8 +91,8 @@ class ResourcesController(Controller):
         return render_template(
             '%s/index.html' % self.templates_dir, resources=resources,
             endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey(),
-            pagination=pagination, base_route=self.base_route,
-            resource_types=resource_types,
+            search_text=search_text, pagination=pagination,
+            base_route=self.base_route, resource_types=resource_types,
             active_resource_type=active_resource_type
         )
 

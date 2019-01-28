@@ -23,6 +23,20 @@
       {% endfor %}
     </ul>
   </div>
+
+  <div class="btn-group">
+    <form action_="{{ url_for(base_route) }}" method="get">
+      {% if active_resource_type %}
+        <input type="hidden" name="type" value="{{ active_resource_type }}" />
+      {% endif %}
+      <div class="input-group">
+        <input name="search" type="text" class="form-control" placeholder="Search" value="{{ search_text if search_text }}">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="submit">{{ utils.icon('search') }}</button>
+        </span>
+      </div>
+    </form>
+  </div>
 {% endblock %}
 
 {% block table_headers %}
