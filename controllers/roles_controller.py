@@ -18,12 +18,17 @@ class RolesController(Controller):
         self.User = self.config_models.model('users')
         self.Group = self.config_models.model('groups')
 
-    def resources_for_index_query(self, session):
+    def resources_for_index_query(self, search_text, session):
         """Return query for roles list.
 
+        :param str search_text: Search string for filtering
         :param Session session: DB session
         """
-        return session.query(self.Role).order_by(self.Role.name)
+        query = session.query(self.Role).order_by(self.Role.name)
+        if search_text:
+            query = query.filter(self.Role.name.ilike("%%%s%%" % search_text))
+
+        return query
 
     def find_resource(self, id, session):
         """Find role by ID.

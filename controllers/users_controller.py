@@ -34,12 +34,17 @@ class UsersController(Controller):
 
         UserForm.add_custom_fields(user_info_fields)
 
-    def resources_for_index_query(self, session):
+    def resources_for_index_query(self, search_text, session):
         """Return query for users list.
 
+        :param str search_text: Search string for filtering
         :param Session session: DB session
         """
-        return session.query(self.User).order_by(self.User.name)
+        query = session.query(self.User).order_by(self.User.name)
+        if search_text:
+            query = query.filter(self.User.name.ilike("%%%s%%" % search_text))
+
+        return query
 
     def find_resource(self, id, session):
         """Find user by ID.

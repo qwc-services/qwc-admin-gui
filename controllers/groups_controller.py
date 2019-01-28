@@ -18,12 +18,17 @@ class GroupsController(Controller):
         self.User = self.config_models.model('users')
         self.Role = self.config_models.model('roles')
 
-    def resources_for_index_query(self, session):
+    def resources_for_index_query(self, search_text, session):
         """Return query for groups list.
 
+        :param str search_text: Search string for filtering
         :param Session session: DB session
         """
-        return session.query(self.Group).order_by(self.Group.name)
+        query = session.query(self.Group).order_by(self.Group.name)
+        if search_text:
+            query = query.filter(self.Group.name.ilike("%%%s%%" % search_text))
+
+        return query
 
     def find_resource(self, id, session):
         """Find group by ID.

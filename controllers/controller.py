@@ -87,11 +87,12 @@ class Controller:
 
     # index
 
-    def resources_for_index_query(self, session):
+    def resources_for_index_query(self, search_text, session):
         """Return query for resources list.
 
         Implement in subclass
 
+        :param str search_text: Search string for filtering
         :param Session session: DB session
         """
         raise NotImplementedError
@@ -100,8 +101,13 @@ class Controller:
         """Show resources list."""
         session = self.session()
 
+        # get search string
+        search_text = request.args.get('search')
+        if not search_text:
+            search_text = None
+
         # get resources query
-        query = self.resources_for_index_query(session)
+        query = self.resources_for_index_query(search_text, session)
 
         # paginate
         page, per_page = self.pagination_args()
@@ -113,7 +119,10 @@ class Controller:
             'num_pages': num_pages,
             'per_page': per_page,
             'per_page_options': self.PER_PAGE_OPTIONS,
-            'per_page_default': self.DEFAULT_PER_PAGE
+            'per_page_default': self.DEFAULT_PER_PAGE,
+            'params': {
+                'search': search_text
+            }
         }
 
         session.close()
@@ -121,7 +130,8 @@ class Controller:
         return render_template(
             '%s/index.html' % self.templates_dir, resources=resources,
             endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey(),
-            pagination=pagination, base_route=self.base_route
+            pagination=pagination, search_text=search_text,
+            base_route=self.base_route
         )
 
     # new
