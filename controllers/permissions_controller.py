@@ -26,16 +26,23 @@ class PermissionsController(Controller):
         self.Resource = self.config_models.model('resources')
         self.ResourceType = self.config_models.model('resource_types')
 
-    def resources_for_index_query(self, session, role, resource_type):
+    def resources_for_index_query(self, search_text, role, resource_type,
+                                  session):
         """Return query for permissions list filtered by role or resource type.
 
-        :param Session session: DB session
+        :param str search_text: Search string for filtering
         :param str role: Optional role filter
         :param str resource_type: Optional resource type filter
+        :param Session session: DB session
         """
         query = session.query(self.Permission). \
             join(self.Permission.role).join(self.Permission.resource). \
             order_by(self.Role.name, self.Resource.type, self.Resource.name)
+
+        if search_text:
+            query = query.filter(
+                self.Resource.name.ilike("%%%s%%" % search_text)
+            )
 
         if role is not None:
             # filter by role name
@@ -59,10 +66,11 @@ class PermissionsController(Controller):
         session = self.session()
 
         # get resources filtered by resource type
-        active_resource_type = request.args.get('type')
+        search_text = self.search_text_arg()
         role = request.args.get('role')
+        active_resource_type = request.args.get('type')
         query = self.resources_for_index_query(
-            session, role, active_resource_type
+            search_text, role, active_resource_type, session
         )
 
         # paginate
@@ -77,8 +85,9 @@ class PermissionsController(Controller):
             'per_page_options': self.PER_PAGE_OPTIONS,
             'per_page_default': self.DEFAULT_PER_PAGE,
             'params': {
-                'type': active_resource_type,
-                'role': role
+                'search': search_text,
+                'role': role,
+                'type': active_resource_type
             }
         }
 
@@ -97,8 +106,8 @@ class PermissionsController(Controller):
         return render_template(
             '%s/index.html' % self.templates_dir, resources=resources,
             endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey(),
-            pagination=pagination, base_route=self.base_route,
-            roles=roles, active_role=role,
+            search_text=search_text, pagination=pagination,
+            base_route=self.base_route, roles=roles, active_role=role,
             resource_types=resource_types,
             active_resource_type=active_resource_type
         )
