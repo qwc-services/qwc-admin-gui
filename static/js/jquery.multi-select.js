@@ -374,6 +374,8 @@
         selections.addClass('ms-selected').show();
 
         options.attr('selected', 'selected');
+        // also update multi-select with appended value to fix issues with re-selected values not being included
+        ms.val($.merge(ms.val() || [], value));
 
         that.$container.find(that.elemsSelector).removeClass('ms-hover');
 
