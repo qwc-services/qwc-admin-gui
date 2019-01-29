@@ -103,6 +103,16 @@ based on https://github.com/lou/multi-select
   font-weight: bold;
 }
 
+.ms-container .ms-selectable .ms-search,
+.ms-container .ms-selection .ms-search {
+  width: 100%;
+  margin-bottom: 4px;
+  background: url("../img/chosen-sprite.png") no-repeat 100% -20px, #fff;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  padding: 4px 20px 4px 4px;
+}
+
 .ms-container .ms-selection li.ms-elem-selection {
   background-color: #337ab7;
   color: #fff;

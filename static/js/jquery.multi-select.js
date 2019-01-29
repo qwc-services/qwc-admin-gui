@@ -540,6 +540,46 @@
         $parent.children().eq(index - 1).after(this);
       }
     });
-};
+  };
 
+  /* Multiselect with search */
+
+  // apply filter to multi-select selectable or selection container
+  var filterItems = function(container) {
+    var filter = container.find('.ms-search').val();
+    container.find('.ms-list li.ms-elem-selectable:not(.ms-selected), .ms-list li.ms-elem-selection.ms-selected').each(function() {
+      if (filter !== "") {
+        // show item if matching
+        $(this).toggle($(this).text().toLowerCase().includes(filter));
+      }
+      else {
+        // show all
+        $(this).show();
+      }
+    });
+  };
+
+  $.fn.multiSelectWithSearch = function(msOptions) {
+    var options = $.extend({}, msOptions);
+    // add search fields to each header and filter lists on input
+    $.extend(options, {
+      selectableHeader: options.selectableHeader + '<input class="ms-search" type="text">',
+      selectionHeader: options.selectionHeader + '<input class="ms-search" type="text">',
+      afterInit: function(ms) {
+        ms.find('.ms-search').on('change keyup', function() {
+          filterItems($(this).parent('div'));
+        });
+      },
+      afterSelect: function() {
+        filterItems(this.$selectableContainer);
+        filterItems(this.$selectionContainer);
+      },
+      afterDeselect: function() {
+        filterItems(this.$selectableContainer);
+        filterItems(this.$selectionContainer);
+      }
+    });
+
+    $(this).multiSelect(options);
+  };
 }(window.jQuery);
