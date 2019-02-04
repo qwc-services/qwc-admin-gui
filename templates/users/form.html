@@ -50,6 +50,9 @@
     <legend>Authentication</legend>
     {{ wtf.form_field(form.password, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.form_field(form.password2, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {% if form.totp_enabled %}
+      {{ wtf.form_field(form.totp_secret, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {% endif %}
     {{ wtf.form_field(form.last_sign_in_at, form_type="horizontal", horizontal_columns=('sm', 2, 5), disabled=True) }}
     {{ wtf.form_field(form.failed_sign_in_count, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
 

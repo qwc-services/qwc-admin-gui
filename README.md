@@ -56,6 +56,8 @@ ALTER TABLE qwc_config.user_infos ADD COLUMN first_name character varying NOT NU
 USER_INFO_FIELDS='[{"title": "Surname", "name": "surname", "type": "text", "required": true}, {"title": "First name", "name": "first_name", "type": "text", "required": true}]'
 ```
 
+Set the `TOTP_ENABLED` environment variable to `True` to show the TOTP fields in the user form, if two factor authentication is enabled in the DB-Auth service (default: `False`).
+
 
 Usage
 -----

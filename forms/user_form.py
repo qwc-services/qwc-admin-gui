@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import FormField, IntegerField, SelectMultipleField, \
     StringField, SubmitField, TextAreaField, ValidationError, PasswordField
 from wtforms.validators import DataRequired, Optional, Email, EqualTo, \
-    NumberRange
+    Length, NumberRange
 from wtforms.widgets.html5 import NumberInput
 
 
@@ -23,6 +23,10 @@ class UserForm(FlaskForm):
     password = PasswordField('Password')
     password2 = PasswordField(
         'Repeat Password', validators=[EqualTo('password')])
+    totp_enabled = False
+    totp_secret = StringField(
+        'TOTP secret', validators=[Optional(), Length(max=16)]
+    )
     last_sign_in_at = StringField('Last sign in', validators=[Optional()])
     failed_sign_in_count = IntegerField(
         'Failed login attempts',

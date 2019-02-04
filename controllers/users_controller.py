@@ -32,6 +32,9 @@ class UsersController(Controller):
             app.logger.error("Could not load USER_INFO_FIELDS:\n%s" % e)
             user_info_fields = []
 
+        # show TOTP fields?
+        self.totp_enabled = os.environ.get('TOTP_ENABLED', 'False') == 'True'
+
         UserForm.add_custom_fields(user_info_fields)
 
     def resources_for_index_query(self, search_text, session):
@@ -61,6 +64,8 @@ class UsersController(Controller):
         :param bool edit_form: Set if edit form
         """
         form = UserForm(self.config_models, obj=resource)
+
+        form.totp_enabled = self.totp_enabled
 
         session = self.session()
         self.update_form_collection(
@@ -98,6 +103,12 @@ class UsersController(Controller):
         if form.password.data:
             user.set_password(form.password.data)
         user.failed_sign_in_count = form.failed_sign_in_count.data or 0
+
+        if self.totp_enabled:
+            if form.totp_secret.data:
+                user.totp_secret = form.totp_secret.data
+            else:
+                user.totp_secret = None
 
         # update user info
         if form.user_info.data:
