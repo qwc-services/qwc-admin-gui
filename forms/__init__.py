@@ -3,3 +3,4 @@ from .group_form import GroupForm
 from .role_form import RoleForm
 from .resource_form import ResourceForm
 from .permission_form import PermissionForm
+from .registrable_group_form import RegistrableGroupForm

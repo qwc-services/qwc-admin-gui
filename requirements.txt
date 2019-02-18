@@ -3,5 +3,5 @@ Flask-Bootstrap==3.3.7.1
 Flask-WTF==0.14.2
 psycopg2==2.7.6.1
 Flask-JWT-Extended==3.5.1
-git+https://github.com/qwc-services/qwc-config-db.git#egg=qwc-config-db
-git+https://github.com/qwc-services/qwc-services-core.git#egg=qwc-services-core
+git+https://github.com/qwc-services/qwc-config-db.git@5c20c7ae795e27248647b7b2329dcb984d7677ab#egg=qwc-config-db
+git+https://github.com/qwc-services/qwc-services-core.git@d53015462234c787465252f952b4cb0d6dcb1641#egg=qwc-services-core

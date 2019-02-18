@@ -11,7 +11,7 @@ from qwc_services_core.database import DatabaseEngine
 from qwc_services_core.jwt import jwt_manager
 from access_control import AccessControl
 from controllers import UsersController, GroupsController, RolesController, \
-    ResourcesController, PermissionsController
+    ResourcesController, PermissionsController, RegistrableGroupsController
 
 
 # load ORM models for ConfigDB
@@ -38,6 +38,7 @@ GroupsController(app, config_models)
 RolesController(app, config_models)
 ResourcesController(app, config_models)
 PermissionsController(app, config_models)
+RegistrableGroupsController(app, config_models)
 
 acccess_control = AccessControl(config_models, app.logger)
 
