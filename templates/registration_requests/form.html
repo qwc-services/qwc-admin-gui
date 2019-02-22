@@ -100,7 +100,7 @@
                   <td>{{ utils.icon('plus-sign', ['text-success']) }} <b>{{ req.title.data }}</b></td>
                 {% endif %}
                 <td>{{ req.group.data }}</td>
-                <td>{{ req.created_at.data.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+                <td>{{ req.created_at.data.strftime("%Y-%m-%d %H:%M:%S") if req.created_at.data }}</td>
               </tr>
             {% endfor %}
           </tbody>

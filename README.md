@@ -3,6 +3,10 @@ QWC Admin GUI
 
 GUI for administration of QWC Services.
 
+* manage users, groups and roles
+* define QWC resources and assign [permissions](https://github.com/qwc-services/qwc-services-core#resources-and-permissions)
+* define registrable groups and manage group registration requests
+
 **Note:** requires a QWC ConfigDB
 
 
@@ -59,6 +63,24 @@ USER_INFO_FIELDS='[{"title": "Surname", "name": "surname", "type": "text", "requ
 Set the `TOTP_ENABLED` environment variable to `True` to show the TOTP fields in the user form, if two factor authentication is enabled in the DB-Auth service (default: `False`).
 
 
+### Mailer
+
+[Flask-Mail](https://pythonhosted.org/Flask-Mail/) is used for sending mails like user notifications. These are the available options:
+* `MAIL_SERVER`: default ‘localhost’
+* `MAIL_PORT`: default 25
+* `MAIL_USE_TLS`: default False
+* `MAIL_USE_SSL`: default False
+* `MAIL_DEBUG`: default app.debug
+* `MAIL_USERNAME`: default None
+* `MAIL_PASSWORD`: default None
+* `MAIL_DEFAULT_SENDER`: default None
+* `MAIL_MAX_EMAILS`: default None
+* `MAIL_SUPPRESS_SEND`: default app.testing
+* `MAIL_ASCII_ATTACHMENTS`: default False
+
+In addition the standard Flask `TESTING` configuration option is used by Flask-Mail in unit tests.
+
+
 Usage
 -----
 
@@ -94,4 +116,4 @@ Install requirements:
 
 Start local service:
 
-    python server.py
+    MAIL_SUPPRESS_SEND=True MAIL_DEFAULT_SENDER=from@example.com python server.py

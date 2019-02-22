@@ -1,3 +1,5 @@
+from flask import flash, render_template
+from flask_mail import Message
 from sqlalchemy import or_
 from sqlalchemy.orm import joinedload
 
@@ -8,11 +10,12 @@ from forms import RegistrationRequestForm
 class RegistrationRequestsController(Controller):
     """Controller for registration request model"""
 
-    def __init__(self, app, config_models):
+    def __init__(self, app, config_models, mail):
         """Constructor
 
         :param Flask app: Flask application
         :param ConfigModels config_models: Helper for ORM models
+        :param flask_mail.Mail mail: Application mailer
         """
         super(RegistrationRequestsController, self).__init__(
             "Registration request", 'registration_requests',
@@ -24,6 +27,8 @@ class RegistrationRequestsController(Controller):
         self.RegistrableGroup = self.config_models.model('registrable_groups')
         self.User = self.config_models.model('users')
         self.Group = self.config_models.model('groups')
+
+        self.mail = mail
 
     def resources_for_index_query(self, search_text, session):
         """Return query for registration requests list.
@@ -135,6 +140,9 @@ class RegistrationRequestsController(Controller):
             request_forms[int(req.data['request_id'])] = req.data['action']
 
         # update registration requests
+        groups_joined = []
+        groups_left = []
+        rejected_requests = []
         for registration_request in pending_requests:
             registrable_group = registration_request.registrable_group
             group = registrable_group.group
@@ -152,15 +160,18 @@ class RegistrationRequestsController(Controller):
                         "Remove user from group '%s'" % group.name
                     )
                     user.groups_collection.remove(group)
+                    groups_left.append(registrable_group.title)
                 elif group.id not in user_group_ids:
                     # add to group
                     self.logger.info("Add user to group '%s'" % group.name)
                     user.groups_collection.append(group)
+                    groups_joined.append(registrable_group.title)
                 else:
                     # already a group member
                     self.logger.info(
                         "User is already a member of group '%s'" % group.name
                     )
+                    groups_joined.append(registrable_group.title)
                 registration_request.pending = False
                 registration_request.accepted = True
 
@@ -171,6 +182,7 @@ class RegistrationRequestsController(Controller):
                 )
                 registration_request.pending = False
                 registration_request.accepted = False
+                rejected_requests.append(registrable_group.title)
 
             else:
                 if group.id in user_group_ids:
@@ -179,6 +191,12 @@ class RegistrationRequestsController(Controller):
                         "User is already a member of group '%s'" % group.name
                     )
                     registration_request.pending = False
+                    groups_joined.append(registrable_group.title)
+
+        if user.email:
+            self.send_user_notification(
+                user, groups_joined, groups_left, rejected_requests, session
+            )
 
     def pending_requests(self, user_id, session):
         """Return all pending registration requests of a user.
@@ -200,3 +218,52 @@ class RegistrationRequestsController(Controller):
             .joinedload(self.RegistrableGroup.group)
         )
         return query.all()
+
+    def send_user_notification(self, user, groups_joined, groups_left,
+                               rejected_requests, session):
+        """Send mail with any registration request updates to user.
+
+        :param User user: User instance
+        :param list[str] groups_joined: List of groups joined
+        :param list[str] groups_left: List of groups left
+        :param list[str] rejected_requests: List of rejected requests
+        :param Session session: DB session
+        """
+        if not groups_joined and not groups_left and not rejected_requests:
+            # no changes in registration requests
+            return
+
+        # successfully commit changes before sending user notification
+        try:
+            session.commit()
+        except Exception as e:
+            raise(e)
+
+        # send notification to user
+        try:
+            msg = Message(
+                "Group registration updates",
+                recipients=[user.email]
+            )
+            # set message body from template
+            msg.body = render_template(
+                '%s/user_notification.txt' % self.templates_dir, user=user,
+                groups_joined=groups_joined, groups_left=groups_left,
+                rejected_requests=rejected_requests
+            )
+
+            # send message
+            self.logger.debug(msg)
+            self.mail.send(msg)
+            flash(
+                "User has been notified of registration request updates.",
+                'success'
+            )
+        except Exception as e:
+            self.logger.error(
+                "Could not send notification to user '%s':\n%s" %
+                (user.email, e)
+            )
+            flash(
+                "Failed to send user notification:\n%s" % e, 'error'
+            )

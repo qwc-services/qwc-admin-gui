@@ -1,0 +1,19 @@
+Hello {{ user.name }}!
+{% if groups_joined | length > 0 %}
+You have been added to the following groups:
+  {%- for group in groups_joined %}
+  * {{ group }}
+  {%- endfor %}
+{% endif -%}
+{% if groups_left | length > 0 %}
+You have been removed from the following groups:
+  {%- for group in groups_left %}
+  * {{ group }}
+  {%- endfor %}
+{% endif -%}
+{% if rejected_requests | length > 0 %}
+Your membership requests for the following groups have been declined:
+  {%- for group in rejected_requests %}
+  * {{ group }}
+  {%- endfor %}
+{% endif -%}
