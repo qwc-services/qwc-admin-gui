@@ -60,7 +60,9 @@ ALTER TABLE qwc_config.user_infos ADD COLUMN first_name character varying NOT NU
 USER_INFO_FIELDS='[{"title": "Surname", "name": "surname", "type": "text", "required": true}, {"title": "First name", "name": "first_name", "type": "text", "required": true}]'
 ```
 
-Set the `TOTP_ENABLED` environment variable to `True` to show the TOTP fields in the user form, if two factor authentication is enabled in the DB-Auth service (default: `False`).
+Set the `TOTP_ENABLED` environment variable to `True` to show the TOTP fields in the user form, if two factor authentication is enabled in the [DB-Auth service](https://github.com/qwc-services/qwc-db-auth) (default: `False`).
+
+Set the `GROUP_REGISTRATION_ENABLED` environment variable to `False` to disable registrable groups and group registration requests, if not using the [Registration GUI](https://github.com/qwc-services/qwc-registration-gui) (default: `True`).
 
 
 ### Mailer

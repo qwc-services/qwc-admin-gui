@@ -23,8 +23,10 @@ config_models = ConfigModels(db_engine)
 # Flask application
 app = Flask(__name__)
 app.secret_key = os.environ.get(
-        'JWT_SECRET_KEY',
-        'CHANGE-ME-8JGL6Kc9UA69p6E88JGL6Kc9UA69p6E8')
+    'JWT_SECRET_KEY',
+    'CHANGE-ME-8JGL6Kc9UA69p6E88JGL6Kc9UA69p6E8')
+app.config['QWC_GROUP_REGISTRATION_ENABLED'] = os.environ.get(
+    'GROUP_REGISTRATION_ENABLED', 'True') == 'True'
 
 # enable CSRF protection
 CSRFProtect(app)
@@ -63,8 +65,9 @@ GroupsController(app, config_models)
 RolesController(app, config_models)
 ResourcesController(app, config_models)
 PermissionsController(app, config_models)
-RegistrableGroupsController(app, config_models)
-RegistrationRequestsController(app, config_models, mail)
+if app.config.get('QWC_GROUP_REGISTRATION_ENABLED'):
+    RegistrableGroupsController(app, config_models)
+    RegistrationRequestsController(app, config_models, mail)
 
 acccess_control = AccessControl(config_models, app.logger)
 
