@@ -1,0 +1,13 @@
+{
+  "locale": "de",
+  "registration_requests": {
+    "user_notification": {
+      "subject": "Gruppen-Registrierung aktualisiert",
+      "salutation": "Guten Tag %(username)s",
+      "user_added_to_groups": "Sie wurden zu den folgenden Gruppen hinzugefügt:",
+      "user_removed_from_groups": "Sie wurden aus folgenden Gruppen entfernt:",
+      "user_requests_declined": "Ihre Anträge für folgende Gruppen wurden abgelehnt:",
+      "footer": ""
+    }
+  }
+}

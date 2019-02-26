@@ -1,19 +1,20 @@
-Hello {{ user.name }}!
+{{ 'registration_requests.user_notification.salutation' | i18n | format(username=user.name) }}
 {% if groups_joined | length > 0 %}
-You have been added to the following groups:
+{{ 'registration_requests.user_notification.user_added_to_groups' | i18n }}
   {%- for group in groups_joined %}
   * {{ group }}
   {%- endfor %}
 {% endif -%}
 {% if groups_left | length > 0 %}
-You have been removed from the following groups:
+{{ 'registration_requests.user_notification.user_removed_from_groups' | i18n }}
   {%- for group in groups_left %}
   * {{ group }}
   {%- endfor %}
 {% endif -%}
 {% if rejected_requests | length > 0 %}
-Your membership requests for the following groups have been declined:
+{{ 'registration_requests.user_notification.user_requests_declined' | i18n }}
   {%- for group in rejected_requests %}
   * {{ group }}
   {%- endfor %}
-{% endif -%}
+{% endif %}
+{{ 'registration_requests.user_notification.footer' | i18n }}

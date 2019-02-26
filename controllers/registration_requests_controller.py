@@ -10,11 +10,12 @@ from forms import RegistrationRequestForm
 class RegistrationRequestsController(Controller):
     """Controller for registration request model"""
 
-    def __init__(self, app, config_models, mail):
+    def __init__(self, app, config_models, i18n, mail):
         """Constructor
 
         :param Flask app: Flask application
         :param ConfigModels config_models: Helper for ORM models
+        :param callable i18n: Translation helper method
         :param flask_mail.Mail mail: Application mailer
         """
         super(RegistrationRequestsController, self).__init__(
@@ -28,6 +29,7 @@ class RegistrationRequestsController(Controller):
         self.User = self.config_models.model('users')
         self.Group = self.config_models.model('groups')
 
+        self.i18n = i18n
         self.mail = mail
 
     def resources_for_index_query(self, search_text, session):
@@ -242,7 +244,7 @@ class RegistrationRequestsController(Controller):
         # send notification to user
         try:
             msg = Message(
-                "Group registration updates",
+                self.i18n('registration_requests.user_notification.subject'),
                 recipients=[user.email]
             )
             # set message body from template

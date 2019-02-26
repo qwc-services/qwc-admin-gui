@@ -5,7 +5,7 @@ GUI for administration of QWC Services.
 
 * manage users, groups and roles
 * define QWC resources and assign [permissions](https://github.com/qwc-services/qwc-services-core#resources-and-permissions)
-* define registrable groups and manage group registration requests
+* define registrable groups and manage [group registration requests](https://github.com/qwc-services/qwc-services-core#group_registration)
 
 **Note:** requires a QWC ConfigDB
 
@@ -81,6 +81,13 @@ Set the `GROUP_REGISTRATION_ENABLED` environment variable to `False` to disable 
 * `MAIL_ASCII_ATTACHMENTS`: default False
 
 In addition the standard Flask `TESTING` configuration option is used by Flask-Mail in unit tests.
+
+
+### Translations
+
+Translation strings are stored in a JSON file for each locale in `translations/<locale>.json` (e.g. `en.json`). Add any new languages as new JSON files.
+
+Set the `DEFAULT_LOCALE` environment variable to choose the locale for the user notification mails (default: `en`).
 
 
 Usage

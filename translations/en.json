@@ -1,0 +1,13 @@
+{
+  "locale": "en",
+  "registration_requests": {
+    "user_notification": {
+      "subject": "Group registration updates",
+      "salutation": "Hello %(username)s",
+      "user_added_to_groups": "You have been added to the following groups:",
+      "user_removed_from_groups": "You have been removed from the following groups:",
+      "user_requests_declined": "Your membership requests for the following groups have been declined:",
+      "footer": ""
+    }
+  }
+}
