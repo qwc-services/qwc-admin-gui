@@ -3,6 +3,7 @@ Flask-Bootstrap==3.3.7.1
 Flask-JWT-Extended==3.5.1
 Flask-Mail==0.9.1
 Flask-WTF==0.14.2
-psycopg2
+psycopg2==2.7.7
+SQLAlchemy==1.2.18
 git+https://github.com/qwc-services/qwc-config-db.git@ee33dc8c0a0b405949e062036ee29b01bc4687b5#egg=qwc-config-db
 git+https://github.com/qwc-services/qwc-services-core.git@d53015462234c787465252f952b4cb0d6dcb1641#egg=qwc-services-core
