@@ -90,6 +90,18 @@ Translation strings are stored in a JSON file for each locale in `translations/<
 Set the `DEFAULT_LOCALE` environment variable to choose the locale for the user notification mails (default: `en`).
 
 
+### Proxy to internal services
+
+The route `/proxy?url=http://example.com/path?a=1` serves as a proxy for calling whitelisted internal services. This can be used e.g. to call other internal services from custom pages in the Admin GUI, without having to expose those services externally.
+
+Set the `PROXY_URL_WHITELIST` environment variable to a JSON with a list of RegExes for whitelisted URLs (default: `[]`), e.g.
+```json
+    ["<RegEx pattern for full URL from proxy request>", "^http://example.com/path\\?.*$"]
+```
+
+Set the `PROXY_TIMEOUT` environment variable to the timeout in seconds for proxy requests (default: `60`s).
+
+
 Usage
 -----
 

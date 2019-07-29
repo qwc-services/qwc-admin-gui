@@ -1,7 +1,10 @@
 import logging
 import os
+import re
+import requests
 
-from flask import Flask, json, render_template, request, redirect
+from flask import abort, Flask, json, redirect, render_template, request, \
+    Response, stream_with_context
 from flask_bootstrap import Bootstrap
 from flask_wtf.csrf import CSRFProtect
 from flask_jwt_extended import jwt_optional, get_jwt_identity
@@ -73,6 +76,16 @@ except Exception as e:
         % (locale, path, e)
     )
 
+# settings for proxy to internal services
+PROXY_TIMEOUT = int(os.environ.get('PROXY_TIMEOUT', 60))
+try:
+    PROXY_URL_WHITELIST = json.loads(
+        os.environ.get('PROXY_URL_WHITELIST', '[]')
+    )
+except Exception as e:
+    app.logger.error("Could not load PROXY_URL_WHITELIST:\n%s" % e)
+    PROXY_URL_WHITELIST = []
+
 
 # Setup translation helper
 @app.template_filter('i18n')
@@ -114,7 +127,7 @@ if app.config.get('QWC_GROUP_REGISTRATION_ENABLED'):
     RegistrableGroupsController(app, config_models)
     RegistrationRequestsController(app, config_models, i18n, mail)
 
-acccess_control = AccessControl(config_models, app.logger)
+access_control = AccessControl(config_models, app.logger)
 
 
 @app.before_request
@@ -122,7 +135,7 @@ acccess_control = AccessControl(config_models, app.logger)
 def assert_admin_role():
     identity = get_jwt_identity()
     app.logger.debug("Access with identity %s" % identity)
-    if not acccess_control.is_admin(identity):
+    if not access_control.is_admin(identity):
         app.logger.info("Access denied for user %s" % identity)
         if app.debug:
             pass  # Allow access in debug mode
@@ -138,6 +151,46 @@ def assert_admin_role():
 @app.route('/')
 def home():
     return render_template('home.html')
+
+
+@app.route("/proxy", methods=['GET', 'POST', 'PUT', 'DELETE'])
+def proxy():
+    """Proxy for calling whitelisted internal services.
+
+    Parameter:
+        url: Target URL
+    """
+    url = request.args.get('url')
+
+    # check if URL is in whitelist
+    url_permitted = False
+    for expr in PROXY_URL_WHITELIST:
+        if re.match(expr, url):
+            url_permitted = True
+            break
+    if not url_permitted:
+        app.logger.info("Proxy forbidden for URL '%s'" % url)
+        abort(403)
+
+    # forward request
+    if request.method == 'GET':
+        res = requests.get(url, stream=True, timeout=PROXY_TIMEOUT)
+    elif request.method == 'POST':
+        headers = {'content-type': request.headers['content-type']}
+        res = requests.post(url, stream=True, timeout=PROXY_TIMEOUT,
+                            data=request.get_data(), headers=headers)
+    elif request.method == 'PUT':
+        headers = {'content-type': request.headers['content-type']}
+        res = requests.put(url, stream=True, timeout=PROXY_TIMEOUT,
+                           data=request.get_data(), headers=headers)
+    elif request.method == 'DELETE':
+        res = requests.delete(url, stream=True, timeout=PROXY_TIMEOUT)
+    else:
+        raise "Invalid operation"
+    response = Response(stream_with_context(res.iter_content(chunk_size=1024)),
+                        status=res.status_code)
+    response.headers['content-type'] = res.headers['content-type']
+    return response
 
 
 # local webserver
