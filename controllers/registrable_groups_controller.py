@@ -28,6 +28,7 @@ class RegistrableGroupsController(Controller):
         :param Session session: DB session
         """
         query = session.query(self.RegistrableGroup) \
+            .join(self.RegistrableGroup.group) \
             .order_by(self.RegistrableGroup.title)
         if search_text:
             # filter by registrable group title or group name
@@ -41,6 +42,27 @@ class RegistrableGroupsController(Controller):
         query = query.options(joinedload(self.RegistrableGroup.group))
 
         return query
+
+    def order_by_criterion(self, sort, sort_asc):
+        """Return order_by criterion for sorted resources list as tuple.
+
+        :param str sort: Column name for sorting
+        :param bool sort_asc: Set to sort in ascending order
+        """
+        sortable_columns = {
+            'id': self.RegistrableGroup.id,
+            'title': self.RegistrableGroup.title,
+            'description': self.RegistrableGroup.description,
+            'group': self.Group.name
+        }
+
+        order_by = sortable_columns.get(sort)
+        if order_by is not None:
+            if not sort_asc:
+                # sort in descending order
+                order_by = order_by.desc()
+
+        return order_by
 
     def find_resource(self, id, session):
         """Find registrable group by ID.

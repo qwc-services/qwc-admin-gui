@@ -30,6 +30,25 @@ class GroupsController(Controller):
 
         return query
 
+    def order_by_criterion(self, sort, sort_asc):
+        """Return order_by criterion for sorted resources list as tuple.
+
+        :param str sort: Column name for sorting
+        :param bool sort_asc: Set to sort in ascending order
+        """
+        sortable_columns = {
+            'id': self.Group.id,
+            'name': self.Group.name
+        }
+
+        order_by = sortable_columns.get(sort)
+        if order_by is not None:
+            if not sort_asc:
+                # sort in descending order
+                order_by = order_by.desc()
+
+        return order_by
+
     def find_resource(self, id, session):
         """Find group by ID.
 

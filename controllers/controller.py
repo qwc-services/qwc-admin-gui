@@ -97,6 +97,14 @@ class Controller:
         """
         raise NotImplementedError
 
+    def order_by_criterion(self, sort, sort_asc):
+        """Return order_by criterion for sorted resources list.
+
+        :param str sort: Column name for sorting
+        :param bool sort_asc: Set to sort in ascending order
+        """
+        return None
+
     def index(self):
         """Show resources list."""
         session = self.session()
@@ -104,6 +112,25 @@ class Controller:
         # get resources query
         search_text = self.search_text_arg()
         query = self.resources_for_index_query(search_text, session)
+
+        # order by sort args
+        sort, sort_asc = self.sort_args()
+        sort_param = None
+        if sort is not None:
+            order_by = self.order_by_criterion(sort, sort_asc)
+            if order_by is not None:
+                if type(order_by) is tuple:
+                    # order by multiple sort columns
+                    query = query.order_by(None).order_by(*order_by)
+                else:
+                    # order by single sort column
+                    query = query.order_by(None).order_by(order_by)
+
+                sort_param = sort
+                if not sort_asc:
+                    # append sort direction suffix
+                    sort_param = "%s-" % sort
+        # else use default order from index query
 
         # paginate
         page, per_page = self.pagination_args()
@@ -117,7 +144,8 @@ class Controller:
             'per_page_options': self.PER_PAGE_OPTIONS,
             'per_page_default': self.DEFAULT_PER_PAGE,
             'params': {
-                'search': search_text
+                'search': search_text,
+                'sort': sort_param
             }
         }
 
@@ -127,6 +155,7 @@ class Controller:
             '%s/index.html' % self.templates_dir, resources=resources,
             endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey(),
             search_text=search_text, pagination=pagination,
+            sort=sort, sort_asc=sort_asc,
             base_route=self.base_route
         )
 
@@ -447,6 +476,22 @@ class Controller:
             search_text = None
 
         return search_text
+
+    def sort_args(self):
+        """Return request arg for sort as (sort, sort_asc)."""
+        sort = request.args.get('sort')
+        sort_asc = True
+        if not sort:
+            sort = None
+        else:
+            # detect any direction suffix '-', e.g. 'name-'
+            parts = sort.split('-')
+            sort = parts[0]
+            if len(parts) > 1:
+                # sort in descending order
+                sort_asc = False
+
+        return sort, sort_asc
 
     def pagination_args(self):
         """Return request args for pagination as (page, per_page)."""

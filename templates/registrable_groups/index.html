@@ -5,10 +5,10 @@
 {% block new_resource_label %}New Registrable Group{% endblock %}
 
 {% block table_headers %}
-  <th>ID</th>
-  <th>Title</th>
-  <th>Description</th>
-  <th>Group</th>
+  <th>{{ sortable_column("ID", 'id') }}</th>
+  <th>{{ sortable_column("Title", 'title') }}</th>
+  <th>{{ sortable_column("Description", 'description') }}</th>
+  <th>{{ sortable_column("Group", 'group') }}</th>
 {% endblock %}
 
 {% block resource_fields %}

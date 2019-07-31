@@ -13,19 +13,19 @@
     </button>
     <ul class="dropdown-menu">
       <li role="presentation" class="{{ 'active' if active_resource_type is none }}">
-        <a href="{{ url_for('resources') }}"">All</a>
+        <a href="{{ url_for('resources') }}">All</a>
       </li>
       <li role="separator" class="divider"></li>
       {% for resource_type in resource_types %}
         <li class="{{ 'active' if resource_type == active_resource_type }}">
-          <a href="{{ url_for('resources', type=resource_type) }}"">{{ resource_types[resource_type] }}</a>
+          <a href="{{ url_for('resources', type=resource_type) }}">{{ resource_types[resource_type] }}</a>
         </li>
       {% endfor %}
     </ul>
   </div>
 
   <div class="btn-group">
-    <form action_="{{ url_for(base_route) }}" method="get">
+    <form action="{{ url_for(base_route) }}" method="get">
       {% if active_resource_type %}
         <input type="hidden" name="type" value="{{ active_resource_type }}" />
       {% endif %}
@@ -40,9 +40,9 @@
 {% endblock %}
 
 {% block table_headers %}
-  <th>ID</th>
-  <th>Type</th>
-  <th>Name</th>
+  <th>{{ sortable_column("ID", 'id') }}</th>
+  <th>{{ sortable_column("Type", 'type') }}</th>
+  <th>{{ sortable_column("Name", 'name') }}</th>
   <th>Parent</th>
 {% endblock %}
 

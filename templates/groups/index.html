@@ -5,8 +5,8 @@
 {% block new_resource_label %}New Group{% endblock %}
 
 {% block table_headers %}
-  <th>ID</th>
-  <th>Name</th>
+  <th>{{ sortable_column("ID", 'id') }}</th>
+  <th>{{ sortable_column("Name", 'name') }}</th>
 {% endblock %}
 
 {% block resource_fields %}

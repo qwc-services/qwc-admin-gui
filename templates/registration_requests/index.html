@@ -4,7 +4,7 @@
 
 {% block buttons %}
   <div class="btn-group">
-    <form action_="{{ url_for(base_route) }}" method="get">
+    <form action="{{ url_for(base_route) }}" method="get">
       <div class="input-group">
         <input name="search" type="text" class="form-control" placeholder="Search" value="{{ search_text if search_text }}">
         <span class="input-group-btn">
@@ -16,10 +16,10 @@
 {% endblock %}
 
 {% block table_headers %}
-  <th>ID</th>
-  <th>User</th>
-  <th>Requested registrable group</th>
-  <th>Created at</th>
+  <th>{{ sortable_column("ID", 'id') }}</th>
+  <th>{{ sortable_column("User", 'user') }}</th>
+  <th>{{ sortable_column("Requested registrable group", 'group') }}</th>
+  <th>{{ sortable_column("Created at", 'created') }}</th>
 {% endblock %}
 
 {% block resource_fields %}

@@ -60,6 +60,39 @@ class PermissionsController(Controller):
 
         return query
 
+    def order_by_criterion(self, sort, sort_asc):
+        """Return order_by criterion for sorted resources list as tuple.
+
+        :param str sort: Column name for sorting
+        :param bool sort_asc: Set to sort in ascending order
+        """
+        sortable_columns = {
+            'id': [self.Permission.id],
+            'role': [self.Role.name, self.Resource.type, self.Resource.name],
+            'type': [self.Resource.type, self.Role.name, self.Resource.name],
+            'resource': [
+                self.Resource.name, self.Role.name, self.Resource.type
+            ],
+            'priority': [
+                self.Permission.priority, self.Role.name, self.Resource.type,
+                self.Resource.name
+            ],
+            'write': [
+                self.Permission.write, self.Role.name, self.Resource.type,
+                self.Resource.name
+            ]
+        }
+
+        order_by = sortable_columns.get(sort)
+        if order_by is not None:
+            if not sort_asc:
+                # sort in descending order
+                order_by[0] = order_by[0].desc()
+            # convert multiple columns to tuple
+            order_by = tuple(order_by)
+
+        return order_by
+
     def index(self):
         """Show permissions list."""
 
@@ -72,6 +105,24 @@ class PermissionsController(Controller):
         query = self.resources_for_index_query(
             search_text, role, active_resource_type, session
         )
+
+        # order by sort args
+        sort, sort_asc = self.sort_args()
+        sort_param = None
+        if sort is not None:
+            order_by = self.order_by_criterion(sort, sort_asc)
+            if order_by is not None:
+                if type(order_by) is tuple:
+                    # order by multiple sort columns
+                    query = query.order_by(None).order_by(*order_by)
+                else:
+                    # order by single sort column
+                    query = query.order_by(None).order_by(order_by)
+
+                sort_param = sort
+                if not sort_asc:
+                    # append sort direction suffix
+                    sort_param = "%s-" % sort
 
         # paginate
         page, per_page = self.pagination_args()
@@ -87,7 +138,8 @@ class PermissionsController(Controller):
             'params': {
                 'search': search_text,
                 'role': role,
-                'type': active_resource_type
+                'type': active_resource_type,
+                'sort': sort_param
             }
         }
 
@@ -107,6 +159,7 @@ class PermissionsController(Controller):
             '%s/index.html' % self.templates_dir, resources=resources,
             endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey(),
             search_text=search_text, pagination=pagination,
+            sort=sort, sort_asc=sort_asc,
             base_route=self.base_route, roles=roles, active_role=role,
             resource_types=resource_types,
             active_resource_type=active_resource_type

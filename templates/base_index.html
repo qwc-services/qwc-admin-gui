@@ -1,4 +1,26 @@
 {% extends "base.html" %}
+
+{%- macro sortable_column(label, new_sort) -%}
+  {%- set params = {} -%}
+  {%- if pagination -%}
+    {# get any filter params #}
+    {%- set params = pagination['params'] or {} -%}
+  {%- endif -%}
+
+  {%- set icon = '' -%}
+  {%- if sort == new_sort -%}
+    {# append sort direction suffix #}
+    {%- set new_sort = '%s-' % new_sort if sort_asc else new_sort -%}
+    {# select sort direction icon  #}
+    {%- set icon = '&#x25B2;' if sort_asc else '&#x25BC;' -%}
+  {%- endif -%}
+
+  {# override sort param #}
+  {%- do params.update({'sort': new_sort}) -%}
+
+  <a href="{{ url_for(base_route, **params) }}">{{ label }}{{ icon | safe }}</a>
+{%- endmacro -%}
+
 {% block title %}Resources{% endblock %}
 {% block container %}
   <h1>{{ self.title() }}</h1>
@@ -9,7 +31,7 @@
     </a>
 
     <div class="btn-group">
-      <form action_="{{ url_for(base_route) }}" method="get">
+      <form action="{{ url_for(base_route) }}" method="get">
         <div class="input-group">
           <input name="search" type="text" class="form-control" placeholder="Search" value="{{ search_text if search_text }}">
           <span class="input-group-btn">

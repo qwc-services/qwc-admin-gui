@@ -13,12 +13,12 @@
     </button>
     <ul class="dropdown-menu">
       <li role="presentation" class="{{ 'active' if active_role is none }}">
-        <a href="{{ url_for('permissions', type=active_resource_type) }}"">All</a>
+        <a href="{{ url_for('permissions', type=active_resource_type) }}">All</a>
       </li>
       <li role="separator" class="divider"></li>
       {% for role in roles %}
         <li class="{{ 'active' if role.name == active_role }}">
-          <a href="{{ url_for('permissions', role=role.name, type=active_resource_type) }}"">{{ role.name }}</a>
+          <a href="{{ url_for('permissions', role=role.name, type=active_resource_type) }}">{{ role.name }}</a>
         </li>
       {% endfor %}
     </ul>
@@ -30,19 +30,19 @@
     </button>
     <ul class="dropdown-menu">
       <li role="presentation" class="{{ 'active' if active_resource_type is none }}">
-        <a href="{{ url_for('permissions', role=active_role) }}"">All</a>
+        <a href="{{ url_for('permissions', role=active_role) }}">All</a>
       </li>
       <li role="separator" class="divider"></li>
       {% for resource_type in resource_types %}
         <li class="{{ 'active' if resource_type == active_resource_type }}">
-          <a href="{{ url_for('permissions', role=active_role, type=resource_type) }}"">{{ resource_types[resource_type] }}</a>
+          <a href="{{ url_for('permissions', role=active_role, type=resource_type) }}">{{ resource_types[resource_type] }}</a>
         </li>
       {% endfor %}
     </ul>
   </div>
 
   <div class="btn-group">
-    <form action_="{{ url_for(base_route) }}" method="get">
+    <form action="{{ url_for(base_route) }}" method="get">
       {% if active_role %}
         <input type="hidden" name="role" value="{{ active_role }}" />
       {% endif %}
@@ -60,12 +60,12 @@
 {% endblock %}
 
 {% block table_headers %}
-  <th>ID</th>
-  <th>Role</th>
-  <th>Resource type</th>
-  <th>Resource</th>
-  <th>Priority</th>
-  <th>Write</th>
+  <th>{{ sortable_column("ID", 'id') }}</th>
+  <th>{{ sortable_column("Role", 'role') }}</th>
+  <th>{{ sortable_column("Resource type", 'type') }}</th>
+  <th>{{ sortable_column("Resource", 'resource') }}</th>
+  <th>{{ sortable_column("Priority", 'priority') }}</th>
+  <th>{{ sortable_column("Write", 'write') }}</th>
 {% endblock %}
 
 {% block resource_fields %}
