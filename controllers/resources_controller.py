@@ -1,7 +1,7 @@
 from collections import OrderedDict
 import math
 
-from flask import render_template, request
+from flask import abort, render_template, request
 from sqlalchemy.orm import joinedload
 
 from .controller import Controller
@@ -23,6 +23,15 @@ class ResourcesController(Controller):
         )
         self.Resource = self.config_models.model('resources')
         self.ResourceType = self.config_models.model('resource_types')
+
+        # add custom routes
+        base_route = self.base_route
+        suffix = self.endpoint_suffix
+        # resource hierarchy
+        app.add_url_rule(
+            '/%s/<int:id>/hierarchy' % base_route, 'hierarchy_%s' % suffix,
+            self.hierarchy, methods=['GET']
+        )
 
     def resources_for_index_query(self, search_text, resource_type, session):
         """Return query for resources list filtered by resource type.
@@ -238,3 +247,69 @@ class ResourcesController(Controller):
             resource.parent_id = form.parent_id.data
         else:
             resource.parent_id = None
+
+    def hierarchy(self, id):
+        """Show resource hierarchy.
+
+        :param int id: Resource ID
+        """
+        # find resource
+        session = self.session()
+        resource = self.find_resource(id, session)
+
+        if resource is not None:
+            # get root resource
+            root = resource
+            parent = root.parent
+            while parent is not None:
+                root = parent
+                parent = root.parent
+
+            # recursively collect hierarchy
+            items = []
+            self.collect_resources(root, 0, items, session)
+
+            # query resource types
+            resource_types = OrderedDict()
+            query = session.query(self.ResourceType) \
+                .order_by(self.ResourceType.list_order, self.ResourceType.name)
+            for resource_type in query.all():
+                resource_types[resource_type.name] = resource_type.description
+
+            session.close()
+
+            return render_template(
+                '%s/hierarchy.html' % self.templates_dir, items=items,
+                selected_item_id=resource.id,
+                endpoint_suffix=self.endpoint_suffix,
+                pkey=self.resource_pkey(), resource_types=resource_types
+            )
+        else:
+            # resource not found
+            session.close()
+            abort(404)
+
+    def collect_resources(self, resource, depth, items, session):
+        """Recursively collect resource hierarchy from DB.
+
+        :param object resource: Resource object
+        :param int depth: Hierarchy depth
+        :param list[object] choices: List of collected resources
+        :param Session session: DB session
+        """
+        # add resource
+        items.append({
+            'depth': depth,
+            'resource': resource
+        })
+
+        # get sorted children
+        query = session.query(self.Resource) \
+            .join(self.Resource.resource_types) \
+            .order_by(self.ResourceType.list_order, self.Resource.type,
+                      self.Resource.name, self.Resource.id) \
+            .filter(self.Resource.parent_id == resource.id)
+
+        # recursively collect children
+        for child in query.all():
+            self.collect_resources(child, depth + 1, items, session)

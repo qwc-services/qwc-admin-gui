@@ -51,6 +51,9 @@
   <td>{{ resource_types[resource.type] }}</td>
   <td>{{ resource.name }}</td>
   <td>
+    <a href="{{ url_for('hierarchy_%s' % endpoint_suffix, id=resource[pkey]) }}" class="btn btn-default btn-xs" role="button" title="Resource hierarchy">
+      {{ utils.icon('list') }}
+    </a>
     {% if resource.parent %}
       {{ resource.parent.name }} ({{ resource_types[resource.parent.type] }})
     {% endif %}
