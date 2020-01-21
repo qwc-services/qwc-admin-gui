@@ -1,7 +1,61 @@
 {% extends "base.html" %}
 
+{% block scripts %}
+{{super()}}
+<script type="text/javascript">
+  $(function() {
+    var clearAlerts = function() {
+      $('#alerts > div > div').remove();
+    };
+
+    $('#refresh_config_cache').click(function() {
+      clearAlerts();
+
+      // call Admin GUI service
+      $.post(
+        "{{ url_for('refresh_config_cache') }}",
+        {
+          csrf_token: '{{ csrf_token() }}'
+        }
+      ).done(function(data, status) {
+        clearAlerts();
+        var html = '';
+        html += '<div class="alert alert-success" role="alert">';
+        html +=   'Timestamp of last config change has been updated.';
+        html += '</div>';
+        $('#alerts > div').append(html);
+      }).fail(function(jqXHR, status) {
+        // show errors
+        var msg = jqXHR.statusText;
+        if (jqXHR.responseJSON) {
+          msg = jqXHR.responseText.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;");
+        }
+
+        clearAlerts();
+        var html = '';
+        html += '<div class="alert alert-danger" role="alert">';
+        html +=   '<strong>Error while refreshing config cache:</strong><br/>';
+        html +=   '<div style="font-family: monospace">' + msg + '</div>';
+        html += '</div>';
+        $('#alerts > div').append(html);
+      });
+    });
+  });
+</script>
+{% endblock %}
+
 {% block title %}Home{% endblock %}
 {% block container %}
+  <div id="alerts" class="row">
+    <div class="col-md-12"></div>
+  </div>
+
   <h1>QWC Admin</h1>
   Administration tool for QWC services
+
+  <br><br>
+
+  <button id="refresh_config_cache" class="btn btn-success">
+    {{ utils.icon('refresh') }} Refresh config cache
+  </button>
 {% endblock %}

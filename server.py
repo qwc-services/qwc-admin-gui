@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 import os
 import re
@@ -151,6 +152,30 @@ def assert_admin_role():
 @app.route('/')
 def home():
     return render_template('home.html')
+
+
+@app.route('/refresh_config_cache', methods=['POST'])
+def refresh_config_cache():
+    """Update timestamp of last config change to current UTC time
+    to force QWC services to refresh their config cache.
+    """
+    # get first timestamp record
+    LastUpdate = config_models.model('last_update')
+    session = config_models.session()
+    query = session.query(LastUpdate)
+    last_update = query.first()
+    if last_update is None:
+        # create new timestamp record
+        last_update = self.LastUpdate()
+        session.add(last_update)
+
+    # update and commit new timestamp
+    last_update.updated_at = datetime.utcnow()
+    session.commit()
+    session.close()
+
+    # return No Content
+    return ('', 204)
 
 
 @app.route("/proxy", methods=['GET', 'POST', 'PUT', 'DELETE'])
