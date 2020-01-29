@@ -2,8 +2,10 @@
 
 FROM husseinkabbout/qwc-docker
 
-# Install service packages if needed
-RUN apk add --no-cache --update postgresql-dev gcc python3-dev musl-dev git
+# Required for pip with git repos
+RUN apk add --no-cache --update git
+# Required for psychopg, --> https://github.com/psycopg/psycopg2/issues/684
+RUN apk add --no-cache --update postgresql-dev gcc python3-dev musl-dev
 
 # maybe set locale here if needed
 
