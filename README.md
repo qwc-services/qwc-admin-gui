@@ -111,6 +111,11 @@ Base URL:
 
     http://localhost:5031/
 
+### Default login
+
+username: admin
+password: admin
+
 
 Development
 -----------
