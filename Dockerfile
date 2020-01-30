@@ -1,6 +1,6 @@
 # WSGI service environment
 
-FROM husseinkabbout/qwc-docker
+FROM sourcepole/qwc-uwsgi-base:alpine-latest
 
 # Required for pip with git repos
 RUN apk add --no-cache --update git
