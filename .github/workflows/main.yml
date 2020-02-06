@@ -8,10 +8,6 @@ jobs:
       runs-on: ubuntu-latest
       steps:
 
-      - name: Define user which will be used to push to Docker Hub
-        id: get_dockerhub_username
-        run: echo ::set-output name=username::sourcepole
-
       - uses: actions/checkout@master
 
       - name: Get version tag
@@ -26,7 +22,7 @@ jobs:
       - name: Publish to Registry
         uses: elgohr/Publish-Docker-Github-Action@2.12
         with:
-          name: ${{ steps.get_dockerhub_username.outputs.username }}/${{ github.event.repository.name }}
+          name: sourcepole/${{ github.event.repository.name }}
           username: ${{ secrets.DOCKER_HUB_USER }}
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
           tags: "${{ steps.get_tag.outputs.tag }}"
