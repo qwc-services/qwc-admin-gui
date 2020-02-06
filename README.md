@@ -9,6 +9,27 @@ GUI for administration of QWC Services.
 
 **Note:** requires a QWC ConfigDB
 
+Docker usage
+------------
+
+### Run docker image
+
+    docker run -v /PATH/TO/pg_service.conf:/var/www/.pg_service.conf:ro -p 5031:9090 --env FLASK_DEBUG=1 sourcepole/qwc-admin-gui
+
+A configuration database is required to run the Admin GUI. For testing purposes you can use the demo DB:
+
+    docker run -p 5439:5432 sourcepole/qwc-demo-db
+
+
+| docker parameters | Description |
+|----------------------|-------------|
+| `-v /PATH/TO/pg_service.conf:/var/www/.pg_service.conf:ro` | Mount your pg_service.conf file to `/var/www/` with read only mode|
+| `-p 5031:9090` | This binds port 9090 of the container to port 5031 on 127.0.0.1 of the host machine. |
+| `--env FLASK_DEBUG=1` | Set debug mode to true, so the login is deactivated |
+
+### Build docker image locally:
+
+    docker build .
 
 Setup
 -----
