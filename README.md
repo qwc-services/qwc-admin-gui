@@ -9,28 +9,6 @@ GUI for administration of QWC Services.
 
 **Note:** requires a QWC ConfigDB
 
-Docker usage
-------------
-
-### Run docker image
-
-    docker run -v /PATH/TO/pg_service.conf:/var/www/.pg_service.conf:ro -p 5031:9090 --env FLASK_DEBUG=1 sourcepole/qwc-admin-gui
-
-A configuration database is required to run the Admin GUI. For testing purposes you can use the demo DB:
-
-    docker run -p 5439:5432 sourcepole/qwc-demo-db
-
-
-| docker parameters | Description |
-|----------------------|-------------|
-| `-v /PATH/TO/pg_service.conf:/var/www/.pg_service.conf:ro` | Mount your pg_service.conf file to `/var/www/` with read only mode|
-| `-p 5031:9090` | This binds port 9090 of the container to port 5031 on 127.0.0.1 of the host machine. |
-| `--env FLASK_DEBUG=1` | Set debug mode to true, so the login is deactivated |
-
-### Build docker image locally:
-
-    docker build .
-
 Setup
 -----
 
@@ -137,6 +115,34 @@ Base URL:
 username: admin
 password: admin
 
+
+Docker usage
+------------
+
+To run this docker image you will need a configuration database. For testing purposes you can use the demo DB.
+
+The following steps explain how to download the demo DB docker image and how to run the `qwc-admin-gui` service with `docker-compose`.
+
+**Step 1: Clone qwc-docker**
+
+    git clone https://github.com/qwc-services/qwc-docker
+    cd qwc-docker
+
+**Step 2: Create docker-compose.yml file**
+
+    cp docker-compose-example.yml docker-compose.yml
+
+**Step 3: Set flask debug mode to true**
+
+For the QWC Admin GUI to work without login you will have to add the following `env` variable:
+
+    FLASK_DEBUG=1
+
+**Step 4: Start docker containers**
+
+    docker-compose up qwc-admin-gui
+
+For more information please visit: https://github.com/qwc-services/qwc-docker
 
 Development
 -----------
