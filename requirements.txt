@@ -7,5 +7,6 @@ psycopg2==2.7.7
 requests==2.21.0
 SQLAlchemy==1.2.18
 werkzeug==0.16.1
+email_validator==1.0.5
 git+https://github.com/qwc-services/qwc-config-db.git@ee33dc8c0a0b405949e062036ee29b01bc4687b5#egg=qwc-config-db
 git+https://github.com/qwc-services/qwc-services-core.git@d53015462234c787465252f952b4cb0d6dcb1641#egg=qwc-services-core
