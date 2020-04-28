@@ -5,7 +5,7 @@ import re
 import requests
 
 from flask import abort, Flask, json, redirect, render_template, request, \
-    Response, stream_with_context
+    Response, stream_with_context, jsonify
 from flask_bootstrap import Bootstrap
 from flask_wtf.csrf import CSRFProtect
 from flask_jwt_extended import jwt_optional, get_jwt_identity
@@ -216,6 +216,18 @@ def proxy():
                         status=res.status_code)
     response.headers['content-type'] = res.headers['content-type']
     return response
+
+
+""" readyness probe endpoint """
+@app.route("/ready", methods=['GET'])
+def ready():
+    return jsonify({"status": "OK"})
+
+
+""" liveness probe endpoint """
+@app.route("/healthz", methods=['GET'])
+def healthz():
+    return jsonify({"status": "OK"})
 
 
 # local webserver
