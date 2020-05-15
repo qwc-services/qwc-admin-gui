@@ -5,7 +5,7 @@ from flask import abort, flash, redirect, render_template, request, url_for
 from sqlalchemy.exc import IntegrityError, InternalError
 from wtforms import ValidationError
 
-from qwc_config_db.config_models import ConfigModels
+from qwc_services_core.config_models import ConfigModels
 
 
 class Controller:
@@ -88,7 +88,7 @@ class Controller:
         self.config = config_handler.config()
 
         db_engine = config_handler.db_engine()
-        self.config_models = ConfigModels(db_engine)
+        self.config_models = ConfigModels(db_engine, config_handler.conn_str())
 
         self.Group = self.config_models.model('groups')
         self.Permission = self.config_models.model('permissions')

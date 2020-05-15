@@ -122,8 +122,10 @@ class TenantConfigHandler:
         return self._config
 
     def db_engine(self):
-        # return self._db_engine.db_engine(self._config.get('db_url'))
         return self._db_engine
+
+    def conn_str(self):
+        return self._config.get('db_url')
 
 
 def handler():

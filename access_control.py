@@ -1,7 +1,7 @@
 from sqlalchemy import distinct
 from sqlalchemy.sql import text as sql_text, exists
 
-from qwc_config_db.config_models import ConfigModels
+from qwc_services_core.config_models import ConfigModels
 
 
 class AccessControl:
@@ -20,7 +20,7 @@ class AccessControl:
 
     def is_admin(self, identity):
         db_engine = self.handler().db_engine()
-        self.config_models = ConfigModels(db_engine)
+        self.config_models = ConfigModels(db_engine, self.handler().conn_str())
 
         # Extract user infos from identity
         if isinstance(identity, dict):
