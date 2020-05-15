@@ -9,19 +9,15 @@ from forms import UserForm
 class UsersController(Controller):
     """Controller for user model"""
 
-    def __init__(self, app, config_models):
+    def __init__(self, app, handler):
         """Constructor
 
         :param Flask app: Flask application
-        :param ConfigModels config_models: Helper for ORM models
+        :param handler: Tenant config handler
         """
         super(UsersController, self).__init__(
-            "User", 'users', 'user', 'users', app, config_models
+            "User", 'users', 'user', 'users', app, handler
         )
-        self.User = self.config_models.model('users')
-        self.UserInfo = self.config_models.model('user_infos')
-        self.Group = self.config_models.model('groups')
-        self.Role = self.config_models.model('roles')
 
         # get custom user info fields
         try:

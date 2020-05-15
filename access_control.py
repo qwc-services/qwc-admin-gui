@@ -1,22 +1,27 @@
 from sqlalchemy import distinct
 from sqlalchemy.sql import text as sql_text, exists
 
+from qwc_config_db.config_models import ConfigModels
+
 
 class AccessControl:
 
     # name of admin iam.role
     ADMIN_ROLE_NAME = 'admin'
 
-    def __init__(self, config_models, logger):
+    def __init__(self, handler, logger):
         """Constructor
 
-        :param ConfigModels config_models: Helper for ORM models
+        :param ConfigModels handler: Helper for ORM models
         :param Logger logger: Application logger
         """
-        self.config_models = config_models
+        self.handler = handler
         self.logger = logger
 
     def is_admin(self, identity):
+        db_engine = self.handler().db_engine()
+        self.config_models = ConfigModels(db_engine)
+
         # Extract user infos from identity
         if isinstance(identity, dict):
             username = identity.get('username')

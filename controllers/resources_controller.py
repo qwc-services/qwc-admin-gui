@@ -11,18 +11,16 @@ from forms import ResourceForm
 class ResourcesController(Controller):
     """Controller for resource model"""
 
-    def __init__(self, app, config_models):
+    def __init__(self, app, handler):
         """Constructor
 
         :param Flask app: Flask application
-        :param ConfigModels config_models: Helper for ORM models
+        :param handler: Tenant config handler
         """
         super(ResourcesController, self).__init__(
             "Resource", 'resources', 'resource', 'resources', app,
-            config_models
+            handler
         )
-        self.Resource = self.config_models.model('resources')
-        self.ResourceType = self.config_models.model('resource_types')
 
         # add custom routes
         base_route = self.base_route
@@ -88,6 +86,7 @@ class ResourcesController(Controller):
 
     def index(self):
         """Show resources list."""
+        self.setup_models()
 
         session = self.session()
 

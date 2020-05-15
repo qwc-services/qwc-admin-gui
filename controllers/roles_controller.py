@@ -5,18 +5,15 @@ from forms import RoleForm
 class RolesController(Controller):
     """Controller for role model"""
 
-    def __init__(self, app, config_models):
+    def __init__(self, app, handler):
         """Constructor
 
         :param Flask app: Flask application
-        :param ConfigModels config_models: Helper for ORM models
+        :param handler: Tenant config handler
         """
         super(RolesController, self).__init__(
-            "Role", 'roles', 'role', 'roles', app, config_models
+            "Role", 'roles', 'role', 'roles', app, handler
         )
-        self.Role = self.config_models.model('roles')
-        self.User = self.config_models.model('users')
-        self.Group = self.config_models.model('groups')
 
     def resources_for_index_query(self, search_text, session):
         """Return query for roles list.

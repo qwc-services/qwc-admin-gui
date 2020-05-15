@@ -11,20 +11,16 @@ from forms import PermissionForm
 class PermissionsController(Controller):
     """Controller for permission model"""
 
-    def __init__(self, app, config_models):
+    def __init__(self, app, handler):
         """Constructor
 
         :param Flask app: Flask application
-        :param ConfigModels config_models: Helper for ORM models
+        :param handler: Tenant config handler
         """
         super(PermissionsController, self).__init__(
             "Permission", 'permissions', 'permission', 'permissions', app,
-            config_models
+            handler
         )
-        self.Permission = self.config_models.model('permissions')
-        self.Role = self.config_models.model('roles')
-        self.Resource = self.config_models.model('resources')
-        self.ResourceType = self.config_models.model('resource_types')
 
     def resources_for_index_query(self, search_text, role, resource_type,
                                   session):
@@ -95,6 +91,7 @@ class PermissionsController(Controller):
 
     def index(self):
         """Show permissions list."""
+        self.setup_models()
 
         session = self.session()
 

@@ -5,6 +5,8 @@ from flask import abort, flash, redirect, render_template, request, url_for
 from sqlalchemy.exc import IntegrityError, InternalError
 from wtforms import ValidationError
 
+from qwc_config_db.config_models import ConfigModels
+
 
 class Controller:
     """Controller base class
@@ -18,7 +20,7 @@ class Controller:
     DEFAULT_PER_PAGE = 10
 
     def __init__(self, resource_name, base_route, endpoint_suffix,
-                 templates_dir, app, config_models):
+                 templates_dir, app, handler):
         """Constructor
 
         :param str resource_name: Visible name of resource (e.g. 'User')
@@ -26,7 +28,7 @@ class Controller:
         :param str endpoint_suffix: Suffix for route endpoints (e.g. 'user')
         :param str templates_dir: Subdir for resource templates (e.g. 'users')
         :param Flask app: Flask application
-        :param ConfigModels config_models: Helper for ORM models
+        :param handler: Tenant config handler
         """
         self.resource_name = resource_name
         self.base_route = base_route
@@ -34,7 +36,7 @@ class Controller:
         self.templates_dir = templates_dir
         self.app = app
         self.logger = app.logger
-        self.config_models = config_models
+        self.handler = handler
 
         self.add_routes(app)
 
@@ -81,6 +83,25 @@ class Controller:
             methods=['POST']
         )
 
+    def setup_models(self):
+        config_handler = self.handler()
+        self.config = config_handler.config()
+
+        db_engine = config_handler.db_engine()
+        self.config_models = ConfigModels(db_engine)
+
+        self.Group = self.config_models.model('groups')
+        self.Permission = self.config_models.model('permissions')
+        self.RegistrableGroup = self.config_models.model('registrable_groups')
+        self.RegistrationRequest = self.config_models.model(
+            'registration_requests'
+        )
+        self.Resource = self.config_models.model('resources')
+        self.ResourceType = self.config_models.model('resource_types')
+        self.Role = self.config_models.model('roles')
+        self.User = self.config_models.model('users')
+        self.UserInfo = self.config_models.model('user_infos')
+
     def resource_pkey(self):
         """Return primary key column name for resource table (default: 'id')"""
         return 'id'
@@ -107,6 +128,8 @@ class Controller:
 
     def index(self):
         """Show resources list."""
+        self.setup_models()
+
         session = self.session()
 
         # get resources query
@@ -163,6 +186,7 @@ class Controller:
 
     def new(self):
         """Show new resource form."""
+        self.setup_models()
         template = '%s/form.html' % self.templates_dir
         form = self.create_form()
         title = "Add %s" % self.resource_name
@@ -176,6 +200,7 @@ class Controller:
 
     def create(self):
         """Create new resource."""
+        self.setup_models()
         form = self.create_form()
         if form.validate_on_submit():
             try:
@@ -225,6 +250,7 @@ class Controller:
 
         :param int id: Resource ID
         """
+        self.setup_models()
         # find resource
         session = self.session()
         resource = self.find_resource(id, session)
@@ -251,6 +277,7 @@ class Controller:
 
         :param int id: Resource ID
         """
+        self.setup_models()
         # find resource
         session = self.session()
         resource = self.find_resource(id, session)
@@ -309,6 +336,7 @@ class Controller:
 
         :param int id: Resource ID
         """
+        self.setup_models()
         # find resource
         session = self.session()
         resource = self.find_resource(id, session)

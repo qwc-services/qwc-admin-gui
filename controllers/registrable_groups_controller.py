@@ -8,18 +8,16 @@ from forms import RegistrableGroupForm
 class RegistrableGroupsController(Controller):
     """Controller for registrable group model"""
 
-    def __init__(self, app, config_models):
+    def __init__(self, app, handler):
         """Constructor
 
         :param Flask app: Flask application
-        :param ConfigModels config_models: Helper for ORM models
+        :param handler: Tenant config handler
         """
         super(RegistrableGroupsController, self).__init__(
             "Registrable Group", 'registrable_groups', 'registrable_group',
-            'registrable_groups', app, config_models
+            'registrable_groups', app, handler
         )
-        self.RegistrableGroup = self.config_models.model('registrable_groups')
-        self.Group = self.config_models.model('groups')
 
     def resources_for_index_query(self, search_text, session):
         """Return query for registrable groups list.

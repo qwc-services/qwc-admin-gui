@@ -9,12 +9,34 @@ GUI for administration of QWC Services.
 
 **Note:** requires a QWC ConfigDB
 
-Setup
------
 
-Uses PostgreSQL connection service `qwc_configdb` (ConfigDB).
+Configuration
+-------------
 
-Setup PostgreSQL connection service file `~/.pg_service.conf`:
+The static config files are stored as JSON files in `$CONFIG_PATH` with subdirectories for each tenant,
+e.g. `$CONFIG_PATH/default/*.json`. The default tenant name is `default`.
+
+### Admin Gui Service config
+
+* [JSON schema](schemas/qwc-admin-gui.json)
+* File location: `$CONFIG_PATH/<tenant>/adminGuiConfig.json`
+
+Example:
+```json
+{
+  "$schema": "https://raw.githubusercontent.com/qwc-services/qwc-admin-gui/master/schemas/qwc-admin-gui.json",
+  "service": "admin-gui",
+  "config": {
+    "db_url": "postgresql:///?service=qwc_configdb",
+    "totp_enabled": false,
+    "user_info_fields": [],
+    "proxy_url_whitelist": [],
+    "proxy_timeout": 60
+  }
+}
+```
+
+To connect with the demo database, the following `~/.pg_service.conf` entry is expected:
 
 ```
 [qwc_configdb]
@@ -26,12 +48,14 @@ password=qwc_admin
 sslmode=disable
 ```
 
+the `GROUP_REGISTRATION_ENABLED` environment variable to `False` to disable registrable groups and group registration requests, if not using the [Registration GUI](https://github.com/qwc-services/qwc-registration-gui) (default: `True`).
 
-Configuration
--------------
+Set `totp_enabled` to `true` to show the TOTP fields in the user form, if two factor authentication is enabled in the [DB-Auth service](https://github.com/qwc-services/qwc-db-auth) (default: `false`).
+
+### Additional user fields
 
 Additional user fields are saved in the table `qwc_config.user_infos` with a a one-to-one relation to `qwc_config.users` via the `user_id` foreign key.
-To add custom user fields, add new columns to your `qwc_config.user_infos` table and set your `USER_INFO_FIELDS` to a JSON with the following structure:
+To add custom user fields, add new columns to your `qwc_config.user_infos` table and set your `user_info_fields` to a JSON with the following structure:
 
 ```json
 [
@@ -56,13 +80,8 @@ ALTER TABLE qwc_config.user_infos ADD COLUMN first_name character varying NOT NU
 
 ```bash
 # set user info fields config
-USER_INFO_FIELDS='[{"title": "Surname", "name": "surname", "type": "text", "required": true}, {"title": "First name", "name": "first_name", "type": "text", "required": true}]'
+"user_info_fields": [{"title": "Surname", "name": "surname", "type": "text", "required": true}, {"title": "First name", "name": "first_name", "type": "text", "required": true}]
 ```
-
-Set the `TOTP_ENABLED` environment variable to `True` to show the TOTP fields in the user form, if two factor authentication is enabled in the [DB-Auth service](https://github.com/qwc-services/qwc-db-auth) (default: `False`).
-
-Set the `GROUP_REGISTRATION_ENABLED` environment variable to `False` to disable registrable groups and group registration requests, if not using the [Registration GUI](https://github.com/qwc-services/qwc-registration-gui) (default: `True`).
-
 
 ### Mailer
 
@@ -81,6 +100,16 @@ Set the `GROUP_REGISTRATION_ENABLED` environment variable to `False` to disable 
 
 In addition the standard Flask `TESTING` configuration option is used by Flask-Mail in unit tests.
 
+### Proxy to internal services
+
+The route `/proxy?url=http://example.com/path?a=1` serves as a proxy for calling whitelisted internal services. This can be used e.g. to call other internal services from custom pages in the Admin GUI, without having to expose those services externally.
+
+Set `proxy_url_whitelist` to a list of RegExes for whitelisted URLs (default: `[]`), e.g.
+```json
+    ["<RegEx pattern for full URL from proxy request>", "^http://example.com/path\\?.*$"]
+```
+
+Set `proxy_timeout` to the timeout in seconds for proxy requests (default: `60`s).
 
 ### Translations
 
@@ -89,22 +118,8 @@ Translation strings are stored in a JSON file for each locale in `translations/<
 Set the `DEFAULT_LOCALE` environment variable to choose the locale for the user notification mails (default: `en`).
 
 
-### Proxy to internal services
-
-The route `/proxy?url=http://example.com/path?a=1` serves as a proxy for calling whitelisted internal services. This can be used e.g. to call other internal services from custom pages in the Admin GUI, without having to expose those services externally.
-
-Set the `PROXY_URL_WHITELIST` environment variable to a JSON with a list of RegExes for whitelisted URLs (default: `[]`), e.g.
-```json
-    ["<RegEx pattern for full URL from proxy request>", "^http://example.com/path\\?.*$"]
-```
-
-Set the `PROXY_TIMEOUT` environment variable to the timeout in seconds for proxy requests (default: `60`s).
-
-
 Usage
 -----
-
-Set the `USER_INFO_FIELDS` environment variable to your custom user info fields JSON (default: `[]`.
 
 Base URL:
 
@@ -147,15 +162,7 @@ For more information please visit: https://github.com/qwc-services/qwc-docker
 Development
 -----------
 
-Install Python module for PostgreSQL:
-
-    apt-get install python3-psycopg2
-
 Create a virtual environment:
-
-    virtualenv --python=/usr/bin/python3 --system-site-packages .venv
-
-Without system packages:
 
     virtualenv --python=/usr/bin/python3 .venv
 
@@ -167,6 +174,14 @@ Install requirements:
 
     pip install -r requirements.txt
 
+Set the `CONFIG_PATH` environment variable to the path containing the service config and permission files when starting this service (default: `config`).
+
+    export CONFIG_PATH=../qwc-docker/demo-config
+
+Configure environment:
+
+    echo FLASK_ENV=development >.flaskenv
+
 Start local service:
 
-    MAIL_SUPPRESS_SEND=True MAIL_DEFAULT_SENDER=from@example.com python server.py
+     python server.py

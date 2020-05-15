@@ -10,24 +10,18 @@ from forms import RegistrationRequestForm
 class RegistrationRequestsController(Controller):
     """Controller for registration request model"""
 
-    def __init__(self, app, config_models, i18n, mail):
+    def __init__(self, app, handler, i18n, mail):
         """Constructor
 
         :param Flask app: Flask application
-        :param ConfigModels config_models: Helper for ORM models
+        :param handler: Tenant config handler
         :param callable i18n: Translation helper method
         :param flask_mail.Mail mail: Application mailer
         """
         super(RegistrationRequestsController, self).__init__(
             "Registration request", 'registration_requests',
-            'registration_request', 'registration_requests', app, config_models
+            'registration_request', 'registration_requests', app, handler
         )
-        self.RegistrationRequest = self.config_models.model(
-            'registration_requests'
-        )
-        self.RegistrableGroup = self.config_models.model('registrable_groups')
-        self.User = self.config_models.model('users')
-        self.Group = self.config_models.model('groups')
 
         self.i18n = i18n
         self.mail = mail

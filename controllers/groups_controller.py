@@ -5,18 +5,15 @@ from forms import GroupForm
 class GroupsController(Controller):
     """Controller for group model"""
 
-    def __init__(self, app, config_models):
+    def __init__(self, app, handler):
         """Constructor
 
         :param Flask app: Flask application
-        :param ConfigModels config_models: Helper for ORM models
+        :param handler: Tenant config handler
         """
         super(GroupsController, self).__init__(
-            "Group", 'groups', 'group', 'groups', app, config_models
+            "Group", 'groups', 'group', 'groups', app, handler
         )
-        self.Group = self.config_models.model('groups')
-        self.User = self.config_models.model('users')
-        self.Role = self.config_models.model('roles')
 
     def resources_for_index_query(self, search_text, session):
         """Return query for groups list.

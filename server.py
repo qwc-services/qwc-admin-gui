@@ -11,7 +11,8 @@ from flask_wtf.csrf import CSRFProtect
 from flask_jwt_extended import jwt_optional, get_jwt_identity
 from flask_mail import Mail
 
-from qwc_config_db.config_models import ConfigModels
+from qwc_services_core.tenant_handler import TenantHandler
+from qwc_services_core.runtime_config import RuntimeConfig
 from qwc_services_core.database import DatabaseEngine
 from qwc_services_core.jwt import jwt_manager
 from access_control import AccessControl
@@ -19,10 +20,6 @@ from controllers import UsersController, GroupsController, RolesController, \
     ResourcesController, PermissionsController, RegistrableGroupsController, \
     RegistrationRequestsController
 
-
-# load ORM models for ConfigDB
-db_engine = DatabaseEngine()
-config_models = ConfigModels(db_engine)
 
 # Flask application
 app = Flask(__name__)
@@ -77,16 +74,6 @@ except Exception as e:
         % (locale, path, e)
     )
 
-# settings for proxy to internal services
-PROXY_TIMEOUT = int(os.environ.get('PROXY_TIMEOUT', 60))
-try:
-    PROXY_URL_WHITELIST = json.loads(
-        os.environ.get('PROXY_URL_WHITELIST', '[]')
-    )
-except Exception as e:
-    app.logger.error("Could not load PROXY_URL_WHITELIST:\n%s" % e)
-    PROXY_URL_WHITELIST = []
-
 
 # Setup translation helper
 @app.template_filter('i18n')
@@ -118,17 +105,48 @@ def i18n(value, locale=DEFAULT_LOCALE):
     return lookup
 
 
-# create controllers (including their routes)
-UsersController(app, config_models)
-GroupsController(app, config_models)
-RolesController(app, config_models)
-ResourcesController(app, config_models)
-PermissionsController(app, config_models)
-if app.config.get('QWC_GROUP_REGISTRATION_ENABLED'):
-    RegistrableGroupsController(app, config_models)
-    RegistrationRequestsController(app, config_models, i18n, mail)
+tenant_handler = TenantHandler(app.logger)
+db_engine = DatabaseEngine()
 
-access_control = AccessControl(config_models, app.logger)
+
+class TenantConfigHandler:
+    def __init__(self, tenant, db_engine, logger):
+        self.tenant = tenant
+        self._db_engine = db_engine
+        self.logger = logger
+
+        config_handler = RuntimeConfig("adminGui", logger)
+        self._config = config_handler.tenant_config(tenant)
+
+    def config(self):
+        return self._config
+
+    def db_engine(self):
+        # return self._db_engine.db_engine(self._config.get('db_url'))
+        return self._db_engine
+
+
+def handler():
+    tenant = tenant_handler.tenant()
+    handler = tenant_handler.handler('admin-gui', 'handler', tenant)
+    if handler is None:
+        handler = tenant_handler.register_handler(
+            'handler', tenant,
+            TenantConfigHandler(tenant, db_engine, app.logger))
+    return handler
+
+
+# create controllers (including their routes)
+UsersController(app, handler)
+GroupsController(app, handler)
+RolesController(app, handler)
+ResourcesController(app, handler)
+PermissionsController(app, handler)
+if app.config.get('QWC_GROUP_REGISTRATION_ENABLED'):
+    RegistrableGroupsController(app, handler)
+    RegistrationRequestsController(app, handler, i18n, mail)
+
+access_control = AccessControl(handler, app.logger)
 
 
 @app.before_request
@@ -196,6 +214,16 @@ def proxy():
     if not url_permitted:
         app.logger.info("Proxy forbidden for URL '%s'" % url)
         abort(403)
+
+    # settings for proxy to internal services
+    PROXY_TIMEOUT = int(os.environ.get('PROXY_TIMEOUT', 60))
+    try:
+        PROXY_URL_WHITELIST = json.loads(
+            os.environ.get('PROXY_URL_WHITELIST', '[]')
+        )
+    except Exception as e:
+        app.logger.error("Could not load PROXY_URL_WHITELIST:\n%s" % e)
+        PROXY_URL_WHITELIST = []
 
     # forward request
     if request.method == 'GET':
