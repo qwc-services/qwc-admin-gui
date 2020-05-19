@@ -1,4 +1,4 @@
-[![](https://github.com/qwc-services/qwc-admin-gui/workflows/build/badge.svg)](https://hub.docker.com/repository/docker/sourcepole/qwc-admin-gui)
+[![](https://github.com/qwc-services/qwc-admin-gui/workflows/build/badge.svg)](https://github.com/qwc-services/qwc-admin-gui/actions)
 [![](https://img.shields.io/docker/pulls/sourcepole/qwc-admin-gui)](https://hub.docker.com/repository/docker/sourcepole/qwc-admin-gui)
 
 QWC Admin GUI
