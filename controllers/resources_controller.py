@@ -27,6 +27,10 @@ class ResourcesController(Controller):
         suffix = self.endpoint_suffix
         # resource hierarchy
         app.add_url_rule(
+            '/<string:tenant>/%s/<int:id>/hierarchy' % base_route, 'hierarchy_%s' % suffix,
+            self.hierarchy, methods=['GET']
+        )
+        app.add_url_rule(
             '/%s/<int:id>/hierarchy' % base_route, 'hierarchy_%s' % suffix,
             self.hierarchy, methods=['GET']
         )
@@ -148,7 +152,8 @@ class ResourcesController(Controller):
             search_text=search_text, pagination=pagination,
             sort=sort, sort_asc=sort_asc,
             base_route=self.base_route, resource_types=resource_types,
-            active_resource_type=active_resource_type
+            active_resource_type=active_resource_type,
+            tenant=self.handler().tenant_param()
         )
 
     def find_resource(self, id, session):
