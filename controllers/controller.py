@@ -50,63 +50,34 @@ class Controller:
 
         # index
         app.add_url_rule(
-            '/<string:tenant>/%s' % base_route, base_route, self.index,
-            methods=['GET']
-        )
-        app.add_url_rule(
-            '/%s' % base_route, base_route, self.index,
-            methods=['GET'],
+            '/%s' % base_route, base_route, self.index, methods=['GET']
         )
         # new
-        app.add_url_rule(
-            '/<string:tenant>/%s/new' % base_route, 'new_%s' % suffix, self.new,
-            methods=['GET']
-        )
         app.add_url_rule(
             '/%s/new' % base_route, 'new_%s' % suffix, self.new,
             methods=['GET']
         )
         # create
         app.add_url_rule(
-            '/<string:tenant>/%s' % base_route, 'create_%s' % suffix, self.create,
-            methods=['POST']
-        )
-        app.add_url_rule(
             '/%s' % base_route, 'create_%s' % suffix, self.create,
             methods=['POST']
         )
         # edit
-        app.add_url_rule(
-            '/<string:tenant>/%s/<int:id>/edit' % base_route, 'edit_%s' % suffix, self.edit,
-            methods=['GET']
-        )
         app.add_url_rule(
             '/%s/<int:id>/edit' % base_route, 'edit_%s' % suffix, self.edit,
             methods=['GET']
         )
         # update
         app.add_url_rule(
-            '/<string:tenant>/%s/<int:id>' % base_route, 'update_%s' % suffix, self.update,
-            methods=['PUT']
-        )
-        app.add_url_rule(
             '/%s/<int:id>' % base_route, 'update_%s' % suffix, self.update,
             methods=['PUT']
         )
         # delete
         app.add_url_rule(
-            '/<string:tenant>/%s/<int:id>' % base_route, 'destroy_%s' % suffix, self.destroy,
-            methods=['DELETE']
-        )
-        app.add_url_rule(
             '/%s/<int:id>' % base_route, 'destroy_%s' % suffix, self.destroy,
             methods=['DELETE']
         )
         # update or delete
-        app.add_url_rule(
-            '/<string:tenant>/%s/<int:id>' % base_route, 'modify_%s' % suffix, self.modify,
-            methods=['POST']
-        )
         app.add_url_rule(
             '/%s/<int:id>' % base_route, 'modify_%s' % suffix, self.modify,
             methods=['POST']
@@ -208,7 +179,6 @@ class Controller:
             endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey(),
             search_text=search_text, pagination=pagination,
             sort=sort, sort_asc=sort_asc,
-            tenant=self.handler().tenant_param(),
             base_route=self.base_route
         )
 
@@ -223,8 +193,7 @@ class Controller:
         action = url_for('create_%s' % self.endpoint_suffix)
 
         return render_template(
-            template, title=title, form=form, action=action, method='POST',
-            tenant=self.handler().tenant_param()
+            template, title=title, form=form, action=action, method='POST'
         )
 
     # create
@@ -261,8 +230,7 @@ class Controller:
         action = url_for('create_%s' % self.endpoint_suffix)
 
         return render_template(
-            template, title=title, form=form, action=action, method='POST',
-            tenant=self.handler().tenant_param()
+            template, title=title, form=form, action=action, method='POST'
         )
 
     # edit
@@ -295,8 +263,7 @@ class Controller:
             action = url_for('update_%s' % self.endpoint_suffix, id=id)
 
             return render_template(
-                template, title=title, form=form, action=action, method='PUT',
-                tenant=self.handler().tenant_param()
+                template, title=title, form=form, action=action, method='PUT'
             )
         else:
             # resource not found
@@ -347,8 +314,7 @@ class Controller:
             action = url_for('update_%s' % self.endpoint_suffix, id=id)
 
             return render_template(
-                template, title=title, form=form, action=action, method='PUT',
-                tenant=self.handler().tenant_param()
+                template, title=title, form=form, action=action, method='PUT'
             )
         else:
             # resource not found

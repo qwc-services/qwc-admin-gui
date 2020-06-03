@@ -11,7 +11,7 @@ from flask_wtf.csrf import CSRFProtect
 from flask_jwt_extended import jwt_optional, get_jwt_identity
 from flask_mail import Mail
 
-from qwc_services_core.tenant_handler import TenantHandler, DEFAULT_TENANT
+from qwc_services_core.tenant_handler import TenantHandler
 from qwc_services_core.runtime_config import RuntimeConfig
 from qwc_services_core.database import DatabaseEngine
 from qwc_services_core.jwt import jwt_manager
@@ -111,7 +111,7 @@ db_engine = DatabaseEngine()
 
 class TenantConfigHandler:
     def __init__(self, tenant, db_engine, logger):
-        self._tenant = tenant
+        self.tenant = tenant
         self._db_engine = db_engine
         self.logger = logger
 
@@ -123,12 +123,6 @@ class TenantConfigHandler:
 
     def db_engine(self):
         return self._db_engine
-
-    def tenant_param(self):
-        if self._tenant == DEFAULT_TENANT:
-            return None
-        else:
-            return self._tenant
 
     def conn_str(self):
         return self._config.get('db_url')
@@ -175,10 +169,9 @@ def assert_admin_role():
 
 
 # routes
-@app.route('/', defaults={'tenant': None})
-@app.route('/<string:tenant>/')
-def home(tenant):
-    return render_template('home.html', tenant=handler().tenant_param())
+@app.route('/')
+def home():
+    return render_template('home.html')
 
 
 @app.route('/refresh_config_cache', methods=['POST'])
