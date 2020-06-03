@@ -11,7 +11,8 @@ from flask_wtf.csrf import CSRFProtect
 from flask_jwt_extended import jwt_optional, get_jwt_identity
 from flask_mail import Mail
 
-from qwc_services_core.tenant_handler import TenantHandler
+from qwc_services_core.tenant_handler import TenantHandler, \
+    TenantPrefixMiddleware
 from qwc_services_core.runtime_config import RuntimeConfig
 from qwc_services_core.database import DatabaseEngine
 from qwc_services_core.jwt import jwt_manager
@@ -136,6 +137,11 @@ def handler():
             'handler', tenant,
             TenantConfigHandler(tenant, db_engine, app.logger))
     return handler
+
+
+if os.environ.get('TENANT_HEADER'):
+    app.wsgi_app = TenantPrefixMiddleware(
+        app.wsgi_app, os.environ.get('TENANT_HEADER'))
 
 
 # create controllers (including their routes)
