@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/qwc-services/qwc-admin-gui/master/schemas/qwc-admin-gui.json",
+  "title": "QWC Admin GUI",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "title": "JSON Schema",
+      "description": "Reference to JSON schema of this config",
+      "type": "string",
+      "format": "uri",
+      "default": "https://raw.githubusercontent.com/qwc-services/qwc-admin-gui/master/schemas/qwc-admin-gui.json"
+    },
+    "service": {
+      "title": "Service name",
+      "type": "string",
+      "const": "admin-gui"
+    },
+    "config": {
+      "title": "Config options",
+      "type": "object",
+      "properties": {
+        "db_url": {
+          "description": "DB connection URL",
+          "type": "string"
+        },
+        "totp_enabled": {
+          "description": "Show TOTP fields for two factor authentication",
+          "type": "boolean"
+        },
+        "user_info_fields": {
+          "description": "Additional user fields",
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "proxy_url_whitelist": {
+          "description": "List of RegExes for whitelisted URLs",
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "proxy_timeout": {
+          "description": "Timeout in seconds for proxy requests",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "db_url",
+        "totp_enabled"
+      ]
+    }
+  },
+  "required": [
+    "service",
+    "config"
+  ]
+}
