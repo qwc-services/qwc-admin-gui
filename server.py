@@ -167,14 +167,15 @@ def assert_admin_role():
         if app.debug:
             pass  # Allow access in debug mode
         else:
-            prefix = ''
+            prefix = '/auth'  # TODO: from configuration
             if os.environ.get('TENANT_HEADER'):
-                prefix = '/' + tenant_handler.tenant()
+                # TODO: add ignore_default config
+                prefix = '/' + tenant_handler.tenant() + prefix
             if identity:
                 # Already logged in, but not with admin role
-                return redirect(prefix + '/auth/logout?url=%s' % request.url)
+                return redirect(prefix + '/logout?url=%s' % request.url)
             else:
-                return redirect(prefix + '/auth/login?url=%s' % request.url)
+                return redirect(prefix + '/login?url=%s' % request.url)
 
 
 # routes
