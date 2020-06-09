@@ -190,21 +190,11 @@ def refresh_config_cache():
     to force QWC services to refresh their config cache.
     """
     # get first timestamp record
-    LastUpdate = config_models.model('last_update')
-    session = config_models.session()
-    query = session.query(LastUpdate)
-    last_update = query.first()
-    if last_update is None:
-        # create new timestamp record
-        last_update = self.LastUpdate()
-        session.add(last_update)
 
-    # update and commit new timestamp
-    last_update.updated_at = datetime.utcnow()
-    session.commit()
-    session.close()
-
-    # return No Content
+    current_handler = handler()
+    requests.post(
+        "http://qwc-config-service:9090/generate_configs?tenant=" +
+        current_handler.tenant)
     return ('', 204)
 
 
