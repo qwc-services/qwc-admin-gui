@@ -31,6 +31,7 @@ Example:
   "service": "admin-gui",
   "config": {
     "db_url": "postgresql:///?service=qwc_configdb",
+    "config_generator_service_url": "http://qwc-config-service:9090",
     "totp_enabled": false,
     "user_info_fields": [],
     "proxy_url_whitelist": [],

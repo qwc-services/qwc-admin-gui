@@ -3,6 +3,7 @@ import logging
 import os
 import re
 import requests
+import urllib.parse
 
 from flask import abort, Flask, json, redirect, render_template, request, \
     Response, stream_with_context, jsonify
@@ -192,9 +193,17 @@ def refresh_config_cache():
     # get first timestamp record
 
     current_handler = handler()
+    config_generator_url = current_handler.config().get(
+        "config_generator_service_url")
+
+    if config_generator_url is None:
+        app.logger.error("Config generator URL is not defined!!")
+        abort(400)
+
     requests.post(
-        "http://qwc-config-service:9090/generate_configs?tenant=" +
-        current_handler.tenant)
+        urllib.parse.urljoin(
+            config_generator_url,
+            "generate_configs?tenant=" + current_handler.tenant))
     return ('', 204)
 
 
