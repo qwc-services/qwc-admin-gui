@@ -200,11 +200,12 @@ def refresh_config_cache():
         app.logger.error("Config generator URL is not defined!!")
         abort(400)
 
-    requests.post(
+    response = requests.post(
         urllib.parse.urljoin(
             config_generator_url,
             "generate_configs?tenant=" + current_handler.tenant))
-    return ('', 204)
+
+    return (response.text, response.status_code)
 
 
 @app.route("/proxy", methods=['GET', 'POST', 'PUT', 'DELETE'])
