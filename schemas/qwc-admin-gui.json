@@ -24,6 +24,10 @@
           "description": "DB connection URL",
           "type": "string"
         },
+        "config_generator_service_url": {
+          "description": "Config generator URL",
+          "type": "string"
+        },
         "totp_enabled": {
           "description": "Show TOTP fields for two factor authentication",
           "type": "boolean"
@@ -49,6 +53,7 @@
       },
       "required": [
         "db_url",
+        "config_generator_service_url",
         "totp_enabled"
       ]
     }
