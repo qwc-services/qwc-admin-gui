@@ -20,8 +20,10 @@
       ).done(function(data, status) {
         clearAlerts();
         var html = '';
-        html += '<div class="alert alert-success" role="alert">';
-        html +=   'Timestamp of last config change has been updated.';
+        html += '<div role="alert">';
+        html += '<pre>';
+        html += data;
+        html += '</pre>';
         html += '</div>';
         $('#alerts > div').append(html);
       }).fail(function(jqXHR, status) {
@@ -49,9 +51,6 @@
 
 {% block title %}Home{% endblock %}
 {% block container %}
-  <div id="alerts" class="row">
-    <div class="col-md-12"></div>
-  </div>
 
   <h1>QWC Admin</h1>
   Administration tool for QWC services
@@ -61,4 +60,9 @@
   <button id="refresh_config_cache" class="btn btn-success">
     {{ utils.icon('refresh') }} Refresh config cache
   </button>
+
+  <div id="alerts" class="row">
+    <br/>
+    <div class="col-md-12"></div>
+  </div>
 {% endblock %}
