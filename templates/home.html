@@ -35,6 +35,9 @@
         else if (jqXHR.responseText.indexOf("<p>The CSRF token is invalid.</p>") != -1) {
           msg = "The CSRF token is invalid. Please reload this page and retry.";
         }
+        else if (jqXHR.responseText) {
+          msg = '<pre>' + jqXHR.responseText + '</pre>';
+        }
 
         clearAlerts();
         var html = '';
