@@ -169,7 +169,7 @@ def assert_admin_role():
             pass  # Allow access in debug mode
         else:
             prefix = '/auth'  # TODO: from configuration
-            if os.environ.get('TENANT_HEADER'):
+            if os.environ.get('TENANT_HEADER') or os.environ.get('TENANT_URL_RE'):
                 # TODO: add ignore_default config
                 prefix = '/' + tenant_handler.tenant() + prefix
             if identity:
