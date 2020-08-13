@@ -15,7 +15,7 @@
       var parent_filters = {
         map: [],
         layer: ['map'],
-        attribute: ['layer', 'data'],
+        attribute: ['layer', 'data', 'feature_info_layer'],
         print_template: ['map'],
         data: ['map'],
         data_create: ['map'],
@@ -23,7 +23,13 @@
         data_update: ['map'],
         data_delete: ['map'],
         viewer: [],
-        viewer_task: []
+        viewer_task: [],
+        theme_info_link: [],
+        plugin: [],
+        plugin_data: ['plugin'],
+        solr_facet: [],
+        feature_info_service: [],
+        feature_info_layer: ['feature_info_service']
       };
 
       var filter = parent_filters[resource_type];
