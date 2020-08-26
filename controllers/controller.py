@@ -263,7 +263,8 @@ class Controller:
             action = url_for('update_%s' % self.endpoint_suffix, id=id)
 
             return render_template(
-                template, title=title, form=form, action=action, method='PUT'
+                template, title=title, form=form, action=action, id=id,
+                method='PUT'
             )
         else:
             # resource not found

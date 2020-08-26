@@ -37,6 +37,12 @@ class ResourcesController(Controller):
             '/%s/import_maps' % base_route, 'import_maps_%s' % suffix,
             self.import_maps, methods=['POST']
         )
+        # import resource children
+        app.add_url_rule(
+            '/%s/<int:id>/import_children' % base_route,
+            'import_children_%s' % suffix,
+            self.import_children, methods=['POST']
+        )
 
     def resources_for_index_query(self, search_text, resource_type, session):
         """Return query for resources list filtered by resource type.
@@ -390,3 +396,109 @@ class ResourcesController(Controller):
             self.logger.error(msg)
             flash(msg, 'error')
             return redirect(url_for(self.base_route))
+
+    def import_children(self, id):
+        """Import child resources for a resource:
+
+        * Import layers for a map
+
+        :param int id: Resource ID
+        """
+        self.setup_models()
+
+        # find resource
+        session = self.session()
+        resource = self.find_resource(id, session)
+
+        if resource is not None:
+            # get config generator URL
+            config_generator_service_url = self.handler().config().get(
+                "config_generator_service_url"
+            )
+            if config_generator_service_url is None:
+                flash('Config generator URL is not defined', 'error')
+            elif resource.type == 'map':
+                self.import_layers(
+                    resource, config_generator_service_url, session
+                )
+            else:
+                flash('Child import not supported for this resource type.',
+                      'warning')
+
+            session.close()
+
+            return redirect(
+                url_for('hierarchy_%s' % self.endpoint_suffix, id=id)
+            )
+        else:
+            # resource not found
+            session.close()
+            abort(404)
+
+    def import_layers(self, map_resource, config_generator_service_url,
+                      session):
+        """Import layers for a map.
+
+        :param object map_resource: Map resource
+        :param str config_generator_service_url: ConfigGenerator service URL
+        :param Session session: DB session
+        """
+        try:
+            # get map details from config generator service
+            url = urljoin(
+                config_generator_service_url, 'maps/%s' % map_resource.name
+            )
+            tenant = self.handler().tenant
+            response = requests.get(url, params={'tenant': tenant})
+            if response.status_code != requests.codes.ok:
+                self.logger.error(
+                    "Could not get map details from %s:\n%s" %
+                    (response.url, response.content)
+                )
+                flash(
+                    'Could not import layers: Status %s' %
+                    response.status_code, 'error'
+                )
+                return redirect(url_for(self.base_route))
+
+            layers_from_config = response.json().get('layers', [])
+
+            if layers_from_config:
+                # get map layers from ConfigDB
+                query = session.query(self.Resource) \
+                    .filter(self.Resource.type == 'layer') \
+                    .filter(self.Resource.parent_id == map_resource.id)
+                layers = [
+                    resource.name for resource in query.all()
+                ]
+
+                # add additional layers to ConfigDB
+                new_layers = sorted(
+                    list(set(layers_from_config) - set(layers))
+                )
+                if new_layers:
+                    for layer in new_layers:
+                        # create new layer resource
+                        resource = self.Resource()
+                        resource.type = 'layer'
+                        resource.name = layer
+                        resource.parent_id = map_resource.id
+                        session.add(resource)
+
+                    # commit resources
+                    session.commit()
+                    self.update_config_timestamp(session)
+
+                    flash(
+                        '%d new layers have been added.' %
+                        len(new_layers), 'success'
+                    )
+                else:
+                    flash('No additional maps found.', 'info')
+            else:
+                # map not found or no layers
+                flash('No layers found for this map.', 'warning')
+        except Exception as e:
+            msg = "Could not import layers: %s" % e
+            self.logger.error(msg)
+            flash(msg, 'error')
