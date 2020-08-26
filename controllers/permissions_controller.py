@@ -23,12 +23,13 @@ class PermissionsController(Controller):
         )
 
     def resources_for_index_query(self, search_text, role, resource_type,
-                                  session):
+                                  resource_id, session):
         """Return query for permissions list filtered by role or resource type.
 
         :param str search_text: Search string for filtering
         :param str role: Optional role filter
         :param str resource_type: Optional resource type filter
+        :param int resource_id: Optional resource ID filter
         :param Session session: DB session
         """
         query = session.query(self.Permission). \
@@ -47,6 +48,10 @@ class PermissionsController(Controller):
         if resource_type is not None:
             # filter by resource type
             query = query.filter(self.Resource.type == resource_type)
+
+        if resource_id is not None:
+            # filter by resource ID
+            query = query.filter(self.Permission.resource_id == resource_id)
 
         # eager load relations
         query = query.options(
@@ -99,8 +104,9 @@ class PermissionsController(Controller):
         search_text = self.search_text_arg()
         role = request.args.get('role')
         active_resource_type = request.args.get('type')
+        resource_id = request.args.get('resource_id')
         query = self.resources_for_index_query(
-            search_text, role, active_resource_type, session
+            search_text, role, active_resource_type, resource_id, session
         )
 
         # order by sort args
