@@ -1,7 +1,9 @@
 from collections import OrderedDict
 import math
+import requests
+from urllib.parse import urljoin
 
-from flask import abort, render_template, request
+from flask import abort, flash, redirect, render_template, request, url_for
 from sqlalchemy.orm import joinedload
 
 from .controller import Controller
@@ -29,6 +31,11 @@ class ResourcesController(Controller):
         app.add_url_rule(
             '/%s/<int:id>/hierarchy' % base_route, 'hierarchy_%s' % suffix,
             self.hierarchy, methods=['GET']
+        )
+        # import maps
+        app.add_url_rule(
+            '/%s/import_maps' % base_route, 'import_maps_%s' % suffix,
+            self.import_maps, methods=['POST']
         )
 
     def resources_for_index_query(self, search_text, resource_type, session):
@@ -312,3 +319,74 @@ class ResourcesController(Controller):
         # recursively collect children
         for child in query.all():
             self.collect_resources(child, depth + 1, items, session)
+
+    def import_maps(self):
+        """Import map resources."""
+        # get config generator URL
+        config_generator_service_url = self.handler().config().get(
+            "config_generator_service_url"
+        )
+        if config_generator_service_url is None:
+            flash('Config generator URL is not defined', 'error')
+            return redirect(url_for(self.base_route))
+
+        session = None
+        try:
+            # get maps for tenant from config generator service
+            url = urljoin(config_generator_service_url, 'maps')
+            tenant = self.handler().tenant
+            response = requests.get(url, params={'tenant': tenant})
+            if response.status_code != requests.codes.ok:
+                self.logger.error(
+                    "Could not get maps from %s:\n%s" %
+                    (response.url, response.content)
+                )
+                flash(
+                    'Could not import maps: Status %s' %
+                    response.status_code, 'error'
+                )
+                return redirect(url_for(self.base_route))
+
+            maps_from_config = response.json()
+
+            self.setup_models()
+            session = self.session()
+
+            # get maps from ConfigDB
+            query = session.query(self.Resource) \
+                .filter(self.Resource.type == 'map')
+            maps = [
+                resource.name for resource in query.all()
+            ]
+
+            # add additional maps to ConfigDB
+            new_maps = sorted(list(set(maps_from_config) - set(maps)))
+            if new_maps:
+                for map_name in new_maps:
+                    # create new map resource
+                    resource = self.Resource()
+                    resource.type = 'map'
+                    resource.name = map_name
+                    session.add(resource)
+
+                # commit resources
+                session.commit()
+                self.update_config_timestamp(session)
+
+                flash(
+                    '%d new maps have been added.' %
+                    len(new_maps), 'success'
+                )
+            else:
+                flash('No additional maps found.', 'info')
+
+            session.close()
+
+            return redirect(url_for(self.base_route, type='map'))
+        except Exception as e:
+            if session:
+                session.close()
+            msg = "Could not import maps: %s" % e
+            self.logger.error(msg)
+            flash(msg, 'error')
+            return redirect(url_for(self.base_route))

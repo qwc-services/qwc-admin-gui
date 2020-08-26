@@ -37,6 +37,13 @@
       </div>
     </form>
   </div>
+
+  <form action="{{ url_for('import_maps_%s' % endpoint_suffix) }}" method="post" style="display: inline;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <button type="submit" class="btn btn-success">
+      {{ utils.icon('download-alt') }} Import maps
+    </button>
+  </form>
 {% endblock %}
 
 {% block table_headers %}
