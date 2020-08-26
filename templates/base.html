@@ -1,6 +1,32 @@
 {% import "bootstrap/utils.html" as utils %}
 {% extends "bootstrap/base.html" %}
 
+{% block scripts %}
+{{super()}}
+<script type="text/javascript">
+  $(function() {
+    $('.btn-spin-on-click').click(function() {
+      $(this).attr('disabled', true);
+      // add spinning icon and update button text
+      $(this).html('{{ utils.icon("refresh", ["icon-rotate"]) }} ' + $(this).data('spinning-msg'));
+    });
+  });
+</script>
+
+<style type="text/css">
+<!--
+  .icon-rotate {
+    animation: 2s infinite linear rotation;
+  }
+
+  @keyframes rotation {
+    from {transform: rotate(0deg);}
+    to   {transform: rotate(360deg);}
+  }
+-->
+</style>
+{% endblock %}
+
 {%- block head %}
   <title>{% block title %}{% endblock title %} - QWC Admin</title>
 
