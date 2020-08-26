@@ -10,6 +10,7 @@
         <th>ID</th>
         <th>Name</th>
         <th>Type</th>
+        <th>Permissions</th>
         <th></th>
       </tr>
     </thead>
@@ -25,6 +26,13 @@
           {{ utils.icon('chevron-right') }} {{ resource.name }}
         </td>
         <td>{{ resource_types[resource.type] }}</td>
+        <td>
+          {% if item['permissions'] %}
+            <a href="{{ url_for('permissions', resource_id=resource.id) }}" class="btn btn-default btn-xs" role="button" title="Resource permissions">
+              {{ utils.icon('lock') }}
+            </a>
+          {% endif %}
+        </td>
         <td>
           <a href="{{ url_for('edit_%s' % endpoint_suffix, id=resource[pkey]) }}" class="btn btn-primary" role="button">
             {{ utils.icon('pencil') }} Edit

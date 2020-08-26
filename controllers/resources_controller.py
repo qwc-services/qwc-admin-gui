@@ -378,10 +378,16 @@ class ResourcesController(Controller):
         :param list[object] choices: List of collected resources
         :param Session session: DB session
         """
+        # query resource permissions
+        query = session.query(self.Permission) \
+            .filter(self.Permission.resource_id == resource.id)
+        has_permissions = query.count() > 0
+
         # add resource
         items.append({
             'depth': depth,
-            'resource': resource
+            'resource': resource,
+            'permissions': has_permissions
         })
 
         # get sorted children
