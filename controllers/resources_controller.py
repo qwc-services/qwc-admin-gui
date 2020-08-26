@@ -27,6 +27,12 @@ class ResourcesController(Controller):
         # add custom routes
         base_route = self.base_route
         suffix = self.endpoint_suffix
+        # delete cascaded
+        app.add_url_rule(
+            '/%s/<int:id>/cascaded' % base_route,
+            'destroy_cascaded_%s' % suffix,
+            self.destroy_casacaded, methods=['DELETE', 'POST']
+        )
         # resource hierarchy
         app.add_url_rule(
             '/%s/<int:id>/hierarchy' % base_route, 'hierarchy_%s' % suffix,
@@ -172,6 +178,67 @@ class ResourcesController(Controller):
         """
         return session.query(self.Resource).filter_by(id=id).first()
 
+    def destroy_casacaded(self, id):
+        """Delete existing resource and its children.
+
+        :param int id: Resource ID
+        """
+        # workaround for missing DELETE methods in HTML forms
+        #   using hidden form parameter '_method'
+        method = request.form.get('_method', request.method).upper()
+        if method != 'DELETE':
+            abort(405)
+
+        self.setup_models()
+
+        # find resource
+        session = self.session()
+        resource = self.find_resource(id, session)
+
+        if resource is not None:
+            parent_id = resource.parent_id
+
+            try:
+                # delete and commit resource and its children
+                self.destroy_resource_cascaded(resource, session)
+                session.commit()
+                self.update_config_timestamp(session)
+                flash(
+                    'Resource and its children have been deleted.', 'success'
+                )
+            except InternalError as e:
+                flash('InternalError: %s' % e.orig, 'error')
+            except IntegrityError as e:
+                flash('IntegrityError: %s' % e.orig, 'error')
+
+            session.close()
+
+            if parent_id:
+                # redirect to hierarchy view of parent resource
+                return redirect(url_for(
+                    'hierarchy_%s' % self.endpoint_suffix, id=parent_id
+                ))
+            else:
+                # redirect to resources list
+                return redirect(url_for(self.base_route))
+        else:
+            # resource not found
+            session.close()
+            abort(404)
+
+    def destroy_resource_cascaded(self, resource, session):
+        """Recursively delete existing resource and its children in DB.
+
+        :param object resource: Resource object
+        :param Session session: DB session
+        """
+        # recursively delete child resources (depth first)
+        for child in resource.children:
+            self.destroy_resource_cascaded(child, session)
+
+        # delete resource
+        session.delete(resource)
+
     def create_form(self, resource=None, edit_form=False):
         """Return form with fields loaded from DB.
 
@@ -265,6 +332,8 @@ class ResourcesController(Controller):
 
         :param int id: Resource ID
         """
+        self.setup_models()
+
         # find resource
         session = self.session()
         resource = self.find_resource(id, session)

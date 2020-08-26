@@ -32,13 +32,20 @@
           <form action="{{ url_for('destroy_%s' % endpoint_suffix, id=resource[pkey]) }}" method="post" style="display: inline;">
             <input type="hidden" name="_method" value="DELETE" />
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-            <button type="submit" class="btn btn-danger" onclick="return confirm('{% block delete_resource_confirmation %}Remove resource?{% endblock %}');">
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Remove resource?');">
               {{ utils.icon('remove') }} Remove
+            </button>
+          </form>
+          <form action="{{ url_for('destroy_cascaded_%s' % endpoint_suffix, id=resource[pkey]) }}" method="post" style="display: inline;">
+            <input type="hidden" name="_method" value="DELETE" />
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button type="submit" class="btn btn-danger" onclick="return confirm('Remove resource and its children?');">
+              {{ utils.icon('remove') }} Remove cascaded
             </button>
           </form>
         </td>
       </tr>
-    {% endfor %}    
+    {% endfor %}
     </tbody>
   </table>
 {% endblock %}
