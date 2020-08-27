@@ -569,7 +569,7 @@ class ResourcesController(Controller):
                         len(new_layers), 'success'
                     )
                 else:
-                    flash('No additional maps found.', 'info')
+                    flash('No additional layers found.', 'info')
             else:
                 # map not found or no layers
                 flash('No layers found for this map.', 'warning')
