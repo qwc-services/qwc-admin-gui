@@ -3,7 +3,7 @@
 {% block title %}Pending Registration Requests{% endblock %}
 
 {% block buttons %}
-  <div class="btn-group">
+  <div class="btn-group search-group">
     <form action="{{ url_for(base_route) }}" method="get">
       <div class="input-group">
         <input name="search" type="text" class="form-control" placeholder="Search" value="{{ search_text if search_text }}">

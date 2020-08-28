@@ -24,7 +24,7 @@
     </ul>
   </div>
 
-  <div class="btn-group">
+  <div class="btn-group search-group">
     <form action="{{ url_for(base_route) }}" method="get">
       {% if active_resource_type %}
         <input type="hidden" name="type" value="{{ active_resource_type }}" />
