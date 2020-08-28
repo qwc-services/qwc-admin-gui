@@ -5,10 +5,16 @@
 {{super()}}
 <script type="text/javascript">
   $(function() {
-    $('.btn-spin-on-click').click(function() {
+    $('.btn-spin-on-click').click(function(e) {
       $(this).attr('disabled', true);
       // add spinning icon and update button text
       $(this).html('{{ utils.icon("refresh", ["icon-rotate"]) }} ' + $(this).data('spinning-msg'));
+
+      if ($(this).attr('type') == 'submit') {
+        // submit form
+        e.preventDefault();
+        var form = $(this).closest('form').submit();
+      }
     });
   });
 </script>
