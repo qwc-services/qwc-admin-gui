@@ -13,7 +13,7 @@ from flask_jwt_extended import jwt_optional, get_jwt_identity
 from flask_mail import Mail
 
 from qwc_services_core.tenant_handler import TenantHandler, \
-    TenantPrefixMiddleware
+    TenantPrefixMiddleware, TenantSessionInterface
 from qwc_services_core.runtime_config import RuntimeConfig
 from qwc_services_core.database import DatabaseEngine
 from qwc_services_core.jwt import jwt_manager
@@ -143,6 +143,10 @@ def handler():
 if os.environ.get('TENANT_HEADER'):
     app.wsgi_app = TenantPrefixMiddleware(
         app.wsgi_app, os.environ.get('TENANT_HEADER'))
+
+
+if os.environ.get('TENANT_HEADER') or os.environ.get('TENANT_URL_RE'):
+    app.session_interface = TenantSessionInterface(os.environ)
 
 
 # create controllers (including their routes)
