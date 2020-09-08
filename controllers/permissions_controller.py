@@ -156,13 +156,20 @@ class PermissionsController(Controller):
         for resource_type in query.all():
             resource_types[resource_type.name] = resource_type.description
 
+        # Create dict with all defined parents from resource objects
+        parents_dict = {}
+        for res in resources:
+            if res.resource.parent is not None and \
+                    res.resource.parent.id not in parents_dict.keys():
+                parents_dict[res.resource.parent.id] = res.resource.parent.name
+
         session.close()
 
         return render_template(
             '%s/index.html' % self.templates_dir, resources=resources,
-            endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey(),
-            search_text=search_text, pagination=pagination,
-            sort=sort, sort_asc=sort_asc,
+            parents_dict=parents_dict, endpoint_suffix=self.endpoint_suffix,
+            pkey=self.resource_pkey(), search_text=search_text,
+            pagination=pagination, sort=sort, sort_asc=sort_asc,
             base_route=self.base_route, roles=roles, active_role=role,
             resource_types=resource_types,
             active_resource_type=active_resource_type
@@ -207,6 +214,14 @@ class PermissionsController(Controller):
         )
         resources = query.all()
 
+        # This small code is needed to make sure that the parent object
+        # of all resources is called at least once before closing the session.
+        # Doing this allows us to call the parent object even after the session
+        # was closed.
+        for res in resources:
+            if res.parent is not None:
+                res.parent.name
+
         session.close()
 
         # set choices for role select field
@@ -237,6 +252,10 @@ class PermissionsController(Controller):
                     'group_label': r.resource_type.description,
                     'options': []
                 }
+
+                # save parent name (if it exists) to group dict
+                if r.parent is not None:
+                    group["parent"] = r.parent.name
 
                 form.resource_choices.append(group)
 
