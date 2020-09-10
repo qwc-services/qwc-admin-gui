@@ -118,7 +118,15 @@ class TenantConfigHandler:
         self.logger = logger
 
         config_handler = RuntimeConfig("adminGui", logger)
-        self._config = config_handler.tenant_config(tenant)
+        try:
+            self._config = config_handler.tenant_config(tenant)
+        except FileNotFoundError:
+            self._config = {
+                "db_url": os.environ.get(
+                    "DB_URL", "postgresql:///?service=qwc_configdb"),
+                "config_generator_service_url": os.environ.get(
+                    "CONFIG_GENERATOR_SERVICE_URL", None)
+                }
 
     def config(self):
         return self._config
