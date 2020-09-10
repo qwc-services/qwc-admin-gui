@@ -253,14 +253,10 @@ class PermissionsController(Controller):
                     'options': []
                 }
 
-                # save parent name (if it exists) to group dict
-                if r.parent is not None:
-                    group["parent"] = r.parent.name
-
                 form.resource_choices.append(group)
 
             # add resource to group
-            group['options'].append((r.id, r.name))
+            group['options'].append((r.id, r.name, r.parent))
 
         return form
 
