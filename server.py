@@ -125,7 +125,8 @@ class TenantConfigHandler:
                 "db_url": os.environ.get(
                     "DB_URL", "postgresql:///?service=qwc_configdb"),
                 "config_generator_service_url": os.environ.get(
-                    "CONFIG_GENERATOR_SERVICE_URL", None)
+                    "CONFIG_GENERATOR_SERVICE_URL",
+                    "http://qwc-config-service:9090")
                 }
 
     def config(self):
