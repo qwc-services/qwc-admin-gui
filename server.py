@@ -228,6 +228,18 @@ def proxy():
         url: Target URL
     """
     url = request.args.get('url')
+    current_handler = handler()
+
+    try:
+        # json.dumps converts the list object to a string
+        # and makes sure that all python strings
+        # are in double quotes and not single quotes
+        PROXY_URL_WHITELIST = json.loads(
+            json.dumps(current_handler.config().get(
+                "proxy_url_whitelist", "[]")))
+    except Exception as e:
+        app.logger.error("Could not load PROXY_URL_WHITELIST:\n%s" % e)
+        PROXY_URL_WHITELIST = []
 
     # check if URL is in whitelist
     url_permitted = False
@@ -240,14 +252,8 @@ def proxy():
         abort(403)
 
     # settings for proxy to internal services
-    PROXY_TIMEOUT = int(os.environ.get('PROXY_TIMEOUT', 60))
-    try:
-        PROXY_URL_WHITELIST = json.loads(
-            os.environ.get('PROXY_URL_WHITELIST', '[]')
-        )
-    except Exception as e:
-        app.logger.error("Could not load PROXY_URL_WHITELIST:\n%s" % e)
-        PROXY_URL_WHITELIST = []
+    PROXY_TIMEOUT = int(current_handler.config().get(
+        "proxy_timeout", 60))
 
     # forward request
     if request.method == 'GET':
