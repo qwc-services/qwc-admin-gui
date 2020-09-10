@@ -210,7 +210,7 @@ def refresh_config_cache():
 
     if config_generator_url is None:
         app.logger.error("Config generator URL is not defined!!")
-        abort(400)
+        abort(400, "Config generator URL is not defined!!")
 
     response = requests.post(
         urllib.parse.urljoin(
