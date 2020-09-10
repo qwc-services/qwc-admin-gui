@@ -112,11 +112,11 @@
               <option value=""></option>
               {% for group in form.resource_choices %}
                 <optgroup label="{{ group['group_label'] }}" data-type="{{ group['resource_type'] }}">
-                  {% for value, label in group['options'] %}
+                  {% for value, label, parent in group['options'] %}
                     <option value="{{ value }}" {{ 'selected=""' if value == form.resource_id.data }}>
                       {{ label }}
-                      {% if group.get("parent") %}
-                        ({{group["parent"]}})
+                      {% if parent is not none %}
+                        ({{ parent.name }})
                       {% endif %}
                     </option>
                   {% endfor %}
