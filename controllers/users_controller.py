@@ -21,16 +21,21 @@ class UsersController(Controller):
 
         # get custom user info fields
         try:
+            # json.dumps converts the list object to a string
+            # and makes sure that all python strings
+            # are in double quotes and not single quotes
             user_info_fields = json.loads(
-                os.environ.get('USER_INFO_FIELDS', '[]')
+                json.dumps(self.handler().config().get(
+                    "user_info_fields", "[]"))
             )
+
         except Exception as e:
             app.logger.error("Could not load USER_INFO_FIELDS:\n%s" % e)
             user_info_fields = []
 
         # show TOTP fields?
-        self.totp_enabled = os.environ.get('TOTP_ENABLED', 'False') == 'True'
-
+        self.totp_enabled = self.handler().config().get(
+            "totp_enabled", False) is True
         UserForm.add_custom_fields(user_info_fields)
 
     def resources_for_index_query(self, search_text, session):
