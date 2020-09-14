@@ -21,13 +21,22 @@ class UsersController(Controller):
 
         # get custom user info fields
         try:
-            # json.dumps converts the list object to a string
-            # and makes sure that all python strings
-            # are in double quotes and not single quotes
-            user_info_fields = json.loads(
-                json.dumps(self.handler().config().get(
-                    "user_info_fields", "[]"))
-            )
+            handler_config = self.handler().config().get(
+                "user_info_fields", "[]")
+            # this type separation is needed because
+            # the handler return two different types
+            # depending on where he reads the config
+            # str --> read from env variable
+            # list --> read from adminGuiConfig.json
+            if type(handler_config) is str:
+                user_info_fields = json.loads(handler_config)
+            else:
+                # json.dumps converts the list object to a string
+                # and makes sure that all python strings
+                # are in double quotes and not single quotes
+                user_info_fields = json.loads(
+                    json.dumps(handler_config)
+                )
 
         except Exception as e:
             app.logger.error("Could not load USER_INFO_FIELDS:\n%s" % e)
@@ -35,7 +44,7 @@ class UsersController(Controller):
 
         # show TOTP fields?
         self.totp_enabled = self.handler().config().get(
-            "totp_enabled", False) is True
+            "totp_enabled", False) in (True, 'True')
         UserForm.add_custom_fields(user_info_fields)
 
     def resources_for_index_query(self, search_text, session):

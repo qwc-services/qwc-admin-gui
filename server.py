@@ -232,12 +232,22 @@ def proxy():
     current_handler = handler()
 
     try:
-        # json.dumps converts the list object to a string
-        # and makes sure that all python strings
-        # are in double quotes and not single quotes
-        PROXY_URL_WHITELIST = json.loads(
-            json.dumps(current_handler.config().get(
-                "proxy_url_whitelist", "[]")))
+        handler_config = current_handler.config().get(
+                "proxy_url_whitelist", "[]")
+        # this type separation is needed because
+        # the handler return two different types
+        # depending on where he reads the config
+        # str --> read from env variable
+        # list --> read from adminGuiConfig.json
+        if type(handler_config) is str:
+            PROXY_URL_WHITELIST = json.loads(handler_config)
+        else:
+            # json.dumps converts the list object to a string
+            # and makes sure that all python strings
+            # are in double quotes and not single quotes
+            PROXY_URL_WHITELIST = json.loads(
+                json.dumps(handler_config)
+            )
     except Exception as e:
         app.logger.error("Could not load PROXY_URL_WHITELIST:\n%s" % e)
         PROXY_URL_WHITELIST = []
