@@ -405,11 +405,9 @@ class ResourcesController(Controller):
         """Import map resources."""
         # get config generator URL
         config_generator_service_url = self.handler().config().get(
-            "config_generator_service_url"
+            "config_generator_service_url",
+            "http://qwc-config-service:9090"
         )
-        if config_generator_service_url is None:
-            flash('Config generator URL is not defined', 'error')
-            return redirect(url_for(self.base_route))
 
         session = None
         try:
@@ -488,11 +486,10 @@ class ResourcesController(Controller):
         if resource is not None:
             # get config generator URL
             config_generator_service_url = self.handler().config().get(
-                "config_generator_service_url"
+                "config_generator_service_url",
+                "http://qwc-config-service:9090"
             )
-            if config_generator_service_url is None:
-                flash('Config generator URL is not defined', 'error')
-            elif resource.type == 'map':
+            if resource.type == 'map':
                 self.import_layers(
                     resource, config_generator_service_url, session
                 )

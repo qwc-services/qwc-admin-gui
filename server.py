@@ -118,16 +118,7 @@ class TenantConfigHandler:
         self.logger = logger
 
         config_handler = RuntimeConfig("adminGui", logger)
-        try:
-            self._config = config_handler.tenant_config(tenant)
-        except FileNotFoundError:
-            self._config = {
-                "db_url": os.environ.get(
-                    "DB_URL", "postgresql:///?service=qwc_configdb"),
-                "config_generator_service_url": os.environ.get(
-                    "CONFIG_GENERATOR_SERVICE_URL",
-                    "http://qwc-config-service:9090")
-                }
+        self._config = config_handler.tenant_config(tenant)
 
     def config(self):
         return self._config
@@ -136,7 +127,8 @@ class TenantConfigHandler:
         return self._db_engine
 
     def conn_str(self):
-        return self._config.get('db_url')
+        return self._config.get(
+            'db_url', 'postgresql:///?service=qwc_configdb')
 
 
 def handler():
@@ -207,11 +199,8 @@ def refresh_config_cache():
 
     current_handler = handler()
     config_generator_url = current_handler.config().get(
-        "config_generator_service_url")
-
-    if config_generator_url is None:
-        app.logger.error("Config generator URL is not defined!!")
-        abort(400, "Config generator URL is not defined!!")
+        "config_generator_service_url",
+        "http://qwc-config-service:9090")
 
     response = requests.post(
         urllib.parse.urljoin(
@@ -231,26 +220,8 @@ def proxy():
     url = request.args.get('url')
     current_handler = handler()
 
-    try:
-        handler_config = current_handler.config().get(
-                "proxy_url_whitelist", "[]")
-        # this type separation is needed because
-        # the handler return two different types
-        # depending on where he reads the config
-        # str --> read from env variable
-        # list --> read from adminGuiConfig.json
-        if type(handler_config) is str:
-            PROXY_URL_WHITELIST = json.loads(handler_config)
-        else:
-            # json.dumps converts the list object to a string
-            # and makes sure that all python strings
-            # are in double quotes and not single quotes
-            PROXY_URL_WHITELIST = json.loads(
-                json.dumps(handler_config)
-            )
-    except Exception as e:
-        app.logger.error("Could not load PROXY_URL_WHITELIST:\n%s" % e)
-        PROXY_URL_WHITELIST = []
+    PROXY_URL_WHITELIST = current_handler.config().get(
+        "proxy_url_whitelist", [])
 
     # check if URL is in whitelist
     url_permitted = False
@@ -263,8 +234,8 @@ def proxy():
         abort(403)
 
     # settings for proxy to internal services
-    PROXY_TIMEOUT = int(current_handler.config().get(
-        "proxy_timeout", 60))
+    PROXY_TIMEOUT = current_handler.config().get(
+        "proxy_timeout", 60)
 
     # forward request
     if request.method == 'GET':
