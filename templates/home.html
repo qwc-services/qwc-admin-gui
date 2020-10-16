@@ -10,6 +10,8 @@
 
     $('#refresh_config_cache').click(function() {
       clearAlerts();
+      $('#refresh_config_cache').prop("disabled", true);
+      $('#refresh_config_cache').css("cursor", 'wait');
 
       // call Admin GUI service
       $.post(
@@ -19,6 +21,8 @@
         }
       ).done(function(data, status) {
         clearAlerts();
+        $('#refresh_config_cache').prop("disabled", false);
+        $('#refresh_config_cache').css("cursor", '');
         var html = '';
         html += '<div role="alert">';
         html += '<pre>';
@@ -27,6 +31,8 @@
         html += '</div>';
         $('#alerts > div').append(html);
       }).fail(function(jqXHR, status) {
+        $('#refresh_config_cache').prop("disabled", false);
+        $('#refresh_config_cache').css("cursor", '');
         // show errors
         var msg = jqXHR.statusText;
         if (jqXHR.responseJSON) {
