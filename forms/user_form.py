@@ -48,7 +48,7 @@ class UserForm(FlaskForm):
 
     submit = SubmitField('Save')
 
-    def __init__(self, config_models, **kwargs):
+    def __init__(self, config_models, user_info_fields, **kwargs):
         """Constructor
 
         :param ConfigModels config_models: Helper for ORM models
@@ -59,9 +59,11 @@ class UserForm(FlaskForm):
         # store any provided user object
         self.obj = kwargs.get('obj')
 
+        self.add_custom_fields(user_info_fields)
+
         super(UserForm, self).__init__(**kwargs)
 
-    def add_custom_fields(user_info_fields):
+    def add_custom_fields(self, user_info_fields):
         """Add custom user_info fields.
 
         :param list(obj) user_info_fields: Custom user info fields

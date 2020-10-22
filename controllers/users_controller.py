@@ -19,20 +19,6 @@ class UsersController(Controller):
             "User", 'users', 'user', 'users', app, handler
         )
 
-        # get custom user info fields
-        user_info_fields = self.handler().config().get(
-            "user_info_fields", [])
-        # make sure that all python strings
-        # are in double quotes and not single quotes
-        user_info_fields = json.loads(
-            json.dumps(user_info_fields)
-        )
-
-        # show TOTP fields?
-        self.totp_enabled = self.handler().config().get(
-            "totp_enabled", False)
-        UserForm.add_custom_fields(user_info_fields)
-
     def resources_for_index_query(self, search_text, session):
         """Return query for users list.
 
@@ -78,9 +64,22 @@ class UsersController(Controller):
         :param object resource: Optional user object
         :param bool edit_form: Set if edit form
         """
-        form = UserForm(self.config_models, obj=resource)
 
-        form.totp_enabled = self.totp_enabled
+        # get custom user info fields
+        # get custom user info fields
+        user_info_fields = self.handler().config().get(
+            "user_info_fields", [])
+        # make sure that all python strings
+        # are in double quotes and not single quotes
+        user_info_fields = json.loads(
+            json.dumps(user_info_fields)
+        )
+
+        form = UserForm(self.config_models, user_info_fields, obj=resource)
+
+        # show TOTP fields?
+        form.totp_enabled = self.handler().config().get(
+            "totp_enabled", False)
 
         session = self.session()
         self.update_form_collection(
