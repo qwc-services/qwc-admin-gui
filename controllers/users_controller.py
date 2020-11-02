@@ -118,7 +118,10 @@ class UsersController(Controller):
             user.set_password(form.password.data)
         user.failed_sign_in_count = form.failed_sign_in_count.data or 0
 
-        if self.totp_enabled:
+        totp_enabled = self.handler().config().get(
+            "totp_enabled", False)
+
+        if totp_enabled:
             if form.totp_secret.data:
                 user.totp_secret = form.totp_secret.data
             else:
