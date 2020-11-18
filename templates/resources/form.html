@@ -136,7 +136,7 @@
     {{ wtf.form_field(form.submit, class="col-sm-offset-2 btn btn-primary") }}
   </form>
 
-  {% if form.type.data == 'map' %}
+  {% if form.type.data == 'map' and id %}
     <br>
     <form action="{{ url_for('import_children_resource', id=id) }}" method="post" style="display: inline;">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
