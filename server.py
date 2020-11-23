@@ -4,6 +4,7 @@ import os
 import re
 import requests
 import urllib.parse
+import importlib
 
 from flask import abort, Flask, json, redirect, render_template, request, \
     Response, stream_with_context, jsonify
@@ -162,6 +163,16 @@ if app.config.get('QWC_GROUP_REGISTRATION_ENABLED'):
     RegistrationRequestsController(app, handler, i18n, mail)
 
 access_control = AccessControl(handler, app.logger)
+
+# Load plugins
+app.config['PLUGINS'] = []
+for plugin in handler().config().get("plugins", []):
+    try:
+        mod = importlib.import_module("plugins." + plugin)
+        mod.load_plugin(app, handler)
+        app.config['PLUGINS'].append({"id": plugin, "name": mod.name})
+    except Exception as e:
+        app.logger.warning("Could not load plugin %s: %s" % (plugin, str(e)))
 
 
 @app.before_request

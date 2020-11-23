@@ -49,6 +49,13 @@
         "proxy_timeout": {
           "description": "Timeout in seconds for proxy requests",
           "type": "integer"
+        },
+        "plugins": {
+          "description": "List of plugins to load",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
