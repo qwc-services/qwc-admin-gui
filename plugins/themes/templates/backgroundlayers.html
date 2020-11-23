@@ -1,0 +1,39 @@
+{% extends "plugins/themes/templates/index.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block themes_container %}
+  <h1>{{ title }}</h1>
+  <a href="{{ url_for('new_backgroundlayer', type='wms') }}" class="btn btn-success" role="button" title="New WMS layer">
+    {{ utils.icon('plus') }} WMS
+  </a>
+  <a href="{{ url_for('new_backgroundlayer', type='wmts') }}" class="btn btn-success" role="button" title="New WMTS layer">
+    {{ utils.icon('plus') }} WMTS
+  </a>
+  <div style="padding-top: 1em;"/>
+    <div clas="panel-body">
+      <table class="table">
+        <thead>
+          <th>ID</th>
+          <th>Type</th>
+          <th>Name</th>
+          <th>Title</th>
+          <th></th>
+        </thead>
+        <tbody>
+        {% for layer in backgroundlayers %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ layer.type }}</td>
+            <td>{{ layer.name }}</td>
+            <td>{{ layer.title }}</td>
+            <td style="text-align: right">
+              <a href="{{ url_for('delete_backgroundlayer', index=loop.index0) }}" class="btn btn-danger" role="button" title="Delete layer" onclick="return confirm('Really delete layer {{ layer.title }}?');">
+                {{ utils.icon('trash') }}
+              </a>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}

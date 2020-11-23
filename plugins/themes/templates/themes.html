@@ -1,0 +1,137 @@
+{% extends "plugins/themes/templates/index.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block themes_container %}
+  <h1>{{ title }}</h1>
+  <a href="{{ url_for('save_themesconfig') }}" class="btn btn-success" role="button">
+    {{ utils.icon('ok-circle') }} Save
+  </a>
+  <a href="{{ url_for('reset_themesconfig') }}" class="btn btn-info" role="button" onclick="return confirm('This will discard all changes and reload the configuration from disk. Proceed?')">
+    {{ utils.icon('remove-circle') }} Reload from disk
+  </a>
+  <div style="padding-top: 1em;"/>
+  {% for key, list in themes.items() %}
+    {% if key == "items" %}
+      <div class="panel panel-default">
+        <div class="panel-heading clearfix" style="overflow: hidden;">
+          <div class="panel-title pull-left" style="padding-top: 7.5px;"><b>Themes</b></div>
+          <div class="btn-group pull-right">
+            <a href="{{ url_for('new_theme') }}" class="btn btn-success" role="button" title="New theme">
+              {{ utils.icon('plus') }}
+            </a>
+          </div>
+        </div>
+        <div clas="panel-body">
+          <table class="table">
+            <thead>
+              <th>ID</th>
+              <th>Theme</th>
+              <th></th>
+            </thead>
+            <tbody>
+            {% for item in list %}
+              <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ item.name }}</td>
+                <td style="text-align: right">
+                  <div class="btn-group">
+                    <a href="{{ url_for('move_theme', tid=loop.index0, direction='up') }}" class="btn btn-default move-up" role="button" title="Move theme up">
+                      {{ utils.icon('chevron-up') }}
+                    </a>
+                    <a href="{{ url_for('move_theme', tid=loop.index0, direction='down') }}" class="btn btn-default move-up" role="button" title="Move theme down">
+                      {{ utils.icon('chevron-down') }}
+                    </a>
+                    <a href="{{ url_for('edit_theme', tid=loop.index0) }}" class="btn btn-primary" role="button" title="Edit theme">
+                      {{ utils.icon('pencil') }}
+                    </a>
+                    <a href="{{ url_for('delete_theme', tid=loop.index0) }}" class="btn btn-danger" role="button" title="Delete theme" onclick="return confirm('Really delete theme?');">
+                      {{ utils.icon('trash') }}
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    {% elif key == "groups" %}
+      <div class="panel panel-default">
+        <div class="panel-heading clearfix" style="overflow: hidden;">
+          <div class="panel-title pull-left" style="padding-top: 7.5px;"><b>Theme groups</b></div>
+          <div class="btn-group pull-right">
+            <a href="{{ url_for('add_theme_group') }}" class="btn btn-success" role="button" title="New theme group">
+              {{ utils.icon('plus') }}
+            </a>
+          </div>
+        </div>
+        <div clas="panel-body">
+        {% for group in list %}
+        {% set group_loop = loop %}
+          <div class="panel panel-default" style="padding: 1em;">
+            <div class="panel-heading clearfix" style="overflow: hidden;">
+              <div class="panel-title pull-left">
+                <form class="form-inline" action="{{ url_for('update_theme_group', gid=group_loop.index0) }}" method="post">
+                  <input type="hidden" name="_method" value="POST" />
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                  <label class="control-label" for="group_title">Title:</label>
+                  <input class="form-control" type="text" name="group_title" value="{{ group.title }}"/>
+                  <button class="btn btn-primary" type="submit" role="button" title="Edit title">
+                    {{ utils.icon('ok') }}
+                  </button>
+                </form>
+              </div>
+              <div class="btn-group pull-right">
+                <a href="{{ url_for('new_theme', gid=group_loop.index0) }}" class="btn btn-success" role="button" title="New theme">
+                  {{ utils.icon('plus') }}
+                </a>
+                <a href="{{ url_for('move_theme_group', gid=group_loop.index0, direction='up') }}" class="btn btn-default" role="button" title="Move theme group up">
+                  {{ utils.icon('chevron-up') }}
+                </button>
+                <a href="{{ url_for('move_theme_group', gid=group_loop.index0, direction='down') }}" class="btn btn-default" role="button" title="Move theme group down">
+                  {{ utils.icon('chevron-down') }}
+                </button>
+                <a href="{{ url_for('delete_theme_group', gid=group_loop.index0) }}" class="btn btn-danger" role="button" title="Delete theme group" onclick="return confirm('Really delete theme group?');">
+                  {{ utils.icon('trash') }}
+                </a>
+              </div>
+            </div>
+            <div clas="panel-body">
+              <table class="table">
+                <thead>
+                  <th>ID</th>
+                  <th>Theme</th>
+                  <th></th>
+                </thead>
+                <tbody>
+                {% for item in group["items"] %}
+                  <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ item.name }}</td>
+                    <td style="text-align: right">
+                      <div class="btn-group">
+                        <a href="{{ url_for('move_theme', gid=group_loop.index0, tid=loop.index0, direction='up') }}" class="btn btn-default move-up" role="button" title="Move theme up">
+                          {{ utils.icon('chevron-up') }}
+                        </a>
+                        <a href="{{ url_for('move_theme', gid=group_loop.index0, tid=loop.index0, direction='down') }}" class="btn btn-default move-down" role="button" title="Move theme down">
+                          {{ utils.icon('chevron-down') }}
+                        </a>
+                        <a href="{{ url_for('edit_theme', gid=group_loop.index0, tid=loop.index0) }}" class="btn btn-primary" role="button" title="Edit theme">
+                          {{ utils.icon('pencil') }}
+                        </a>
+                        <a href="{{ url_for('delete_theme', gid=group_loop.index0, tid=loop.index0) }}" class="btn btn-danger" role="button" title="Delete theme" onclick="return confirm('Really delete theme?');">
+                          {{ utils.icon('trash') }}
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+{% endblock %}

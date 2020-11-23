@@ -1,0 +1,186 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "templates/base.html" %}
+
+{% block scripts %}
+{{super()}}
+  <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/build/ol.js"></script>
+  <script type="text/javascript">
+    // global object for storing bboxes in different crs per layer
+    var boundingboxes = {};
+
+    function addLayerRow(layer) {
+      if(Array.isArray(layer)) {
+        for(i in layer) {
+          addLayerRow(layer[i]);
+        }
+      } else {
+        if(layer.Name) {
+          // add boundingboxes
+          var item = {};
+          item[layer.Name] = layer.BoundingBox;
+          $.extend(boundingboxes, item);
+
+          // add rows
+          var row = '<tr class="layer-row">';
+          row += '<td class="wms-title">' + layer.Title + '</td>';
+          row += '<td class="wms-name">' + layer.Name + '</td>';
+          // add hidden td
+          row += '<td class="wms-attribution hidden">' + layer.Attribution + '</td>';
+          row += '</tr>';
+          $('#wms-table > tbody:last-child').append(row);
+        }
+        if(layer.Layer) {
+          addLayerRow(layer.Layer);
+        }
+      }
+    }
+
+    // read capabilities from url and fill form
+    $('#btn-connect').click(function() {
+ 
+      // clear form
+      $('#url').val('');
+      $('#select-srs').find('option').remove();
+      $('#select-format').find('option').remove();
+      $('#form').trigger('reset');
+      boundingboxes = {};
+
+      var url = $('#input-url').val().trim();
+
+      // skip empty url
+      if(!url) {
+        return false;
+      }
+
+      $('#url').val(url);
+      // add protocol and host
+      if(url.match("^\/")) {
+        url = location.protocol + "//" + location.host + url;
+      // add protocol
+      } else if(!url.match("^http")) {
+        url = location.protocol + "//" + url;
+        $('#url').val(url);
+      }
+
+      // add cabilities url paramter 
+      if(url.indexOf('?') > 0) {
+        var base = url.substring(0, url.indexOf('?'));
+        url = base + '?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities';
+      } else {
+        url += '?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetCapabilities';
+      }
+
+      // read capbilities from input-url
+      $.get(url)
+        .success(function(data) {
+          var parser = new ol.format.WMSCapabilities();
+          var capabilities = parser.read(data);
+          var wmsLayer = capabilities.Capability.Layer.Layer;
+          wmsLayer.map(layer => {addLayerRow(layer)});
+
+          // select srs
+          $.each(capabilities.Capability.Layer.BoundingBox, function(key, bbox) {
+            $('#select-srs').append('<option value=' + bbox.crs + '>' + bbox.crs + '</option>');
+          });
+          // select format
+          $.each(capabilities.Capability.Request.GetMap.Format, function(key, format) {
+            $('#select-format').append('<option value=' + format + '>' + format + '</option>');
+          });
+          $('#select-format').val('image/png');
+        })
+        .error(function() {
+          alert('Could not read capabilities!');
+        })
+    });
+
+    // highlight selected row and set hidden vars
+    $('#wms-table').on('click', '.layer-row', function(event) {
+      // highlight selected row
+      $(this).addClass('selected').siblings().removeClass('selected');
+      // set hidden vars
+      var name = $(this).find('td.wms-name').text();
+      var srs = $('#select-srs option:selected').text();
+//       var bbox = boundingboxes[name].find(box => box.crs === srs).extent;
+      $('#name').val(name);
+      $('#title').val($(this).find('td.wms-title').text());
+      $('#srs').val(srs);
+//       $('#bbox').val(bbox);
+      if($(this).find('td.wms-attribution').text() !== "undefined") {
+        $('#attribution').val($(this).find('td.wms-attribution').text());
+      }
+    });
+
+    // srs change
+    $('#select-srs').change(function() {
+      var srs = $(this).find('option:selected').text();
+      var name = $('#name').val();
+//       var bbox = boundingboxes[name].find(box => box.crs === srs).extent;
+      $('#srs').val(srs); 
+//       $('#bbox').val(bbox);
+    });
+    // format change
+    $('#select-format').change(function() {
+      $('#format').val($(this).find('option:selected').text()); 
+    });
+  </script>
+{% endblock %}
+{%- block styles %}
+    {{ super() }}
+    <link href="{{ url_for('plugin_static', plugin='themes', filename='application.css') }}" rel="stylesheet">
+{%- endblock styles %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block container %}
+  <h1>{{ title }}</h1>
+  <div class="col-sm-7">
+    <div class="row" style="padding: 2.5em 0">
+      <div class="input-group">
+        <input type="text" id="input-url" class="form-control" placeholder="WMS Capabilities URL">
+        <span class="input-group-btn">
+          <button id="btn-connect" class="btn btn-info" type="button">Connect</button>
+        </span>
+      </div>
+    </div>
+    <div class="table-wrapper">
+      <table class="table ellipsis" id="wms-table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Layer</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+    <form id="form" class="form form-horizontal" action="{{ url_for('create_backgroundlayer', type=type) }}" method="post" style="padding: 2.5em 0;">
+      {{ form.csrf_token }}
+      {{ wtf.form_field(form.title, form_type="horizontal", horizontal_columns=('sm', 2, 10)) }}
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="select-srs">
+          CRS
+        </label>
+        <div class="col-sm-10">
+          <select class="form-control" id="select-srs"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="select-format">
+          Format
+        </label>
+        <div class="col-sm-10">
+          <select class="form-control" id="select-format"></select>
+        </div>
+      </div>
+      {{ wtf.form_field(form.attribution, form_type="horizontal", horizontal_columns=('sm', 2, 10)) }}
+      {{ wtf.form_field(form.thumbnail, form_type="horizontal", horizontal_columns=('sm', 2, 10)) }}
+      {{ wtf.form_field(form.tiled, form_type="horizontal", horizontal_columns=('sm', 2, 10)) }}
+      {{ form.url }}
+      {{ form.name }}
+      {{ form.format }}
+      {{ form.srs }}
+      {{ form.bbox }}
+      {{ wtf.form_field(form.submit, class="btn btn-primary") }}
+    </form>
+  </div>
+{% endblock %}

@@ -1,0 +1,145 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "templates/base.html" %}
+
+{% block scripts %}
+{{super()}}
+  <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/build/ol.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/proj4@2.6.3/dist/proj4-src.min.js"></script>
+  <script type="text/javascript">
+    // TODO: add more proj4 defs
+    proj4.defs("EPSG:25832","+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
+    ol.proj.proj4.register(proj4);
+
+    // highlight selected row and set hidden vars
+    $('#wmts-table').on('click', '.layer-row', function(event) {
+      // highlight selected row
+      $(this).addClass('selected').siblings().removeClass('selected');
+      // set hidden vars
+      $('#url').val($(this).find('td.wmts-url').text());
+      $('#title').val($(this).find('td.wmts-title').text());
+      $('#name').val($(this).find('td.wmts-name').text());
+      $('#tileMatrixSet').val($(this).find('td.wmts-tilematrix').text());
+      $('#style').val($(this).find('td.wmts-style').text());
+      $('#projection').val($(this).find('td.wmts-crs').text());
+      $('#originX').val($(this).find('td.wmts-originX').text());
+      $('#originY').val($(this).find('td.wmts-originY').text());
+      $('#tileSize').val($(this).find('td.wmts-tilesize').text());
+      $('#resolutions').val($(this).find('td.wmts-resolutions').text());
+    });
+
+    // read capabilities from input-url
+    $('#btn-connect').click(function() {
+
+      // clear form and table
+      $('#form').trigger('reset');
+      $('#wmts-table > tbody').html("");
+      $('#btn-gen-tile-cache').prop('disabled', true);
+      $('#with_capabilities').prop('checked', false);
+
+      var url = $('#input-url').val().trim();
+
+      // skip empty url
+      if(!url) {
+        return false;
+      }
+
+      // add http
+      if(!url.match('^http')) { 
+        url = "http://" + url
+      }
+
+      $.get(url)
+      .success(function(data) {
+        var parser = new ol.format.WMTSCapabilities();
+        var capabilities = parser.read(data);
+        $('#capabilities').val(JSON.stringify(capabilities));
+
+        var wmtsLayer = capabilities.Contents.Layer;
+        wmtsLayer.map(layer => {
+          layer.TileMatrixSetLink.map(tms => {
+            var options = ol.source.WMTS.optionsFromCapabilities(capabilities, {layer: layer.Identifier, matrixSet: tms.TileMatrixSet});
+            var row = '<tr class="layer-row">';
+            row += '<td class="wmts-title">' + layer.Title + '</td>';
+            row += '<td class="wmts-tilematrix">' + options.matrixSet + '</td>';
+            row += '<td class="wmts-format">' + options.format + '</td>';
+            row += '<td class="wmts-style">'+ options.style + '</td>';
+            row += '<td class="wmts-crs">' + options.projection.code_ + '</td>';
+            // add hidden td
+            row += '<td class="wmts-url hidden">' + options.urls[0] + '</td>';
+            row += '<td class="wmts-name hidden">' + options.layer + '</td>';
+            row += '<td class="wmts-originX hidden">' + options.tileGrid.origins_[0][0] + '</td>';
+            row += '<td class="wmts-originY hidden">' + options.tileGrid.origins_[0][1] + '</td>';
+            row += '<td class="wmts-tilesize hidden">' + [options.tileGrid.tileSizes_[0], options.tileGrid.tileSizes_[0]] + '</td>';
+            row += '<td class="wmts-resolutions hidden">' + options.tileGrid.resolutions_ + '</td>';
+            row += '</tr>';
+            $('#wmts-table > tbody:last-child').append(row);
+          });
+        });
+      })
+      .error(function() {
+        alert('Konnte Capabilities nicht laden!');
+      })
+    });
+
+    $('#with_capabilities').click(function() {
+      if($("#with_capabilities").is(':checked')) {
+        // show button
+        $('#btn-gen-tile-cache').prop('disabled', false);
+      } else {
+        // hide button
+        $('#btn-gen-tile-cache').prop('disabled', true);
+      }
+    });
+  </script>
+{% endblock %}
+{%- block styles %}
+    {{ super() }}
+    <link href="{{ url_for('plugin_static', plugin='themes', filename='application.css') }}" rel="stylesheet">
+{%- endblock styles %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block container %}
+  <h1>{{ title }}</h1>
+  <div class="col-sm-7">
+    <div class="row" style="padding: 2.5em 0">
+      <div class="input-group">
+        <input type="text" id="input-url" class="form-control" placeholder="WMTS Capabilities URL">
+        <span class="input-group-btn">
+          <button id="btn-connect" class="btn btn-info" type="button">Connect</button>
+        </span>
+      </div>
+    </div>
+    <div class="table-wrapper">
+      <table class="table" id="wmts-table">
+        <thead>
+          <tr>
+            <th>Layer</th>
+            <th>Tilematrix</th>
+            <th>Format</th>
+            <th>Style</th>
+            <th>CRS</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+    <form id="form" class="form form-horizontal" action="{{ url_for('create_backgroundlayer', type=type) }}" method="post" style="padding-top: 2.5em 0;">
+      {{ form.csrf_token }}
+      {{ form.capabilities }}
+      {{ wtf.form_field(form.title, form_type="horizontal", horizontal_columns=('sm', 2, 10)) }}
+      {{ wtf.form_field(form.attribution, form_type="horizontal", horizontal_columns=('sm', 2, 10)) }}
+      {{ wtf.form_field(form.thumbnail, form_type="horizontal", horizontal_columns=('sm', 2, 10)) }}
+      {{ form.url }}
+      {{ form.name }}
+      {{ form.style }}
+      {{ form.tileMatrixSet }}
+      {{ form.projection }}
+      {{ form.originX }}
+      {{ form.originY }}
+      {{ form.resolutions }}
+      {{ form.tileSize }}
+      {{ wtf.form_field(form.submit, class="btn btn-primary") }}
+    </form>
+  </div>
+{% endblock %}

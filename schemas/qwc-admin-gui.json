@@ -56,6 +56,18 @@
           "items": {
             "type": "string"
           }
+        },
+        "input_config_path": {
+          "description": "The path to the input configs. Required for 'themes' plugin.",
+          "type": "string"
+        },
+        "qwc2_path": {
+          "description": "The path to QWC2 files. Required for 'themes' plugin.",
+          "type": "string"
+        },
+        "qgs_resources_path": {
+          "description": "The path to the QGIS projects. Required for 'themes' plugin.",
+          "type": "string"
         }
       },
       "required": [
