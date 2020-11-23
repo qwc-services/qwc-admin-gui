@@ -33,7 +33,7 @@ class Controller:
         self.resource_name = resource_name
         self.base_route = base_route
         self.endpoint_suffix = endpoint_suffix
-        self.templates_dir = templates_dir
+        self.templates_dir = "templates/%s" % templates_dir
         self.app = app
         self.logger = app.logger
         self.handler = handler

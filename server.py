@@ -23,8 +23,9 @@ from controllers import UsersController, GroupsController, RolesController, \
     RegistrationRequestsController
 
 
+
 # Flask application
-app = Flask(__name__)
+app = Flask(__name__, template_folder='.')
 app.secret_key = os.environ.get(
     'JWT_SECRET_KEY',
     'CHANGE-ME-8JGL6Kc9UA69p6E88JGL6Kc9UA69p6E8')
@@ -187,7 +188,7 @@ def assert_admin_role():
 # routes
 @app.route('/')
 def home():
-    return render_template('home.html')
+    return render_template('templates/home.html')
 
 
 @app.route('/refresh_config_cache', methods=['POST'])
