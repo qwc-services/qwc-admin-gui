@@ -7,7 +7,7 @@ import urllib.parse
 import importlib
 
 from flask import abort, Flask, json, redirect, render_template, request, \
-    Response, stream_with_context, jsonify
+    Response, stream_with_context, jsonify, send_from_directory
 from flask_bootstrap import Bootstrap
 from flask_wtf.csrf import CSRFProtect
 from flask_jwt_extended import jwt_optional, get_jwt_identity
@@ -201,6 +201,11 @@ def assert_admin_role():
 def home():
     return render_template('templates/home.html')
 
+
+@app.route('/pluginstatic/<plugin>/<filename>')
+def plugin_static(plugin, filename):
+    """ Return assets from plugins """
+    return send_from_directory(os.path.join("plugins", plugin, "static"), filename)
 
 @app.route('/refresh_config_cache', methods=['POST'])
 def refresh_config_cache():
