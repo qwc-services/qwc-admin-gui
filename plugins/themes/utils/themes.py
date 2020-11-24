@@ -1,5 +1,6 @@
 import os
 import json
+import pathlib
 from datetime import datetime
 from collections import OrderedDict
 
@@ -61,13 +62,16 @@ class ThemeUtils():
         """Return QGIS project file names from QGIS_RESOURCES_PATH"""
         current_handler = handler()
         resources_path = current_handler.config().get("qgs_resources_path")
+        ogc_service_url = current_handler.config().get("ogc_service_url")
 
         projects = []
-        for f in os.listdir(resources_path):
-            if f.endswith(".qgs"):
-                project = f.replace(".qgs", "")
-                url = os.environ.get("OGC_SERVICE_URL", "/wms/") + project
-                projects.append((url, project))
+        app.logger.info(resources_path)
+        for path in pathlib.Path(resources_path).rglob("*.qgs"):
+            app.logger.info(str(path))
+            app.logger.info(path.relative_to(resources_path))
+            project = str(path.relative_to(resources_path)).rstrip(".qgs").replace("\\", "/")
+            url = ogc_service_url.rstrip("/") + "/" + project
+            projects.append((url, project))
         return sorted(projects)
 
     @staticmethod
