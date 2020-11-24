@@ -124,13 +124,13 @@ class ThemesController:
         themes["items"] = []
         themes["groups"] = []
 
-        for item in self.themesconfig["themes"]["items"]:
+        for item in self.themesconfig["themes"].get("items", []):
             themes["items"].append({
                 "name": item["title"] if "title" in item else item["url"]
             })
 
         # TODO: nested groups
-        for group in self.themesconfig["themes"]["groups"]:
+        for group in self.themesconfig["themes"].get("groups", []):
             groupEntry = {
                 "title": group["title"],
                 "items": []
@@ -149,9 +149,9 @@ class ThemesController:
     def new_theme(self, gid=None):
         """Show new theme form."""
         # use first theme as default
-        if len(self.themesconfig["themes"]["items"]):
+        if len(self.themesconfig["themes"].get("items", [])):
             default = self.themesconfig["themes"]["items"][0]
-        elif len(self.themesconfig["themes"]["groups"]) and \
+        elif len(self.themesconfig["themes"].get("groups", [])) and \
                 len(self.themesconfig["themes"]["groups"][0]["items"]):
             default = self.themesconfig["themes"]["groups"][0]["items"][0]
         else:
