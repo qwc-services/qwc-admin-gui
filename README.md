@@ -121,6 +121,9 @@ Translation strings are stored in a JSON file for each locale in `translations/<
 
 Set the `DEFAULT_LOCALE` environment variable to choose the locale for the user notification mails (default: `en`).
 
+### Plugins
+
+The admin gui is extendable through plugins, which reside in the `plugins` folder. To enable them, list them in `plugins` in the admin gui configuration. See the JSON schema for details, and for configuration parameters which may be required by plugins shipped by default with `qwc-admin-gui`.
 
 Usage
 -----
