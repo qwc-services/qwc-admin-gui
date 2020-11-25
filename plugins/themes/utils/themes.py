@@ -69,7 +69,7 @@ class ThemeUtils():
         for path in pathlib.Path(resources_path).rglob("*.qgs"):
             app.logger.info(str(path))
             app.logger.info(path.relative_to(resources_path))
-            project = str(path.relative_to(resources_path)).rstrip(".qgs").replace("\\", "/")
+            project = str(path.relative_to(resources_path))[:-4].replace("\\", "/")
             url = ogc_service_url.rstrip("/") + "/" + project
             projects.append((url, project))
         return sorted(projects)

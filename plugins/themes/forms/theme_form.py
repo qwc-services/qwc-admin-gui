@@ -58,23 +58,21 @@ class ThemeForm(FlaskForm):
     scales = StringField(
         "Scales",
         description="List of available map scales.",
-        default=("200000, 100000, 75000, 50000, 25000, 10000, 5000, 2500, "
-                 "1000, 500, 250, 100"),
+        default=(""),
         validators=[Regexp(r'^(\d+)(,\s*\d+)*$',
                     message="Please enter a comma separted list of numbers.")]
     )
     printScales = StringField(
         "Print scales",
         description="List of available print scales.",
-        default=("200000, 100000, 75000, 50000, 25000, 10000, 7500, 5000, "
-                 "2500, 2000, 1500, 1000, 750, 500, 250, 100"),
+        default=(""),
         validators=[Regexp(r'^(\d+)(,\s*\d+)*$',
                     message="Please enter a comma separted list of numbers.")]
     )
     printResolutions = StringField(
         "Print resolutions",
         description="List of available print resolutions.",
-        default=("150, 300, 600"),
+        default=(""),
         validators=[Regexp(r'^(\d+)(,\s*\d+)*$',
                     message="Please enter a comma separted list of numbers.")]
     )

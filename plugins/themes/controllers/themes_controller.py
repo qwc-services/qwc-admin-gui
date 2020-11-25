@@ -148,16 +148,7 @@ class ThemesController:
 
     def new_theme(self, gid=None):
         """Show new theme form."""
-        # use first theme as default
-        if len(self.themesconfig["themes"].get("items", [])):
-            default = self.themesconfig["themes"]["items"][0]
-        elif len(self.themesconfig["themes"].get("groups", [])) and \
-                len(self.themesconfig["themes"]["groups"][0]["items"]):
-            default = self.themesconfig["themes"]["groups"][0]["items"][0]
-        else:
-            default = None
-
-        form = self.create_form(default)
+        form = self.create_form()
         template = "%s/theme.html" % self.template_dir
         title = "Create theme"
         action = url_for("create_theme", gid=gid)
@@ -377,7 +368,7 @@ class ThemesController:
 
         crslist = ThemeUtils.get_crs(self.app, self.handler)
 
-        form.url.choices = ThemeUtils.get_projects(self.app, self.handler)
+        form.url.choices = [("", "---")] + ThemeUtils.get_projects(self.app, self.handler)
         form.thumbnail.choices = ThemeUtils.get_mapthumbs(self.app, self.handler)
         form.format.choices = ThemeUtils.get_format()
         form.mapCrs.choices = crslist
@@ -391,6 +382,15 @@ class ThemesController:
         if theme is None:
             return form
         else:
+            current_handler = self.handler()
+            ogc_service_url = current_handler.config().get("ogc_service_url")
+            if "url" in theme:
+                if theme["url"].startswith(ogc_service_url):
+                    form.url.data = theme["url"]
+                else:
+                    form.url.data = ogc_service_url.rstrip("/") + "/" + theme["url"]
+            else:
+                form.url.data = None
             if "title" in theme:
                 form.title.data = theme["title"]
             if "thumbnail" in theme:
@@ -458,6 +458,8 @@ class ThemesController:
 
         if form.title.data:
             item["title"] = form.title.data
+        else:
+            del item["title"]
 
         if form.thumbnail.data:
             item["thumbnail"] = form.thumbnail.data
@@ -471,29 +473,41 @@ class ThemesController:
 
         if form.format.data:
             item["format"] = form.format.data
+        else:
+            del item["format"]
 
         if form.mapCrs.data:
             item["mapCrs"] = form.mapCrs.data
+        else:
+            del item["mapCrs"]
 
         if form.additionalMouseCrs.data:
             item["additionalMouseCrs"] = form.additionalMouseCrs.data
+        else:
+            del item["additionalMouseCrs"]
 
+        item["searchProviders"] = []
         if form.searchProviders.data:
-            item["searchProviders"] = []
             for provider in form.searchProviders.data.split(","):
                 item["searchProviders"].append(provider)
 
         if form.scales.data:
             item["scales"] = list(map(int, form.scales.data.replace(
                 " ", "").split(",")))
+        else:
+            del item["scales"]
 
         if form.printScales.data:
             item["printScales"] = list(map(int, form.printScales.data.replace(
                 " ", "").split(",")))
+        else:
+            del item["printScales"]
 
         if form.printResolutions.data:
             item["printResolutions"] = list(map(
                 int, form.printResolutions.data.replace(" ", "").split(",")))
+        else:
+            del item["printResolutions"]
 
         item["collapseLayerGroupsBelowLevel"] = 1
 
