@@ -62,7 +62,7 @@
           "type": "string"
         },
         "qwc2_path": {
-          "description": "The path to QWC2 files. Required for 'themes' plugin.",
+          "description": "The path to QWC2 files. Required for 'themes' and 'alkis' plugins.",
           "type": "string"
         },
         "qgs_resources_path": {

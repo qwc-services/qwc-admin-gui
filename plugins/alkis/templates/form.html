@@ -1,0 +1,45 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "templates/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block scripts %}
+{{super()}}
+<script src="{{ url_for('static', filename='js/jquery.multi-select.js') }}"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    //$('#pg_service').multiSelect();
+    if($('#pg_service').val() == undefined) {
+      // TODO: select first value
+      // $('select#pg_service').val($('#pg_service option')[0].value)
+      // $("#pg_service").prop("selectedIndex", 0);
+      /*var multi = $('#pg_service').multiSelect();
+      console.log(multi.find(':checkbox').first());
+      multi.find(':checkbox').first().click();*/
+    }
+
+    $('#enable_alkis').on('click', function() {
+      if(!$(this).is(':checked')) {
+        $('#enable_owner').prop('checked', false);
+      }
+    });
+
+    $('#enable_owner').on("click", function() {
+      if($(this).is(':checked') && !$('#enable_alkis').is(':checked')) {
+        $(this).prop('checked', false);
+      }
+    });
+
+  })
+</script>
+{% endblock %}
+{% block container %}
+  <h1>{{ title }}</h1>
+  <form id="form" class="form form-horizontal" action="{{ action }}" method="post" style="padding-bottom: 25px;">
+    {{ form.csrf_token }}
+    {{ wtf.form_field(form.pgservice, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.name, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.enable_alkis, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.enable_owner, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.header_template, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.submit, class="btn btn-primary") }}
+  </form>
+{% endblock %}

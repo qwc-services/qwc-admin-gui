@@ -1,0 +1,41 @@
+{% extends "templates/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block container %}
+  <h1>{{ title }}</h1>
+  <a href="{{ url_for('new_alkis') }}" class="btn btn-success" role="button">
+    {{ utils.icon('plus') }} {% block new_resource_label %}Neu{% endblock %}
+  </a>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        {% block table_headers %}
+          <th>ID</th>
+          <th>Name</th>
+        {% endblock %}
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for resource in resources %}
+      <tr>
+        {% block resource_fields scoped %}
+          <td>{{ resource.id }}</td>
+          <td>{{ resource.name }}</td>
+        {% endblock %}
+        <td>
+          <a href="{{ url_for('edit_alkis', index=resource.id) }}" class="btn btn-primary" role="button">
+            {{ utils.icon('pencil') }} Bearbeiten
+          </a>
+          <form action="{{ url_for('delete_alkis', index=resource.id) }}" method="post" style="display: inline;">
+            <input type="hidden" name="_method" value="DELETE" />
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button type="submit" class="btn btn-danger" onclick="return confirm('{% block delete_resource_confirmation %}Wirklich entfernen?{% endblock %}');">
+              {{ utils.icon('remove') }} Entfernen
+            </button>
+          </form>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
