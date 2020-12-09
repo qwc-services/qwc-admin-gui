@@ -128,7 +128,7 @@ class BackgroundLayersController():
             self.themesconfig["themes"]["backgroundLayers"].append(
                 backgroundlayer)
 
-            if ThemeUtils.save_themesconfig(self.themesconfig, self.app):
+            if ThemeUtils.save_themesconfig(self.themesconfig, self.app, self.handler):
                 message = "Background layer '{0}' was created.\
                         ".format(backgroundlayer["title"])
                 flash(message, "success")
@@ -159,7 +159,7 @@ class BackgroundLayersController():
             flash("Could not delete background layer.", "error")
         else:
             self.themesconfig["themes"]["backgroundLayers"].pop(index)
-            if ThemeUtils.save_themesconfig(self.themesconfig, self.app):
+            if ThemeUtils.save_themesconfig(self.themesconfig, self.app, self.handler):
                 flash("Background layer deleted.", "success")
             else:
                 flash("Could not delete background layer.", "error")
