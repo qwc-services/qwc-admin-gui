@@ -171,7 +171,7 @@ class ThemesController:
                 flash("Could not create theme {0}.".format(
                     form.title.data), "warning")
         else:
-            flash("Count not create theme {0}.".format(form.title.data),
+            flash("Could not create theme {0}.".format(form.title.data),
                   "warning")
 
         # show validation errors
