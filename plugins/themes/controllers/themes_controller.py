@@ -459,7 +459,7 @@ class ThemesController:
         if form.title.data:
             item["title"] = form.title.data
         else:
-            del item["title"]
+            if "title" in item: del item["title"]
 
         if form.thumbnail.data:
             item["thumbnail"] = form.thumbnail.data
@@ -474,17 +474,17 @@ class ThemesController:
         if form.format.data:
             item["format"] = form.format.data
         else:
-            del item["format"]
+            if "format" in item: del item["format"]
 
         if form.mapCrs.data:
             item["mapCrs"] = form.mapCrs.data
         else:
-            del item["mapCrs"]
+            if item in "mapCrs": del item["mapCrs"]
 
         if form.additionalMouseCrs.data:
             item["additionalMouseCrs"] = form.additionalMouseCrs.data
         else:
-            del item["additionalMouseCrs"]
+            if "additionalMouseCrs" in item: del item["additionalMouseCrs"]
 
         item["searchProviders"] = []
         if form.searchProviders.data:
@@ -495,19 +495,19 @@ class ThemesController:
             item["scales"] = list(map(int, form.scales.data.replace(
                 " ", "").split(",")))
         else:
-            del item["scales"]
+            if "scales" in item: del item["scales"]
 
         if form.printScales.data:
             item["printScales"] = list(map(int, form.printScales.data.replace(
                 " ", "").split(",")))
         else:
-            del item["printScales"]
+            if "printScales" in item: del item["printScales"]
 
         if form.printResolutions.data:
             item["printResolutions"] = list(map(
                 int, form.printResolutions.data.replace(" ", "").split(",")))
         else:
-            del item["printResolutions"]
+            if "printResolutions" in item: del item["printResolutions"]
 
         item["collapseLayerGroupsBelowLevel"] = 1
 
