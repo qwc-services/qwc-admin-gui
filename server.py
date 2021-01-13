@@ -201,6 +201,11 @@ def assert_admin_role():
                 return redirect(prefix + '/login?url=%s' % request.url)
 
 
+@app.route('/logout')
+def logout():
+    prefix = '/auth'  # TODO: from configuration
+    return redirect(prefix + '/logout?url=%s' % request.url.replace("/logout", ""))
+
 # routes
 @app.route('/')
 def home():
