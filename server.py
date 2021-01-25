@@ -32,6 +32,7 @@ app.secret_key = os.environ.get(
     'CHANGE-ME-8JGL6Kc9UA69p6E88JGL6Kc9UA69p6E8')
 app.config['QWC_GROUP_REGISTRATION_ENABLED'] = os.environ.get(
     'GROUP_REGISTRATION_ENABLED', 'True') == 'True'
+app.config['IDLE_TIMEOUT'] = os.environ.get('IDLE_TIMEOUT', 0);
 
 # enable CSRF protection
 CSRFProtect(app)

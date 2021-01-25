@@ -52,7 +52,9 @@ password=qwc_admin
 sslmode=disable
 ```
 
-the `GROUP_REGISTRATION_ENABLED` environment variable to `False` to disable registrable groups and group registration requests, if not using the [Registration GUI](https://github.com/qwc-services/qwc-registration-gui) (default: `True`).
+Set the `GROUP_REGISTRATION_ENABLED` environment variable to `False` to disable registrable groups and group registration requests, if not using the [Registration GUI](https://github.com/qwc-services/qwc-registration-gui) (default: `True`).
+
+To automatically logout from the admin gui after a period of inactivity, set the `IDLE_TIMEOUT` environment variable to the desired period, in seconds (default: `0`, i.e. disabled).
 
 Set `totp_enabled` to `true` to show the TOTP fields in the user form, if two factor authentication is enabled in the [DB-Auth service](https://github.com/qwc-services/qwc-db-auth) (default: `false`).
 

@@ -18,6 +18,23 @@
     });
   });
 </script>
+<script type="text/javascript">
+  // Idle autologout
+  var idleTimer = null;
+  if({{ config['IDLE_TIMEOUT'] }} > 0) {
+    function idleAutologout() {
+        location.href = "{{ url_for('logout') }}";
+    }
+    function resetIdleTimer() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(idleAutologout, {{ config['IDLE_TIMEOUT'] }} * 1000);
+    }
+    window.addEventListener('keydown', resetIdleTimer, {passive: true});
+    window.addEventListener('mousedown', resetIdleTimer, {passive: true});
+    window.addEventListener('wheel', resetIdleTimer, {passive: true});
+    idleTimer = setTimeout(idleAutologout, {{ config['IDLE_TIMEOUT'] }} * 1000);
+  }
+</script>
 
 <style type="text/css">
 <!--
