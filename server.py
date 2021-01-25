@@ -180,6 +180,14 @@ def load_plugins():
                 app.logger.warning("Could not load plugin %s: %s" % (plugin, str(e)))
 
 
+def tenant_path_prefix():
+    prefix = '/auth'  # TODO: from configuration
+    if os.environ.get('TENANT_HEADER') or os.environ.get('TENANT_URL_RE'):
+        # TODO: add ignore_default config
+        prefix = '/' + tenant_handler.tenant() + prefix
+    return prefix
+
+
 @app.before_request
 @jwt_optional
 def assert_admin_role():
@@ -190,10 +198,7 @@ def assert_admin_role():
         if app.debug:
             pass  # Allow access in debug mode
         else:
-            prefix = '/auth'  # TODO: from configuration
-            if os.environ.get('TENANT_HEADER') or os.environ.get('TENANT_URL_RE'):
-                # TODO: add ignore_default config
-                prefix = '/' + tenant_handler.tenant() + prefix
+            prefix = tenant_path_prefix()
             if identity:
                 # Already logged in, but not with admin role
                 return redirect(prefix + '/logout?url=%s' % request.url)
@@ -203,8 +208,9 @@ def assert_admin_role():
 
 @app.route('/logout')
 def logout():
-    prefix = '/auth'  # TODO: from configuration
-    return redirect(prefix + '/logout?url=%s' % request.url.replace("/logout", ""))
+    prefix = tenant_path_prefix()
+    return redirect(prefix + '/logout?url=%s' % request.url.replace(
+        "/logout", ""))
 
 # routes
 @app.route('/')
