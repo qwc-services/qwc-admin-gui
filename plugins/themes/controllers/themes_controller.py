@@ -400,6 +400,8 @@ class ThemesController:
                 form.url.data = None
             if "title" in theme:
                 form.title.data = theme["title"]
+            if "default" in theme:
+                form.default.data = theme["default"]
             if "thumbnail" in theme:
                 form.thumbnail.data = theme["thumbnail"]
             if "attribution" in theme:
@@ -429,6 +431,14 @@ class ThemesController:
             if "printResolutions" in theme:
                 form.printResolutions.data = ", ".join(map(str, theme[
                     "printResolutions"]))
+            if "printLabelBlacklist" in theme:
+                form.printLabelBlacklist.data = ", ".join(map(str, theme[
+                    "printLabelBlacklist"]))
+            if "skipEmptyFeatureAttributes" in theme:
+                form.skipEmptyFeatureAttributes.data = theme["skipEmptyFeatureAttributes"]
+            if "collapseLayerGroupsBelowLevel" in theme:
+                form.collapseLayerGroupsBelowLevel.data = theme["collapseLayerGroupsBelowLevel"]
+
             if "backgroundLayers" in theme:
                 for i, layer in enumerate(theme["backgroundLayers"]):
                     data = {
@@ -467,6 +477,10 @@ class ThemesController:
             item["title"] = form.title.data
         else:
             if "title" in item: del item["title"]
+
+        item["default"] = False
+        if form.default.data:
+            item["default"] = True
 
         if form.thumbnail.data:
             item["thumbnail"] = form.thumbnail.data
@@ -516,7 +530,21 @@ class ThemesController:
         else:
             if "printResolutions" in item: del item["printResolutions"]
 
-        item["collapseLayerGroupsBelowLevel"] = 1
+        if form.printLabelBlacklist.data:
+            item["printLabelBlacklist"] = list(map(
+                str, form.printLabelBlacklist.data.replace(" ", "").split(",")
+            ))
+        else:
+            if "printLabelBlacklist" in item: del item["printLabelBlacklist"]
+
+        item["skipEmptyFeatureAttributes"] = False
+        if form.skipEmptyFeatureAttributes.data:
+            item["skipEmptyFeatureAttributes"] = True
+
+        if form.collapseLayerGroupsBelowLevel.data:
+            item["collapseLayerGroupsBelowLevel"] = form.collapseLayerGroupsBelowLevel.data
+        else:
+            if "collapseLayerGroupsBelowLevel" in item: del item["collapseLayerGroupsBelowLevel"]
 
         item["backgroundLayers"] = []
         if form.backgroundLayers.data:
