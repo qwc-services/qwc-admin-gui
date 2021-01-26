@@ -120,6 +120,7 @@ class ThemesController:
 
     def index(self):
         """Show theme list."""
+        self.themesconfig = ThemeUtils.load_themesconfig(self.app, self.handler)
         themes = OrderedDict()
         themes["items"] = []
         themes["groups"] = []
@@ -270,6 +271,7 @@ class ThemesController:
                 flash("Could not delete resource for map '{0}'!".format(
                     resource.name), "warning")
 
+        self.save_themesconfig()
         return redirect(url_for("themes"))
 
     def move_theme(self, direction, tid, gid=None):
@@ -295,6 +297,7 @@ class ThemesController:
 
             self.themesconfig["themes"]["groups"][gid]["items"] = items
 
+        self.save_themesconfig()
         return redirect(url_for("themes"))
 
     def add_theme_group(self):
@@ -302,15 +305,18 @@ class ThemesController:
             "title": "new theme group",
             "items": []
         })
+        self.save_themesconfig()
         return redirect(url_for("themes"))
 
     def delete_theme_group(self, gid):
         self.themesconfig["themes"]["groups"].pop(gid)
+        self.save_themesconfig()
         return redirect(url_for("themes"))
 
     def update_theme_group(self, gid):
         self.themesconfig["themes"]["groups"][gid]["title"] = request.form[
             "group_title"]
+        self.save_themesconfig()
         return redirect(url_for("themes"))
 
     def move_theme_group(self, gid, direction):
@@ -323,6 +329,7 @@ class ThemesController:
             groups[gid], groups[gid-1] = groups[gid-1], groups[gid]
 
         self.themesconfig["themes"]["groups"] = groups
+        self.save_themesconfig()
         return redirect(url_for("themes"))
 
     def save_themesconfig(self):
@@ -563,6 +570,8 @@ class ThemesController:
             else:
                 self.themesconfig["themes"]["groups"][gid]["items"].append(
                     item)
+
+        self.save_themesconfig()
 
     def get_backgroundlayers(self):
         layers = []
