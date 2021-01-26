@@ -65,6 +65,10 @@
     {{ wtf.form_field(form.scales, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.form_field(form.printScales, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.form_field(form.printResolutions, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.printLabelBlacklist, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.collapseLayerGroupsBelowLevel, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.default, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.skipEmptyFeatureAttributes, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     <div data-toggle="fieldset" class="form-group">
       <div class="col-sm-7">
         <table id="bl-table" class="ui table">

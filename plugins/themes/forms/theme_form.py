@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import FieldList, FormField, SelectField, BooleanField, \
-        SelectMultipleField, StringField, SubmitField
+        SelectMultipleField, IntegerField, StringField, SubmitField
 from wtforms.validators import DataRequired, Optional, Regexp
 
 
@@ -76,6 +76,28 @@ class ThemeForm(FlaskForm):
         validators=[Regexp(r'^(\d+)(,\s*\d+)*$',
                     message="Please enter a comma separted list of numbers.")]
     )
+    printLabelBlacklist = StringField(
+        "Print label blacklist",
+        description="Optional, list of composer label ids to not expose in the print dialog.",
+        validators=[Optional(), Regexp(r'^(\w+)(,\s*\w+)*$',
+                    message="Please enter a comma separted list of names.")]
+    )
+    collapseLayerGroupsBelowLevel = IntegerField(
+        "collapse layer groups below level",
+        description="Optional, layer tree level below which to initially collapse groups. By default the tree is completely expanded.",
+        validators=[Optional()]
+    )
+    default = BooleanField(
+        "default",
+        description="Whether to use this theme as initial theme.",
+        validators=[Optional()]
+    )
+    skipEmptyFeatureAttributes = BooleanField(
+        "Skip empty feature attributes",
+        description="Optional, whether to skip empty attributes in the identify results. Default is false.",
+        validators=[Optional()]
+    )
+
     backgroundLayers = FieldList(FormField(BackgroundLayerForm))
 
     submit = SubmitField("Save")
