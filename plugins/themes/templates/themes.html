@@ -2,12 +2,6 @@
 {% block title %}{{ title }}{% endblock %}
 {% block themes_container %}
   <h1>{{ title }}</h1>
-  <a href="{{ url_for('save_themesconfig') }}" class="btn btn-success" role="button">
-    {{ utils.icon('ok-circle') }} Save
-  </a>
-  <a href="{{ url_for('reset_themesconfig') }}" class="btn btn-info" role="button" onclick="return confirm('This will discard all changes and reload the configuration from disk. Proceed?')">
-    {{ utils.icon('remove-circle') }} Reload from disk
-  </a>
   <div style="padding-top: 1em;"/>
   {% for key, list in themes.items() %}
     {% if key == "items" %}
