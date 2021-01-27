@@ -59,21 +59,21 @@ class ThemeForm(FlaskForm):
         "Scales",
         description="List of available map scales.",
         default=(""),
-        validators=[Regexp(r'^(\d+)(,\s*\d+)*$',
+        validators=[Optional(), Regexp(r'^(\d+)(,\s*\d+)*$',
                     message="Please enter a comma separted list of numbers.")]
     )
     printScales = StringField(
         "Print scales",
         description="List of available print scales.",
         default=(""),
-        validators=[Regexp(r'^(\d+)(,\s*\d+)*$',
+        validators=[Optional(), Regexp(r'^(\d+)(,\s*\d+)*$',
                     message="Please enter a comma separted list of numbers.")]
     )
     printResolutions = StringField(
         "Print resolutions",
         description="List of available print resolutions.",
         default=(""),
-        validators=[Regexp(r'^(\d+)(,\s*\d+)*$',
+        validators=[Optional(), Regexp(r'^(\d+)(,\s*\d+)*$',
                     message="Please enter a comma separted list of numbers.")]
     )
     printLabelBlacklist = StringField(
