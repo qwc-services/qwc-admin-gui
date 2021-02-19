@@ -24,6 +24,7 @@ from controllers import UsersController, GroupsController, RolesController, \
     RegistrationRequestsController
 
 
+AUTH_PATH = os.environ.get('AUTH_PATH', '/auth')
 
 # Flask application
 app = Flask(__name__, template_folder='.')
@@ -32,7 +33,7 @@ app.secret_key = os.environ.get(
     'CHANGE-ME-8JGL6Kc9UA69p6E88JGL6Kc9UA69p6E8')
 app.config['QWC_GROUP_REGISTRATION_ENABLED'] = os.environ.get(
     'GROUP_REGISTRATION_ENABLED', 'True') == 'True'
-app.config['IDLE_TIMEOUT'] = os.environ.get('IDLE_TIMEOUT', 0);
+app.config['IDLE_TIMEOUT'] = os.environ.get('IDLE_TIMEOUT', 0)
 
 # enable CSRF protection
 CSRFProtect(app)
@@ -153,6 +154,11 @@ if os.environ.get('TENANT_HEADER') or os.environ.get('TENANT_URL_RE'):
     app.session_interface = TenantSessionInterface(os.environ)
 
 
+def auth_path_prefix():
+    # e.g. /org1/auth
+    return tenant_handler.tenant_path_prefix() + AUTH_PATH
+
+
 # create controllers (including their routes)
 UsersController(app, handler)
 GroupsController(app, handler)
@@ -181,14 +187,6 @@ def load_plugins():
                 app.logger.warning("Could not load plugin %s: %s" % (plugin, str(e)))
 
 
-def tenant_path_prefix():
-    prefix = '/auth'  # TODO: from configuration
-    if os.environ.get('TENANT_HEADER') or os.environ.get('TENANT_URL_RE'):
-        # TODO: add ignore_default config
-        prefix = '/' + tenant_handler.tenant() + prefix
-    return prefix
-
-
 @app.before_request
 @jwt_optional
 def assert_admin_role():
@@ -199,7 +197,7 @@ def assert_admin_role():
         if app.debug:
             pass  # Allow access in debug mode
         else:
-            prefix = tenant_path_prefix()
+            prefix = auth_path_prefix()
             if identity:
                 # Already logged in, but not with admin role
                 return redirect(prefix + '/logout?url=%s' % request.url)
@@ -209,7 +207,7 @@ def assert_admin_role():
 
 @app.route('/logout')
 def logout():
-    prefix = tenant_path_prefix()
+    prefix = auth_path_prefix()
     return redirect(prefix + '/logout?url=%s' % request.url.replace(
         "/logout", ""))
 
@@ -222,7 +220,9 @@ def home():
 @app.route('/pluginstatic/<plugin>/<filename>')
 def plugin_static(plugin, filename):
     """ Return assets from plugins """
-    return send_from_directory(os.path.join("plugins", plugin, "static"), filename)
+    return send_from_directory(
+        os.path.join("plugins", plugin, "static"), filename)
+
 
 @app.route('/refresh_config_cache', methods=['POST'])
 def refresh_config_cache():
