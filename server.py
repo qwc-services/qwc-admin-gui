@@ -156,7 +156,7 @@ if os.environ.get('TENANT_HEADER') or os.environ.get('TENANT_URL_RE'):
 
 def auth_path_prefix():
     # e.g. /org1/auth
-    return tenant_handler.tenant_path_prefix() + AUTH_PATH
+    return '/' + tenant_handler.tenant() + AUTH_PATH
 
 
 # create controllers (including their routes)
