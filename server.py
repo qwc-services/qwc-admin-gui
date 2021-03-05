@@ -25,6 +25,7 @@ from controllers import UsersController, GroupsController, RolesController, \
 
 
 AUTH_PATH = os.environ.get('AUTH_PATH', '/auth')
+SKIP_LOGIN = os.environ.get('SKIP_LOGIN', False)
 
 # Flask application
 app = Flask(__name__, template_folder='.')
@@ -145,18 +146,13 @@ def handler():
     return handler
 
 
-if os.environ.get('TENANT_HEADER'):
-    app.wsgi_app = TenantPrefixMiddleware(
-        app.wsgi_app, os.environ.get('TENANT_HEADER'))
-
-
-if os.environ.get('TENANT_HEADER') or os.environ.get('TENANT_URL_RE'):
-    app.session_interface = TenantSessionInterface(os.environ)
+app.wsgi_app = TenantPrefixMiddleware(app.wsgi_app)
+app.session_interface = TenantSessionInterface(os.environ)
 
 
 def auth_path_prefix():
-    # e.g. /org1/auth
-    return '/' + tenant_handler.tenant() + AUTH_PATH
+    # e.g. /admin/org1/auth
+    return app.session_interface.tenant_path_prefix() + AUTH_PATH
 
 
 # create controllers (including their routes)
@@ -193,10 +189,11 @@ def assert_admin_role():
     identity = get_jwt_identity()
     app.logger.debug("Access with identity %s" % identity)
     if not access_control.is_admin(identity):
-        app.logger.info("Access denied for user %s" % identity)
-        if app.debug:
-            pass  # Allow access in debug mode
+        if SKIP_LOGIN:
+            app.logger.info("Login skipped for user %s" % identity)
+            pass  # Allow access without login
         else:
+            app.logger.info("Access denied for user %s" % identity)
             prefix = auth_path_prefix()
             if identity:
                 # Already logged in, but not with admin role
@@ -308,4 +305,5 @@ def healthz():
 if __name__ == '__main__':
     print("Starting QWC Admin GUI...")
     app.logger.setLevel(logging.DEBUG)
+    SKIP_LOGIN = True
     app.run(host='localhost', port=5031, debug=True)
