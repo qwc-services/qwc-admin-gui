@@ -152,7 +152,7 @@ app.session_interface = TenantSessionInterface(os.environ)
 
 def auth_path_prefix():
     # e.g. /admin/org1/auth
-    return app.session_interface.tenant_path_prefix() + AUTH_PATH
+    return app.session_interface.tenant_path_prefix().rstrip("/") + "/" + AUTH_PATH.lstrip("/")
 
 
 # create controllers (including their routes)
