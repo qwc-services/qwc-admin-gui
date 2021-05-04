@@ -29,9 +29,10 @@ SKIP_LOGIN = os.environ.get('SKIP_LOGIN', False)
 
 # Flask application
 app = Flask(__name__, template_folder='.')
-app.secret_key = os.environ.get(
-    'JWT_SECRET_KEY',
-    'CHANGE-ME-8JGL6Kc9UA69p6E88JGL6Kc9UA69p6E8')
+
+jwt = jwt_manager(app)
+app.secret_key = app.config['JWT_SECRET_KEY']
+
 app.config['QWC_GROUP_REGISTRATION_ENABLED'] = os.environ.get(
     'GROUP_REGISTRATION_ENABLED', 'True') == 'True'
 app.config['IDLE_TIMEOUT'] = os.environ.get('IDLE_TIMEOUT', 0)
@@ -40,9 +41,6 @@ app.config['IDLE_TIMEOUT'] = os.environ.get('IDLE_TIMEOUT', 0)
 CSRFProtect(app)
 # load Bootstrap extension
 Bootstrap(app)
-
-# Setup the Flask-JWT-Extended extension
-jwt = jwt_manager(app)
 
 
 # Setup mailer
