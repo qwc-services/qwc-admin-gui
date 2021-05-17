@@ -2,6 +2,8 @@ from collections import OrderedDict
 import math
 import requests
 from urllib.parse import urljoin
+from operator import itemgetter, getitem
+from functools import reduce
 
 from flask import abort, flash, redirect, render_template, request, url_for
 from sqlalchemy.orm import joinedload
@@ -116,6 +118,25 @@ class ResourcesController(Controller):
             search_text, active_resource_type, session
         )
 
+        # get config generator URL
+        config_generator_service_url = self.handler().config().get(
+            "config_generator_service_url",
+            "http://qwc-config-service:9090"
+        )
+        url = urljoin(config_generator_service_url, "resources")
+        tenant = self.handler().tenant
+        response = requests.get(url, params={'tenant': tenant})
+        if response.status_code != requests.codes.ok:
+            self.logger.error(
+                "Could not get all resources from %s:\n%s" %
+                (response.url, response.content)
+            )
+
+        # List of resources that are referenced somewhere in the config of a
+        # service
+        resources_from_config = response.json()
+        maps_from_config = list(map(itemgetter('map'), resources_from_config))
+
         # order by sort args
         sort, sort_asc = self.sort_args()
         sort_param = None
@@ -138,6 +159,62 @@ class ResourcesController(Controller):
         page, per_page = self.pagination_args()
         num_pages = math.ceil(query.count() / per_page)
         resources = query.limit(per_page).offset((page - 1) * per_page).all()
+
+        # Iterate over all registered resources and
+        # check whether they are referenced in a service config or not
+
+        # resources_from_config is a dict with all maps and their
+        # layers(and attributes) that the ConfigGenerator sees.
+
+        for res in resources:
+            if res.type == "map":
+                if res.name not in maps_from_config:
+                    res.not_referenced = True
+                else:
+                    res.not_referenced = False
+
+                continue
+            else:
+                # Check if parent exists --> If not, then resource is not referenced
+                if res.parent is None:
+                    res.not_referenced = True
+                else:
+                    # Iterate over all resources found in the config
+                    for resource in resources_from_config:
+                        res.not_referenced = True
+
+                        # data and layer types are handled the same
+                        # Check whether the resource parent is referenced
+                        if (res.type == "data" or res.type == "layer") and \
+                            res.parent.name in maps_from_config and \
+                                resource["map"] == res.parent.name:
+
+                            # Here we use generator comprehension to boost the
+                            # performance
+                            res.not_referenced = next(
+                                (False for layer in resource[
+                                    "layers"] if res.name in layer.keys()),
+                                True)
+                            # Stop here, because we iterated over
+                            # the maps(parent) resources and didn't find
+                            # any reference
+                            continue
+
+                        elif res.type == "attribute" and \
+                                next((False for layer in resource[
+                                    "layers"] if res.name in layer.keys()),
+                                    True):
+
+                            # Here we use generator comprehension to boost the
+                            # performance
+                            res.not_referenced = next(
+                                (False for layer in resource[
+                                    "layers"] if res.name in list(layer.values())[0]),
+                                True)
+                            # Stop here, because we iterated over
+                            # the maps(parent) resources and didn't find
+                            # any reference
+                            continue
 
         pagination = {
             'page': page,
