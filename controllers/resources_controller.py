@@ -181,9 +181,8 @@ class ResourcesController(Controller):
                     res.not_referenced = True
                 else:
                     # Iterate over all resources found in the config
+                    res.not_referenced = True
                     for resource in resources_from_config:
-                        res.not_referenced = True
-
                         # data and layer types are handled the same
                         # Check whether the resource parent is referenced
                         if (res.type == "data" or res.type == "layer") and \
