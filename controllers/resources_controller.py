@@ -130,10 +130,12 @@ class ResourcesController(Controller):
                 "Could not get all resources from %s:\n%s" %
                 (response.url, response.content)
             )
+            resources_from_config = []
+        else:
+            # List of resources that are referenced somewhere in the config of a
+            # service
+            resources_from_config = response.json()
 
-        # List of resources that are referenced somewhere in the config of a
-        # service
-        resources_from_config = response.json()
         maps_from_config = list(map(itemgetter('map'), resources_from_config))
 
         # order by sort args
