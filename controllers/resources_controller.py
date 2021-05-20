@@ -2,8 +2,7 @@ from collections import OrderedDict
 import math
 import requests
 from urllib.parse import urljoin
-from operator import itemgetter, getitem
-from functools import reduce
+from operator import itemgetter
 
 from flask import abort, flash, redirect, render_template, request, url_for
 from sqlalchemy.orm import joinedload
