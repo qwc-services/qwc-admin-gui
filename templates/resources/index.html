@@ -56,7 +56,11 @@
 {% block resource_fields %}
   <td>{{ resource.id }}</td>
   <td>{{ resource_types[resource.type] }}</td>
-  <td>{{ resource.name }}</td>
+  {% if resource.not_referenced is true %}
+    <td data-toggle="tooltip" title="Resource was not found in any service configuration">{{ utils.icon('warning-sign') }} {{ resource.name }}</td>
+  {% else %}
+    <td>{{ resource.name }}</td>
+  {% endif %}
   <td>
     <a href="{{ url_for('hierarchy_%s' % endpoint_suffix, id=resource[pkey]) }}" class="btn btn-default btn-xs" role="button" title="Resource hierarchy">
       {{ utils.icon('list') }}
