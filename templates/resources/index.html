@@ -44,6 +44,11 @@
       {{ utils.icon('download-alt') }} Import maps
     </button>
   </form>
+
+  <a href="{{ url_for('resources', check_unused=True) }}" class="btn btn-success" role="button">
+    {{ utils.icon('warning-sign') }} Check unused
+  </a>
+
 {% endblock %}
 
 {% block table_headers %}
