@@ -512,7 +512,7 @@ class ResourcesController(Controller):
                     res.not_referenced = True
 
                 continue
-            elif res.type in ["layers", "attribute", "data"]:
+            elif res.type in ["layer", "attribute", "data"]:
                 # Check if parent exists --> If not, then resource is not referenced
                 if res.parent is None:
                     res.not_referenced = True
