@@ -219,12 +219,9 @@ def plugin_static(plugin, filename):
         os.path.join("plugins", plugin, "static"), filename)
 
 
-@app.route('/refresh_config_cache', methods=['POST'])
-def refresh_config_cache():
-    """Update timestamp of last config change to current UTC time
-    to force QWC services to refresh their config cache.
-    """
-    # get first timestamp record
+@app.route('/generate_configs', methods=['POST'])
+def generate_configs():
+    """ Generate service configurations """
 
     current_handler = handler()
     config_generator_url = current_handler.config().get(

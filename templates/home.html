@@ -8,21 +8,21 @@
       $('#alerts > div > div').remove();
     };
 
-    $('#refresh_config_cache').click(function() {
+    $('#generate_configs').click(function() {
       clearAlerts();
-      $('#refresh_config_cache').prop("disabled", true);
-      $('#refresh_config_cache').css("cursor", 'wait');
+      $('#generate_configs').prop("disabled", true);
+      $('#generate_configs').css("cursor", 'wait');
 
       // call Admin GUI service
       $.post(
-        "{{ url_for('refresh_config_cache') }}",
+        "{{ url_for('generate_configs') }}",
         {
           csrf_token: '{{ csrf_token() }}'
         }
       ).done(function(data, status) {
         clearAlerts();
-        $('#refresh_config_cache').prop("disabled", false);
-        $('#refresh_config_cache').css("cursor", '');
+        $('#generate_configs').prop("disabled", false);
+        $('#generate_configs').css("cursor", '');
         var html = '';
         html += '<div role="alert">';
         html += '<pre>';
@@ -31,8 +31,8 @@
         html += '</div>';
         $('#alerts > div').append(html);
       }).fail(function(jqXHR, status) {
-        $('#refresh_config_cache').prop("disabled", false);
-        $('#refresh_config_cache').css("cursor", '');
+        $('#generate_configs').prop("disabled", false);
+        $('#generate_configs').css("cursor", '');
         // show errors
         var msg = jqXHR.statusText;
         if (jqXHR.responseJSON) {
@@ -66,7 +66,7 @@
 
   <br><br>
 
-  <button id="refresh_config_cache" class="btn btn-success">
+  <button id="generate_configs" class="btn btn-success">
     {{ utils.icon('refresh') }} Generate service configuration
   </button>
 
