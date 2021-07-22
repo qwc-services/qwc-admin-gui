@@ -570,7 +570,7 @@ if (!String.prototype.includes) {
     container.find('.ms-list li.ms-elem-selectable:not(.ms-selected), .ms-list li.ms-elem-selection.ms-selected').each(function() {
       if (filter !== "") {
         // show item if matching
-        $(this).toggle($(this).text().toLowerCase().includes(filter));
+        $(this).toggle($(this).text().toLowerCase().includes(filter.toLowerCase()));
       }
       else {
         // show all
