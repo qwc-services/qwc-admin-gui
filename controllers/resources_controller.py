@@ -558,6 +558,10 @@ class ResourcesController(Controller):
                             # the maps(parent) resources and didn't find
                             # any reference
                             continue
+            else:
+                # Resources are marked as referenced per default, if we don't check them
+                res.not_referenced = False
+
             if res.not_referenced:
                 self.logger.info("Unreferenced resource: %s" % json.dumps(
                     res, cls=AlchemyEncoder))
