@@ -18,7 +18,7 @@
       <li role="separator" class="divider"></li>
       {% for resource_type in resource_types %}
         <li class="{{ 'active' if resource_type == active_resource_type }}">
-          <a href="{{ url_for('resources', type=resource_type) }}">{{ resource_types[resource_type] }}</a>
+          <a href="{{ url_for('resources', type=resource_type, check_unused=check_unused) if check_unused else url_for('resources', type=resource_type) }}">{{ resource_types[resource_type] }}</a>
         </li>
       {% endfor %}
     </ul>
@@ -28,6 +28,9 @@
     <form action="{{ url_for(base_route) }}" method="get">
       {% if active_resource_type %}
         <input type="hidden" name="type" value="{{ active_resource_type }}" />
+      {% endif %}
+      {% if check_unused %}
+        <input type="hidden" name="check_unused" value="{{ check_unused }}" />
       {% endif %}
       <div class="input-group">
         <input name="search" type="text" class="form-control" placeholder="Search" value="{{ search_text if search_text }}">
@@ -61,7 +64,7 @@
 {% block resource_fields %}
   <td>{{ resource.id }}</td>
   <td>{{ resource_types[resource.type] }}</td>
-  {% if resource.not_referenced is true %}
+  {% if check_unused and resource.not_referenced is true %}
     <td data-toggle="tooltip" title="Resource was not found in any service configuration">{{ utils.icon('warning-sign') }} {{ resource.name }}</td>
   {% else %}
     <td>{{ resource.name }}</td>

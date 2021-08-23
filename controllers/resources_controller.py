@@ -155,10 +155,12 @@ class ResourcesController(Controller):
             }
         }
 
+        check_unused = False
         if request.args.get('check_unused'):
             pagination['params']['check_unused'] = request.args.get(
                 'check_unused')
             self._check_unused_resources(resources)
+            check_unused = True
 
         # query resource types
         resource_types = OrderedDict()
@@ -173,7 +175,7 @@ class ResourcesController(Controller):
             '%s/index.html' % self.templates_dir, resources=resources,
             endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey(),
             search_text=search_text, pagination=pagination,
-            sort=sort, sort_asc=sort_asc,
+            sort=sort, sort_asc=sort_asc, check_unused=check_unused,
             base_route=self.base_route, resource_types=resource_types,
             active_resource_type=active_resource_type
         )
