@@ -509,7 +509,11 @@ class ResourcesController(Controller):
         # layers(and attributes) that the ConfigGenerator sees.
 
         for res in resources:
-            if res.type == "map":
+            # Wildcards are always marked as referenced
+            if "*" in res.name:
+                res.not_referenced = False
+                continue
+            elif res.type == "map":
                 if res.name not in maps_from_config:
                     res.not_referenced = True
 
