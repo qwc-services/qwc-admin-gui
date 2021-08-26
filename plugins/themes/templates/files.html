@@ -1,0 +1,75 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "plugins/themes/templates/index.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block themes_container %}
+  <h1>{{ title }}</h1>
+  <div style="padding-top: 1em;"/>
+  <form id="form_project" class="form" action="{{ url_for('upload_project') }}" method="post" style="padding-bottom: 25px;" enctype="multipart/form-data">
+    <div class="well form-group">
+      {{ form_project.csrf_token }}
+      {{ wtf.form_field(form_project.upload, horizontal_columns=('lg', 2, 10), class="btn btn-default") }}
+      {{ wtf.form_field(form_project.submit, horizontal_columns=('lg', 2, 10), class="btn btn-primary") }}
+    </div>
+  </form>  
+  <div class="panel panel-default">
+    <div class="panel-heading clearfix" style="overflow: hidden;">
+      <div class="panel-title pull-left" style="padding-top: 7.5px;"><b>QGIS Projects</b></div>
+    </div>
+    <div clas="panel-body">
+      <table class="table">
+        <thead>
+          <th>Project</th>
+          <th></th>
+        </thead>
+        <tbody>
+        {% for project in projects %}
+          <tr>
+            <td>{{ project[1] }}</td>
+            <td style="text-align: right">
+              <div class="btn-group">
+                <a href="{{ url_for('delete_project', projectname=project[1]) }}" class="btn btn-danger" role="button" title="Delete project" onclick="return confirm('Really delete {{ project[1] }}?');">
+                  {{ utils.icon('trash') }}
+                </a>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <form id="form_layer" class="form" action="{{ url_for('upload_layer') }}" method="post" style="padding-bottom: 25px;" enctype="multipart/form-data">
+    <div class="well form-group">
+      {{ form_layer.csrf_token }}
+      {{ wtf.form_field(form_layer.upload, horizontal_columns=('lg', 2, 10), class="btn btn-default") }}
+      {{ wtf.form_field(form_layer.submit, horizontal_columns=('lg', 2, 10), class="btn btn-primary") }}
+    </div>
+  </form>  
+  <div class="panel panel-default">
+    <div class="panel-heading clearfix" style="overflow: hidden;">
+      <div class="panel-title pull-left" style="padding-top: 7.5px;"><b>Geospatial Files</b></div>
+    </div>
+    <div clas="panel-body">
+      <table class="table">
+        <thead>
+          <th>Layer</th>
+          <th></th>
+        </thead>
+        <tbody>
+        {% for layer in layers %}
+          <tr>
+            <td>{{ layer }}</td>
+            <td style="text-align: right">
+              <div class="btn-group">
+                <a href="{{ url_for('delete_layer', layername=layer) }}" class="btn btn-danger" role="button" title="Delete layer" onclick="return confirm('Really delete {{ layer }}?');">
+                  {{ utils.icon('trash') }}
+                </a>
+              </div>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+{% endblock %}
