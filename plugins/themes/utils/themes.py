@@ -58,6 +58,23 @@ class ThemeUtils():
         return False
 
     @staticmethod
+    def get_layers(app, handler):
+        """Return geospatial file names from QGIS_RESOURCES_PATH"""
+        current_handler = handler()
+        resources_path = current_handler.config().get("qgs_resources_path")
+
+        layers = []
+        app.logger.info(resources_path)
+        for ext in ['*.geojson', '*.kml', '*.gpkg', '*.shp']:
+            for path in pathlib.Path(resources_path).rglob(ext):
+                app.logger.info(str(path))
+                app.logger.info(path.relative_to(resources_path))
+                layer = str(path.relative_to(resources_path))
+                if not layer.startswith("."):
+                    layers.append(layer)
+        return sorted(layers)
+
+    @staticmethod
     def get_projects(app, handler):
         """Return QGIS project file names from QGIS_RESOURCES_PATH"""
         current_handler = handler()
