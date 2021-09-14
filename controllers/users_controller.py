@@ -143,6 +143,8 @@ class UsersController(Controller):
 
                 # update user info fields
                 for field, value in user_info_data.items():
+                    if value == '':
+                        value = None
                     setattr(user_info, field, value)
 
         # update groups
