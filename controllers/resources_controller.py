@@ -544,17 +544,15 @@ class ResourcesController(Controller):
                             # any reference
                             continue
 
-                        elif res.type == "attribute" and \
-                                next((False for layer in resource[
-                                    "layers"] if res.name in layer.keys()),
-                                    True):
-
+                        elif res.type == "attribute":
                             # Here we use generator comprehension to boost the
                             # performance
+                            # What we do here is we iterate over the layers list and check the following
+                            # - Is the resources parent (which is a layer) in the layers list?
+                            # - Does the corresponding layer attribute list contain the resource name?
                             res.not_referenced = next(
-                                (False for layer in resource[
-                                    "layers"] if res.name in list(layer.values())[0]),
-                                True)
+                                (False for layer in resource["layers"] if res.parent.name in layer.keys() \
+                                    and res.name in list(layer.values())[0]), True)
                             # Stop here, because we iterated over
                             # the maps(parent) resources and didn't find
                             # any reference
