@@ -127,7 +127,8 @@ class ThemesController:
 
         for item in self.themesconfig["themes"].get("items", []):
             themes["items"].append({
-                "name": item["title"] if "title" in item else item["url"]
+                "name": item["title"] if "title" in item else item["url"],
+                "url": item["url"]
             })
 
         # TODO: nested groups
