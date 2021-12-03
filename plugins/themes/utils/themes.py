@@ -52,8 +52,8 @@ class ThemeUtils():
             return True
 
         except IOError as e:
-            app.logger.error("Error writing tenantConfig.json: {}".format(
-                e.strerror))
+            app.logger.error("Error writing {}: {}".format(
+                tenantConfig, e.strerror))
 
         return False
 

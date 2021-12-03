@@ -173,6 +173,7 @@ def load_plugins():
         plugins_loaded = True
         app.config['PLUGINS'] = []
         for plugin in handler().config().get("plugins", []):
+            app.logger.info("Loading plugin '%s'" % plugin)
             try:
                 mod = importlib.import_module("plugins." + plugin)
                 mod.load_plugin(app, handler)

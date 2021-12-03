@@ -76,8 +76,8 @@ class FilesController:
                       'success')
                 return redirect(url_for('files'))
             except IOError as e:
-                self.app.logger.error("Error writing project: \
-                                      {}".format(e.strerror))
+                self.app.logger.error("Error writing project to {}: {}".format(
+                    self.resources_path, e.strerror))
                 flash("Project could not be saved.", 'error')
         else:
             # TODO: validation error
