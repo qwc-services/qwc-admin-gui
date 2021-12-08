@@ -3,7 +3,7 @@ from wtforms import FormField, IntegerField, SelectMultipleField, \
     StringField, SubmitField, TextAreaField, ValidationError, PasswordField
 from wtforms.validators import DataRequired, Optional, Email, EqualTo, \
     Length, NumberRange
-from wtforms.widgets.html5 import NumberInput
+from wtforms.widgets import NumberInput
 
 
 class UserInfoForm(FlaskForm):
