@@ -10,14 +10,13 @@ from flask import abort, Flask, json, redirect, render_template, request, \
     Response, stream_with_context, jsonify, send_from_directory
 from flask_bootstrap import Bootstrap
 from flask_wtf.csrf import CSRFProtect
-from flask_jwt_extended import jwt_optional, get_jwt_identity
 from flask_mail import Mail
 
+from qwc_services_core.auth import auth_manager, optional_auth, get_identity
 from qwc_services_core.tenant_handler import TenantHandler, \
     TenantPrefixMiddleware, TenantSessionInterface
 from qwc_services_core.runtime_config import RuntimeConfig
 from qwc_services_core.database import DatabaseEngine
-from qwc_services_core.jwt import jwt_manager
 from access_control import AccessControl
 from controllers import UsersController, GroupsController, RolesController, \
     ResourcesController, PermissionsController, RegistrableGroupsController, \
@@ -30,7 +29,7 @@ SKIP_LOGIN = os.environ.get('SKIP_LOGIN', False)
 # Flask application
 app = Flask(__name__, template_folder='.')
 
-jwt = jwt_manager(app)
+jwt = auth_manager(app)
 app.secret_key = app.config['JWT_SECRET_KEY']
 
 app.config['QWC_GROUP_REGISTRATION_ENABLED'] = os.environ.get(
@@ -183,9 +182,9 @@ def load_plugins():
 
 
 @app.before_request
-@jwt_optional
+@optional_auth
 def assert_admin_role():
-    identity = get_jwt_identity()
+    identity = get_identity()
     app.logger.debug("Access with identity %s" % identity)
     if not access_control.is_admin(identity):
         if SKIP_LOGIN:
