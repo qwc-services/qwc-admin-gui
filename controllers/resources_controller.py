@@ -525,6 +525,13 @@ class ResourcesController(Controller):
                     res.not_referenced = True
                     for resource in resources_from_config:
                         # data and layer types are handled the same
+
+                        # When iterating over the `resources_from_config` list,
+                        # the existance of the `res` resource will be checked in all maps.
+                        # This means that when have found the resource in a map, this loop should end.
+                        if res.not_referenced == False:
+                            break
+
                         # Check whether the resource parent is referenced
                         if "*" in res.name and res.parent.name in maps_from_config:
                             res.not_referenced = False
