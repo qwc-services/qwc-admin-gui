@@ -5,17 +5,17 @@ from wtforms import SubmitField
 class LayerForm(FlaskForm):
     """Main form for Geospatial layer GUI"""
 
-    upload = FileField('Geospatial Layer', validators=[
+    upload = FileField('Geospatial Layer (.geojson, .kml, .gpkg, .shp, .zip)', validators=[
         FileRequired(),
-        FileAllowed(['geojson', 'kml', 'gpkg', 'shp', 'dbf', 'shx', 'cpg', 'prj'],
-        'Please only use geospatial files (geojson, kml, gpkg, shp) !')
+        FileAllowed(['geojson', 'kml', 'gpkg', 'shp', 'dbf', 'shx', 'cpg', 'prj', 'zip'],
+        'Please only use geospatial files (geojson, kml, gpkg, shp, zip) !')
     ])
     submit = SubmitField("Upload")
 
 class ProjectForm(FlaskForm):
     """Main form for QGS Project GUI"""
 
-    upload = FileField('QGIS Project', validators=[
+    upload = FileField('QGIS Project (.qgs)', validators=[
         FileRequired(),
         FileAllowed(['qgs'], 'Please only use QGS projects !')
     ])
