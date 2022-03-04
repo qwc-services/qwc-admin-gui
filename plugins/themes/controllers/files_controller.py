@@ -1,4 +1,5 @@
 import os
+from zipfile import ZipFile
 
 from flask import flash, redirect, render_template, url_for
 from werkzeug.utils import secure_filename
@@ -125,7 +126,17 @@ class FilesController:
             filename = secure_filename(f.filename)
             try:
                 f.save(os.path.join(self.resources_path, filename))
-                flash("File '{}' successfully uploaded".format(filename),
+                is_zip_file = os.path.splitext(filename)[1] == '.zip'
+                if (is_zip_file):
+                    self.app.logger.info(f"Extracting files from file {filename}...")
+                    extensions = ('shp', 'shx', 'dbf', 'prj', 'cpg', 'geojson', 'kml', 'gpkg')
+                    with ZipFile(os.path.join(self.resources_path, filename), 'r') as zip:
+                        for file in zip.namelist():
+                            if file.endswith(extensions):
+                                self.app.logger.info(f"Extracting {file} from {filename}")
+                                zip.extract(file, os.path.join(self.resources_path))
+                    os.remove(os.path.join(self.resources_path, filename))
+                flash("File '{}' successfully uploaded{}".format(filename, " and extracted" if is_zip_file else ""),
                       'success')
                 return redirect(url_for('files'))
             except IOError as e:
