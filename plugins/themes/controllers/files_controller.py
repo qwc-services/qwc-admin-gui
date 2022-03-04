@@ -163,6 +163,12 @@ class FilesController:
     def delete_layer(self, layername):
         """Delete layer file."""
         try:
+            is_shp_file = os.path.splitext(layername)[1] == '.shp'
+            if is_shp_file:
+                # Also remove all extensions that could be with SHP layer
+                extensions = ['.shx', '.dbf', '.prj', '.cpg']
+                name = os.path.splitext(layername)[0]
+                [os.remove(os.path.join(self.resources_path, name + ext)) for ext in extensions if os.path.exists(os.path.join(self.resources_path, name + ext))]
             os.remove(os.path.join(self.resources_path, layername))
             return redirect(url_for('files'))
         except IOError as e:
