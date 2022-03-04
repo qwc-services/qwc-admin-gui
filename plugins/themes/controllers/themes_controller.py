@@ -302,6 +302,7 @@ class ThemesController:
         return redirect(url_for("themes"))
 
     def add_theme_group(self):
+        self.themesconfig["themes"]["groups"] = self.themesconfig["themes"].get("groups", [])
         self.themesconfig["themes"]["groups"].append({
             "title": "new theme group",
             "items": []
