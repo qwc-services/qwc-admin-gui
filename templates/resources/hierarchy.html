@@ -28,6 +28,9 @@
         <td>{{ resource_types[resource.type] }}</td>
         <td>
           {% if item['permissions'] %}
+            {% for permission in item['permissions']%}
+            <b>role:</b> {{ permission.role }} {{ utils.icon('pencil') }}<br/>
+            {% endfor %}
             <a href="{{ url_for('permissions', resource_id=resource.id) }}" class="btn btn-default btn-xs" role="button" title="Resource permissions">
               {{ utils.icon('lock') }}
             </a>

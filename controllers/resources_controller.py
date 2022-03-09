@@ -399,11 +399,19 @@ class ResourcesController(Controller):
             .filter(self.Permission.resource_id == resource.id)
         has_permissions = query.count() > 0
 
+        permissions = []
+        for permission in query.all():
+            permissions.append({
+                "role": permission.role.name,
+                "write": permission.write
+            })
+
         # add resource
         items.append({
             'depth': depth,
             'resource': resource,
-            'permissions': has_permissions
+            'has_permissions': has_permissions,
+            'permissions': permissions
         })
 
         # get sorted children
