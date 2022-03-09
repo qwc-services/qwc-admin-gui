@@ -100,11 +100,11 @@
       // set hidden vars
       var name = $(this).find('td.wms-name').text();
       var srs = $('#select-srs option:selected').text();
-//       var bbox = boundingboxes[name].find(box => box.crs === srs).extent;
+      var bbox = boundingboxes[name].find(box => box.crs === srs).extent;
       $('#name').val(name);
       $('#title').val($(this).find('td.wms-title').text());
       $('#srs').val(srs);
-//       $('#bbox').val(bbox);
+      $('#bbox').val(bbox);
       if($(this).find('td.wms-attribution').text() !== "undefined") {
         $('#attribution').val($(this).find('td.wms-attribution').text());
       }
@@ -114,9 +114,9 @@
     $('#select-srs').change(function() {
       var srs = $(this).find('option:selected').text();
       var name = $('#name').val();
-//       var bbox = boundingboxes[name].find(box => box.crs === srs).extent;
+      var bbox = boundingboxes[name].find(box => box.crs === srs).extent;
       $('#srs').val(srs); 
-//       $('#bbox').val(bbox);
+      $('#bbox').val(bbox);
     });
     // format change
     $('#select-format').change(function() {
