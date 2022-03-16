@@ -29,7 +29,7 @@
         <td>
           {% if item['permissions'] %}
             {% for permission in item['permissions']%}
-            <b>role:</b> {{ permission.role }} {{ utils.icon('pencil') }}<br/>
+              <b>role:</b> {{ permission.role }} {{ utils.icon('pencil') if permission.write }}<br/>
             {% endfor %}
             <a href="{{ url_for('permissions', resource_id=resource.id) }}" class="btn btn-default btn-xs" role="button" title="Resource permissions">
               {{ utils.icon('lock') }}
