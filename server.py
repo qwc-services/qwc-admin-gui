@@ -209,7 +209,14 @@ def logout():
 # routes
 @app.route('/')
 def home():
-    return render_template('templates/home.html')
+    config = handler().config()
+    admin_gui_title = config.get('admin_gui_title', 'QWC Admin')
+    admin_gui_subtitle = config.get('admin_gui_subtitle', 'Administration tool for QWC services')
+    return render_template(
+        'templates/home.html',
+        admin_gui_title=admin_gui_title,
+        admin_gui_subtitle=admin_gui_subtitle
+    )
 
 
 @app.route('/pluginstatic/<plugin>/<filename>')

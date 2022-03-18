@@ -50,6 +50,14 @@
           "description": "Timeout in seconds for proxy requests",
           "type": "integer"
         },
+        "admin_gui_title": {
+          "description": "Title displayed in Admin Gui home page",
+          "type": "string"
+        },
+        "admin_gui_subtitle": {
+          "description": "Subtitle displayed in Admin Gui home page",
+          "type": "string"
+        },
         "plugins": {
           "description": "List of plugins to load",
           "type": "array",
