@@ -41,12 +41,14 @@
     </form>
   </div>
 
+{% if enable_import_maps %}
   <form action="{{ url_for('import_maps_%s' % endpoint_suffix) }}" method="post" style="display: inline;">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
     <button id="import_maps" type="submit" class="btn btn-success btn-spin-on-click" data-spinning-msg="Importing maps...">
       {{ utils.icon('download-alt') }} Import maps
     </button>
   </form>
+{% endif %}
 
   <a href="{{ url_for('resources', check_unused=True) }}" class="btn btn-success" role="button">
     {{ utils.icon('warning-sign') }} Check unused
