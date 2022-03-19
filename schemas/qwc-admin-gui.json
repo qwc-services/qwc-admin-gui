@@ -32,10 +32,6 @@
           "description": "Show TOTP fields for two factor authentication",
           "type": "boolean"
         },
-        "enable_import_maps": {
-          "description": "Show the import maps button in the resources page (default is true)",
-          "type": "boolean"
-        },
         "user_info_fields": {
           "description": "Additional user fields",
           "type": "array",

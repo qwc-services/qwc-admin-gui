@@ -171,13 +171,19 @@ class ResourcesController(Controller):
 
         session.close()
 
+        have_config_generator = True if self.handler().config().get(
+            "config_generator_service_url",
+            "http://qwc-config-service:9090"
+        ) else False
+
         return render_template(
             '%s/index.html' % self.templates_dir, resources=resources,
             endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey(),
             search_text=search_text, pagination=pagination,
             sort=sort, sort_asc=sort_asc, check_unused=check_unused,
             base_route=self.base_route, resource_types=resource_types,
-            active_resource_type=active_resource_type
+            active_resource_type=active_resource_type,
+            have_config_generator=have_config_generator
         )
 
     def find_resource(self, id, session):

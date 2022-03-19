@@ -66,9 +66,11 @@
 
   <br><br>
 
+{% if have_config_generator %}
   <button id="generate_configs" class="btn btn-success">
     {{ utils.icon('refresh') }} Generate service configuration
   </button>
+{% endif %}
 
   <div id="alerts" class="row">
     <br/>

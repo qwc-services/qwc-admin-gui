@@ -174,15 +174,12 @@ class Controller:
 
         session.close()
 
-        enable_import_maps = self.handler().config().get("enable_import_maps", True)
-
         return render_template(
             '%s/index.html' % self.templates_dir, resources=resources,
             endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey(),
             search_text=search_text, pagination=pagination,
             sort=sort, sort_asc=sort_asc,
-            base_route=self.base_route,
-            enable_import_maps=enable_import_maps
+            base_route=self.base_route
         )
 
     # new

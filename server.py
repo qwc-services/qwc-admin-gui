@@ -212,10 +212,15 @@ def home():
     config = handler().config()
     admin_gui_title = config.get('admin_gui_title', 'QWC Admin')
     admin_gui_subtitle = config.get('admin_gui_subtitle', 'Administration tool for QWC services')
+    have_config_generator = True if config.get(
+        "config_generator_service_url",
+        "http://qwc-config-service:9090"
+    ) else False
     return render_template(
         'templates/home.html',
         admin_gui_title=admin_gui_title,
-        admin_gui_subtitle=admin_gui_subtitle
+        admin_gui_subtitle=admin_gui_subtitle,
+        have_config_generator=have_config_generator
     )
 
 
