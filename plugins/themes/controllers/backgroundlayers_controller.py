@@ -43,6 +43,7 @@ class BackgroundLayersController():
 
     def index(self):
         """Show backgroundlayers."""
+        self.themesconfig = ThemeUtils.load_themesconfig(self.app, self.handler)
         layers = []
         for layer in self.themesconfig["themes"]["backgroundLayers"]:
             layers.append(layer)
