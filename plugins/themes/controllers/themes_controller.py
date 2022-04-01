@@ -139,7 +139,8 @@ class ThemesController:
             }
             for item in group["items"]:
                 groupEntry["items"].append({
-                    "name": item["title"] if "title" in item else item["url"]
+                    "name": item["title"] if "title" in item else item["url"],
+                    "url": item["url"]
                 })
             themes["groups"].append(groupEntry)
 
