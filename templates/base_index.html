@@ -181,7 +181,7 @@
             {{ utils.icon('pencil') }} Edit
           </a>
           {% if endpoint_suffix == "resource" %}
-            <a href="{{ url_for('new_permission') }}" class="btn btn-success" role="button">
+            <a href="{{ url_for('new_permission', resource_id=resource['id']) }}" class="btn btn-success" role="button">
               {{ utils.icon('plus') }} New Permission
             </a>
           {% endif %}

@@ -268,6 +268,10 @@ class PermissionsController(Controller):
             (r.id, "%s: %s" % (r.type, r.name)) for r in resources
         ]
 
+        resource_id = request.args.get('resource_id')
+        if resource_id is not None and resource_id.isdigit():
+            form.resource_id.data = int(resource_id)
+
         # set choices for resource select field, grouped by resource type
         current_type = None
         group = {}
