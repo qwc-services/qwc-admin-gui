@@ -106,7 +106,6 @@ class PermissionsController(Controller):
             }
 
         session = self.session()
-        print(flask_session["permissions"]['params'])
         # get resources filtered by resource type
         search_text = request.args.get('search')
         # First check wether user deleted the filter
@@ -193,7 +192,6 @@ class PermissionsController(Controller):
             if res.resource.parent is not None and \
                     res.resource.parent.id not in parents_dict.keys():
                 parents_dict[res.resource.parent.id] = res.resource.parent.name
-        print(flask_session["permissions"]['params'])
         session.close()
 
         return render_template(
