@@ -1,7 +1,7 @@
 from collections import OrderedDict
 import math
 
-from flask import render_template, request
+from flask import render_template, request, session as flask_session
 from sqlalchemy.orm import joinedload
 
 from .controller import Controller
@@ -98,15 +98,42 @@ class PermissionsController(Controller):
         """Show permissions list."""
         self.setup_models()
 
-        session = self.session()
+        # A flask session works like a normal cookie, but it is encrypted via the JWT token
+        # Only create resources dict if it doesn't exist in the current flask session
+        if "permissions" not in flask_session.keys():
+            flask_session["permissions"] = {
+                "params": {}
+            }
 
+        session = self.session()
         # get resources filtered by resource type
-        search_text = self.search_text_arg()
+        search_text = request.args.get('search')
+        # First check wether user deleted the filter
+        # "" implies that the user actively deleted the filter and not just changed to a different page
+        # (which would not set the filter in the requests params when switching back)
+        if search_text == "":
+            flask_session["permissions"]['params'].pop("search", None)
+        elif search_text is not None:
+            flask_session["permissions"]['params']["search"] = search_text
+        active_search_text = flask_session["permissions"]['params'].get("search", None)
+
         role = request.args.get('role')
-        active_resource_type = request.args.get('type')
+        if role == "all":
+            flask_session["permissions"]['params'].pop("role", None)
+        elif role is not None:
+            flask_session["permissions"]['params']["role"] = role
+        active_role = flask_session["permissions"]['params'].get("role", None)
+
+        resource_type = request.args.get('type')
+        if resource_type == "all":
+            flask_session["permissions"]['params'].pop("type", None)
+        elif resource_type is not None:
+            flask_session["permissions"]['params']["type"] = resource_type
+        active_resource_type = flask_session["permissions"]['params'].get("type", None)
+
         resource_id = request.args.get('resource_id')
         query = self.resources_for_index_query(
-            search_text, role, active_resource_type, resource_id, session
+            active_search_text, active_role, active_resource_type, resource_id, session
         )
 
         # order by sort args
@@ -126,11 +153,19 @@ class PermissionsController(Controller):
                 if not sort_asc:
                     # append sort direction suffix
                     sort_param = "%s-" % sort
+                flask_session["permissions"]['params']["sort"] = sort_param
 
         # paginate
         page, per_page = self.pagination_args()
         num_pages = math.ceil(query.count() / per_page)
         resources = query.limit(per_page).offset((page - 1) * per_page).all()
+
+        # Set modified property to True so that the flask_session object
+        # updates our cookie
+        # Without this, the presistence of data stored in the cookie is not reliable
+        # (Sometimes the data is not saved, this fixes the issue)
+        # See https://stackoverflow.com/questions/39261260/flask-session-variable-not-persisting-between-requests/39261335#39261335
+        flask_session.modified = True
 
         pagination = {
             'page': page,
@@ -138,12 +173,7 @@ class PermissionsController(Controller):
             'per_page': per_page,
             'per_page_options': self.PER_PAGE_OPTIONS,
             'per_page_default': self.DEFAULT_PER_PAGE,
-            'params': {
-                'search': search_text,
-                'role': role,
-                'type': active_resource_type,
-                'sort': sort_param
-            }
+            'params': flask_session["permissions"]["params"]
         }
 
         # query roles
@@ -162,15 +192,14 @@ class PermissionsController(Controller):
             if res.resource.parent is not None and \
                     res.resource.parent.id not in parents_dict.keys():
                 parents_dict[res.resource.parent.id] = res.resource.parent.name
-
         session.close()
 
         return render_template(
             '%s/index.html' % self.templates_dir, resources=resources,
             parents_dict=parents_dict, endpoint_suffix=self.endpoint_suffix,
-            pkey=self.resource_pkey(), search_text=search_text,
+            pkey=self.resource_pkey(), search_text=active_search_text,
             pagination=pagination, sort=sort, sort_asc=sort_asc,
-            base_route=self.base_route, roles=roles, active_role=role,
+            base_route=self.base_route, roles=roles, active_role=active_role,
             resource_types=resource_types,
             active_resource_type=active_resource_type
         )
@@ -238,6 +267,10 @@ class PermissionsController(Controller):
         form.resource_id.choices = [(0, "")] + [
             (r.id, "%s: %s" % (r.type, r.name)) for r in resources
         ]
+
+        resource_id = request.args.get('resource_id')
+        if resource_id is not None and resource_id.isdigit():
+            form.resource_id.data = int(resource_id)
 
         # set choices for resource select field, grouped by resource type
         current_type = None

@@ -28,6 +28,9 @@
         <td>{{ resource_types[resource.type] }}</td>
         <td>
           {% if item['permissions'] %}
+            {% for permission in item['permissions']%}
+              {{ permission.role }} {{ utils.icon('pencil') if permission.write }}<br/>
+            {% endfor %}
             <a href="{{ url_for('permissions', resource_id=resource.id) }}" class="btn btn-default btn-xs" role="button" title="Resource permissions">
               {{ utils.icon('lock') }}
             </a>
@@ -36,6 +39,9 @@
         <td>
           <a href="{{ url_for('edit_%s' % endpoint_suffix, id=resource[pkey]) }}" class="btn btn-primary" role="button">
             {{ utils.icon('pencil') }} Edit
+          </a>
+          <a href="{{ url_for('new_permission', resource_id=resource['id']) }}" class="btn btn-success" role="button">
+            {{ utils.icon('plus') }} New Permission
           </a>
           <form action="{{ url_for('destroy_%s' % endpoint_suffix, id=resource[pkey]) }}" method="post" style="display: inline;">
             <input type="hidden" name="_method" value="DELETE" />

@@ -12,8 +12,8 @@
       Role Filter <span class="caret"></span>
     </button>
     <ul class="dropdown-menu">
-      <li role="presentation" class="{{ 'active' if active_role is none }}">
-        <a href="{{ url_for('permissions', type=active_resource_type) }}">All</a>
+      <li role="presentation" class="{{ 'active' if active_role is none or active_role == 'all' }}">
+        <a href="{{ url_for('permissions', role='all', type=active_resource_type) }}">All</a>
       </li>
       <li role="separator" class="divider"></li>
       {% for role in roles %}
@@ -29,8 +29,8 @@
       Type Filter <span class="caret"></span>
     </button>
     <ul class="dropdown-menu">
-      <li role="presentation" class="{{ 'active' if active_resource_type is none }}">
-        <a href="{{ url_for('permissions', role=active_role) }}">All</a>
+      <li role="presentation" class="{{ 'active' if active_resource_type is none or active_resource_type == 'all' }}">
+        <a href="{{ url_for('permissions', role=active_role, type='all') }}">All</a>
       </li>
       <li role="separator" class="divider"></li>
       {% for resource_type in resource_types %}

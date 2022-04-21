@@ -5,7 +5,7 @@ import json
 from urllib.parse import urljoin
 from operator import itemgetter
 
-from flask import abort, flash, redirect, render_template, request, url_for
+from flask import abort, flash, redirect, render_template, request, url_for, session as flask_session
 from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
@@ -110,13 +110,35 @@ class ResourcesController(Controller):
         """Show resources list."""
         self.setup_models()
 
+        # A flask session works like a normal cookie, but it is encrypted via the JWT token
+        # Only create resources dict if it doesn't exist in the current flask session
+        if "resources" not in flask_session.keys():
+            flask_session["resources"] = {
+                "params": {}
+            }
+
         session = self.session()
 
         # get resources filtered by resource type
-        search_text = self.search_text_arg()
-        active_resource_type = request.args.get('type')
+        search_text = request.args.get('search')
+        # First check wether user deleted the filter
+        # "" implies that the user actively deleted the filter and not just changed to a different page
+        # (which would not set the filter in the requests params when switching back)
+        if search_text == "":
+            flask_session["resources"]['params'].pop("search", None)
+        elif search_text is not None:
+            flask_session["resources"]['params']["search"] = search_text
+        active_search_text = flask_session["resources"]['params'].get("search", None)
+
+        resource_type = request.args.get('type')
+        if resource_type == "all":
+            flask_session["resources"]['params'].pop("type", None)
+        elif resource_type is not None:
+            flask_session["resources"]['params']["type"] = resource_type
+        active_resource_type = flask_session["resources"]['params'].get("type", None)
+
         query = self.resources_for_index_query(
-            search_text, active_resource_type, session
+            active_search_text, active_resource_type, session
         )
 
         # order by sort args
@@ -136,11 +158,27 @@ class ResourcesController(Controller):
                 if not sort_asc:
                     # append sort direction suffix
                     sort_param = "%s-" % sort
+                flask_session["resources"]['params']["sort"] = sort_param
 
         # paginate
         page, per_page = self.pagination_args()
         num_pages = math.ceil(query.count() / per_page)
         resources = query.limit(per_page).offset((page - 1) * per_page).all()
+
+        check_unused = request.args.get('check_unused')
+        if check_unused is True:
+            flask_session["resources"]['params']['check_unused'] = check_unused
+            self._check_unused_resources(resources)
+        else:
+            flask_session["resources"]['params'].pop('check_unused', None)
+        active_check_unused = flask_session["resources"]['params'].get('check_unused', None)
+
+        # Set modified property to True so that the flask_session object
+        # updates our cookie
+        # Without this, the presistence of data stored in the cookie is not reliable
+        # (Sometimes the data is not saved, this fixes the issue)
+        # See https://stackoverflow.com/questions/39261260/flask-session-variable-not-persisting-between-requests/39261335#39261335
+        flask_session.modified = True
 
         pagination = {
             'page': page,
@@ -148,19 +186,8 @@ class ResourcesController(Controller):
             'per_page': per_page,
             'per_page_options': self.PER_PAGE_OPTIONS,
             'per_page_default': self.DEFAULT_PER_PAGE,
-            'params': {
-                'search': search_text,
-                'type': active_resource_type,
-                'sort': sort_param
-            }
+            'params': flask_session["resources"]["params"]
         }
-
-        check_unused = False
-        if request.args.get('check_unused'):
-            pagination['params']['check_unused'] = request.args.get(
-                'check_unused')
-            self._check_unused_resources(resources)
-            check_unused = True
 
         # query resource types
         resource_types = OrderedDict()
@@ -179,8 +206,8 @@ class ResourcesController(Controller):
         return render_template(
             '%s/index.html' % self.templates_dir, resources=resources,
             endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey(),
-            search_text=search_text, pagination=pagination,
-            sort=sort, sort_asc=sort_asc, check_unused=check_unused,
+            search_text=active_search_text, pagination=pagination,
+            sort=sort, sort_asc=sort_asc, check_unused=active_check_unused,
             base_route=self.base_route, resource_types=resource_types,
             active_resource_type=active_resource_type,
             have_config_generator=have_config_generator
@@ -399,11 +426,19 @@ class ResourcesController(Controller):
             .filter(self.Permission.resource_id == resource.id)
         has_permissions = query.count() > 0
 
+        permissions = []
+        for permission in query.all():
+            permissions.append({
+                "role": permission.role.name,
+                "write": permission.write
+            })
+
         # add resource
         items.append({
             'depth': depth,
             'resource': resource,
-            'permissions': has_permissions
+            'has_permissions': has_permissions,
+            'permissions': permissions
         })
 
         # get sorted children

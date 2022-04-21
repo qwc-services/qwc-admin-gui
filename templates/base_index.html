@@ -180,6 +180,11 @@
           <a href="{{ url_for('edit_%s' % endpoint_suffix, id=resource[pkey]) }}" class="btn btn-primary" role="button">
             {{ utils.icon('pencil') }} Edit
           </a>
+          {% if endpoint_suffix == "resource" %}
+            <a href="{{ url_for('new_permission', resource_id=resource['id']) }}" class="btn btn-success" role="button">
+              {{ utils.icon('plus') }} New Permission
+            </a>
+          {% endif %}
           <form action="{{ url_for('destroy_%s' % endpoint_suffix, id=resource[pkey]) }}" method="post" style="display: inline;">
             <input type="hidden" name="_method" value="DELETE" />
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
