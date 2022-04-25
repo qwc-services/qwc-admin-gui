@@ -135,7 +135,7 @@ class TenantConfigHandler:
 
 def handler():
     tenant = tenant_handler.tenant()
-    handler = tenant_handler.handler('admin-gui', 'handler', tenant)
+    handler = tenant_handler.handler('adminGui', 'handler', tenant)
     if handler is None:
         handler = tenant_handler.register_handler(
             'handler', tenant,
