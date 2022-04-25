@@ -21,7 +21,7 @@ class UserForm(FlaskForm):
         'Repeat Password', validators=[EqualTo('password')])
     totp_enabled = False
     totp_secret = StringField(
-        'TOTP secret', validators=[Optional(), Length(max=16)]
+        'TOTP secret', validators=[Optional(), Length(max=128)]
     )
     last_sign_in_at = StringField('Last sign in', validators=[Optional()])
     failed_sign_in_count = IntegerField(
