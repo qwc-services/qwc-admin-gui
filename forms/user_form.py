@@ -6,11 +6,6 @@ from wtforms.validators import DataRequired, Optional, Email, EqualTo, \
 from wtforms.widgets import NumberInput
 
 
-class UserInfoForm(FlaskForm):
-    """Subform for custom user info fields"""
-    pass
-
-
 class UserForm(FlaskForm):
     """Main form for User GUI"""
     name = StringField('User name', validators=[DataRequired()])
@@ -18,7 +13,8 @@ class UserForm(FlaskForm):
     email = StringField('Email', validators=[Optional(), Email()])
 
     # custom user fields
-    user_info = FormField(UserInfoForm, "User info", _meta={'csrf': False})
+    # NOTE: actual subform added in add_custom_fields()
+    user_info = FormField(FlaskForm, "User info", _meta={'csrf': False})
 
     password = PasswordField('Password')
     password2 = PasswordField(
@@ -68,6 +64,17 @@ class UserForm(FlaskForm):
 
         :param list(obj) user_info_fields: Custom user info fields
         """
+        # NOTE: use a new UserInfoForm class for every UserForm instance,
+        #       so custom fields are only set for the current tenant
+        #       and not globally
+        class UserInfoForm(FlaskForm):
+            """Subform for custom user info fields"""
+            pass
+
+        # override form_class in user_info FormField
+        self.user_info.args = (UserInfoForm, "User info")
+
+        # add custom fields
         for field in user_info_fields:
             field_class = StringField
             widget = None
