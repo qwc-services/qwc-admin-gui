@@ -1,0 +1,17 @@
+{% extends "templates/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block container %}
+  <h1>{{ title }}</h1>
+
+  Edit input configs
+
+  <br><br>
+
+  <a href="{{ url_for('config_editor_edit_tenant_config') }}" class="btn btn-primary" role="button">
+    {{ utils.icon('pencil') }} tenantConfig.json
+  </a>
+
+  <a href="{{ url_for('config_editor_edit_qwc2_config') }}" class="btn btn-primary" role="button">
+    {{ utils.icon('pencil') }} config.json
+  </a>
+{% endblock %}

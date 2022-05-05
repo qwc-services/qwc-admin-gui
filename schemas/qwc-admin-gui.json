@@ -66,7 +66,7 @@
           }
         },
         "input_config_path": {
-          "description": "The path to the input configs. Required for 'themes' plugin.",
+          "description": "The path to the input configs. Required for 'themes' and 'config_editor' plugin.",
           "type": "string"
         },
         "qwc2_path": {
@@ -78,7 +78,7 @@
           "type": "string"
         },
         "ogc_service_url": {
-          "description": "The OGC service URL.",
+          "description": "The OGC service URL. Required for 'themes' plugin.",
           "type": "string"
         }
       },

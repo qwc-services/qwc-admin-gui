@@ -1,0 +1,77 @@
+{% extends "templates/base.html" %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{ url_for('static', filename='js/ace/ace.js') }}"></script>
+<script type="text/javascript">
+  $(function() {
+    // initialize Ace code editor
+    var editor = ace.edit('editor', {
+      mode: 'ace/mode/json',
+      fontSize: 14,
+      tabSize: 2,
+      newLineMode: 'unix',
+      minLines: 5,
+      maxLines: 45,
+      wrap: true
+    });
+
+    // sync editor contents to hidden form field
+    var configDataField = $('#config_data');
+    function syncToFormField() {
+      configDataField.val(editor.getValue());
+    }
+    editor.session.on('change', syncToFormField);
+    syncToFormField();
+
+    // show any editor annotations as alert
+    editor.session.on('changeAnnotation', function() {
+      if (editor.session.getAnnotations().length > 0) {
+        var html = "<b>Annotations:</b>";
+        html += "<ul>";
+        editor.session.getAnnotations().forEach(function(annotation) {
+          html += "<li>" + annotation.type + ": " + annotation.text + " on line " + (annotation.row + 1) + "</li>";
+        });
+        html += "</ul>";
+        $('#annotations').html(html);
+        $('#annotations').show();
+      }
+      else {
+        $('#annotations').html("");
+        $('#annotations').hide();
+      }
+    });
+
+    $('form').show();
+  });
+</script>
+{% endblock %}
+
+{%- block styles %}
+  {{ super() }}
+  <style type="text/css">
+    #editor {
+      border:  1px solid #ccc;
+      border-radius: 4px;
+    }
+  </style>
+{%- endblock styles %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block container %}
+  <h1>{{ title }}</h1>
+
+  <form class="form form-horizontal" action="{{ action }}" method="post" style="display: none">
+    <input id="csrf_token" name="csrf_token" type="hidden" value="{{ csrf_token() }}">
+    <input id="config_data" name="config_data" type="hidden" value="">
+    <div class="form-group ">
+      <div class="col-sm-12">
+        <div id="editor">{{ config_data }}</div>
+      </div>
+    </div>
+
+    <div id="annotations" class="alert alert-danger" role="alert" style="display: none"></div>
+
+    <input class="btn btn-primary" id="submit" name="submit" type="submit" value="Save">
+  </form>
+{% endblock %}
