@@ -166,7 +166,7 @@ class ResourcesController(Controller):
         resources = query.limit(per_page).offset((page - 1) * per_page).all()
 
         check_unused = request.args.get('check_unused')
-        if check_unused is True:
+        if check_unused == "True":
             flask_session["resources"]['params']['check_unused'] = check_unused
             self._check_unused_resources(resources)
         else:
