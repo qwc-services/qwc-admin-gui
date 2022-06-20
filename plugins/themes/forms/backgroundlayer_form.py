@@ -25,6 +25,7 @@ class WMTSLayerForm(FlaskForm):
     url = HiddenField(validators=[DataRequired(), URL()])
     name = HiddenField(validators=[DataRequired()])
     style = HiddenField(validators=[DataRequired()])
+    format = HiddenField(validators=[DataRequired()])
     title = StringField("Title")
     # tileMatrixPrefix = StringField("TileMatrixPrefix")
     tileMatrixSet = HiddenField(validators=[DataRequired()])

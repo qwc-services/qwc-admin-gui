@@ -22,6 +22,7 @@
       $('#name').val($(this).find('td.wmts-name').text());
       $('#tileMatrixSet').val($(this).find('td.wmts-tilematrix').text());
       $('#style').val($(this).find('td.wmts-style').text());
+      $('#format').val($(this).find('td.wmts-format').text());
       $('#projection').val($(this).find('td.wmts-crs').text());
       $('#originX').val($(this).find('td.wmts-originX').text());
       $('#originY').val($(this).find('td.wmts-originY').text());
@@ -135,6 +136,7 @@
       {{ form.url }}
       {{ form.name }}
       {{ form.style }}
+      {{ form.format }}
       {{ form.tileMatrixSet }}
       {{ form.projection }}
       {{ form.originX }}
