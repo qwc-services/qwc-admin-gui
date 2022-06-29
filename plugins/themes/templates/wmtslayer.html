@@ -28,6 +28,7 @@
       $('#originY').val($(this).find('td.wmts-originY').text());
       $('#tileSize').val($(this).find('td.wmts-tilesize').text());
       $('#resolutions').val($(this).find('td.wmts-resolutions').text());
+      $('#requestEncoding').val($(this).find('td.wmts-requestEncoding').text());
     });
 
     // read capabilities from input-url
@@ -74,6 +75,7 @@
             row += '<td class="wmts-originY hidden">' + options.tileGrid.origins_[0][1] + '</td>';
             row += '<td class="wmts-tilesize hidden">' + [options.tileGrid.tileSizes_[0], options.tileGrid.tileSizes_[0]] + '</td>';
             row += '<td class="wmts-resolutions hidden">' + options.tileGrid.resolutions_ + '</td>';
+            row += '<td class="wmts-requestEncoding hidden">' + options.requestEncoding + '</td>';
             row += '</tr>';
             $('#wmts-table > tbody:last-child').append(row);
           });
@@ -142,6 +144,7 @@
       {{ form.originX }}
       {{ form.originY }}
       {{ form.resolutions }}
+      {{ form.requestEncoding }}
       {{ form.tileSize }}
       {{ wtf.form_field(form.submit, class="btn btn-primary") }}
     </form>
