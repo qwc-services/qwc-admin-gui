@@ -25,6 +25,7 @@ class WMTSLayerForm(FlaskForm):
     url = HiddenField(validators=[DataRequired(), URL()])
     name = HiddenField(validators=[DataRequired()])
     style = HiddenField(validators=[DataRequired()])
+    format = HiddenField(validators=[DataRequired()])
     title = StringField("Title")
     # tileMatrixPrefix = StringField("TileMatrixPrefix")
     tileMatrixSet = HiddenField(validators=[DataRequired()])
@@ -34,6 +35,7 @@ class WMTSLayerForm(FlaskForm):
     resolutions = HiddenField(validators=[DataRequired()])
     tileSize = HiddenField(validators=[DataRequired()])
     capabilities = HiddenField(validators=[DataRequired()])
+    requestEncoding = HiddenField(validators=[DataRequired()])
     with_capabilities = BooleanField("Save capabilities? \
         (Only needed for QGIS Server WMTS!)"
     )

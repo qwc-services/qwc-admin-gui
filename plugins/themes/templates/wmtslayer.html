@@ -8,6 +8,8 @@
   <script type="text/javascript">
     // TODO: add more proj4 defs
     proj4.defs("EPSG:25832","+proj=utm +zone=32 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
+    proj4.defs("EPSG:3948","+proj=lcc +lat_1=47.25 +lat_2=48.75 +lat_0=48 +lon_0=3 +x_0=1700000 +y_0=7200000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs ");
+    proj4.defs("EPSG:2154","+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs");
     ol.proj.proj4.register(proj4);
 
     // highlight selected row and set hidden vars
@@ -20,11 +22,13 @@
       $('#name').val($(this).find('td.wmts-name').text());
       $('#tileMatrixSet').val($(this).find('td.wmts-tilematrix').text());
       $('#style').val($(this).find('td.wmts-style').text());
+      $('#format').val($(this).find('td.wmts-format').text());
       $('#projection').val($(this).find('td.wmts-crs').text());
       $('#originX').val($(this).find('td.wmts-originX').text());
       $('#originY').val($(this).find('td.wmts-originY').text());
       $('#tileSize').val($(this).find('td.wmts-tilesize').text());
       $('#resolutions').val($(this).find('td.wmts-resolutions').text());
+      $('#requestEncoding').val($(this).find('td.wmts-requestEncoding').text());
     });
 
     // read capabilities from input-url
@@ -71,6 +75,7 @@
             row += '<td class="wmts-originY hidden">' + options.tileGrid.origins_[0][1] + '</td>';
             row += '<td class="wmts-tilesize hidden">' + [options.tileGrid.tileSizes_[0], options.tileGrid.tileSizes_[0]] + '</td>';
             row += '<td class="wmts-resolutions hidden">' + options.tileGrid.resolutions_ + '</td>';
+            row += '<td class="wmts-requestEncoding hidden">' + options.requestEncoding + '</td>';
             row += '</tr>';
             $('#wmts-table > tbody:last-child').append(row);
           });
@@ -133,11 +138,13 @@
       {{ form.url }}
       {{ form.name }}
       {{ form.style }}
+      {{ form.format }}
       {{ form.tileMatrixSet }}
       {{ form.projection }}
       {{ form.originX }}
       {{ form.originY }}
       {{ form.resolutions }}
+      {{ form.requestEncoding }}
       {{ form.tileSize }}
       {{ wtf.form_field(form.submit, class="btn btn-primary") }}
     </form>

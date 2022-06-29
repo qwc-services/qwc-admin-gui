@@ -111,6 +111,9 @@ class BackgroundLayersController():
                 backgroundlayer["tileMatrixPrefix"] = ""
                 backgroundlayer["tileMatrixSet"] = form.tileMatrixSet.data
                 backgroundlayer["projection"] = form.projection.data
+                backgroundlayer["format"] = form.format.data                
+                backgroundlayer["requestEncoding"] = form.requestEncoding.data
+                backgroundlayer["style"] = form.style.data  
                 backgroundlayer["originX"] = float(form.originX.data)
                 backgroundlayer["originY"] = float(form.originY.data)
                 resolutions = [
