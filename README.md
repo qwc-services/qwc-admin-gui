@@ -123,6 +123,25 @@ Translation strings are stored in a JSON file for each locale in `translations/<
 
 Set the `DEFAULT_LOCALE` environment variable to choose the locale for the user notification mails (default: `en`).
 
+### Solr search index update
+
+If using a Solr search service, the Solr search index of a tenant may be updated via a button on the main page. This can be activated by adding the following configuration options to the Admin GUI service config:
+```json
+{
+  "config": {
+    "solr_service_url": "http://qwc-solr:8983/solr/gdi/",
+    "solr_tenant_dih": "dih_geodata",
+    "solr_update_check_wait": 5,
+    "solr_update_check_max_retries": 10,
+  }
+}
+```
+
+* `solr_service_url`: Solr Service base URL for collection
+* `solr_tenant_dih`: Solr DataImportHandler for the tenant
+* `solr_update_check_wait` (optional): Wait time in seconds for checks during Solr index update (default: `5`s)
+* `solr_update_check_max_retries` (optional): Max number of retries for checks during Solr index update (default: `10`)
+
 ### Plugins
 
 The admin gui is extendable through plugins, which reside in the `plugins` folder. To enable them, list them in `plugins` in the admin gui configuration. See the JSON schema for details, and for configuration parameters which may be required by plugins shipped by default with `qwc-admin-gui`.

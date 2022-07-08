@@ -3,6 +3,7 @@ import logging
 import os
 import re
 import requests
+import time
 import urllib.parse
 import importlib
 
@@ -216,11 +217,13 @@ def home():
         "config_generator_service_url",
         "http://qwc-config-service:9090"
     ) else False
+    solr_index_update_enabled = True if config.get('solr_service_url', '') else False
     return render_template(
         'templates/home.html',
         admin_gui_title=admin_gui_title,
         admin_gui_subtitle=admin_gui_subtitle,
-        have_config_generator=have_config_generator
+        have_config_generator=have_config_generator,
+        solr_index_update_enabled=solr_index_update_enabled
     )
 
 
@@ -246,6 +249,89 @@ def generate_configs():
             "generate_configs?tenant=" + current_handler.tenant))
 
     return (response.text, response.status_code)
+
+
+@app.route('/update_solr_index', methods=['POST'])
+def update_solr_index():
+    """Update Solr index for a tenant."""
+    config = handler().config()
+    solr_service_url = config.get('solr_service_url', '')
+    if not solr_service_url:
+        abort(404, "Missing config for 'solr_service_url'")
+
+    # get DataImportHandler for tenant
+    solr_tenant_dih = config.get('solr_tenant_dih', '')
+    if not solr_tenant_dih:
+        abort(500, "Missing config for 'solr_tenant_dih'")
+
+    try:
+        tenant = handler().tenant
+        timeout = config.get('proxy_timeout', 60)
+
+        # clear search index for tenant
+        url = urllib.parse.urljoin(solr_service_url, "update?commitWithin=1000")
+        data = {'delete': {'query': "tenant:%s" % tenant}}
+        headers = {'content-type': 'application/json'}
+        app.logger.info("Clearing Solr search index for tenant '%s'" % tenant)
+        response = requests.post(
+            url, data=json.dumps(data), headers=headers, timeout=timeout
+        )
+        if response.status_code != 200:
+            abort(
+                response.status_code,
+                "Could not clear Solr search index:\n%s" % response.text
+            )
+
+        # wait until index has been cleared
+        solr_update_check_max_retries = config.get(
+            'solr_update_check_max_retries', 10
+        )
+        solr_update_check_wait = config.get('solr_update_check_wait', 5)
+        num_found = -1
+        for i in range(solr_update_check_max_retries):
+            time.sleep(solr_update_check_wait)
+
+            # send dummy query with tenant filter
+            url = urllib.parse.urljoin(
+                solr_service_url,
+                "select?omitHeader=true&q=tenant:%s&rows=0" % tenant
+            )
+            app.logger.info("Checking result count for tenant '%s'" % tenant)
+            response = requests.get(url, timeout=timeout)
+
+            # check if result count is 0
+            num_found = json.loads(response.text) \
+                .get('response', {}).get('numFound', -1)
+            if num_found == 0:
+                break
+
+        if num_found != 0:
+            abort(
+                500,
+                "Solr search index could not be cleared (%s results)" %
+                num_found
+            )
+
+        # update search index for tenant
+        url = urllib.parse.urljoin(
+            solr_service_url,
+            "%s?command=full-import&clean=false" % solr_tenant_dih
+        )
+        app.logger.info(
+            "Updating Solr search index for '%s' for tenant '%s'" %
+            (solr_tenant_dih, tenant)
+        )
+        response = requests.get(url, timeout=timeout)
+        if response.status_code != 200:
+            abort(
+                response.status_code,
+                "Could not create Solr search index:\n%s" % response.text
+            )
+        return ("Started Solr search index update for tenant '%s'" % tenant)
+    except Exception as e:
+        msg = "Could not update Solr search index:\n%s" % e
+        app.logger.error(msg)
+        abort(500, msg)
 
 
 @app.route("/proxy", methods=['GET', 'POST', 'PUT', 'DELETE'])

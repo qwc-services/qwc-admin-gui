@@ -58,6 +58,22 @@
           "description": "Subtitle displayed in Admin Gui home page",
           "type": "string"
         },
+        "solr_service_url": {
+          "description": "Solr Service base URL for collection",
+          "type": "string"
+        },
+        "solr_tenant_dih": {
+          "description": "Solr DataImportHandler for tenant",
+          "type": "string"
+        },
+        "solr_update_check_wait": {
+          "description": "Wait time in seconds for checks during Solr index update",
+          "type": "number"
+        },
+        "solr_update_check_max_retries": {
+          "description": "Max number of retries for checks during Solr index update",
+          "type": "integer"
+        },
         "plugins": {
           "description": "List of plugins to load",
           "type": "array",
