@@ -360,7 +360,7 @@ class BackgroundLayersController():
 
         if ThemeUtils.save_themesconfig(self.themesconfig, self.app, self.handler):
             message = "Background layer '{0}' {1}.\
-                    ".format(item["title"], action_name)
+                    ".format(item.get("title", ""), action_name)
             flash(message, "success")
         else:
             message = "Could not save background layer '{0}'.\

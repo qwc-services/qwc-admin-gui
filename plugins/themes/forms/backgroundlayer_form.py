@@ -12,7 +12,7 @@ class WMSLayerForm(FlaskForm):
     format = HiddenField()
     srs = HiddenField()
     bbox = HiddenField()
-    title = StringField("Title")
+    title = StringField("Title", validators=[DataRequired()])
     attribution = StringField("Attribution")
     thumbnail = SelectField("Thumbnail", coerce=str, choices=[("", "")])
     tiled = BooleanField("tiled")
