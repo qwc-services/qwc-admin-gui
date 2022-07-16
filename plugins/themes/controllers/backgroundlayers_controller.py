@@ -98,6 +98,18 @@ class BackgroundLayersController():
             self.app.logger.error("Error adding backgroundlayer: \
                                   {}".format(form.errors))
 
+        # show validation errors
+        if type == "wms":
+            template = "%s/wmslayer.html" % self.template_dir
+        elif type == "wmts":
+            template = "%s/wmtslayer.html" % self.template_dir
+        action = url_for("create_backgroundlayer", type=type)
+
+        return render_template(
+            template, title="Add background layer", action=action, type=type, form=form,
+            method="POST"
+        )
+
     def edit(self, index=None):
         """Show edit backgroundlayer form.
 
@@ -144,8 +156,21 @@ class BackgroundLayersController():
                     flash("Could not update background layer {0}.".format(
                         form.title.data), "warning")
             else:
-                flash("Could not update background layer {0}.".format(
-                      form.title.data), "warning")
+                flash("Could not update background layer {0}. {1}".format(
+                      form.title.data, form.errors), "warning")
+            
+            # show validation errors
+            if backgroundlayer["type"] == "wms":
+                template = "%s/wmslayer.html" % self.template_dir
+            elif backgroundlayer["type"] == "wmts":
+                template = "%s/wmtslayer.html" % self.template_dir
+            title = "Edit background layer"
+            action = url_for("update_backgroundlayer", index=index)
+
+            return render_template(
+                template, title=title, type=backgroundlayer["type"], form=form, action=action,
+                method="POST"
+            )
         else:
             # backgroundlayer not found
             abort(404)
