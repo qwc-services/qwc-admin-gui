@@ -7,51 +7,23 @@
   <script type="text/javascript">
     // global object for storing bboxes in different crs per layer
     var boundingboxes = {};
+    var capabilities = '';
 
-    function addLayerRow(layer) {
-      if(Array.isArray(layer)) {
-        for(i in layer) {
-          addLayerRow(layer[i]);
-        }
-      } else {
-        if(layer.Name) {
-          // add boundingboxes
-          var item = {};
-          item[layer.Name] = layer.BoundingBox;
-          $.extend(boundingboxes, item);
-
-          // add rows
-          var row = '<tr class="layer-row">';
-          row += '<td class="wms-title">' + layer.Title + '</td>';
-          row += '<td class="wms-name">' + layer.Name + '</td>';
-          // add hidden td
-          row += '<td class="wms-attribution hidden">' + layer.Attribution + '</td>';
-          row += '</tr>';
-          $('#wms-table > tbody:last-child').append(row);
-        }
-        if(layer.Layer) {
-          addLayerRow(layer.Layer);
-        }
-      }
+    if ($('#url').val() != '') {
+      const url = $('#url').val();
+      $('#input-url').val(url);
+      getCapabilities(url).then(() => {
+        var wmsLayer = capabilities.Capability.Layer.Layer;
+        wmsLayer.map(layer => {addLayerRow(layer)});
+  
+        // select srs
+        getSRS(wmsLayer.find(layer => layer.Name === $('#name').val()).BoundingBox);
+        // select format
+        getFormats(capabilities.Capability.Request.GetMap.Format);
+      });
     }
 
-    // read capabilities from url and fill form
-    $('#btn-connect').click(function() {
- 
-      // clear form
-      $('#url').val('');
-      $('#select-srs').find('option').remove();
-      $('#select-format').find('option').remove();
-      $('#form').trigger('reset');
-      boundingboxes = {};
-
-      var url = $('#input-url').val().trim();
-
-      // skip empty url
-      if(!url) {
-        return false;
-      }
-
+    function getCapabilities(url) {
       $('#url').val(url);
       // add protocol and host
       if(url.match("^\/")) {
@@ -71,26 +43,118 @@
       }
 
       // read capbilities from input-url
-      $.get(url)
-        .success(function(data) {
-          var parser = new ol.format.WMSCapabilities();
-          var capabilities = parser.read(data);
-          var wmsLayer = capabilities.Capability.Layer.Layer;
-          wmsLayer.map(layer => {addLayerRow(layer)});
+      return new Promise((success, failure) => {
+        $.get(url)
+          .success(function(data) {
+            var parser = new ol.format.WMSCapabilities();
+            capabilities = parser.read(data);
+            success();
+          })
+          .error(function() {
+            alert('Could not read capabilities!');
+          })
+      })
+    }
 
-          // select srs
-          $.each(capabilities.Capability.Layer.BoundingBox, function(key, bbox) {
-            $('#select-srs').append('<option value=' + bbox.crs + '>' + bbox.crs + '</option>');
-          });
-          // select format
-          $.each(capabilities.Capability.Request.GetMap.Format, function(key, format) {
-            $('#select-format').append('<option value=' + format + '>' + format + '</option>');
-          });
-          $('#select-format').val('image/png');
+    function getBoundingBoxes(name, bboxes) {
+      // add boundingboxes
+      var item = {};
+      item[name] = bboxes;
+      $.extend(boundingboxes, item);
+    }
+
+    function getFormats(formats) {
+      $.each(formats, function(key, format) {
+        $('#select-format').append('<option value=' + format + '>' + format + '</option>');
+        if ($('#format').val() != '') {
+          $('#select-format').find('option').each(function() {
+            if ($(this).val() === $('#format').val()) {
+              $(this).attr('selected', true);
+            }
+          })
+        }
+      });
+      $('#select-format').change();
+    }
+
+    function getSRS(bboxes) {
+      $('#select-srs').find('option').remove();
+      $.each(bboxes, function(key, bbox) {
+        $('#select-srs').append('<option value=' + bbox.crs + '>' + bbox.crs + '</option>');
+      });
+      if ($('#srs').val() != '') {
+        $('#select-srs').find('option').each(function() {
+          if ($(this).val() === $('#srs').val()) {
+            $(this).attr('selected', true);
+            // $('#select-srs').change();
+          }
         })
-        .error(function() {
-          alert('Could not read capabilities!');
-        })
+      }
+    }
+
+    function addLayerRow(layer) {
+      if(Array.isArray(layer)) {
+        for(i in layer) {
+          addLayerRow(layer[i]);
+        }
+      } else {
+        if(layer.Name) {
+          getBoundingBoxes(layer.Name, layer.BoundingBox);
+
+          // add rows
+          let row_class = "layer-row";
+          if ($('#name').val() != '') {
+            if (layer.Name === $('#name').val()) {
+              row_class = "layer-row selected";
+            }
+          }
+          var row = '<tr class="' + row_class + '">';
+          row += '<td class="wms-title">' + layer.Title + '</td>';
+          row += '<td class="wms-name">' + layer.Name + '</td>';
+          // add hidden td
+          if (layer.Attribution) { 
+            row += '<td class="wms-attribution hidden">' + layer.Attribution.Title + '</td>'; 
+          }
+          row += '</tr>';
+          $('#wms-table > tbody:last-child').append(row);
+        }
+        if(layer.Layer) {
+          addLayerRow(layer.Layer);
+        }
+      }
+    }
+
+    // read capabilities from url and fill form
+    $('#btn-connect').click(function() {
+ 
+      // clear form
+      $('#url').val('');
+      $('#select-srs').find('option').remove();
+      $('#select-format').find('option').remove();
+      $('#form').trigger('reset');
+      $('#wms-table>tbody').empty();
+      boundingboxes = {};
+
+      var url = $('#input-url').val().trim();
+
+      // skip empty url
+      if(!url) {
+        return false;
+      }
+
+      getCapabilities(url).then(() => {
+        var wmsLayer = capabilities.Capability.Layer.Layer;
+        wmsLayer.map(layer => {addLayerRow(layer)});
+  
+        // select srs
+        if ($('#name').val() != '') {
+          getSRS(wmsLayer.find(layer => layer.Name === $('#name').val()).BoundingBox);
+        } else {
+          getSRS(capabilities.Capability.Layer.BoundingBox);
+        }
+        // select format
+        getFormats(capabilities.Capability.Request.GetMap.Format);
+      });
     });
 
     // highlight selected row and set hidden vars
@@ -98,29 +162,36 @@
       // highlight selected row
       $(this).addClass('selected').siblings().removeClass('selected');
       // set hidden vars
-      var name = $(this).find('td.wms-name').text();
-      var srs = $('#select-srs option:selected').text();
-      var bbox = boundingboxes[name].find(box => box.crs === srs).extent;
+      const name = $(this).find('td.wms-name').text().trim();
+      boundingboxes = {};
+      const bboxes = capabilities.Capability.Layer.Layer.find(layer => layer.Name === name).BoundingBox;
+      getBoundingBoxes(name, bboxes);
+      getSRS(bboxes);
+      const srs = $('#select-srs option:selected').text().trim();
+      const bbox = boundingboxes[name].find(box => box.crs === srs).extent;
       $('#name').val(name);
       $('#title').val($(this).find('td.wms-title').text());
       $('#srs').val(srs);
       $('#bbox').val(bbox);
       if($(this).find('td.wms-attribution').text() !== "undefined") {
-        $('#attribution').val($(this).find('td.wms-attribution').text());
+        $('#attribution').val($(this).find('td.wms-attribution').text().trim());
       }
     });
 
     // srs change
     $('#select-srs').change(function() {
-      var srs = $(this).find('option:selected').text();
-      var name = $('#name').val();
-      var bbox = boundingboxes[name].find(box => box.crs === srs).extent;
+      const srs = $(this).find('option:selected').text().trim();
+      const name = $('#name').val();
+      boundingboxes = {};
+      const bboxes = capabilities.Capability.Layer.Layer.find(layer => layer.Name === name).BoundingBox;
+      getBoundingBoxes(name, bboxes);
+      const bbox = boundingboxes[name].find(box => box.crs === srs).extent;
       $('#srs').val(srs); 
       $('#bbox').val(bbox);
     });
     // format change
     $('#select-format').change(function() {
-      $('#format').val($(this).find('option:selected').text()); 
+      $('#format').val($(this).find('option:selected').text().trim()); 
     });
   </script>
 {% endblock %}
@@ -153,7 +224,7 @@
         </tbody>
       </table>
     </div>
-    <form id="form" class="form form-horizontal" action="{{ url_for('create_backgroundlayer', type=type) }}" method="post" style="padding: 2.5em 0;">
+    <form id="form" class="form form-horizontal" action="{{ action }}" method="post" style="padding: 2.5em 0;">
       {{ form.csrf_token }}
       {{ wtf.form_field(form.title, form_type="horizontal", horizontal_columns=('sm', 2, 10)) }}
       <div class="form-group">
