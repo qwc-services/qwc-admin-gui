@@ -115,13 +115,21 @@
                 <thead>
                   <th>ID</th>
                   <th>Theme</th>
+                  <th>Url</th>
+                  <th></th>
                   <th></th>
                 </thead>
                 <tbody>
                 {% for item in group["items"] %}
                   <tr>
-                    <td>{{ loop.index }}</td>
-                    <td>{{ item.name }}</td>
+                    <td style="vertical-align: middle">{{ loop.index }}</td>
+                    <td style="vertical-align: middle">{{ item.name }}</td>
+                    <td style="vertical-align: middle">{{ item.url }}</td>
+                    <td>
+                      <a href="#" onclick="copyToClipboard('{{ item.url }}')" class="btn btn-default copy" role="button" title="Copy url to clipboard">
+                        {{ utils.icon('copy') }}
+                      </a>
+                    </td>
                     <td style="text-align: right">
                       <div class="btn-group">
                         <a href="{{ url_for('move_theme', gid=group_loop.index0, tid=loop.index0, direction='up') }}" class="btn btn-default move-up" role="button" title="Move theme up">
