@@ -88,8 +88,13 @@ class ThemeForm(FlaskForm):
         validators=[Optional()]
     )
     default = BooleanField(
-        "default",
+        "Default",
         description="Whether to use this theme as initial theme.",
+        validators=[Optional()]
+    )
+    tiled = BooleanField(
+        "Tiled",
+        description="Tiling the layers",
         validators=[Optional()]
     )
     skipEmptyFeatureAttributes = BooleanField(

@@ -405,6 +405,8 @@ class ThemesController:
                 form.title.data = theme["title"]
             if "default" in theme:
                 form.default.data = theme["default"]
+            if "tiled" in theme:
+                form.tiled.data = theme["tiled"]
             if "thumbnail" in theme:
                 form.thumbnail.data = theme["thumbnail"]
             if "attribution" in theme:
@@ -484,6 +486,10 @@ class ThemesController:
         item["default"] = False
         if form.default.data:
             item["default"] = True
+        
+        item["tiled"] = False
+        if form.tiled.data:
+            item["tiled"] = True
 
         if form.thumbnail.data:
             item["thumbnail"] = form.thumbnail.data
