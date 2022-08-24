@@ -97,7 +97,7 @@ class ThemeForm(FlaskForm):
         description="Tiling the layers",
         validators=[Optional()]
     )
-     mapTips = BooleanField(
+    mapTips = BooleanField(
         "Enable tooltip by default",
         description="Enable the theme tooltip by default",
         validators=[Optional()]
