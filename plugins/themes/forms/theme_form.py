@@ -100,7 +100,6 @@ class ThemeForm(FlaskForm):
      mapTips = BooleanField(
         "Enable tooltip by default",
         description="Enable the theme tooltip by default",
-        default = True,
         validators=[Optional()]
     )
     skipEmptyFeatureAttributes = BooleanField(
