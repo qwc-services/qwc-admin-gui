@@ -407,6 +407,8 @@ class ThemesController:
                 form.default.data = theme["default"]
             if "tiled" in theme:
                 form.tiled.data = theme["tiled"]
+            if "mapTips" in theme:
+                form.mapTips.data = theme["mapTips"]
             if "thumbnail" in theme:
                 form.thumbnail.data = theme["thumbnail"]
             if "attribution" in theme:
@@ -490,6 +492,10 @@ class ThemesController:
         item["tiled"] = False
         if form.tiled.data:
             item["tiled"] = True
+        
+        item["mapTips"] = False
+        if form.mapTips.data:
+            item["mapTips"] = True
 
         if form.thumbnail.data:
             item["thumbnail"] = form.thumbnail.data
