@@ -97,6 +97,12 @@ class ThemeForm(FlaskForm):
         description="Tiling the layers",
         validators=[Optional()]
     )
+     mapTips = BooleanField(
+        "Enable tooltip by default",
+        description="Enable the theme tooltip by default",
+        default = True,
+        validators=[Optional()]
+    )
     skipEmptyFeatureAttributes = BooleanField(
         "Skip empty feature attributes",
         description="Optional, whether to skip empty attributes in the identify results. Default is false.",
