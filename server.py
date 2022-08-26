@@ -3,6 +3,7 @@ import logging
 import os
 import re
 import requests
+from shutil import copyfile
 import time
 import urllib.parse
 import importlib
@@ -255,6 +256,8 @@ def generate_configs():
 def update_solr_index():
     """Update Solr index for a tenant."""
     config = handler().config()
+    tenant = handler().tenant
+
     solr_service_url = config.get('solr_service_url', '')
     if not solr_service_url:
         abort(404, "Missing config for 'solr_service_url'")
@@ -264,8 +267,29 @@ def update_solr_index():
     if not solr_tenant_dih:
         abort(500, "Missing config for 'solr_tenant_dih'")
 
+    # get optional source DataImportHandler config file for tenant
+    solr_tenant_dih_config_file = config.get('solr_tenant_dih_config_file', '')
+    # get optional target path for Solr configs
+    solr_config_path = config.get('solr_config_path', '')
+
+    if solr_tenant_dih_config_file and solr_config_path:
+        try:
+            # copy tenant config file to Solr configs dir
+            file_name = os.path.basename(solr_tenant_dih_config_file)
+            app.logger.info(
+                "Updating Solr config file '%s' for tenant '%s'" %
+                (file_name, tenant)
+            )
+            copyfile(
+                solr_tenant_dih_config_file,
+                os.path.join(solr_config_path, file_name)
+            )
+        except Exception as e:
+            msg = "Could not copy Solr tenant config:\n%s" % e
+            app.logger.error(msg)
+            abort(500, msg)
+
     try:
-        tenant = handler().tenant
         timeout = config.get('proxy_timeout', 60)
 
         # clear search index for tenant

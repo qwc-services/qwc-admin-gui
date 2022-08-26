@@ -66,6 +66,14 @@
           "description": "Solr DataImportHandler for tenant",
           "type": "string"
         },
+        "solr_tenant_dih_config_file": {
+          "description": "Path to source DataImportHandler config file for tenant",
+          "type": "string"
+        },
+        "solr_config_path": {
+          "description": "Path to Solr configs",
+          "type": "string"
+        },
         "solr_update_check_wait": {
           "description": "Wait time in seconds for checks during Solr index update",
           "type": "number"
