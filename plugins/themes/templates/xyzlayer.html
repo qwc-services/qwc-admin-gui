@@ -1,0 +1,27 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "templates/base.html" %}
+
+{% block scripts %}
+{% endblock %}
+{%- block styles %}
+    {{ super() }}
+    <link href="{{ url_for('plugin_static', plugin='themes', filename='application.css') }}" rel="stylesheet">
+{%- endblock styles %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block container %}
+  <h1>{{ title }}</h1>
+
+<div class="col-md-6 col-lg-offset-3" align="center" style="margin-top:25px;">
+    <form id="form" class="form form-horizontal" action="{{ url_for('create_backgroundlayer', type=type) }}" method="post" style="padding-top: 2.5em 0;">
+      {{ form.csrf_token }}
+      {{ wtf.form_field(form.url, placeholder="https://tile.openstreetmap.org/{z}/{x}/{y}.png", form_type="horizontal") }}
+      {{ wtf.form_field(form.name, form_type="horizontal") }}
+      {{ wtf.form_field(form.title, form_type="horizontal") }}
+      {{ wtf.form_field(form.attribution, form_type="horizontal") }}
+      {{ wtf.form_field(form.crs, form_type="horizontal") }}
+      {{ wtf.form_field(form.thumbnail, form_type="horizontal") }}
+      {{ wtf.form_field(form.submit, class="btn btn-primary", style="width:50%;margin-top:25px;")  }}
+    </form>
+  </div>
+{% endblock %}
