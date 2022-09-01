@@ -42,3 +42,12 @@ class WMTSLayerForm(FlaskForm):
     attribution = StringField("Attribution")
     thumbnail = SelectField("Thumbnail", coerce=str, choices=[("", "")])
     submit = SubmitField("Save")
+
+class XYZLayerForm(FlaskForm):
+    url = StringField(validators=[DataRequired(), URL()])
+    name = StringField(validators=[DataRequired()])
+    title = StringField("Title", validators=[DataRequired()])
+    thumbnail = SelectField("Thumbnail", coerce=str, choices=[("", "")])
+    attribution = StringField("Attribution")
+    submit = SubmitField("Save")
+    crs = SelectField("CRS", default=("EPSG:3857"))

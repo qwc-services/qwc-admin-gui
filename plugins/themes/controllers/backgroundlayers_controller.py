@@ -5,7 +5,7 @@ from collections import OrderedDict
 from flask import flash, redirect, render_template, url_for
 from wtforms import ValidationError
 
-from plugins.themes.forms import WMSLayerForm, WMTSLayerForm
+from plugins.themes.forms import WMSLayerForm, WMTSLayerForm, XYZLayerForm
 from plugins.themes.utils import ThemeUtils
 
 
@@ -70,6 +70,9 @@ class BackgroundLayersController():
             template = "%s/wmslayer.html" % self.template_dir
         elif type == "wmts":
             template = "%s/wmtslayer.html" % self.template_dir
+        elif type == "xyz":
+            form.crs.choices = ThemeUtils.get_crs(self.app, self.handler)
+            template = "%s/xyzlayer.html" % self.template_dir
         action = url_for("create_backgroundlayer", type=type)
 
         form.thumbnail.choices = list(map(lambda x: (x, x), ThemeUtils.get_mapthumbs(self.app, self.handler)))
@@ -83,6 +86,7 @@ class BackgroundLayersController():
         form = self.create_form(type, None)
 
         form.thumbnail.choices = ThemeUtils.get_mapthumbs(self.app, self.handler)
+        form.crs.choices = ThemeUtils.get_crs(self.app, self.handler)
 
         if form.validate_on_submit():
             try:
@@ -103,6 +107,8 @@ class BackgroundLayersController():
             template = "%s/wmslayer.html" % self.template_dir
         elif type == "wmts":
             template = "%s/wmtslayer.html" % self.template_dir
+        elif type == "xyz":
+            template = "%s/xyzlayer.html" % self.template_dir
         action = url_for("create_backgroundlayer", type=type)
 
         return render_template(
@@ -124,6 +130,8 @@ class BackgroundLayersController():
                 template = "%s/wmslayer.html" % self.template_dir
             elif backgroundlayer["type"] == "wmts":
                 template = "%s/wmtslayer.html" % self.template_dir
+            elif backgroundlayer["type"] == "xyz":
+                template = "%s/xyzlayer.html" % self.template_dir
             form = self.create_form(type=backgroundlayer["type"], backgroundlayer=backgroundlayer)
             title = "Edit background layer"
             action = url_for("update_backgroundlayer", index=index)
@@ -164,6 +172,8 @@ class BackgroundLayersController():
                 template = "%s/wmslayer.html" % self.template_dir
             elif backgroundlayer["type"] == "wmts":
                 template = "%s/wmtslayer.html" % self.template_dir
+            elif backgroundlayer["type"] == "xyz":
+                template = "%s/xyzlayer.html" % self.template_dir
             title = "Edit background layer"
             action = url_for("update_backgroundlayer", index=index)
 
@@ -212,6 +222,9 @@ class BackgroundLayersController():
         elif type == "wmts":
             form = WMTSLayerForm()
             # template = "%s/wmtslayer.html" % self.template_dir
+        elif type == "xyz" : 
+            form = XYZLayerForm()
+            form.crs.choices = ThemeUtils.get_crs(self.app, self.handler)
         else:
             flash("Type {0} is not supported.".format(type), 'warning')
             return redirect(url_for('backgroundlayers'))
@@ -235,6 +248,9 @@ class BackgroundLayersController():
 
             if "thumbnail" in backgroundlayer:
                 form.thumbnail.data = backgroundlayer["thumbnail"]
+
+            if "crs" in backgroundlayer:
+                form.crs.data = backgroundlayer["crs"]
 
             if type == "wms":
                 if "format" in backgroundlayer:
@@ -347,6 +363,9 @@ class BackgroundLayersController():
             if form.with_capabilities.data:
                 item["capabilities"] = json.loads(
                     form.capabilities.data)
+        elif type == "xyz":
+            if form.crs.data:
+                item["crs"] = form.crs.data
 
         # edit background layer
         if index:
