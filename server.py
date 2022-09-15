@@ -351,6 +351,39 @@ def update_solr_index():
                 response.status_code,
                 "Could not create Solr search index:\n%s" % response.text
             )
+
+        # wait until index has been updated
+        for i in range(solr_update_check_max_retries):
+            time.sleep(solr_update_check_wait)
+
+            # check status for tenant
+            url = urllib.parse.urljoin(
+                solr_service_url,
+                "%s?command=status" % solr_tenant_dih
+            )
+            app.logger.info("Checking Solr status for tenant '%s'" % tenant)
+            response = requests.get(url, timeout=timeout)
+
+            status_response = json.loads(response.text)
+            status = status_response.get('status')
+            if status == 'idle':
+                import_failed = 'Full Import failed' in status_response.get(
+                    'statusMessages', {}
+                )
+                if not import_failed:
+                    msg = (
+                        "Solr search index for tenant '%s' "
+                        "has been successfully updated" % tenant
+                    )
+                    app.logger.info(msg)
+                    return (msg)
+                else:
+                    abort(
+                        500,
+                        "Solr full import failed. Check Solr logs for errors."
+                    )
+
+        # if still updating
         return ("Started Solr search index update for tenant '%s'" % tenant)
     except Exception as e:
         msg = "Could not update Solr search index:\n%s" % e
