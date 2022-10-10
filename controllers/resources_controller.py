@@ -10,7 +10,7 @@ from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
 from .controller import Controller
-from forms import ResourceForm
+from forms import ImportResourceForm, ResourceForm
 
 
 class ResourcesController(Controller):
@@ -51,6 +51,17 @@ class ResourcesController(Controller):
             '/%s/<int:id>/import_children' % base_route,
             'import_children_%s' % suffix,
             self.import_children, methods=['POST']
+        )
+        # import resources from parent map
+        app.add_url_rule(
+            '/%s/<int:id>/import' % base_route,
+            'import_%s' % suffix,
+            self.import_resources, methods=['GET', 'POST']
+        )
+        app.add_url_rule(
+            '/%s/<int:id>/import_from_parent_map' % base_route,
+            'import_%s_from_parent_map' % suffix,
+            self.import_resources_from_parent_map, methods=['GET', 'POST']
         )
 
     def resources_for_index_query(self, search_text, resource_type, session):
@@ -342,6 +353,31 @@ class ResourcesController(Controller):
 
             # add resource to group
             group['options'].append((r.id, r.name))
+
+        return form
+
+    def create_import_form(self):
+        """Return form with fields loaded from DB.
+
+        :param object resource: Optional resource object
+        :param bool edit_form: Set if edit form
+        """
+        form = ImportResourceForm()
+
+        session = self.session()
+
+        # query resource types
+        query = session.query(self.ResourceType) \
+            .order_by(self.ResourceType.list_order, self.ResourceType.name) \
+            .filter(self.ResourceType.name.in_(('layer', 'data', 'data_create', 'data_read', 'data_update', 'data_delete')))
+        resource_types_to_import_from_map = query.all()
+
+        session.close()
+
+        # set choices for import_type select field
+        form.import_type.choices = [
+            (t.name, t.description) for t in resource_types_to_import_from_map
+        ]
 
         return form
 
@@ -718,6 +754,118 @@ class ResourcesController(Controller):
             self.logger.error(msg)
             flash(msg, 'error')
 
+    def import_resources(self, id):
+        """Import child resources for a map:
+
+        * Import resources for a map
+
+        :param int id: Resource ID
+        """
+        self.setup_models()
+        template = '%s/import_form.html' % self.templates_dir
+        form = self.create_import_form()
+        title = "Import %s" % self.resource_name
+        action = url_for('import_%s_from_parent_map' % self.endpoint_suffix, id=id)
+
+        return render_template(
+            template, title=title, form=form, action=action, method='POST'
+        )
+
+    def import_resources_from_parent_map(self, id):
+        """Import layers for a map.
+
+        :param int id: Resource ID
+        """
+        self.setup_models()
+        form = self.create_import_form()
+        if form.validate_on_submit():
+            try:
+                # find resource
+                session = self.session()
+                parent_resource = self.find_resource(id, session)
+                if parent_resource is not None:
+                    # get config generator URL
+                    config_generator_service_url = self.handler().config().get(
+                        "config_generator_service_url",
+                        "http://qwc-config-service:9090"
+                    )
+                    type = form.import_type.data
+                    if parent_resource.type == 'map':
+
+                        # get map details from config generator service
+                        url = urljoin(
+                            config_generator_service_url, 'maps/%s' % parent_resource.name
+                        )
+                        tenant = self.handler().tenant
+                        response = requests.get(url, params={'tenant': tenant})
+                        if response.status_code != requests.codes.ok:
+                            self.logger.error(
+                                "Could not get map details from %s:\n%s" %
+                                (response.url, response.content)
+                            )
+                            flash(
+                                'Could not import layers: Status %s' %
+                                response.status_code, 'error'
+                            )
+                            return redirect(url_for(self.base_route))
+
+                        layers_from_config = response.json().get('layers', [])
+
+                        if layers_from_config:
+                            new_resources = []
+                            for layer in layers_from_config:
+                                query = session.query(self.Resource) \
+                                    .filter(self.Resource.name == layer) \
+                                    .filter(self.Resource.type == type) \
+                                    .filter(self.Resource.parent_id == parent_resource.id)
+                                resources = query.all()
+
+                                if not resources:
+                                    # resource does not exist in database so create new resource
+                                    resource = self.Resource()
+                                    resource.type = type
+                                    resource.name = layer
+                                    resource.parent_id = parent_resource.id
+                                    new_resources.append(resource)
+                                    session.add(resource)
+
+                            # commit resources
+                            session.commit()
+                            self.update_config_timestamp(session)
+
+                            if new_resources:
+                                flash(
+                                    '%d new resources have been added.' %
+                                    len(new_resources), 'success'
+                                )
+                            else:
+                                flash('No additional resources found.', 'info')
+
+                        else:
+                            # map not found or no layers
+                            flash('No layers found for this map.', 'warning')
+
+                    else:
+                        flash('Child import not supported for this resource type.',
+                            'warning')
+
+                else:
+                    # resource not found
+                    session.close()
+                    abort(404)
+
+                session.close()
+
+                return redirect(
+                    url_for('hierarchy_%s' % self.endpoint_suffix, id=id)
+                )                
+            except Exception as e:
+                msg = "Could not import resources: %s" % e
+                self.logger.error(msg)
+                flash(msg, 'error')
+        else:
+            flash('Could not import resources from %s.' % parent_resource,
+                  'warning')
 
 class AlchemyEncoder(json.JSONEncoder):
 
