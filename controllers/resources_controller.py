@@ -913,9 +913,14 @@ class ResourcesController(Controller):
                     url_for('hierarchy_%s' % self.endpoint_suffix, id=id)
                 )                
             except Exception as e:
+                if session:
+                    session.close()
                 msg = "Could not import resources: %s" % e
                 self.logger.error(msg)
                 flash(msg, 'error')
+                return redirect(
+                    url_for(self.base_route)
+                )
         else:
             flash('Could not import resources from %s.' % parent_resource,
                   'warning')
