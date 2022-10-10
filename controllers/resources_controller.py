@@ -372,11 +372,18 @@ class ResourcesController(Controller):
             .filter(self.ResourceType.name.in_(('layer', 'data', 'data_create', 'data_read', 'data_update', 'data_delete')))
         resource_types_to_import_from_map = query.all()
 
+        # query permission roles
+        roles = session.query(self.Role).order_by(self.Role.name).all()
+
         session.close()
 
         # set choices for import_type select field
         form.import_type.choices = [
             (t.name, t.description) for t in resource_types_to_import_from_map
+        ]
+        # set choices for permission_role_id select field
+        form.role_id.choices = [(0, "")] + [
+            (r.id, r.name) for r in roles
         ]
 
         return form
