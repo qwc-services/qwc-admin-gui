@@ -184,6 +184,11 @@
             <a href="{{ url_for('new_permission', resource_id=resource['id']) }}" class="btn btn-success" role="button">
               {{ utils.icon('plus') }} New Permission
             </a>
+            {% if resource['type'] == 'map' %}
+              <a href="{{ url_for('import_resource', id=resource['id']) }}" method="post" class="btn btn-success" role="button">
+                {{ utils.icon('plus') }} Import Resources
+              </a>
+            {% endif %}
           {% endif %}
           <form action="{{ url_for('destroy_%s' % endpoint_suffix, id=resource[pkey]) }}" method="post" style="display: inline;">
             <input type="hidden" name="_method" value="DELETE" />
