@@ -25,3 +25,7 @@ class ResourceForm(FlaskForm):
     parent_choices = []
 
     submit = SubmitField('Save')
+
+class ImportResourceForm(FlaskForm):
+    """Form for Import Resource from Map"""
+    import_type = SelectField('Type of resources to import from map', coerce=str)
