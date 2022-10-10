@@ -820,7 +820,9 @@ class ResourcesController(Controller):
 
                         if layers_from_config:
                             new_resources = []
+                            new_permissions = []
                             for layer in layers_from_config:
+                                # first query to know if resource already exists
                                 query = session.query(self.Resource) \
                                     .filter(self.Resource.name == layer) \
                                     .filter(self.Resource.type == type) \
@@ -836,6 +838,43 @@ class ResourcesController(Controller):
                                     new_resources.append(resource)
                                     session.add(resource)
 
+                                    # new query to get id of new resource
+                                    query = session.query(self.Resource) \
+                                        .filter(self.Resource.name == layer) \
+                                        .filter(self.Resource.type == type) \
+                                        .filter(self.Resource.parent_id == parent_resource.id)
+                                    resources = query.all()
+
+                                # handle permission for existing or new resource if role has been chosen
+                                role = form.role_id.data
+                                if role > 0:
+                                    for resource in resources:
+                                        resource_id = resource.__dict__.get('id')
+                                        # query resource permissions
+                                        query = session.query(self.Permission) \
+                                            .filter(self.Permission.resource_id == resource_id) \
+                                            .filter(self.Permission.role_id == role)
+
+                                        permissions = []
+                                        for permission in query.all():
+                                            permissions.append({
+                                                "role": permission.role.name,
+                                                "write": permission.write
+                                            })
+                                        if not permissions:
+                                            # create new permission for resource
+                                            permission = self.Permission()
+                                            session.add(permission)
+
+                                            # update permission
+                                            permission.priority = form.priority.data
+                                            permission.write = form.write.data
+
+                                            permission.role_id = role
+
+                                            permission.resource_id = resource_id
+                                            new_permissions.append(permission)                                
+
                             # commit resources
                             session.commit()
                             self.update_config_timestamp(session)
@@ -848,6 +887,13 @@ class ResourcesController(Controller):
                             else:
                                 flash('No additional resources found.', 'info')
 
+                            if new_permissions:
+                                flash(
+                                    '%d new permissions have been added.' %
+                                    len(new_permissions), 'success'
+                                )
+                            else:
+                                flash('No additional permissions found.', 'info')
                         else:
                             # map not found or no layers
                             flash('No layers found for this map.', 'warning')
