@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import SelectField, StringField, SubmitField
-from wtforms.validators import DataRequired, Optional
+from wtforms import BooleanField, IntegerField, SelectField, StringField, SubmitField
+from wtforms.validators import DataRequired, NumberRange, Optional
 
 
 class ResourceForm(FlaskForm):
@@ -29,3 +29,12 @@ class ResourceForm(FlaskForm):
 class ImportResourceForm(FlaskForm):
     """Form for Import Resource from Map"""
     import_type = SelectField('Type of resources to import from map', coerce=str)
+    role_id = SelectField('Role permission of resources to import from map', coerce=int)
+    priority = IntegerField(
+        'Priority',
+        validators=[
+            Optional(),
+            NumberRange(min=0, message="Priority must be greater or equal 0")
+        ]
+    )
+    write = BooleanField('Write')
