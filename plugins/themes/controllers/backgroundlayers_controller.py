@@ -86,7 +86,8 @@ class BackgroundLayersController():
         form = self.create_form(type, None)
 
         form.thumbnail.choices = ThemeUtils.get_mapthumbs(self.app, self.handler)
-        form.crs.choices = ThemeUtils.get_crs(self.app, self.handler)
+        if type == "xyz":
+            form.crs.choices = ThemeUtils.get_crs(self.app, self.handler)
 
         if form.validate_on_submit():
             try:
