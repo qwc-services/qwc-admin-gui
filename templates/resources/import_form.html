@@ -1,0 +1,31 @@
+{% import "bootstrap/wtf.html" as wtf %}
+{% extends "templates/base.html" %}
+
+{%- block styles %}
+  {{ super() }}
+  <link href="{{ url_for('static', filename='css/bootstrap-chosen.css') }}" rel="stylesheet">
+  <style type="text/css">
+    .chosen-container .chosen-results li.group-result.chosen-hidden {
+      display: none;
+    }
+  </style>
+{% endblock %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block container %}
+  <h1>{{ title }}</h1>
+
+  <form class="form form-horizontal" action="{{ action }}" method="post">
+    {% if method != 'POST' %}
+      <input type="hidden" name="_method" value="{{method}}" />
+    {% endif %}
+    {{ form.csrf_token }}
+    {{ wtf.form_field(form.import_type, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.role_id, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.priority, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.write, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    <button type="submit" class="col-sm-offset-2 btn btn-success btn-spin-on-click" data-spinning-msg="Importing resources...">
+      {{ utils.icon('download-alt') }} Import resources
+    </button>
+  </form>
+{% endblock %}
