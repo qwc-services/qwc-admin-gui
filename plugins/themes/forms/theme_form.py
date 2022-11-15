@@ -48,12 +48,11 @@ class ThemeForm(FlaskForm):
         description=("Additional CRS for the mouse coordinate display."),
         validators=[Optional()]
     )
-    searchProviders = StringField(
+    searchProviders = SelectMultipleField(
         "Search providers",
         description="List of available search providers.",
-        default=("coordinates"),
-        validators=[Regexp(r'^(\w+)(,\s*\w+)*$',
-                    message="Please enter a comma separted list of names.")]
+        validators=[Optional()],
+        default=("coordinates")
     )
     scales = StringField(
         "Scales",

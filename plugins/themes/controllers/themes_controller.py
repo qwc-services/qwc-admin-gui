@@ -377,12 +377,14 @@ class ThemesController:
             form = ThemeForm(url=theme["url"])
 
         crslist = ThemeUtils.get_crs(self.app, self.handler)
+        defaultSearchProvidersList = ThemeUtils.get_default_search_providers(self.app, self.handler)
 
         form.url.choices = [("", "---")] + ThemeUtils.get_projects(self.app, self.handler)
         form.thumbnail.choices = ThemeUtils.get_mapthumbs(self.app, self.handler)
         form.format.choices = ThemeUtils.get_format()
         form.mapCrs.choices = crslist
         form.additionalMouseCrs.choices = crslist
+        form.searchProviders.choices = defaultSearchProvidersList
         form.backgroundLayersList = self.get_backgroundlayers()
 
         if form.backgroundLayers.data:
@@ -423,13 +425,7 @@ class ThemesController:
             if "additionalMouseCrs" in theme:
                 form.additionalMouseCrs.data = theme["additionalMouseCrs"]
             if "searchProviders" in theme:
-                searchProviders = []
-                for provider in theme["searchProviders"]:
-                    if "key" in provider:
-                        searchProviders.append(provider["key"])
-                    else:
-                        searchProviders.append(provider)
-                form.searchProviders.data = ",".join(searchProviders)
+                form.searchProviders.data = theme["searchProviders"]
             if "scales" in theme:
                 form.scales.data = ", ".join(map(str, theme["scales"]))
             if "printScales" in theme:
@@ -524,8 +520,9 @@ class ThemesController:
 
         item["searchProviders"] = []
         if form.searchProviders.data:
-            for provider in form.searchProviders.data.split(","):
-                item["searchProviders"].append(provider)
+            item["searchProviders"] = form.searchProviders.data
+        else:
+            if "searchProviders" in item: del item["searchProviders"]
 
         if form.scales.data:
             item["scales"] = list(map(int, form.scales.data.replace(
