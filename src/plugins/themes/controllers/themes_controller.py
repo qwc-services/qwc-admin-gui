@@ -7,6 +7,7 @@ from qwc_services_core.config_models import ConfigModels
 
 from plugins.themes.forms import ThemeForm
 from plugins.themes.utils import ThemeUtils
+from utils import i18n
 
 
 class ThemesController:
@@ -152,19 +153,19 @@ class ThemesController:
 
         return render_template(
             "%s/themes.html" % self.template_dir, themes=themes,
-            endpoint_suffix="theme", title="Theme configuration"
+            endpoint_suffix="theme", title=i18n('plugins.themes.themes.title'), i18n=i18n
         )
 
     def new_theme(self, gid=None):
         """Show new theme form."""
         form = self.create_form()
         template = "%s/theme.html" % self.template_dir
-        title = "Create theme"
+        title = i18n('plugins.themes.themes.create_theme_title')
         action = url_for("create_theme", gid=gid)
 
         return render_template(
             template, title=title, form=form, action=action, gid=gid,
-            method="POST"
+            method="POST", i18n=i18n
         )
 
     def create_theme(self, gid=None):
@@ -173,24 +174,26 @@ class ThemesController:
         if form.validate_on_submit():
             try:
                 self.create_or_update_theme(None, form, gid=gid)
-                flash("Theme {0} created.".format(form.title.data),
+                flash("{0}: {1}.".format(
+                    i18n('plugins.themes.themes.create_theme_message_success'),form.title.data),
                       "success")
                 return redirect(url_for("themes"))
             except ValidationError:
-                flash("Could not create theme {0}.".format(
-                    form.title.data), "warning")
+                flash("{0} {1}.".format(
+                    i18n('plugins.themes.themes.create_theme_message_error'), form.title.data), "warning")
         else:
-            flash("Could not create theme {0}.".format(form.title.data),
+            flash("{0} {1}.".format(
+                i18n('plugins.themes.themes.create_theme_message_error'), form.title.data),
                   "warning")
 
         # show validation errors
         template = "%s/theme.html" % self.template_dir
-        title = "Theme configuration"
+        title = i18n('plugins.themes.themes.title')
         action = url_for("create_theme", gid=gid)
 
         return render_template(
             template, title=title, form=form, action=action, gid=gid,
-            method="POST"
+            method="POST", i18n=i18n
         )
 
     def edit_theme(self, tid, gid=None):
@@ -204,12 +207,12 @@ class ThemesController:
         if theme is not None:
             template = "%s/theme.html" % self.template_dir
             form = self.create_form(theme)
-            title = "Edit theme"
+            title = i18n('plugins.themes.themes.edit_theme_title')
             action = url_for("update_theme", tid=tid, gid=gid)
 
             return render_template(
                 template, title=title, form=form, action=action, theme=theme,
-                tid=tid, gid=gid, method="POST"
+                tid=tid, gid=gid, method="POST", i18n=i18n
             )
         else:
             # theme not found
@@ -230,24 +233,27 @@ class ThemesController:
                 try:
                     # update theme
                     self.create_or_update_theme(theme, form, tid=tid, gid=gid)
-                    flash("Theme {0} was updated.".format(
-                        form.title.data), "success")
+                    flash("{0} : {1}.".format(
+                        i18n('plugins.themes.themes.update_theme_message_success'), form.title.data), 
+                        "success")
                     return redirect(url_for("themes"))
                 except ValidationError:
-                    flash("Could not update theme {0}.".format(
-                        form.title.data), "warning")
+                    flash("{0} {1}.".format(
+                        i18n('plugins.themes.themes.update_theme_message_error'), form.title.data), 
+                        "warning")
             else:
-                flash("Could not update theme {0}.".format(
-                      form.title.data), "warning")
+                flash("{0} {1}.".format(
+                      i18n('plugins.themes.themes.update_theme_message_error'), form.title.data), 
+                      "warning")
 
             # show validation errors
             template = "%s/theme.html" % self.template_dir
-            title = "Update theme"
+            title = i18n('plugins.themes.themes.update_theme_title')
             action = url_for("update_theme", tid=tid, gid=gid)
 
             return render_template(
                 template, title=title, form=form, action=action, tid=tid,
-                gid=gid, method="POST"
+                gid=gid, method="POST", i18n=i18n
             )
 
         else:
@@ -276,8 +282,9 @@ class ThemesController:
             except InternalError as e:
                 flash("InternalError: %s" % e.orig, "error")
             except IntegrityError as e:
-                flash("Could not delete resource for map '{0}'!".format(
-                    resource.name), "warning")
+                flash("{0} '{1}'!".format(
+                    i18n('plugins.themes.themes.delete_theme_message_error'), resource.name), 
+                    "warning")
 
         self.save_themesconfig()
         return redirect(url_for("themes"))
@@ -361,16 +368,16 @@ class ThemesController:
 
     def save_themesconfig(self):
         if ThemeUtils.save_themesconfig(self.themesconfig, self.app, self.handler):
-            flash("Theme configuration was saved.", "success")
+            flash(i18n('plugins.themes.themes.save_theme_message_success'), "success")
         else:
-            flash("Could not save theme configuration.",
+            flash(i18n('plugins.themes.themes.save_theme_message_error'),
                   "error")
 
         return redirect(url_for("themes"))
 
     def reset_themesconfig(self):
         self.themesconfig = ThemeUtils.load_themesconfig(self.app, self.handler)
-        flash("Theme configuration reloaded from disk.", "warning")
+        flash(i18n('plugins.themes.themes.reload_theme_message'), "warning")
         return redirect(url_for("themes"))
 
     def find_theme(self, tid, gid=None):
@@ -658,8 +665,9 @@ class ThemesController:
                 except InternalError as e:
                     flash("InternalError: {0}".format(e.orig), "error")
                 except IntegrityError as e:
-                    flash("Resource for map '{0}' could not be edited!".format(
-                        resource.name), "warning")
+                    flash("{0}: '{1}'!".format(
+                        i18n('plugins.themes.themes.edit_theme_message_integrity_error'), resource.name), 
+                        "warning")
 
         # new theme
         else:
@@ -672,8 +680,9 @@ class ThemesController:
             except InternalError as e:
                 flash("InternalError: {0}".format(e.orig), "error")
             except IntegrityError as e:
-                flash("Resource for map '{0}' already exists!".format(
-                    resource.name), "warning")
+                flash("{0}: '{1}'!".format(
+                    i18n('plugins.themes.themes.create_theme_message_integrity_error'), resource.name), 
+                    "warning")
 
             if gid is None:
                 self.themesconfig["themes"]["items"].append(item)

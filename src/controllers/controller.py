@@ -8,6 +8,8 @@ from wtforms import ValidationError
 
 from qwc_services_core.config_models import ConfigModels
 
+from utils import i18n
+
 
 class Controller:
     """Controller base class
@@ -31,7 +33,7 @@ class Controller:
         :param Flask app: Flask application
         :param handler: Tenant config handler
         """
-        self.resource_name = resource_name
+        self.resource_name = i18n('interface.common.%s'% endpoint_suffix) or resource_name
         self.base_route = base_route
         self.endpoint_suffix = endpoint_suffix
         self.templates_dir = "templates/%s" % templates_dir
@@ -180,7 +182,7 @@ class Controller:
             endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey(),
             search_text=search_text, pagination=pagination,
             sort=sort, sort_asc=sort_asc,
-            base_route=self.base_route
+            base_route=self.base_route, i18n=i18n
         )
 
     # new
@@ -190,11 +192,11 @@ class Controller:
         self.setup_models()
         template = '%s/form.html' % self.templates_dir
         form = self.create_form()
-        title = "Add %s" % self.resource_name
+        title = "%s %s" % (i18n('interface.common.add'), self.resource_name)
         action = url_for('create_%s' % self.endpoint_suffix)
 
         return render_template(
-            template, title=title, form=form, action=action, method='POST'
+            template, title=title, form=form, action=action, method='POST', i18n=i18n
         )
 
     # create
@@ -211,7 +213,7 @@ class Controller:
                 session.commit()
                 self.update_config_timestamp(session)
                 session.close()
-                flash('%s has been created.' % self.resource_name, 'success')
+                flash('%s %s' % (self.resource_name, i18n('interface.main.new_resource_message_success')), 'success')
 
                 return redirect(url_for(self.base_route))
             except InternalError as e:
@@ -219,19 +221,21 @@ class Controller:
             except IntegrityError as e:
                 flash('IntegrityError: %s' % e.orig, 'error')
             except ValidationError as e:
-                flash('Could not create %s.' %
-                      self.resource_name, 'warning')
+                flash('%s %s.' % (
+                      i18n('interface.main.new_resource_message_error'), self.resource_name), 
+                      'warning')
         else:
-            flash('Could not create %s.' % self.resource_name,
+            flash('%s %s.' % (
+                i18n('interface.main.new_resource_message_error'), self.resource_name),
                   'warning')
 
         # show validation errors
         template = '%s/form.html' % self.templates_dir
-        title = "Add %s" % self.resource_name
+        title = "%s %s" % (i18n('interface.common.add'), self.resource_name)
         action = url_for('create_%s' % self.endpoint_suffix)
 
         return render_template(
-            template, title=title, form=form, action=action, method='POST'
+            template, title=title, form=form, action=action, method='POST', i18n=i18n
         )
 
     # edit
@@ -260,12 +264,12 @@ class Controller:
             template = '%s/form.html' % self.templates_dir
             form = self.create_form(resource, True)
             session.close()
-            title = "Edit %s" % self.resource_name
+            title = "%s %s" % (i18n('interface.common.edit'), self.resource_name)
             action = url_for('update_%s' % self.endpoint_suffix, id=id)
 
             return render_template(
                 template, title=title, form=form, action=action, id=id,
-                method='PUT'
+                method='PUT', i18n=i18n
             )
         else:
             # resource not found
@@ -293,7 +297,7 @@ class Controller:
                     session.commit()
                     self.update_config_timestamp(session)
                     session.close()
-                    flash('%s has been updated.' % self.resource_name,
+                    flash('%s %s' % (self.resource_name, i18n('interface.main.update_resource_message_success')),
                           'success')
 
                     return redirect(url_for(self.base_route))
@@ -302,21 +306,23 @@ class Controller:
                 except IntegrityError as e:
                     flash('IntegrityError: %s' % e.orig, 'error')
                 except ValidationError as e:
-                    flash('Could not update %s.' %
-                          self.resource_name, 'warning')
+                    flash('%s %s.' % (
+                          i18n('interface.main.update_resource_message_error'), self.resource_name), 
+                          'warning')
             else:
-                flash('Could not update %s.' %
-                      self.resource_name, 'warning')
+                flash('%s %s.' % (
+                      i18n('interface.main.update_resource_message_error'), self.resource_name), 
+                      'warning')
 
             session.close()
 
             # show validation errors
             template = '%s/form.html' % self.templates_dir
-            title = "Edit %s" % self.resource_name
+            title = "%s %s" % (i18n('interface.common.edit'), self.resource_name)
             action = url_for('update_%s' % self.endpoint_suffix, id=id)
 
             return render_template(
-                template, title=title, form=form, action=action, method='PUT'
+                template, title=title, form=form, action=action, method='PUT', i18n=i18n
             )
         else:
             # resource not found
@@ -349,7 +355,8 @@ class Controller:
                 self.destroy_resource(resource, session)
                 session.commit()
                 self.update_config_timestamp(session)
-                flash('%s has been deleted.' % self.resource_name, 'success')
+                flash('%s %s' % (self.resource_name, i18n('interface.main.delete_resource_message_success')), 
+                'success')
             except InternalError as e:
                 flash('InternalError: %s' % e.orig, 'error')
             except IntegrityError as e:

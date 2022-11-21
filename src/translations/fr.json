@@ -1,0 +1,334 @@
+{
+  "locale": "fr",
+  "registration_requests": {
+    "user_notification": {
+      "subject": "Mise à jour de vos autorisations",
+      "salutation": "Bonjour %(username)s",
+      "user_added_to_groups": "Vous avez été ajouté aux groupes suivants:",
+      "user_removed_from_groups": "Vous avez été supprimé des groupes suivants:",
+      "user_requests_declined": "Votre demande pour rejoindre les groupes suivant a été rejetée:",
+      "footer": ""
+    }
+  },
+  "interface": {
+    "common": {
+      "type": "Type",
+      "url": "URL",
+      "name": "Nom",
+      "title": "Titre",
+      "description": "Description",
+      "group": "Groupe",
+      "id": "ID",
+      "user": "Utilisateur",
+      "add": "Ajouter", 
+      "edit": "Modifier", 
+      "permission": "Permission",
+      "new_permission": "Nouvelle Permission", 
+      "import_resources": "Importer les ressources",
+      "remove": "Supprimer",
+      "confirm_message_remove": "Voulez-vous supprimer la ressource?",
+      "message_required": "Ce champ est obligatoire.",
+      "ph_search": "Recherche",
+      "users": "Utilisateurs",
+      "assigned_users": "Utilisateurs assignés",
+      "group_members": "Membres du groupe",
+      "roles": "Rôles",
+      "role": "Rôle",
+      "assigned_roles": "Rôles assignés",
+      "groups": "Groupes",
+      "assigned_groups": "Groupes assignés",
+      "resource": "Ressource",
+
+      "form_submit": "Enregistrer",
+      "form_name_error": "Ce nom existe déjà.",
+      "form_priority": "Priorité",
+      "form_priority_message": "La priorité doit être supérieure ou égale à 0"
+    },
+    "main": {
+      "title": "Administration QWC",
+      "subtitle": "Outil d'administration pour les services QWC",
+
+      "home_title": "Accueil",
+      "generate_configs": "Générer la configuration des services",
+      "logout": "Déconnexion",
+      "registration_title" : "Enregistrement",
+
+      "new_resource_message_success": "a été créé.",
+      "new_resource_message_error": "Impossible de créer",
+      "update_resource_message_success": "a été modifié.",
+      "update_resource_message_error": "Impossible de modifier",
+      "delete_resource_message_success": "a été supprimé.",
+
+      "per_page": "par page"
+    },
+    "groups": {
+      "title": "Groupes",
+      "confirm_message_delete": "Voulez-vous supprimer ce groupe?",
+      "new_group": "Nouveau groupe"
+    },
+    "permissions": {
+      "title": "Permissions",
+      "type_filter": "Filtrer le type",
+      "role_filter": "Filtrer le rôle",
+      "all": "Tout", 
+      "ph_select_resource": "Sélectionner une ressource",
+      "resource_type": "Type de ressource",
+      "priority": "Priorité",
+      "write": "Ecriture",
+      "confirm_message_delete": "Voulez-vous supprimer la permission?"
+    },
+    "registrable_groups": {
+      "title": "Groupes enregistrables",
+      "new_registrable_group": "Nouveau Groupe enregistrable",
+      "confirm_message_delete": "Voulez-vous supprimer ce groupe enregistrable?"
+    },
+    "registration_requests": {
+      "title": "Demandes d'enregistrement en attente",
+      "registration_requests": "Demandes d'enregistrements",
+      "email": "Email",
+      "registrable_group": "Groupe enregistrable",
+      "created_at": "Créé le",
+      "skip": "Passer",
+      "accept": "Accepter",
+      "reject": "Rejeter",
+      "remove_from_group": "Supprimer du groupe",
+      "reject_request": "Demande de rejet",
+      "add_to_group": "Ajouter au groupe",
+      "group": "Groupe enregistrables demandés",
+      "confirm_message_delete": "Voulez-vous suppirmer la demande d'enregistrement?",
+
+      "send_message_success": "L'utilisateur a été notifié de la mise à jour du statut de sa demande d'enregistrement.",
+      "send_message_error": "Echec lors de l'envoi de la notification à l'utilisateur:",
+
+      "form_action": "Action",
+      "form_submit": "Mettre à jour l'appartenance aux groupes"
+    },
+    "resources": {
+      "title": "Ressources",
+      "parent_resource": "Ressource parent",
+      "ph_resource": "Sélectionner une ressource",
+      "import_layers": "Importer les couches",
+      "message_import_layers": "Import des couches...",
+      "new_resource": "Nouvelle ressource",
+      "type_filter": "Filtrer le type",
+      "all": "Tout", 
+      "parent": "Parent",
+      "check_unused":"Vérifier les ressources inutilisées",
+      "import_maps": "Importer les cartes",
+      "message_import_maps": "Import des cartes...",
+      "message_not_referenced": "La resource n'a été trouvée dans aucune configuration de service",
+      "import_maps_message_error": "Impossible d'importer les cartes:",
+      "add_maps_message_success": "nouvelles cartes ont été ajoutées.",
+      "add_maps_message_error": "Aucune autre carte trouvée.",
+      "import_layers_message_error": "Impossible d'importer les couches:",
+      "add_layers_message_success": "nouvelles couches ont été ajoutées.",
+      "add_layers_message_error": "Aucune autre couche trouvée.",
+      "add_layers_map_message_error": "Aucune autre couche trouvée pour cette carte.",
+
+      "hierarchy_title": "Hierarchie des resources",
+      "permissions": "Permissions",
+      "resource_permissions": "Permissions des resources",
+      "remove_cascaded": "Supprimer en cascade",
+      "confirm_message_remove_cascaded": "Voulez-vous supprimer la ressource et ses enfants?",
+      "add_permissions_message_success": "nouvelles permissions ont été ajoutées.",
+      "add_permissions_message_error": "Aucun autre permission trouvée.",
+
+      "import_resources": "Importer les ressources",
+      "import_resources_title": "Importer",
+      "import_children_message_error": "L'import des enfants n'est pas supporté pour ce type de ressource.",
+      "import_resources_message_error": "Impossible d'importer les ressources:",
+      "import_resources_parent_message_error": "Impossible d'importer les ressources depuis",
+      "add_resources_message_success": "nouvelles ressources ont été ajoutées.",
+      "add_resources_message_error": "Aucun autre ressource n'a été trouvée.",
+
+      "confirm_message_delete": "Voulez-vous supprimer la ressource?",
+
+      "form_import_type": "Type de ressources à importer depuis la carte",
+      "form_role": "Permission du rôle des ressources à importer depuis la carte",
+      "form_write": "Ecriture"
+    },
+    "roles": {
+      "title": "Rôles",
+      "new_role": "Nouveau rôle",
+      "confirm_message_delete": "Voulez-vous supprimer ce rôle?"
+    },
+    "users": {
+      "title": "Utilisateurs",
+      "user_info": "Information utilisateur",
+      "authentication": "Authenticafition",
+      "groups_roles": "Groupes et rôles",
+      "new_user": "Nouvel utilisateur",
+      "confirm_message_delete": "Voulez-vous supprimer cet utilisateur?", 
+
+      "form_name": "Nom de l'utilisateur",
+      "form_email": "Email",
+      "form_password": "Mot de passe",
+      "form_password_repeat": "Répéter le mot de passe",
+      "form_totp": "TOTP secret",
+      "form_last_sign_in": "Dernière connexion",
+      "form_failed_login": "Nombre de tentatives de connexion infructueuses",
+      "form_failed_login_message": "Le nombre doit être supérieur ou égal à 0",
+      "form_email_error": "Utilisez une adresse email différente SVP."
+    }
+
+  },
+  "plugins": {
+    "themes": {
+      "common":{
+        "title": "Thèmes",
+        "layer": "Couche",
+        "delete_layer": "Supprimer la couche",
+        "confirm_message_delete_layer" : "Voulez-vous vraiment supprimer la couche",
+        "connect": "Connecter",
+        "crs": "CRS",
+        "format": "Format",
+
+        "form_attribution": "Attribution",
+        "form_thumbnail": "Miniature",
+        "form_submit": "Enregistrer"
+      },
+      "backgroundlayers": {
+        "title": "Fonds de plan",
+        "create_title": "Ajouter un fond de plan",
+        "create_message_error": "Impossible de créer le fond de plan",
+        "edit_title": "Modifier un fond de plan",
+        "update_message_error": "Impossible de modifier le fond de plan",
+        "delete_message_error": "Impossible de supprimer ce fond de plan.",
+        "delete_message_success": "Fond de plan supprimé.",
+        "action_updated": "mis à jour",
+        "action_created": "créé",
+        "save_action_message_success": "Fond de plan",
+        "save_action_message_error": "Impossible d'enregistrer le fond de plan",
+
+        "new_wms_layer": "Nouvelle couche WMS",
+        "new_wmts_layer": "Nouvelle couche WMTS",
+        "new_xyz_layer": "Nouvelle couche WYZ",
+        "edit_layer": "Modifier la couche"
+      },
+      "files": {
+        "title": "Envoyer des fichiers",
+        "project_upload_message_success": "Projet envoyé avec succès ",
+        "project_upload_message_error": "Impossible d'envoyer le projet",
+        "project_save_message_error": "Impossible d'enregistrer ce projet.",
+        "project_delete_message_error": "Impossible de supprimer ce projet.",
+        "file_upload_message_success": "Fichier envoyé avec succès",
+        "file_extract_message_success": "et extrait",
+        "file_upload_message_error": "Impossible d'envoyer le fichier",
+        "file_save_message_error": "Impossible d'enregistrer ce fichier.",
+        "file_delete_message_error": "Impossible de supprimer ce fichier.",
+
+        "qgis_projects": "Projets QGIS",
+        "project": "Projet",
+        "delete_project": "Supprimer le projet",
+        "confirm_message_delete_project": "Voulez-vous vraiment supprimer",
+        "geospatial_file": "Fichiers Geospatiaux",
+
+        "form_submit": "Envoyer",
+        "form_layer_file": "Couche Géospatiale",
+        "form_layer_allowed": "Choisir uniquement un fichier géospatial svp",
+        "form_project_file": "Projet QGIS",
+        "form_project_allowed": "Choisir uniquement un projet QGS svp!"
+      },
+      "mapthumbs": {
+        "title": "Miniatures",
+        "upload_message_success": "Miniature envoyée avec succès",
+        "upload_message_error": "La miniature n'a pas pu être envoyée",
+        "save_message_error": "La miniature n'a pas pu être enregistrée.",
+        "delete_message_error": "La miniature n'a pas pu être supprimée.",
+
+        "delete_mapthumb": "Supprimer la miniature",
+        "confirm_message_delete_mapthumb": "Voulez-vous vraiment supprimer",
+
+        "form_submit": "Envoyer",
+        "form_file": "Image",
+        "form_allowed": "Choisir uniquement des fichiers jpg ou png svp!"
+      },
+      "themes": {
+        "title": "Configuration des thèmes",
+        "create_theme_title": "Créer un thème",
+        "create_theme_message_success": "Thème créé",
+        "create_theme_message_error": "Impossible de créer le thème",
+        "create_theme_message_integrity_error": "La ressource pour cette carte existe déjà",
+        "edit_theme_title": "Modifier le thème",
+        "edit_theme_message_integrity_error": "La ressource pour cette carte ne peut pas être modifiée",
+        "update_theme_title": "Modification d'un thème",
+        "update_theme_message_success": "Thème modifié",
+        "update_theme_message_error": "Impossible de modifier le thème",
+        "delete_theme_message_error": "Impossible de supprimer la ressource pour la carte",
+        "save_theme_message_success": "Configuration du thème enregistrée.",
+        "save_theme_message_error": "Impossible d'enregistrer la configuration de ce thème.",
+        "reload_theme_message": "La configuration du thème a été rechargée.",
+
+        "themes": "Thèmes",
+        "new_theme": "Nouveau thème",
+        "theme": "Thème",
+        "copy_url": "Copier l'url",
+        "move_up": "Déplacer le thème vers le haut",
+        "move_down": "Déplacer le thème vers le bas",
+        "edit_theme": "Modifier le thème",
+        "delete_theme": "",
+        "confirm_message_delete_theme": "Voulez-vous vraiment supprimer ce thème",
+
+        "theme_groups": "Groupes de thèmes",
+        "new_group": "Nouveau groupes de thèmes",
+        "group_title": "Titre",
+        "group_title_edit": "Modifier le titre",
+        "group_move_up": "Déplacer le groupe de thèmes vers le haut",
+        "group_move_down": "Déplacer le groupe de thèmes vers le bas",
+        "group_delete": "Supprimer le groupe de thèmes",
+        "group_confirm_message_delete": "Voulez-vous vraiment supprimer ce groupe de thèmes"
+      },
+      "theme": {
+        "background_layer" : "Fonds de plan",
+        "print_layer" : "Couches d'impression",
+        "print_layer_message": "(Optionnel): Nom de la couche du projet QGIS qui doit être utilisée lors de l'impression.",
+        "background_layer_message": "(Optionnel): Visibilité initiale de ce fond de plan au moment du chargement du thème.",
+
+        "form_url": "Projet",
+        "form_title_description": "Personnalisation du titre du thème.",
+        "form_attribution_description": "L'attribution du thème, est affuchéd ans le coin en bas à droite de la carte.",
+        "form_thumbnail_description": "Nom du fichier de la miniature du thème. Par défaut, la miniature est autogénérée grâce à un GetMap WMS.",
+        "form_format_description": "Le format d'image est obligatoire pour le service WMS. Par défaut, 'image/png'.",
+        "form_crs_description": "Projection de la carte.",
+        "form_additionalMouseCrs": "CRS add.",
+        "form_additionalMouseCrs_description": "CRS additionnels pour l'affichage des coordonnées de la souris.",
+        "form_searchProviders": "Fournisseurs de recherche",
+        "form_searchProviders_description": "Liste des fournisseurs de recherche disponibles.",
+        "form_scales": "Echelles",
+        "form_scales_description": "Liste des échelles disponibles sur la carte.",
+        "form_scales_message": "SVP, entrer une liste de nombres séparés par une virgule.",
+        "form_printScales": "Echelles d'impression",
+        "form_printScales_description": "Liste des échelles d'impression disponibles.",
+        "form_printScales_message": "SVP, entrer une liste de nombres séparés par une virgule.",
+        "form_printResolutions": "Print resolutions",
+        "form_printResolutions_description": "Liste des résolutions d'impression disponibles.",
+        "form_printResolutions_message": "SVP, entrer une liste de nombres séparés par une virgule.",
+        "form_printLabelBlacklist": "Liste des composeurs d'impression exclus",
+        "form_printLabelBlacklist_description": "Optionnel, liste des identifiants des composeurs d'impression qui ne doivent pas être proposés dans la fenêtre d'impression.",
+        "form_printLabelBlacklist_message": "SVP, entrer une liste de noms séparés par une virgule.",
+        "form_collapseLayerGroupsBelowLevel": "Replier les groupes de couches à partir du niveau",
+        "form_collapseLayerGroupsBelowLevel_description": "Optionnel, niveau de l'arborescence sous lequel les groupes doivent être replié initialement. Par défaut toute l'arborescence est dépliée.",
+        "form_default": "Par défaut",
+        "form_default_description": "Utiliser ce thème comme thème ouvert par défaut.",
+        "form_tiled": "Tuilé",
+        "form_tiled_description": "Tuiler les couches",
+        "form_mapTips": "Activer l'infobulle par défaut",
+        "form_mapTips_description": "Activer l'infobulle par défaut sur ce thème",
+        "form_skipEmptyFeatureAttributes": "Ne pas afficher les attributs vides",
+        "form_skipEmptyFeatureAttributes_descritpion": "Optionnel, ne pas afficher les attributs vides des objets lors de l'identification. Faux par défaut."
+      },
+      "wmslayer": {
+        "capabilities_url": "URL des capacités WMS",
+
+        "form_tiled": "tuilé"
+      },
+      "wmtslayer": {
+        "capabilities_url": "URL des capacités WMTS", 
+        "style": "Style",
+        "tilematrix": "Matrice tuilée",
+
+        "form_with_capabilities": "Enregistrer les capacités? (Uniquement nécessaire pour les QGIS Server WMTS!)"
+      }
+    }
+  }
+}

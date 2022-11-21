@@ -2,22 +2,23 @@ from flask_wtf import FlaskForm
 from wtforms import SelectMultipleField, StringField, SubmitField, \
     TextAreaField, ValidationError
 from wtforms.validators import DataRequired, Optional
+from utils import i18n
 
 
 class RoleForm(FlaskForm):
     """Main form for Role GUI"""
-    name = StringField('Name', validators=[DataRequired()])
-    description = TextAreaField('Description', validators=[Optional()])
+    name = StringField(i18n('interface.common.name'), validators=[DataRequired()])
+    description = TextAreaField(i18n('interface.common.description'), validators=[Optional()])
     groups = SelectMultipleField(
-        'Assigned groups',
+        i18n('interface.common.assigned_groups'),
         coerce=int, validators=[Optional()]
     )
     users = SelectMultipleField(
-        'Assigned users',
+        i18n('interface.common.assigned_users'),
         coerce=int, validators=[Optional()]
     )
 
-    submit = SubmitField('Save')
+    submit = SubmitField(i18n('interface.common.form_submit'))
 
     def __init__(self, config_models, **kwargs):
         """Constructor
@@ -42,4 +43,4 @@ class RoleForm(FlaskForm):
         role = query.first()
         session.close()
         if role is not None:
-            raise ValidationError('Name has already been taken.')
+            raise ValidationError(i18n('interface.common.form_name_error'))

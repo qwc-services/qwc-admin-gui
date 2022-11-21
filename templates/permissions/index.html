@@ -1,0 +1,83 @@
+{% extends "templates/base_index.html" %}
+
+{% block title %}{{ i18n('interface.permissions.title') }} {% endblock %}
+
+{% block buttons %}
+  <a href="{{ url_for('new_%s' % endpoint_suffix) }}" class="btn btn-success" role="button">
+    {{ utils.icon('plus') }} {{ i18n('interface.common.new_permission') }} 
+  </a>
+
+  <div class="btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+{{ i18n('interface.permissions.role_filter') }}: {{ active_role if active_role is not none and active_role != 'all' else 'All' }} <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li role="presentation" class="{{ 'active' if active_role is none or active_role == 'all' }}">
+        <a href="{{ url_for('permissions', role='all', type=active_resource_type) }}">{{ i18n('interface.permissions.all') }} </a>
+      </li>
+      <li role="separator" class="divider"></li>
+      {% for role in roles %}
+        <li class="{{ 'active' if role.name == active_role }}">
+          <a href="{{ url_for('permissions', role=role.name, type=active_resource_type) }}">{{ role.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+{{ i18n('interface.permissions.type_filter') }}: {{ resource_types[active_resource_type] if active_resource_type is not none else 'All' }} <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li role="presentation" class="{{ 'active' if active_resource_type is none or active_resource_type == 'all' }}">
+        <a href="{{ url_for('permissions', role=active_role, type='all') }}">{{ i18n('interface.permissions.all') }} </a>
+      </li>
+      <li role="separator" class="divider"></li>
+      {% for resource_type in resource_types %}
+        <li class="{{ 'active' if resource_type == active_resource_type }}">
+          <a href="{{ url_for('permissions', role=active_role, type=resource_type) }}">{{ resource_types[resource_type] }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="btn-group search-group">
+    <form action="{{ url_for(base_route) }}" method="get">
+      {% if active_role %}
+        <input type="hidden" name="role" value="{{ active_role }}" />
+      {% endif %}
+      {% if active_resource_type %}
+        <input type="hidden" name="type" value="{{ active_resource_type }}" />
+      {% endif %}
+      <div class="input-group">
+        <input name="search" type="text" class="form-control" placeholder="{{ i18n('interface.common.ph_search') }}" value="{{ search_text if search_text }}">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="submit">{{ utils.icon('search') }}</button>
+        </span>
+      </div>
+    </form>
+  </div>
+{% endblock %}
+
+{% block table_headers %}
+  <th>{{ sortable_column(i18n('interface.common.id') , 'id') }}</th>
+  <th>{{ sortable_column(i18n('interface.common.role'), 'role') }}</th>
+  <th>{{ sortable_column(i18n('interface.permissions.resource_type'), 'type') }}</th>
+  <th>{{ sortable_column(i18n('interface.common.resource'), 'resource') }}</th>
+  <th>{{ sortable_column(i18n('interface.permissions.priority'), 'priority') }}</th>
+  <th>{{ sortable_column(i18n('interface.permissions.write'), 'write') }}</th>
+{% endblock %}
+
+{% block resource_fields %}
+  <td>{{ resource.id }}</td>
+  <td>{{ resource.role.name }}</td>
+  <td>{{ resource_types[resource.resource.type] }}</td>
+  <td>{{ resource.resource.name }}
+    {% if resource.resource.parent %}
+      (<i>{{ parents_dict[resource.resource.parent.id] }}</i>)</td>
+    {% endif %}
+  <td>{{ resource.priority }}</td>
+  <td>{{ resource.write }}</td>
+{% endblock %}
+
+{% block delete_resource_confirmation %}{{ i18n('interface.permissions.confirm_message_delete') }}{% endblock %}

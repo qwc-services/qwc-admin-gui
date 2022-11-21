@@ -1,12 +1,12 @@
 {% extends "templates/base_index.html" %}
 
-{% block title %}Groups{% endblock %}
+{% block title %}{{ i18n('interface.groups.title') }}{% endblock %}
 
-{% block new_resource_label %}New Group{% endblock %}
+{% block new_resource_label %}{{ i18n('interface.groups.new_group') }}{% endblock %}
 
 {% block table_headers %}
-  <th>{{ sortable_column("ID", 'id') }}</th>
-  <th>{{ sortable_column("Name", 'name') }}</th>
+  <th>{{ sortable_column(i18n('interface.common.id'), 'id') }}</th>
+  <th>{{ sortable_column(i18n('interface.common.name'), 'name') }}</th>
 {% endblock %}
 
 {% block resource_fields %}
@@ -14,4 +14,4 @@
   <td>{{ resource.name }}</td>
 {% endblock %}
 
-{% block delete_resource_confirmation %}Remove group?{% endblock %}
+{% block delete_resource_confirmation %}{{ i18n('interface.groups.confirm_message_delete') }}{% endblock %}

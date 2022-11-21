@@ -1,0 +1,129 @@
+{% extends "templates/base_index.html" %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{ url_for('static', filename='js/chosen.jquery.min.js') }}"></script>
+<script type="text/javascript">
+  const select_all = document.getElementById("select_all");
+  const btn_remove_selected = document.getElementById("btn_remove_selected");
+  const checkboxes = document.getElementsByName("resource_checkbox");
+  let selected = 0;
+  select_all.addEventListener("click", function () {
+    for (let i = 0; i<checkboxes.length;i++) {
+      checkboxes[i].checked = select_all.checked
+    }
+    if (select_all.checked) {
+      selected = checkboxes.length;
+    } else {
+      selected = 0;
+    }
+    btn_remove_selected.disabled = selected <= 0;
+  });
+  checkboxes.forEach(item => {
+    item.addEventListener("click", function() {
+      if (item.checked) {
+        selected = selected + 1;
+      } else {
+        selected = selected - 1;
+      }
+      btn_remove_selected.disabled = selected <= 0;
+    })
+  });
+</script>
+{% endblock %}
+
+{% block title %}{{ i18n('interface.resources.title') }}{% endblock %}
+
+{% block buttons %}
+  <a href="{{ url_for('new_%s' % endpoint_suffix, type=active_resource_type) }}" class="btn btn-success" role="button">
+    {{ utils.icon('plus') }} {{ i18n('interface.resources.new_resource') }}
+  </a>
+
+  <div class="btn-group">
+    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+{{ i18n('interface.resources.type_filter') }}: {{ resource_types[active_resource_type] if active_resource_type is not none else 'All' }} <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li role="presentation" class="{{ 'active' if active_resource_type is none or active_resource_type == 'all' }}">
+        <a href="{{ url_for('resources', type='all') }}">{{ i18n('interface.resources.all') }}</a>
+      </li>
+      <li role="separator" class="divider"></li>
+      {% for resource_type in resource_types %}
+        <li class="{{ 'active' if resource_type == active_resource_type }}">
+          <a href="{{ url_for('resources', type=resource_type, check_unused=check_unused) if check_unused else url_for('resources', type=resource_type) }}">{{ resource_types[resource_type] }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <div class="btn-group search-group">
+    <form action="{{ url_for(base_route) }}" method="get">
+      {% if active_resource_type %}
+        <input type="hidden" name="type" value="{{ active_resource_type }}" />
+      {% endif %}
+      {% if check_unused %}
+        <input type="hidden" name="check_unused" value="{{ check_unused }}" />
+      {% endif %}
+      <div class="input-group">
+        <input name="search" type="text" class="form-control" placeholder="{{ i18n('interface.common.ph_search') }}" value="{{ search_text if search_text }}">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="submit">{{ utils.icon('search') }}</button>
+        </span>
+      </div>
+    </form>
+  </div>
+
+{% if have_config_generator %}
+  <form action="{{ url_for('import_maps_%s' % endpoint_suffix) }}" method="post" style="display: inline;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+    <button id="import_maps" type="submit" class="btn btn-success btn-spin-on-click" data-spinning-msg="{{ i18n('interface.resources.message_import_maps') }}">
+      {{ utils.icon('download-alt') }} {{ i18n('interface.resources.import_maps') }}
+    </button>
+  </form>
+
+  <a href="{{ url_for('resources', check_unused=True) }}" class="btn btn-success" role="button">
+    {{ utils.icon('warning-sign') }} {{ i18n('interface.resources.check_unused') }}
+  </a>
+{% endif %}
+
+<form action="{{ url_for('destroy_multiple_%s' % endpoint_suffix) }}" method="post" style="display: inline;">
+  <input type="hidden" name="_method" value="DELETE" />
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+  <button type="submit" class="btn btn-danger" id="btn_remove_selected" disabled="false" onclick="return confirm('{% block delete_selected_resources_confirmation %}Remove selected resources?{% endblock %}');">
+    {{ utils.icon('remove') }} Remove selected
+  </button>
+{% endblock %}
+
+{% block table_headers %}
+  <th>
+    <input type="checkbox" id="select_all">
+  </th>
+  <th>{{ sortable_column(i18n('interface.common.id'), 'id') }}</th>
+  <th>{{ sortable_column(i18n('interface.common.type'), 'type') }}</th>
+  <th>{{ sortable_column(i18n('interface.common.name'), 'name') }}</th>
+  <th>{{ i18n('interface.resources.parent') }}</th>
+{% endblock %}
+
+{% block resource_fields %}
+  <td>
+    <input type="checkbox" id="checkbox_{{ resource.id }}" name="resource_checkbox" value="{{ resource.id }}">
+  </td>
+  <td>{{ resource.id }}</td>
+  <td>{{ resource_types[resource.type] }}</td>
+  {% if check_unused and resource.not_referenced is true %}
+    <td data-toggle="tooltip" title="{{ i18n('interface.resources.message_not_referenced') }}">{{ utils.icon('warning-sign') }} {{ resource.name }}</td>
+  {% else %}
+    <td>{{ resource.name }}</td>
+  {% endif %}
+  <td>
+    <a href="{{ url_for('hierarchy_%s' % endpoint_suffix, id=resource[pkey]) }}" class="btn btn-default btn-xs" role="button" title="{{ i18n('interface.resources.resource_hierarchy_title') }}">
+      {{ utils.icon('list') }}
+    </a>
+    {% if resource.parent %}
+      {{ resource.parent.name }} ({{ resource_types[resource.parent.type] }})
+    {% endif %}
+  </td>
+{% endblock %}
+</form>
+
+{% block delete_resource_confirmation %}{{ i18n('interface.resources.confirm_message_delete') }}{% endblock %}

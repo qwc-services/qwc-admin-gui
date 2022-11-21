@@ -1,12 +1,12 @@
 {% extends "templates/base_index.html" %}
 
-{% block title %}Pending Registration Requests{% endblock %}
+{% block title %}{{ i18n('interface.registration_requests.title') }}{% endblock %}
 
 {% block buttons %}
   <div class="btn-group search-group">
     <form action="{{ url_for(base_route) }}" method="get">
       <div class="input-group">
-        <input name="search" type="text" class="form-control" placeholder="Search" value="{{ search_text if search_text }}">
+        <input name="search" type="text" class="form-control" placeholder="{{ i18n('interface.common.ph_search') }}" value="{{ search_text if search_text }}">
         <span class="input-group-btn">
           <button class="btn btn-default" type="submit">{{ utils.render_icon('search') }}</button>
         </span>
@@ -16,10 +16,10 @@
 {% endblock %}
 
 {% block table_headers %}
-  <th>{{ sortable_column("ID", 'id') }}</th>
-  <th>{{ sortable_column("User", 'user') }}</th>
-  <th>{{ sortable_column("Requested registrable group", 'group') }}</th>
-  <th>{{ sortable_column("Created at", 'created') }}</th>
+  <th>{{ sortable_column(i18n('interface.common.id'), 'id') }}</th>
+  <th>{{ sortable_column(i18n('interface.common.user'), 'user') }}</th>
+  <th>{{ sortable_column(i18n('interface.registration_requests.group'), 'group') }}</th>
+  <th>{{ sortable_column(i18n('interface.registration_requests.created_at'), 'created') }}</th>
 {% endblock %}
 
 {% block resource_fields %}
@@ -32,4 +32,4 @@
   <td>{{ resource.created_at.strftime("%Y-%m-%d %H:%M:%S") }}</td>
 {% endblock %}
 
-{% block delete_resource_confirmation %}Remove registration request?{% endblock %}
+{% block delete_resource_confirmation %}{{ i18n('interface.registration_requests.confirm_message_delete') }}{% endblock %}

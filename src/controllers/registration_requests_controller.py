@@ -6,16 +6,17 @@ from sqlalchemy.orm import joinedload
 from .controller import Controller
 from forms import RegistrationRequestForm
 
+from utils import i18n
+
 
 class RegistrationRequestsController(Controller):
     """Controller for registration request model"""
 
-    def __init__(self, app, handler, i18n, mail):
+    def __init__(self, app, handler, mail):
         """Constructor
 
         :param Flask app: Flask application
         :param handler: Tenant config handler
-        :param callable i18n: Translation helper method
         :param flask_mail.Mail mail: Application mailer
         """
         super(RegistrationRequestsController, self).__init__(
@@ -23,7 +24,6 @@ class RegistrationRequestsController(Controller):
             'registration_request', 'registration_requests', app, handler
         )
 
-        self.i18n = i18n
         self.mail = mail
 
     def resources_for_index_query(self, search_text, session):
@@ -270,21 +270,21 @@ class RegistrationRequestsController(Controller):
         # send notification to user
         try:
             msg = Message(
-                self.i18n('registration_requests.user_notification.subject'),
+                i18n('registration_requests.user_notification.subject'),
                 recipients=[user.email]
             )
             # set message body from template
             msg.body = render_template(
                 '%s/user_notification.txt' % self.templates_dir, user=user,
                 groups_joined=groups_joined, groups_left=groups_left,
-                rejected_requests=rejected_requests
+                rejected_requests=rejected_requests, i18n=i18n
             )
 
             # send message
             self.logger.debug(msg)
             self.mail.send(msg)
             flash(
-                "User has been notified of registration request updates.",
+                i18n('interface.registration_requests.send_message_success'),
                 'success'
             )
         except Exception as e:
@@ -293,5 +293,6 @@ class RegistrationRequestsController(Controller):
                 (user.email, e)
             )
             flash(
-                "Failed to send user notification:\n%s" % e, 'error'
+                "%s\n%s" % (i18n('interface.registration_requests.send_message_error'), e), 
+                'error'
             )

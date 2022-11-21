@@ -97,11 +97,11 @@
         {# resource type filter #}
           <div class="dropdown" id="resource_type_filter">
             <button class="btn btn-secondary dropdown-toggle" type="button" id="parent_resource" data-bs-toggle="dropdown" aria-expanded="false">
-              <span id="resource_type_filter_label">Type Filter: All</span>
+              <span id="resource_type_filter_label">{{ i18n('interface.permissions.type_filter') }}: {{ i18n('interface.permissions.all') }}</span>
             </button>
             <ul class="dropdown-menu">
               <li>
-                <a class="dropdown-item" href="#" data-type="" data-description="All">All</a>
+                <a class="dropdown-item" href="#" data-type="" data-description="All">{{ i18n('interface.permissions.all') }}</a>
               </li>
               <li><hr class="dropdown-divider"></li>
               {% for name, description in form.resource_types %}
@@ -114,7 +114,7 @@
 
           {# custom select field with resource type as data in options for parent resource #}
           <div class="flex-fill">
-            <select class="form-control chosen-select" data-placeholder="Select a resource" id="resource_id" name="resource_id">
+            <select class="form-control chosen-select" data-placeholder="{{ i18n('interface.permissions.ph_select_resource') }}" id="resource_id" name="resource_id">
               <option value=""></option>
               {% for group in form.resource_choices %}
                 <optgroup label="{{ group['group_label'] }}" data-type="{{ group['resource_type'] }}">
@@ -137,7 +137,7 @@
     {% if form.resource_id.errors %}
     <div class="mb-3 row">
       <div class="col-sm-7">
-        <p class="help-block">This field is required.</p>
+        <p class="help-block">{{ i18n('interface.common.message_required') }}</p>
       </div>
     </div>
     {% endif %}

@@ -113,19 +113,19 @@
   <div class="col-sm-7">
     <div class="row" style="padding: 2.5em 0">
       <div class="btn-group">
-        <input type="text" id="input-url" class="form-control" placeholder="WMS Capabilities URL">
-        <button id="btn-connect" class="btn btn-secondary" type="button">Connect</button>
+        <input type="text" id="input-url" class="form-control" placeholder="{{ i18n('plugins.theme.wmtslayer.capabilities_url') }}">
+        <button id="btn-connect" class="btn btn-secondary" type="button">{{ i18n('plugins.theme.common.connect') }}</button>
       </div>
     </div>
     <div class="table-wrapper">
       <table class="table" id="wmts-table" style="display: none">
         <thead>
           <tr>
-            <th>Layer</th>
-            <th>Tilematrix</th>
-            <th>Format</th>
-            <th>Style</th>
-            <th>CRS</th>
+            <th>{{ i18n('plugins.themes.common.layer') }}</th>
+            <th>{{ i18n('plugins.themes.wmtslayer.tilematrix') }}</th>
+            <th>{{ i18n('plugins.themes.common.format') }}</th>
+            <th>{{ i18n('plugins.themes.wmtslayer.style') }}</th>
+            <th>{{ i18n('plugins.themes.common.crs') }}</th>
           </tr>
         </thead>
         <tbody>

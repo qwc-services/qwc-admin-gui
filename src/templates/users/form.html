@@ -8,12 +8,12 @@
   $(function() {
     // initialize multi-select
     $('#groups').multiSelectWithSearch({
-      selectableHeader: '<div class="ms-header">Groups</div>',
-      selectionHeader: '<div class="ms-header">Assigned groups</div>'
+      selectableHeader: '<div class="ms-header">{{ i18n('interface.common.groups') }}</div>',
+      selectionHeader: '<div class="ms-header">{{ i18n('interface.common.assigned_groups') }}</div>'
     });
     $('#roles').multiSelectWithSearch({
-      selectableHeader: '<div class="ms-header">Roles</div>',
-      selectionHeader: '<div class="ms-header">Assigned roles</div>'
+      selectableHeader: '<div class="ms-header">{{ i18n('interface.common.roles') }}</div>',
+      selectionHeader: '<div class="ms-header">{{ i18n('interface.common.assigned_roles') }}</div>'
     });
   });
 </script>
@@ -39,7 +39,7 @@
     {{ wtf.render_field(form.email, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
 
     {% if form.user_info.data | length > 1 %}
-      <legend>User info</legend>
+      <legend>{{ i18n('interface.users.user_info') }}</legend>
       {%- for subfield in form.user_info %}
         {% if not bootstrap_is_hidden_field(subfield) -%}
           {{ wtf.render_field(subfield, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
@@ -47,7 +47,7 @@
       {%- endfor %}
     {% endif %}
 
-    <legend>Authentication</legend>
+    <legend>{{ i18n('interface.users.authentication') }}</legend>
     {{ wtf.render_field(form.password, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.password2, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {% if form.totp_enabled %}
@@ -56,7 +56,7 @@
     {{ wtf.render_field(form.last_sign_in_at, form_type="horizontal", horizontal_columns=('sm', 2, 5), disabled=True) }}
     {{ wtf.render_field(form.failed_sign_in_count, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
 
-    <legend>Groups and roles</legend>
+    <legend>{{ i18n('interface.users.groups_roles') }}</legend>
     {{ wtf.render_field(form.groups, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.roles, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
 

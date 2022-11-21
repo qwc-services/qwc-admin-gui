@@ -1,20 +1,20 @@
-{{ 'registration_requests.user_notification.salutation' | i18n | format(username=user.name) }}
+{{ i18n('registration_requests.user_notification.salutation') | format(username=user.name) }}
 {% if groups_joined | length > 0 %}
-{{ 'registration_requests.user_notification.user_added_to_groups' | i18n }}
+{{ i18n('registration_requests.user_notification.user_added_to_groups') }}
   {%- for group in groups_joined %}
   * {{ group }}
   {%- endfor %}
 {% endif -%}
 {% if groups_left | length > 0 %}
-{{ 'registration_requests.user_notification.user_removed_from_groups' | i18n }}
+{{ i18n('registration_requests.user_notification.user_removed_from_groups') }}
   {%- for group in groups_left %}
   * {{ group }}
   {%- endfor %}
 {% endif -%}
 {% if rejected_requests | length > 0 %}
-{{ 'registration_requests.user_notification.user_requests_declined' | i18n }}
+{{ i18n('registration_requests.user_notification.user_requests_declined') }}
   {%- for group in rejected_requests %}
   * {{ group }}
   {%- endfor %}
 {% endif %}
-{{ 'registration_requests.user_notification.footer' | i18n }}
+{{ i18n('registration_requests.user_notification.footer') }}

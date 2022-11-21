@@ -1,12 +1,12 @@
 {% extends "templates/base_index.html" %}
 
-{% block title %}Users{% endblock %}
+{% block title %}{{ i18n('interface.users.title') }}{% endblock %}
 
-{% block new_resource_label %}New User{% endblock %}
+{% block new_resource_label %}{{ i18n('interface.users.new_user') }}{% endblock %}
 
 {% block table_headers %}
-  <th>{{ sortable_column("ID", 'id') }}</th>
-  <th>{{ sortable_column("Name", 'name') }}</th>
+  <th>{{ sortable_column(i18n('interface.common.id'), 'id') }}</th>
+  <th>{{ sortable_column(i18n('interface.common.name'), 'name') }}</th>
 {% endblock %}
 
 {% block resource_fields %}
@@ -14,4 +14,4 @@
   <td>{{ resource.name }}</td>
 {% endblock %}
 
-{% block delete_resource_confirmation %}Remove user?{% endblock %}
+{% block delete_resource_confirmation %}{{ i18n('interface.users.confirm_message_delete') }}{% endblock %}

@@ -207,16 +207,16 @@
   <div class="col-sm-7">
     <div class="row" style="padding: 2.5em 0">
       <div class="btn-group">
-        <input type="text" id="input-url" class="form-control" placeholder="WMS Capabilities URL">
-        <button id="btn-connect" class="btn btn-secondary" type="button">Connect</button>
+        <input type="text" id="input-url" class="form-control" placeholder="{{ i18n('plugins.theme.wmslayer.capabilities_url') }}">
+        <button id="btn-connect" class="btn btn-secondary" type="button">{{ i18n('plugins.theme.common.connect') }}</button>
       </div>
     </div>
     <div class="table-wrapper">
       <table class="table ellipsis" id="wms-table" style="display: none">
         <thead>
           <tr>
-            <th>Title</th>
-            <th>Layer</th>
+            <th>{{ i18n('interface.common.title') }}</th>
+            <th>{{ i18n('plugins.themes.common.layer') }}</th>
           </tr>
         </thead>
         <tbody>
@@ -227,13 +227,13 @@
       {{ form.csrf_token }}
       {{ wtf.render_field(form.title, form_type="horizontal", horizontal_columns=('sm', 2, 10)) }}
       <div class="mb-3 row">
-        <label class="col-form-label col-sm-2" for="select-crs">CRS</label>
+        <label class="col-form-label col-sm-2" for="select-crs">{{ i18n('plugins.theme.common.crs') }}</label>
         <div class="col-sm-10">
           <select class="form-control" id="select-srs"></select>
         </div>
       </div>
       <div class="mb-3 row">
-        <label class="col-form-label col-sm-2" for="select-format">Format</label>
+        <label class="col-form-label col-sm-2" for="select-format">{{ i18n('plugins.theme.common.format') }}</label>
         <div class="col-sm-10">
           <select class="form-control" id="select-format"></select>
         </div>

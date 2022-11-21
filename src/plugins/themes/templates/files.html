@@ -13,12 +13,12 @@
   </form>  
   <div class="panel panel-default">
     <div class="panel-heading clearfix" style="overflow: hidden;">
-      <div class="panel-title pull-left" style="padding-top: 7.5px;"><b>QGIS Projects</b></div>
+      <div class="panel-title pull-left" style="padding-top: 7.5px;"><b>{{ i18n('plugins.themes.files.qgis_projects') }}</b></div>
     </div>
     <div clas="panel-body">
       <table class="table">
         <thead>
-          <th>Project</th>
+          <th>{{ i18n('plugins.themes.files.project') }}</th>
           <th></th>
         </thead>
         <tbody>
@@ -27,7 +27,7 @@
             <td>{{ project[1] }}</td>
             <td style="text-align: right">
               <div class="btn-group">
-                <a href="{{ url_for('delete_project', projectname=project[1]) }}" class="btn btn-danger" role="button" title="Delete project" onclick="return confirm('Really delete {{ project[1] }}?');">
+                <a href="{{ url_for('delete_project', projectname=project[1]) }}" class="btn btn-danger" role="button" title="{{ i18n('plugins.themes.files.delete_project') }}" onclick="return confirm('{{ i18n('plugins.themes.files.confirm_message_delete_project') }} {{ project[1] }}?');">
                   {{ utils.render_icon('trash') }}
                 </a>
               </div>
@@ -47,12 +47,12 @@
   </form>  
   <div class="panel panel-default">
     <div class="panel-heading clearfix" style="overflow: hidden;">
-      <div class="panel-title pull-left" style="padding-top: 7.5px;"><b>Geospatial Files</b></div>
+      <div class="panel-title pull-left" style="padding-top: 7.5px;"><b>{{ i18n('plugins.themes.files.geospatial_file') }}</b></div>
     </div>
     <div clas="panel-body">
       <table class="table">
         <thead>
-          <th>Layer</th>
+          <th>{{ i18n('plugins.themes.common.layer') }}</th>
           <th></th>
         </thead>
         <tbody>
@@ -61,7 +61,7 @@
             <td>{{ layer }}</td>
             <td style="text-align: right">
               <div class="btn-group">
-                <a href="{{ url_for('delete_layer', layername=layer) }}" class="btn btn-danger" role="button" title="Delete layer" onclick="return confirm('Really delete {{ layer }}?');">
+                <a href="{{ url_for('delete_layer', layername=layer) }}" class="btn btn-danger" role="button" title="{{ i18n('plugins.themes.common.delete_layer') }}" onclick="return confirm('{{ i18n('plugins.themes.common.confirm_message_delete_layer') }} {{ layer }}?');">
                   {{ utils.render_icon('trash') }}
                 </a>
               </div>

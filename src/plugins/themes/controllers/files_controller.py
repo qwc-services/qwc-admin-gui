@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 
 from plugins.themes.forms import LayerForm, ProjectForm, TemplateForm
 from plugins.themes.utils import ThemeUtils
+from utils import i18n
 
 
 class FilesController:
@@ -76,7 +77,7 @@ class FilesController:
             "%s/files.html" % self.template_dir,
             projects=projects, layers=layers, templates= templates,
             form_project=form_project, form_layer=form_layer, form_template = form_template,
-            title="Upload files"
+            title=i18n('plugins.theme.files.title'), i18n=i18n
         )
 
     def upload_project(self):
@@ -87,19 +88,20 @@ class FilesController:
             filename = secure_filename(f.filename)
             try:
                 f.save(os.path.join(self.resources_path, filename))
-                flash("Project '{}' successfully uploaded".format(filename),
+                flash("{0}: '{1}'.".format(
+                    i18n('plugins.themes.files.project_upload_message_success'), filename),
                       'success')
                 return redirect(url_for('files'))
             except IOError as e:
                 self.app.logger.error("Error writing project to {}: {}".format(
                     self.resources_path, e.strerror))
-                flash("Project could not be saved.", 'error')
+                flash(i18n('plugins.themes.files.project_save_message_error'), 'error')
         else:
             # TODO: validation error
             self.app.logger.error("Error uploading project: \
                                   {}".format(form.errors))
-            flash("Project could not be uploaded: \
-                  {}".format(form.upload.errors[0]), 'error')
+            flash("{0}: {1}.".format(
+                    i18n('plugins.themes.files.project_upload_message_error'), form.upload.errors[0]), 'error')
         form_project = ProjectForm()
         form_layer = LayerForm()
         form_template = TemplateForm()
@@ -110,7 +112,7 @@ class FilesController:
             "%s/files.html" % self.template_dir,
             projects=projects, layers=layers, templates=templates,
             form_project=form_project, form_layer=form_layer, form_template=form_template,
-            title="Upload files"
+            title=i18n('plugins.theme.files.title'), i18n=i18n
         )
 
     def delete_project(self, projectname):
@@ -121,7 +123,7 @@ class FilesController:
         except IOError as e:
             self.app.logger.error("Error deleting project: \
                                   {}".format(e.strerror))
-            flash("Project could not be deleted.", 'error')
+            flash(i18n('plugins.themes.files.project_delete_message_error'), 'error')
 
         form_project = ProjectForm()
         form_layer = LayerForm()
@@ -133,7 +135,7 @@ class FilesController:
             "%s/files.html" % self.template_dir,
             projects=projects, layers=layers, templates=templates,
             form_project=form_project, form_layer=form_layer, form_template=form_template,
-            title="Upload files"
+            title=i18n('plugins.theme.files.title'), i18n=i18n
         )
 
     def upload_layer(self):
@@ -154,19 +156,21 @@ class FilesController:
                                 self.app.logger.info(f"Extracting {file} from {filename}")
                                 zip.extract(file, os.path.join(self.resources_path))
                     os.remove(os.path.join(self.resources_path, filename))
-                flash("File '{}' successfully uploaded{}".format(filename, " and extracted" if is_zip_file else ""),
+                flash("{0} {2}: {1}".format(
+                    i18n('plugins.themes.files.file_upload_message_success'), filename, 
+                    i18n('plugins.themes.files.file_extract_message_success') if is_zip_file else ""),
                       'success')
                 return redirect(url_for('files'))
             except IOError as e:
                 self.app.logger.error("Error writing file: \
                                       {}".format(e.strerror))
-                flash("File could not be saved.", 'error')
+                flash(i18n('plugins.themes.files.file_save_message_error'), 'error')
         else:
             # TODO: validation error
             self.app.logger.error("Error uploading file: \
                                   {}".format(form.errors))
-            flash("File could not be uploaded: \
-                  {}".format(form.upload.errors[0]), 'error')
+            flash("{0}: {1}".format(
+                    i18n('plugins.themes.files.file_upload_message_error'), form.upload.errors[0]), 'error')
         form_project = ProjectForm()
         form_layer = LayerForm()
         form_template = TemplateForm()
@@ -177,7 +181,7 @@ class FilesController:
             "%s/files.html" % self.template_dir,
             projects=projects, layers=layers, templates=templates,
             form_project=form_project, form_layer=form_layer, form_template=form_template,
-            title="Upload files"
+            title=i18n('plugins.theme.files.title'), i18n=i18n
         )
 
     def delete_layer(self, layername):
@@ -194,7 +198,7 @@ class FilesController:
         except IOError as e:
             self.app.logger.error("Error deleting file: \
                                   {}".format(e.strerror))
-            flash("File could not be deleted.", 'error')
+            flash(i18n('plugins.themes.files.file_delete_message_error'), 'error')
 
         form_project = ProjectForm()
         form_layer = LayerForm()
@@ -206,7 +210,7 @@ class FilesController:
             "%s/files.html" % self.template_dir,
             projects=projects, layers=layers, templates=templates,
             form_project=form_project, form_layer=form_layer, form_template=form_template,
-            title="Upload files"
+            title=i18n('plugins.theme.files.title'), i18n=i18n
         )
 
     def upload_template(self):

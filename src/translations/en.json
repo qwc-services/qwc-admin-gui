@@ -9,5 +9,325 @@
       "user_requests_declined": "Your membership requests for the following groups have been declined:",
       "footer": ""
     }
+  },
+  "interface": {
+    "common": {
+      "type": "Type",
+      "url": "URL",
+      "name": "Name",
+      "title": "Title", 
+      "description": "Description",
+      "group": "Group",
+      "id": "ID",
+      "user": "User",
+      "add": "Add", 
+      "edit": "Edit", 
+      "permission": "Permission",
+      "new_permission": "New Permission", 
+      "import_resources": "Import Resources",
+      "remove": "Remove",
+      "confirm_message_remove": "Remove resource?",
+      "message_required": "This field is required.",
+      "ph_search": "Search",
+      "users": "Users",
+      "assigned_users": "Assigned users",
+      "group_members": "Group members",
+      "roles": "Roles",
+      "role": "Role",
+      "assigned_roles": "Assigned roles",
+      "groups": "Groups",
+      "assigned_groups": "Assigned groups",
+      "resource": "Resource",
+
+      "form_submit": "Save",
+      "form_name_error": "Name has already been taken.",
+      "form_priority": "Priority",
+      "form_priority_message": "Priority must be greater or equal 0"
+    },
+    "main": {
+      "title": "QWC Admin",
+      "subtitle": "Administration tool for QWC services",
+
+      "home_title": "Home",
+      "generate_configs": "Generate service configuration",
+      "logout": "Logout",
+      "registration_title" : "Registration",
+
+      "new_resource_message_success": "has been created.",
+      "new_resource_message_error": "Could not create",
+      "update_resource_message_success": "has been updated.",
+      "update_resource_message_error": "Could not update",
+      "delete_resource_message_success": "has been deleted.",
+
+      "per_page": "per page"
+    },
+    "groups": {
+      "title": "Groups",
+      "confirm_message_delete": "Remove group?",
+      "new_group": "New Group"
+    },
+    "permissions": {
+      "title": "Permissions",
+      "type_filter": "Type Filter",
+      "role_filter": "Role Filter",
+      "all": "All", 
+      "ph_select_resource": "Select a resource",
+      "resource_type": "Resource type",
+      "priority": "Priority",
+      "write": "Write",
+      "confirm_message_delete": "Remove permission?"
+    },
+    "registrable_groups": {
+      "title": "Registrable Groups",
+      "new_registrable_group": "New Registrable Group",
+      "confirm_message_delete": "Remove registrable group?"
+    },
+    "registration_requests": {
+      "title": "Pending Registration Requests",
+      "registration_requests": "Registration requests",
+      "email": "Email",
+      "registrable_group": "Registrable Group",
+      "created_at": "Created at",
+      "skip": "Skip",
+      "accept": "Accept",
+      "reject": "Reject",
+      "remove_from_group": "Remove from group",
+      "reject_request": "Reject request",
+      "add_to_group": "Add to group",
+      "group": "Requested registrable group",
+      "confirm_message_delete": "Remove registration request?",
+
+      "send_message_success": "User has been notified of registration request updates.",
+      "send_message_error": "Failed to send user notification:",
+
+      "form_action": "Action",
+      "form_submit": "Update group memberships"
+    },
+    "resources": {
+      "title": "Resources",
+      "parent_resource": "Parent resource",
+      "ph_resource": "Select a resource",
+      "import_layers": "Import layers",
+      "message_import_layers": "Importing layers...",
+      "new_resource": "New Resource",
+      "type_filter": "Type Filter",
+      "all": "All", 
+      "parent": "Parent",
+      "check_unused":"Check unused",
+      "import_maps": "Import maps",
+      "message_import_maps": "Importing maps...",
+      "message_not_referenced": "Resource was not found in any service configuration",
+      "import_maps_message_error": "Could not import maps:",
+      "add_maps_message_success": "new maps have been added.",
+      "add_maps_message_error": "No additional maps found.",
+      "import_layers_message_error": "Could not import layers:",
+      "add_layers_message_success": "new layers have been added.",
+      "add_layers_message_error": "No additional layers found.",
+      "add_layers_map_message_error": "No layers found for this map.",
+
+      "hierarchy_title": "Resource hierarchy",
+      "permissions": "Permissions",
+      "resource_permissions": "Resource permissions",
+      "remove_cascaded": "Remove cascaded",
+      "confirm_message_remove_cascaded": "Remove resource and its children?",
+      "add_permissions_message_success": "new permissions have been added.",
+      "add_permissions_message_error": "No additional permissions found.",
+
+      "import_resources": "Import resources",
+      "import_resources_title": "Import",
+      "import_children_message_error": "Child import not supported for this resource type.",
+      "import_resources_message_error": "Could not import resources:",
+      "import_resources_parent_message_error": "Could not import resources from",
+      "add_resources_message_success": "new resources have been added.",
+      "add_resources_message_error": "No additional resources found.",
+
+      "confirm_message_delete": "Remove resource?",
+
+      "form_import_type": "Type of resources to import from map",
+      "form_role": "Role permission of resources to import from map",
+      "form_write": "Write"
+    },
+    "roles": {
+      "title": "Roles",
+      "new_role": "New Role",
+      "confirm_message_delete": "Remove role?"
+    },
+    "users": {
+      "title": "Users",
+      "user_info": "User info",
+      "authentication": "Authentication",
+      "groups_roles": "Groups and roles",
+      "new_user": "New user",
+      "confirm_message_delete": "Remove user?", 
+
+      "form_name": "User name",
+      "form_email": "Email",
+      "form_password": "Password",
+      "form_password_repeat": "Repeat Password",
+      "form_totp": "TOTP secret",
+      "form_last_sign_in": "Last sign in",
+      "form_failed_login": "Failed login attempts",
+      "form_failed_login_message": "Number must be greater or equal 0",
+      "form_email_error": "Please use a different email address."
+    }
+  },
+  "plugins": {
+    "themes" : {
+      "common":{
+        "title": "Themes",
+        "layer": "Layer",
+        "delete_layer": "Delete layer",
+        "confirm_message_delete_layer" : "Really delete layer",
+        "connect": "Connect",
+        "crs": "CRS",
+        "format": "Format",
+
+        "form_attribution": "Attribution",
+        "form_thumbnail": "Thumbnail",
+        "form_submit": "Save"
+      },
+      "backgroundlayers" : {
+        "title": "Background layers",
+        "create_title": "Add background layer",
+        "create_message_error": "Could not create background layer",
+        "edit_title": "Edit background layer",
+        "update_message_error": "Could not update background layer",
+        "delete_message_error": "Could not delete background layer.",
+        "delete_message_success": "Background layer deleted.",
+        "action_updated": "updated",
+        "action_created": "created",
+        "save_action_message_success": "Background layer",
+        "save_action_message_error": "Could not save background layer",
+
+        "new_wms_layer": "New WMS layer",
+        "new_wmts_layer": "New WMTS layer",
+        "new_xyz_layer": "New XYZ layer",
+        "edit_layer": "Edit layer"
+      },
+      "files": {
+        "title": "Upload files",
+        "project_upload_message_success": "Project successfully uploaded",
+        "project_upload_message_error": "Project could not be uploaded",
+        "project_save_message_error": "Project could not be saved.",
+        "project_delete_message_error": "Project could not be deleted.",
+        "file_upload_message_success": "File successfully uploaded",
+        "file_extract_message_success": "and extracted",
+        "file_upload_message_error": "File could not be uploaded",
+        "file_save_message_error": "File could not be saved.",
+        "file_delete_message_error": "File could not be deleted.",
+
+        "qgis_projects": "QGIS Projects",
+        "project": "Project",
+        "delete_project": "Delete project",
+        "confirm_message_delete_project": "Really delete",
+        "geospatial_file": "Geospatial Files",
+
+        "form_submit": "Upload",
+        "form_layer_file": "Geospatial Layer",
+        "form_layer_allowed": "Please only use geospatial files",
+        "form_project_file": "QGIS Project",
+        "form_project_allowed": "Please only use QGS projects !"
+      },
+      "mapthumbs": {
+        "title": "Mapthumbs",
+        "upload_message_success": "Mapthumb successfully uploaded",
+        "upload_message_error": "Mapthumb could not be uploaded",
+        "save_message_error": "Mapthumb could not be saved.",
+        "delete_message_error": "Mapthumb could not be deleted.",
+
+        "delete_mapthumb": "Delete mapthumb",
+        "confirm_message_delete_mapthumb": "Really delete",
+
+        "form_submit": "Upload",
+        "form_file": "Image",
+        "form_allowed": "Please only use jpg or png!"
+      },
+      "themes": {
+        "title": "Theme configuration",
+        "create_theme_title": "Create theme",
+        "create_theme_message_success": "This theme was created",
+        "create_theme_message_error": "Could not create theme",
+        "create_theme_message_integrity_error": "Resource for this map already exists",
+        "edit_theme_title": "Edit theme",
+        "edit_theme_message_integrity_error": "Resource for this map could not be edited",
+        "update_theme_title": "Update theme",
+        "update_theme_message_success": "This theme was updated",
+        "update_theme_message_error": "Could not update theme",
+        "delete_theme_message_error": "Could not delete resource for map",
+        "save_theme_message_success": "Theme configuration was saved.",
+        "save_theme_message_error": "Could not save theme configuration.",
+        "reload_theme_message": "Theme configuration reloaded from disk.",
+
+        "themes": "Themes",
+        "new_theme": "New Theme",
+        "theme": "Theme",
+        "copy_url": "Copy url to clipboard",
+        "move_up": "Move theme up",
+        "move_down": "Move theme down",
+        "edit_theme": "Edit theme",
+        "delete_theme": "Delete theme",
+        "confirm_message_delete_theme": "Really delete theme",
+        
+        "theme_groups": "Theme groups",
+        "new_group": "New theme group",
+        "group_title": "Title",
+        "group_title_edit": "Edit title",
+        "group_move_up": "Move theme group up",
+        "group_move_down": "Move theme group down",
+        "group_delete": "Delete theme group",
+        "group_confirm_message_delete": "Really delete theme group"
+      },
+      "theme": {
+        "background_layer" : "Background layer",
+        "print_layer" : "Print layer",
+        "print_layer_message": "(Optional): Name of a layer of the QGIS Project which should be used when printing.",
+        "background_layer_message": "(Optional): The initial visibility of this background layer when loading the theme.",
+
+        "form_url": "Project",
+        "form_title_description": "Customized theme title.",
+        "form_attribution_description": "Theme attribution, is displayed in the bottom right corner of the map.",
+        "form_thumbnail_description": "Filename of the theme thumbnail. By default, autogenerated via WMS GetMap.",
+        "form_format_description": "Image format requested from the WMS Service. Default is 'image/png'.",
+        "form_crs_description": "The map projection.",
+        "form_additionalMouseCrs": "Add. CRS",
+        "form_additionalMouseCrs_description": "Additional CRS for the mouse coordinate display.",
+        "form_searchProviders": "Search providers",
+        "form_searchProviders_description": "List of available search providers.",
+        "form_scales": "Scales",
+        "form_scales_description": "List of available map scales.",
+        "form_scales_message": "Please enter a comma separted list of numbers.",
+        "form_printScales": "Print scales",
+        "form_printScales_description": "List of available print scales.",
+        "form_printScales_message": "Please enter a comma separted list of numbers.",
+        "form_printResolutions": "Print resolutions",
+        "form_printResolutions_description": "List of available print resolutions.",
+        "form_printResolutions_message": "Please enter a comma separted list of numbers.",
+        "form_printLabelBlacklist": "Print label blacklist",
+        "form_printLabelBlacklist_description": "Optional, list of composer label ids to not expose in the print dialog.",
+        "form_printLabelBlacklist_message": "Please enter a comma separted list of names.",
+        "form_collapseLayerGroupsBelowLevel": "collapse layer groups below level",
+        "form_collapseLayerGroupsBelowLevel_description": "Optional, layer tree level below which to initially collapse groups. By default the tree is completely expanded.",
+        "form_default": "Default",
+        "form_default_description": "Whether to use this theme as initial theme.",
+        "form_tiled": "Tiled",
+        "form_tiled_description": "Tiling the layers",
+        "form_mapTips": "Enable tooltip by default",
+        "form_mapTips_description": "Enable the theme tooltip by default",
+        "form_skipEmptyFeatureAttributes": "Skip empty feature attributes",
+        "form_skipEmptyFeatureAttributes_descritpion": "Optional, whether to skip empty attributes in the identify results. Default is false."
+      },
+      "wmslayer": {
+        "capabilities_url": "WMS Capabilities URL",
+
+        "form_tiled": "tiled"
+      },
+      "wmtslayer": {
+        "capabilities_url": "WMTS Capabilities URL", 
+        "style": "Style",
+        "tilematrix": "Tilematrix",
+
+        "form_with_capabilities": "Save capabilities? (Only needed for QGIS Server WMTS!)"
+      }
+    }
   }
 }

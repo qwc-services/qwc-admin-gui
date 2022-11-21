@@ -34,27 +34,27 @@
     {{ form.csrf_token }}
 
     <div class="form-group">
-      <label class="control-label col-sm-2">User</label>
+      <label class="control-label col-sm-2">{{ i18n('interface.common.user') }}</label>
       <div class="col-sm-8">
         <p class="form-control-static">{{ form.username }}</p>
       </div>
     </div>
     <div class="form-group">
-      <label class="control-label col-sm-2">Email</label>
+      <label class="control-label col-sm-2">{{ i18n('interface.registration_requests.email') }}</label>
       <div class="col-sm-8">
         <p class="form-control-static">{{ form.user_email }}</p>
       </div>
     </div>
     <div class="form-group">
-      <label class="control-label col-sm-2" for="title">Registration requests</label>
+      <label class="control-label col-sm-2" for="title">{{ i18n('interface.registration_requests.registration_requests') }}</label>
       <div class=" col-sm-8">
         <table class="table table-hover">
           <thead>
             <tr>
               <th></th>
-              <th>Registrable Group</th>
-              <th>Group</th>
-              <th>Created at</th>
+              <th>{{ i18n('interface.registration_requests.registrable_group') }}</th>
+              <th>{{ i18n('interface.common.group') }}</th>
+              <th>{{ i18n('interface.registration_requests.created_at') }}</th>
             </tr>
           </thead>
           <tbody>
@@ -65,14 +65,14 @@
                   <td>
                     {{ req.request_id }}
                     <div class="btn-group" data-toggle="buttons">
-                      <label class="btn btn-sm btn-default active" title="Skip">
+                      <label class="btn btn-sm btn-default active" title="{{ i18n('interface.registration_requests.skip') }}">
                         <input type="radio" name="{{ req.action.name }}" value="skip" autocomplete="off" checked> {{ utils.render_icon('hourglass') }}
                       </label>
-                      <label class="btn btn-sm btn-success" title="Remove from group">
-                        <input type="radio" name="{{ req.action.name }}" value="accept" autocomplete="off"> {{ utils.render_icon('ban') }}
+                      <label class="btn btn-sm btn-success" title="{{ i18n('interface.registration_requests.remove_from_group') }}">
+                        <input type="radio" name="{{ req.action.name }}" value="accept" autocomplete="off"> {{ utils.render_icon('ban-circle') }}
                       </label>
-                      <label class="btn btn-sm btn-danger" title="Reject request">
-                        <input type="radio" name="{{ req.action.name }}" value="reject" autocomplete="off"> {{ utils.render_icon('x') }}
+                      <label class="btn btn-sm btn-danger" title="{{ i18n('interface.registration_requests.reject_request') }}">
+                        <input type="radio" name="{{ req.action.name }}" value="reject" autocomplete="off"> {{ utils.render_icon('remove') }}
                       </label>
                     </div>
                   </td>
@@ -86,14 +86,14 @@
                   <td>
                     {{ req.request_id }}
                     <div class="btn-group" data-toggle="buttons">
-                      <label class="btn btn-sm btn-default active" title="Skip">
+                      <label class="btn btn-sm btn-default active" title="{{ i18n('interface.registration_requests.skip') }}">
                         <input type="radio" name="{{ req.action.name }}" value="skip" autocomplete="off" checked> {{ utils.render_icon('hourglass') }}
                       </label>
-                      <label class="btn btn-sm btn-success" title="Add to group">
-                        <input type="radio" name="{{ req.action.name }}" value="accept" autocomplete="off"> {{ utils.render_icon('check') }}
+                      <label class="btn btn-sm btn-success" title="{{ i18n('interface.registration_requests.add_to_group') }}">
+                        <input type="radio" name="{{ req.action.name }}" value="accept" autocomplete="off"> {{ utils.render_icon('ok') }}
                       </label>
-                      <label class="btn btn-sm btn-danger" title="Reject request">
-                        <input type="radio" name="{{ req.action.name }}" value="reject" autocomplete="off"> {{ utils.render_icon('x') }}
+                      <label class="btn btn-sm btn-danger" title="{{ i18n('interface.registration_requests.reject_request') }}">
+                        <input type="radio" name="{{ req.action.name }}" value="reject" autocomplete="off"> {{ utils.render_icon('remove') }}
                       </label>
                     </div>
                   </td>

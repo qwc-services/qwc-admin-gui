@@ -87,7 +87,7 @@
 </script>
 {% endblock %}
 
-{% block title %}Home{% endblock %}
+{% block title %}{{ i18n('interface.main.home_title') }}{% endblock %}
 {% block container %}
 
   <h1>{{ admin_gui_title }}</h1>
@@ -96,7 +96,7 @@
   {% if have_config_generator %}
   <br><br>
   <button id="generate_configs" class="btn btn-success">
-    {{ utils.render_icon('arrow-clockwise') }} Generate service configuration
+    {{ utils.render_icon('arrow-clockwise') }} {{ i18n('interface.main.generate_configs') }}
   </button>
   {% endif %}
 
