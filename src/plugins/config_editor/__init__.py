@@ -1,9 +1,10 @@
 import os
 
 from plugins.config_editor.controllers import ConfigsController
+from utils import i18n
 
 
-name = "Config Editor"
+name = i18n('plugins.config_editor.title')
 
 
 def load_plugin(app, handler):

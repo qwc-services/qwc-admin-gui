@@ -145,7 +145,6 @@ def load_plugins():
             try:
                 mod = importlib.import_module("plugins." + plugin)
                 mod.load_plugin(app, handler)
-                plugin_name = i18n("plugins.%s.common.title"% plugin) or mod.name
                 app.config['PLUGINS'].append({"id": plugin, "name": mod.name})
             except Exception as e:
                 app.logger.warning("Could not load plugin %s: %s" % (plugin, str(e)))

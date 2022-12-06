@@ -7,6 +7,8 @@ from flask import flash, json, redirect, render_template, request, url_for
 from markupsafe import Markup
 from json.decoder import JSONDecodeError
 
+from utils import i18n
+
 
 class ConfigsController():
     """Controller for config editors"""
@@ -44,7 +46,7 @@ class ConfigsController():
     def index(self):
         """Show entry page."""
         return render_template(
-            "%s/index.html" % self.templates_dir, title="Config Editor"
+            "%s/index.html" % self.templates_dir, title=i18n('plugins.config_editor.title'), i18n=i18n
         )
 
     def edit_tenant_config(self):
@@ -82,20 +84,20 @@ class ConfigsController():
         except Exception as e:
             flash(
                 Markup(
-                    "Could not read <b>%s</b>:"
+                    "%s <b>%s</b>:"
                     "<br><br>"
                     "<pre>%s</pre>" %
-                    (file_name, e)
+                    (i18n('plugins.config_editor.edit_message_error'), file_name, e)
                 ),
                 'error'
             )
             return redirect(url_for('config_editor'))
 
-        title = "Edit %s" % file_name
+        title = "%s %s" % (i18n('interface.common.edit'), file_name)
 
         return render_template(
             "%s/editor.html" % self.templates_dir, title=title,
-            action=action_url, config_data=config_data
+            action=action_url, config_data=config_data, i18n=i18n
         )
 
     def update_json_config(self, file_name, action_url):
@@ -108,28 +110,28 @@ class ConfigsController():
             # update config file
             config_data = request.values.get('config_data')
             self.save_json_config_file(config_data, file_name)
-            flash("%s has been updated." % file_name, 'success')
+            flash("%s %s." % (i18n('plugins.config_editor.update_message_success'), file_name), 'success')
 
             return redirect(url_for('config_editor'))
         except JSONDecodeError as e:
-            flash("Invalid JSON: %s" % e, 'error')
+            flash("%s: %s" % (i18n('plugins.config_editor.json_message_error'), e), 'error')
         except Exception as e:
             flash(
                 Markup(
-                    "Could not save <b>%s</b>:"
+                    "%s <b>%s</b>:"
                     "<br><br>"
                     "<pre>%s</pre>" %
-                    (file_name, e)
+                    (i18n('plugins.config_editor.save_message_error'), file_name, e)
                 ),
                 'error'
             )
 
         # return to editor and show errors
-        title = "Edit %s" % file_name
+        title = "%s %s" % (i18n('interface.common.edit'), file_name)
 
         return render_template(
             "%s/editor.html" % self.templates_dir, title=title,
-            action=action_url, config_data=config_data
+            action=action_url, config_data=config_data, i18n=i18n
         )
 
     def input_config_path(self):

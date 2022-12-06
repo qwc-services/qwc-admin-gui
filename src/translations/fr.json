@@ -173,6 +173,14 @@
 
   },
   "plugins": {
+    "config_editor" : {
+      "title": "Editeur des configurations",
+      "subtitle": "Modifier les fichiers de configuration",
+      "edit_message_error": "Impossible de lire",
+      "save_message_error": "Impossible d'enregistrer",
+      "json_message_error": "JSON invalide",
+      "update_message_success": "a été mis à jour"
+    },
     "themes": {
       "common":{
         "title": "Thèmes",

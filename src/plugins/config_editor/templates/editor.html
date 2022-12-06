@@ -72,7 +72,7 @@
 
     <div id="annotations" class="alert alert-danger" role="alert" style="display: none"></div>
 
-    <input class="btn btn-primary" id="submit" name="submit" type="submit" value="Save">
-    <button class="col-sm-offset-2 btn btn-danger" onclick="history.back()">Cancel</button>
+    <input class="btn btn-primary" id="submit" name="submit" type="submit" value="{{ i18n('interface.common.form_submit') }}">
+    <button class="col-sm-offset-2 btn btn-danger" onclick="history.back()">{{ i18n('interface.common.form_cancel') }}</button>
   </form>
 {% endblock %}

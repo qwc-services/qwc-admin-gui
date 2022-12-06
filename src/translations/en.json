@@ -172,6 +172,14 @@
     }
   },
   "plugins": {
+    "config_editor" : {
+        "title": "Config Editor",
+        "subtitle": "Edit input configs",
+        "edit_message_error": "Could not read",
+        "save_message_error": "Could not save",
+        "json_message_error": "Invalid JSON",
+        "update_message_success": "has been updated"
+    },
     "themes" : {
       "common":{
         "title": "Themes",
