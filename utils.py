@@ -3,7 +3,6 @@ import logging
 import os
 import pathlib
 
-
 # Load translation strings
 DEFAULT_LOCALE = os.environ.get('DEFAULT_LOCALE', 'en')
 translations = {}
@@ -13,7 +12,7 @@ try:
     with open(path, 'r') as f:
         translations[locale] = json.load(f)
 except Exception as e:
-    print( ## TODO GAN : Remmetre logger error
+    logging.error( 
         "Failed to load translation strings for locale '%s' from %s\n%s"
         % (locale, path, e)
     )

@@ -71,7 +71,7 @@ class ThemeForm(FlaskForm):
     )
     mapCrs = SelectField(
         "CRS",
-        description=i18n('plugins.themes.theme.form_mapCrs_description'),
+        description=i18n('plugins.themes.theme.form_crs_description'),
         default=("EPSG:3857"),
         validators=[Optional()]
     )
