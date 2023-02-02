@@ -38,6 +38,11 @@ app.config['QWC_GROUP_REGISTRATION_ENABLED'] = os.environ.get(
     'GROUP_REGISTRATION_ENABLED', 'True') == 'True'
 app.config['IDLE_TIMEOUT'] = os.environ.get('IDLE_TIMEOUT', 0)
 
+app.config['WTF_CSRF_ENABLED'] = os.environ.get(
+    'WTF_CSRF_ENABLED', 'True') == 'True'
+app.config['WTF_CSRF_SSL_STRICT'] = os.environ.get(
+    'WTF_CSRF_SSL_STRICT', 'True') == 'True'
+
 # enable CSRF protection
 CSRFProtect(app)
 # load Bootstrap extension
