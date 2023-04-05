@@ -12,6 +12,10 @@
 
       // get selected resource type
       var resourceType = $(this).data('type');
+      var resourceDescr = $(this).data('description');
+
+      // show selected resource type
+      $('#resource_type_filter_label').text('Type Filter: ' + resourceDescr);
 
       // mark selected type
       $('#resource_type_filter li').removeClass('active');
@@ -89,25 +93,25 @@
         <div class="row">
 
           {# resource type filter #}
-          <div id="resource_type_filter" class="col-sm-3 btn-group">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Type Filter <span class="caret"></span>
+          <div id="resource_type_filter" class="col-sm-6 btn-group">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="display: flex; width: 100%; align-items: center;">
+              <span id="resource_type_filter_label" style="flex: 1 1 auto; text-align: left;">Type Filter: All</span> <span class="caret"></span>
             </button>
-            <ul class="dropdown-menu">
+            <ul class="dropdown-menu" style="margin-left: 15px">
               <li role="presentation" class="active">
-                <a href="#" data-type="">All</a>
+                <a href="#" data-type="" data-description="All">All</a>
               </li>
               <li role="separator" class="divider"></li>
               {% for name, description in form.resource_types %}
                 <li>
-                  <a href="#" data-type="{{ name }}">{{ description }}</a>
+                  <a href="#" data-type="{{ name }}" data-description="{{ description }}">{{ description }}</a>
                 </li>
               {% endfor %}
             </ul>
           </div>
 
           {# custom select field with resource type as data in options for resource #}
-          <div class="col-sm-9">
+          <div class="col-sm-6">
             <select class="form-control chosen-select" data-placeholder="Select a resource" id="resource_id" name="resource_id">
               <option value=""></option>
               {% for group in form.resource_choices %}
