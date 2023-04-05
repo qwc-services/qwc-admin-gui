@@ -9,7 +9,7 @@
 
   <div class="btn-group">
     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      Type Filter <span class="caret"></span>
+      Type Filter: {{ resource_types[active_resource_type] if active_resource_type is not none else 'All' }} <span class="caret"></span>
     </button>
     <ul class="dropdown-menu">
       <li role="presentation" class="{{ 'active' if active_resource_type is none or active_resource_type == 'all' }}">
