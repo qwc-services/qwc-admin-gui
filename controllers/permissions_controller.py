@@ -1,7 +1,7 @@
 from collections import OrderedDict
 import math
 
-from flask import render_template, request, session as flask_session
+from flask import flash, Markup, render_template, request, session as flask_session
 from sqlalchemy.orm import joinedload
 
 from .controller import Controller
@@ -192,6 +192,27 @@ class PermissionsController(Controller):
             if res.resource.parent is not None and \
                     res.resource.parent.id not in parents_dict.keys():
                 parents_dict[res.resource.parent.id] = res.resource.parent.name
+
+        # Warn if role does not have permission on resource parent
+        resource_roles = {}
+        for res in resources:
+            resource_roles[res.resource.name] = \
+                resource_roles.get(res.resource.name, []) + [res.role.name]
+
+        role_warnings = []
+        for res in resources:
+            parent = res.resource.parent
+            if parent is not None and \
+                    res.role.name not in resource_roles.get(parent.name, ['public']):
+                role_warnings.append(
+                    (
+                        "The permission for role <b>%s</b> on resource <b>%s</b> " +
+                        "has no effect because <b>%s</b> has no permission on the " +
+                        "parent resource <b>%s</b>."
+                     ) % (res.role.name, res.resource.name, res.role.name, parent.name)
+                )
+        flash(Markup("<br />".join(role_warnings)), 'warning')
+
         session.close()
 
         return render_template(
