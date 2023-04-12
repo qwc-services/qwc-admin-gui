@@ -211,7 +211,8 @@ class PermissionsController(Controller):
                         "parent resource <b>%s</b>."
                      ) % (res.role.name, res.resource.name, res.role.name, parent.name)
                 )
-        flash(Markup("<br />".join(role_warnings)), 'warning')
+        if role_warnings:
+            flash(Markup("<br />".join(role_warnings)), 'warning')
 
         session.close()
 
