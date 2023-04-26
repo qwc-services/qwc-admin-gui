@@ -101,6 +101,7 @@ class ThemeUtils():
         for mapthumb in os.listdir(thumbs_path):
             if not mapthumb.startswith("."):
                 mapthumbs.append(mapthumb)
+        mapthumbs.append("")
         return sorted(mapthumbs)
 
     @staticmethod
