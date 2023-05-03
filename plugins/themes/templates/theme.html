@@ -38,7 +38,7 @@
       }
     });
 
-    $(document).on("click", ".checkbox", function() {
+    $("#bl-table tbody").on("click", ".checkbox", function() {
       // allow only one checkbox checked
       $('.checkbox').not(this).prop('checked', false);
     });
