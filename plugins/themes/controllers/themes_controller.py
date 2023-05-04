@@ -107,6 +107,11 @@ class ThemesController:
             "/themes/reset_themesconfig", "reset_themesconfig",
             self.reset_themesconfig, methods=["GET"]
         )
+        # move theme to group
+        app.add_url_rule(
+            "/themes/move_theme_to_group/<string:tid>/<string:old_gid>/<string:gid>/",
+            "move_theme_to_group", self.move_theme_to_group, methods=["GET"]
+        )
 
         self.app = app
         self.handler = handler
@@ -299,6 +304,23 @@ class ThemesController:
 
             self.themesconfig["themes"]["groups"][gid]["items"] = items
 
+        self.save_themesconfig()
+        return redirect(url_for("themes"))
+    def move_theme_to_group(self, tid, old_gid, gid):
+        if old_gid == gid : 
+            return redirect(url_for("themes"))
+        if old_gid == 'undefined':
+            items = self.themesconfig["themes"]["items"]
+            self.themesconfig["themes"]["groups"][int(gid)]["items"].append(items[int(tid)])
+            self.themesconfig["themes"]["items"].pop(int(tid))
+        elif gid == 'undefined':
+            items = self.themesconfig["themes"]["groups"][int(old_gid)]["items"]
+            self.themesconfig["themes"]["items"].append(items[int(tid)])
+            self.themesconfig["themes"]["groups"][int(old_gid)]["items"].pop(int(tid))
+        else:
+            items = self.themesconfig["themes"]["groups"][int(old_gid)]["items"]
+            self.themesconfig["themes"]["groups"][int(gid)]["items"].append(items[int(tid)])
+            self.themesconfig["themes"]["groups"][int(old_gid)]["items"].pop(int(tid))
         self.save_themesconfig()
         return redirect(url_for("themes"))
 
