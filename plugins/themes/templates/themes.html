@@ -2,6 +2,7 @@
 {% block title %}{{ title }}{% endblock %}
 {% block themes_container %}
 {% block scripts %}
+{{super()}}
 <script>
   function copyToClipboard(text) {
     var input = document.createElement('input')
@@ -12,6 +13,24 @@
     document.execCommand('copy')
     input.remove();
   }
+  function showMoveToGroupModal(themeIndex, groupIndex) {
+    let form = document.getElementById('moveToGroupForm');
+    let selectElement = document.getElementById('group');
+    let newGroupId = selectElement.value;
+    originalActionUrl = "{{ url_for('move_theme_to_group',tid='tid_placeholder', old_gid='old_placeholder',  gid='gid_placeholder') }}";
+    if (typeof groupIndex !== 'undefined' && typeof themeIndex !== 'undefined') {
+      actionUrl = originalActionUrl.replace('tid_placeholder',  themeIndex).replace('old_placeholder', groupIndex).replace('gid_placeholder', newGroupId);
+    } else if (typeof themeIndex !== 'undefined') {
+      actionUrl = originalActionUrl.replace('tid_placeholder', themeIndex).replace('old_placeholder', 'undefined').replace('gid_placeholder', newGroupId);
+    }
+    form.action = actionUrl;
+    $('#moveToGroupModal').modal('show');
+    selectElement.addEventListener('change', function() {
+      newGroupId = selectElement.value;
+      actionUrl = originalActionUrl.replace('tid_placeholder', themeIndex).replace('old_placeholder', groupIndex).replace('gid_placeholder', newGroupId);
+      form.action = actionUrl;
+    });
+  } 
 </script>
 {% endblock scripts %}
   <h1>{{ title }}</h1>
@@ -60,6 +79,9 @@
                     </a>
                     <a href="{{ url_for('delete_theme', tid=loop.index0) }}" class="btn btn-danger" role="button" title="Delete theme" onclick="return confirm('Really delete theme?');">
                       {{ utils.icon('trash') }}
+                    </a>
+                    <a href="#" class="btn btn-warning move-to-group" role="button" title="Move theme to group" onclick="showMoveToGroupModal({{ loop.index0 }})">
+                      {{ utils.icon('arrow-right') }}
                     </a>
                   </div>
                 </td>
@@ -144,6 +166,9 @@
                         <a href="{{ url_for('delete_theme', gid=group_loop.index0, tid=loop.index0) }}" class="btn btn-danger" role="button" title="Delete theme" onclick="return confirm('Really delete theme?');">
                           {{ utils.icon('trash') }}
                         </a>
+                        <a href="#" class="btn btn-warning move-to-group" role="button" title="Move theme to group" onclick="showMoveToGroupModal({{ loop.index0 }}, {{ group_loop.index0 }})">
+                          {{ utils.icon('arrow-right') }}
+                        </a> 
                       </div>
                     </td>
                   </tr>
@@ -157,4 +182,31 @@
       </div>
     {% endif %}
   {% endfor %}
+  {% block modals %}
+  <div class="modal fade" id="moveToGroupModal" tabindex="-1" role="dialog" aria-labelledby="moveToGroupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <form id="moveToGroupForm" method="get">
+            <input type="hidden" name="_method" value="GET" />
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="form-group">
+              <label for="group">Select Group:</label>
+              <select class="form-control" id="group" name="group">
+                <option value='undefined'>No group</option>
+                {% for group in themes["groups"] %}
+                  <option value="{{ loop.index0 }}">{{ group.title }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Move</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endblock modals %}
 {% endblock %}
