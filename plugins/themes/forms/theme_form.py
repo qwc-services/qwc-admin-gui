@@ -15,7 +15,7 @@ class BackgroundLayerForm(FlaskForm):
 class ThemeForm(FlaskForm):
     """Main form for Theme GUI"""
 
-    url = SelectField("Projekt", validators=[DataRequired()])
+    url = SelectField("Project", validators=[DataRequired()])
     title = StringField(
         "Title",
         description="Customized theme title.",
