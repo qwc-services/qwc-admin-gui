@@ -44,14 +44,14 @@
 
   {% block pagination %}
     {% if pagination and pagination['num_pages'] > 1 %}
+      {% set params = pagination['params'] or {} %}
       {% set page = pagination['page'] %}
       {% set num_pages = pagination['num_pages'] %}
-      {% set per_page = pagination['per_page'] %}
+      {% set per_page = params['per_page'] %}
       {% if per_page == pagination['per_page_default'] %}
         {# clear default per_page value #}
         {% set per_page = none %}
       {% endif %}
-      {% set params = pagination['params'] or {} %}
 
       {% set start_page = 1 %}
       {% set end_page = num_pages %}
@@ -70,7 +70,7 @@
           {# previous page #}
           {% if page > 1 %}
             <li>
-              <a href="{{ url_for(base_route, page=page-1, per_page=per_page, **params) }}" aria-label="Previous">
+              <a href="{{ url_for(base_route, page=page-1, **params) }}" aria-label="Previous">
                 <span aria-hidden="true" class="glyphicon glyphicon-menu-left"></span>
               </a>
             </li>
@@ -85,7 +85,7 @@
           {# first page #}
           {% if start_page > 1 %}
             <li>
-              <a href="{{ url_for(base_route, page=1, per_page=per_page, **params) }}">1</a>
+              <a href="{{ url_for(base_route, page=1, **params) }}">1</a>
             </li>
           {% endif %}
 
@@ -100,13 +100,13 @@
           {% for p in range(start_page, end_page + 1) %}
             {% if p == pagination['page'] %}
               <li class="active">
-                <a href="{{ url_for(base_route, page=p, per_page=per_page, **params) }}">
+                <a href="{{ url_for(base_route, page=p, **params) }}">
                   {{ p }} <span class="sr-only">(current)</span>
                 </a>
               </li>
             {% else %}
               <li>
-                <a href="{{ url_for(base_route, page=p, per_page=per_page, **params) }}">{{ p }}</a>
+                <a href="{{ url_for(base_route, page=p, **params) }}">{{ p }}</a>
               </li>
             {% endif %}
           {% endfor %}
@@ -121,14 +121,14 @@
           {# last page #}
           {% if end_page < num_pages %}
             <li>
-              <a href="{{ url_for(base_route, page=num_pages, per_page=per_page, **params) }}">{{ num_pages }}</a>
+              <a href="{{ url_for(base_route, page=num_pages, **params) }}">{{ num_pages }}</a>
             </li>
           {% endif %}
 
           {# next page #}
           {% if page < num_pages %}
             <li class="last">
-              <a href="{{ url_for(base_route, page=page+1, per_page=per_page, **params) }}" aria-label="Next">
+              <a href="{{ url_for(base_route, page=page+1, **params) }}" aria-label="Next">
                 <span aria-hidden="true" class="glyphicon glyphicon-menu-right"></span>
               </a>
             </li>
@@ -148,8 +148,10 @@
                 </button>
                 <ul class="dropdown-menu">
                   {% for pp in pagination['per_page_options'] %}
-                    <li class="{{ 'active' if pp == pagination['per_page'] }}">
-                      <a href="{{ url_for(base_route, per_page=pp, **params) }}">{{ pp }} per page</a>
+                    <li class="{{ 'active' if pp == params['per_page'] }}">
+                      {% set page_params_items = (params.items()|list) + [('per_page', pp)] %}
+                      {% set page_params = dict.from_keys(page_params_items) %}
+                      <a href="{{ url_for(base_route, **page_params) }}">{{ pp }} per page</a>
                     </li>
                   {% endfor %}
                 </ul>

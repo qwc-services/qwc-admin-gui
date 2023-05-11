@@ -522,11 +522,12 @@ class Controller:
 
         return sort, sort_asc
 
-    def pagination_args(self):
+    def pagination_args(self, session_params={}):
         """Return request args for pagination as (page, per_page)."""
         page = self.to_int(request.args.get('page'), 1, 1)
         per_page = self.to_int(
-            request.args.get('per_page'), self.DEFAULT_PER_PAGE, 1
+            request.args.get('per_page'),
+            session_params.get('per_page', self.DEFAULT_PER_PAGE), 1
         )
         return page, per_page
 

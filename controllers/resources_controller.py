@@ -172,9 +172,10 @@ class ResourcesController(Controller):
                 flask_session["resources"]['params']["sort"] = sort_param
 
         # paginate
-        page, per_page = self.pagination_args()
+        page, per_page = self.pagination_args(flask_session["resources"]['params'])
         num_pages = math.ceil(query.count() / per_page)
         resources = query.limit(per_page).offset((page - 1) * per_page).all()
+        flask_session["resources"]['params']['per_page'] = per_page
 
         check_unused = request.args.get('check_unused')
         if check_unused == "True":
@@ -194,7 +195,6 @@ class ResourcesController(Controller):
         pagination = {
             'page': page,
             'num_pages': num_pages,
-            'per_page': per_page,
             'per_page_options': self.PER_PAGE_OPTIONS,
             'per_page_default': self.DEFAULT_PER_PAGE,
             'params': flask_session["resources"]["params"]

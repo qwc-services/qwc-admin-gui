@@ -156,9 +156,10 @@ class PermissionsController(Controller):
                 flask_session["permissions"]['params']["sort"] = sort_param
 
         # paginate
-        page, per_page = self.pagination_args()
+        page, per_page = self.pagination_args(flask_session["permissions"]['params'])
         num_pages = math.ceil(query.count() / per_page)
         resources = query.limit(per_page).offset((page - 1) * per_page).all()
+        flask_session["permissions"]['params']['per_page'] = per_page
 
         # Set modified property to True so that the flask_session object
         # updates our cookie
@@ -170,7 +171,6 @@ class PermissionsController(Controller):
         pagination = {
             'page': page,
             'num_pages': num_pages,
-            'per_page': per_page,
             'per_page_options': self.PER_PAGE_OPTIONS,
             'per_page_default': self.DEFAULT_PER_PAGE,
             'params': flask_session["permissions"]["params"]
