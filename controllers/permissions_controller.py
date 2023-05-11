@@ -196,14 +196,14 @@ class PermissionsController(Controller):
         # Warn if role does not have permission on resource parent
         resource_roles = {}
         for res in resources:
-            resource_roles[res.resource.name] = \
+            resource_roles[res.resource.type + ":" + res.resource.name] = \
                 resource_roles.get(res.resource.name, []) + [res.role.name]
 
         role_warnings = []
         for res in resources:
             parent = res.resource.parent
             if parent is not None and \
-                    res.role.name not in resource_roles.get(parent.name, ['public']):
+                    res.role.name not in resource_roles.get(parent.type + ":" + parent.name, ['public']):
                 role_warnings.append(
                     (
                         "The permission for role <b>%s</b> on resource <b>%s</b> " +
