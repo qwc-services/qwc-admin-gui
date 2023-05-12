@@ -12,50 +12,95 @@ class ThemeUtils():
     def load_themesconfig(app, handler):
         """Return themesconfig"""
         current_handler = handler()
-        config_in_path = current_handler.config().get("input_config_path")
-        tenantConfig = os.path.join(config_in_path, current_handler.tenant, 'tenantConfig.json')
+        config_in_path = os.path.join(current_handler.config().get("input_config_path"), current_handler.tenant)
+        tenant_config_path = os.path.join(config_in_path, 'tenantConfig.json')
 
         try:
-            with open(tenantConfig, encoding='utf-8') as fh:
-                config = json.load(fh, object_pairs_hook=OrderedDict)
+            with open(tenant_config_path, encoding='utf-8') as fh:
+                tenant_config = json.load(fh, object_pairs_hook=OrderedDict)
         except IOError as e:
             app.logger.error("Error reading tenantConfig.json: {}".format(
                 e.strerror))
+            return {}
 
-        return config.get("themesConfig", {})
+        themes_config = tenant_config.get("themesConfig", None)
+
+        if isinstance(themes_config, str):
+            themes_config_path = themes_config
+            try:
+                if not os.path.isabs(themes_config_path):
+                    themes_config_path = os.path.join(config_in_path, themes_config_path)
+                with open(themes_config_path) as f:
+                    themes_config = json.load(f)
+            except:
+                msg = "Failed to read themes configuration %s" % themes_config_path
+                app.logger.error(msg)
+                return {}
+        elif not isinstance(themes_config, dict):
+            msg = "Missing or invalid themes configuration in tenantConfig.json"
+            app.logger.error(msg)
+            return {}
+
+        return themes_config
 
     @staticmethod
-    def save_themesconfig(themesConfig, app, handler):
+    def save_themesconfig(new_themes_config, app, handler):
         """Save themesconfig
 
-        :param Dict themesconfig: themesConfig Dictionary
+        :param Dict new_themes_config: new themesConfig Dictionary
         :param Flask app: Flask application
         """
         current_handler = handler()
-        config_in_path = current_handler.config().get("input_config_path")
-        tenantConfig = os.path.join(config_in_path, current_handler.tenant, 'tenantConfig.json')
-
-        timestamp = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
-        backup = "%s.bak%s" % (tenantConfig, timestamp)
+        config_in_path = os.path.join(current_handler.config().get("input_config_path"), current_handler.tenant)
+        tenant_config_path = os.path.join(config_in_path, 'tenantConfig.json')
 
         try:
-            with open(tenantConfig, "r", encoding="utf-8") as fh:
-                config = json.load(fh)
-
-            with open(backup, "w", encoding="utf-8") as fh:
-                json.dump(config, fh, indent=2, separators=(',', ': '))
-
-            config["themesConfig"] = themesConfig
-            with open(tenantConfig, "w", encoding="utf-8") as fh:
-                json.dump(config, fh, indent=2, separators=(',', ': '))
-
-            return True
-
+            with open(tenant_config_path, encoding='utf-8') as fh:
+                tenant_config = json.load(fh, object_pairs_hook=OrderedDict)
         except IOError as e:
-            app.logger.error("Error writing {}: {}".format(
-                tenantConfig, e.strerror))
+            app.logger.error("Error reading tenantConfig.json: {}".format(
+                e.strerror))
+            return False
 
-        return False
+        baksuffix = ".bak%s" % datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+        themes_config = tenant_config.get("themesConfig", None)
+
+        if isinstance(themes_config, str):
+            themes_config_path = themes_config
+            try:
+                if not os.path.isabs(themes_config_path):
+                    themes_config_path = os.path.join(config_in_path, themes_config_path)
+                with open(themes_config_path) as f:
+                    themes_config = json.load(f)
+
+                with open(themes_config_path + baksuffix, "w", encoding="utf-8") as fh:
+                    json.dump(themes_config, fh, indent=2, separators=(',', ': '))
+
+                with open(themes_config_path, "w", encoding="utf-8") as fh:
+                    json.dump(new_themes_config, fh, indent=2, separators=(',', ': '))
+
+            except IOError as e:
+                msg = "Failed to backup/save themes configuration %s: %s" % (themes_config_path, e.strerror)
+                app.logger.error(msg)
+                return False
+        elif isinstance(themes_config, dict):
+            try:
+                with open(tenant_config_path + baksuffix, "w", encoding="utf-8") as fh:
+                    json.dump(tenant_config, fh, indent=2, separators=(',', ': '))
+
+                tenant_config["themesConfig"] = new_themes_config
+                with open(tenant_config_path, "w", encoding="utf-8") as fh:
+                    json.dump(tenant_config, fh, indent=2, separators=(',', ': '))
+            except IOError as e:
+                msg = "Failed to backup/save themes configuration %s: %s" % (tenant_config_path, e.strerror)
+                app.logger.error(msg)
+                return False
+        else:
+            msg = "Missing or invalid themes configuration in tenantConfig.json"
+            app.logger.error(msg)
+            return False
+
+        return True
 
     @staticmethod
     def get_layers(app, handler):
