@@ -187,20 +187,23 @@ class PermissionsController(Controller):
             resource_types[resource_type.name] = resource_type.description
 
         # Create dict with all defined parents from resource objects
+        all_resources = self.resources_for_index_query(
+            None, None, None, resource_id, session
+        ).all()
         parents_dict = {}
-        for res in resources:
+        for res in all_resources:
             if res.resource.parent is not None and \
                     res.resource.parent.id not in parents_dict.keys():
                 parents_dict[res.resource.parent.id] = res.resource.parent.name
 
         # Warn if role does not have permission on resource parent
         resource_roles = {}
-        for res in resources:
+        for res in all_resources:
             resource_roles[res.resource.type + ":" + res.resource.name] = \
                 resource_roles.get(res.resource.name, []) + [res.role.name]
 
         role_warnings = []
-        for res in resources:
+        for res in all_resources:
             parent = res.resource.parent
             if parent is not None and \
                     res.role.name not in resource_roles.get(parent.type + ":" + parent.name, ['public']):
