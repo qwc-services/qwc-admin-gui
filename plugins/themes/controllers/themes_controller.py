@@ -289,7 +289,7 @@ class ThemesController:
                 items[tid-1], items[tid] = items[tid], items[tid-1]
 
             elif direction == "down" and len(items)-1 > tid:
-                items[tid], items[tid-1] = items[tid-1], items[tid]
+                items[tid], items[tid+1] = items[tid+1], items[tid]
 
             self.themesconfig["themes"]["items"] = items
 
@@ -300,12 +300,13 @@ class ThemesController:
                 items[tid-1], items[tid] = items[tid], items[tid-1]
 
             elif direction == "down" and len(items)-1 > tid:
-                items[tid], items[tid-1] = items[tid-1], items[tid]
+                items[tid], items[tid+1] = items[tid+1], items[tid]
 
             self.themesconfig["themes"]["groups"][gid]["items"] = items
 
         self.save_themesconfig()
         return redirect(url_for("themes"))
+
     def move_theme_to_group(self, tid, old_gid, gid):
         if old_gid == gid : 
             return redirect(url_for("themes"))
