@@ -26,7 +26,7 @@ class TemplateForm(FlaskForm):
 
     upload = FileField('HTML template (.html)', validators=[
         FileRequired(),
-        FileAllowed(['html'], 'Please only HTML files')
+        FileAllowed(['html'], 'Please only use HTML files')
     ])
     submit = SubmitField("Upload")
 
