@@ -20,3 +20,13 @@ class ProjectForm(FlaskForm):
         FileAllowed(['qgs'], 'Please only use QGS projects !')
     ])
     submit = SubmitField("Upload")
+    
+class TemplateForm(FlaskForm):
+    """Main form for QGS Project GUI"""
+
+    upload = FileField('HTML template (.html)', validators=[
+        FileRequired(),
+        FileAllowed(['html'], 'Please only HTML files')
+    ])
+    submit = SubmitField("Upload")
+

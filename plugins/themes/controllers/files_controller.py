@@ -4,7 +4,7 @@ from zipfile import ZipFile
 from flask import flash, redirect, render_template, url_for
 from werkzeug.utils import secure_filename
 
-from plugins.themes.forms import LayerForm, ProjectForm
+from plugins.themes.forms import LayerForm, ProjectForm, TemplateForm
 from plugins.themes.utils import ThemeUtils
 
 
@@ -43,6 +43,17 @@ class FilesController:
             "/files/layers/delete/<string:layername>", "delete_layer",
             self.delete_layer, methods=["GET"]
         )
+        # Custom templates
+        # upload 
+        app.add_url_rule(
+            '/files/templates/upload', 'upload_template', self.upload_template,
+            methods=["GET", "POST"]
+        )
+        # delete
+        app.add_url_rule(
+            "/files/templates/delete/<string:templatename>", "delete_template",
+            self.delete_template, methods=["GET"]
+        )
 
         self.app = app
         self.handler = handler
@@ -50,18 +61,21 @@ class FilesController:
 
         config_handler = handler()
         self.resources_path = config_handler.config().get("qgs_resources_path")
-
+        self.info_templates_path = config_handler.config().get("info_templates_path")
+          
     def index(self):
         """Show project list."""
         form_project = ProjectForm()
         form_layer = LayerForm()
+        form_template = TemplateForm()
         projects = ThemeUtils.get_projects(self.app, self.handler)
         layers = ThemeUtils.get_layers(self.app, self.handler)
+        templates = ThemeUtils.get_templates(self.app, self.handler)
 
         return render_template(
             "%s/files.html" % self.template_dir,
-            projects=projects, layers=layers,
-            form_project=form_project, form_layer=form_layer,
+            projects=projects, layers=layers, templates= templates,
+            form_project=form_project, form_layer=form_layer, form_template = form_template,
             title="Upload files"
         )
 
@@ -88,12 +102,14 @@ class FilesController:
                   {}".format(form.upload.errors[0]), 'error')
         form_project = ProjectForm()
         form_layer = LayerForm()
+        form_template = TemplateForm()
         projects = ThemeUtils.get_projects(self.app, self.handler)
         layers = ThemeUtils.get_layers(self.app, self.handler)
+        templates = ThemeUtils.get_templates(self.app, self.handler)
         return render_template(
             "%s/files.html" % self.template_dir,
-            projects=projects, layers=layers,
-            form_project=form_project, form_layer=form_layer,
+            projects=projects, layers=layers, templates=templates,
+            form_project=form_project, form_layer=form_layer, form_template=form_template,
             title="Upload files"
         )
 
@@ -109,12 +125,14 @@ class FilesController:
 
         form_project = ProjectForm()
         form_layer = LayerForm()
+        form_template = TemplateForm()
         projects = ThemeUtils.get_projects(self.app, self.handler)
         layers = ThemeUtils.get_layers(self.app, self.handler)
+        templates = ThemeUtils.get_templates(self.app, self.handler)
         return render_template(
             "%s/files.html" % self.template_dir,
-            projects=projects, layers=layers,
-            form_project=form_project, form_layer=form_layer,
+            projects=projects, layers=layers, templates=templates,
+            form_project=form_project, form_layer=form_layer, form_template=form_template,
             title="Upload files"
         )
 
@@ -151,12 +169,14 @@ class FilesController:
                   {}".format(form.upload.errors[0]), 'error')
         form_project = ProjectForm()
         form_layer = LayerForm()
+        form_template = TemplateForm()
         projects = ThemeUtils.get_projects(self.app, self.handler)
         layers = ThemeUtils.get_layers(self.app, self.handler)
+        templates = ThemeUtils.get_templates(self.app, self.handler)
         return render_template(
             "%s/files.html" % self.template_dir,
-            projects=projects, layers=layers,
-            form_project=form_project, form_layer=form_layer,
+            projects=projects, layers=layers, templates=templates,
+            form_project=form_project, form_layer=form_layer, form_template=form_template,
             title="Upload files"
         )
 
@@ -178,11 +198,71 @@ class FilesController:
 
         form_project = ProjectForm()
         form_layer = LayerForm()
+        form_template = TemplateForm()
         projects = ThemeUtils.get_projects(self.app, self.handler)
         layers = ThemeUtils.get_layers(self.app, self.handler)
+        templates = ThemeUtils.get_templates(self.app, self.handler)
         return render_template(
             "%s/files.html" % self.template_dir,
-            projects=projects, layers=layers,
-            form_project=form_project, form_layer=form_layer,
+            projects=projects, layers=layers, templates=templates,
+            form_project=form_project, form_layer=form_layer, form_template=form_template,
+            title="Upload files"
+        )
+
+    def upload_template(self):
+        """Upload HTML template."""
+        form = TemplateForm()
+        if form.validate_on_submit():
+            f = form.upload.data
+            filename = secure_filename(f.filename)
+            try:
+                f.save(os.path.join(self.info_templates_path, filename))
+                flash("Template '{}' successfully uploaded".format(filename),
+                      'success')
+                return redirect(url_for('files'))
+            except IOError as e:
+                self.app.logger.error("Error writing template to {}: {}".format(
+                    self.info_templates_path, e.strerror))
+                flash("Template could not be saved.", 'error')
+        else:
+            # TODO: validation error
+            self.app.logger.error("Error uploading template: \
+                                  {}".format(form.errors))
+            flash("Template could not be uploaded: \
+                  {}".format(form.upload.errors[0]), 'error')
+        form_project = ProjectForm()
+        form_layer = LayerForm()
+        form_template = TemplateForm()
+        projects = ThemeUtils.get_projects(self.app, self.handler)
+        layers = ThemeUtils.get_layers(self.app, self.handler)
+        templates = ThemeUtils.get_templates(self.app, self.handler)
+        
+        return render_template(
+            "%s/files.html" % self.template_dir,
+            projects=projects, layers=layers, templates=templates,
+            form_project=form_project, form_layer=form_layer, form_template = form_template,
+            title="Upload templates"
+        )
+  
+    def delete_template(self, templatename):
+        """Delete template file."""
+        try:
+            os.remove(os.path.join(self.info_templates_path, templatename))
+            return redirect(url_for('files'))
+        except IOError as e:
+            self.app.logger.error("Error deleting file: \
+                                  {}".format(e.strerror))
+            flash("File could not be deleted.", 'error')
+
+        form_project = ProjectForm()
+        form_layer = LayerForm()
+        form_template = TemplateForm()
+        projects = ThemeUtils.get_projects(self.app, self.handler)
+        layers = ThemeUtils.get_layers(self.app, self.handler)
+        templates = ThemeUtils.get_templates(self.app, self.handler)
+        return render_template(
+            "%s/files.html" % self.template_dir,
+            projects=projects, layers=layers, templates = templates,
+            form_project=form_project, form_layer=form_layer, form_template=form_template,
             title="Upload files"
         )
