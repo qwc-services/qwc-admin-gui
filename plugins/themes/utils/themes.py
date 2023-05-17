@@ -135,6 +135,23 @@ class ThemeUtils():
             url = ogc_service_url.rstrip("/") + "/" + project
             projects.append((url, project))
         return sorted(projects)
+    
+    @staticmethod
+    def get_templates(app, handler):
+        """Return templates file names from INFO_TEMPLATES_PATH"""
+        current_handler = handler()
+        info_templates_path = current_handler.config().get("info_templates_path")
+
+        templates = []
+        app.logger.info(info_templates_path)
+        for ext in ['*.html']:
+            for path in pathlib.Path(info_templates_path).rglob(ext):
+                app.logger.info(str(path))
+                app.logger.info(path.relative_to(info_templates_path))
+                template = str(path.relative_to(info_templates_path))
+                if not template.startswith("."):
+                    templates.append(template)
+        return sorted(templates)
 
     @staticmethod
     def get_mapthumbs(app, handler):
