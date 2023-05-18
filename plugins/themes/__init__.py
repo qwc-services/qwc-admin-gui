@@ -14,7 +14,7 @@ def load_plugin(app, handler):
 
     # Check required settings
     config = handler().config()
-    for setting in ["input_config_path", "qwc2_path", "qgs_resources_path"]:
+    for setting in ["input_config_path", "qwc2_path", "qgs_resources_path", "info_templates_path"]:
         if not os.path.isdir(config.get(setting, "")):
             raise RuntimeError("%s is not set or invalid" % setting)
     if not config.get("ogc_service_url", None):
