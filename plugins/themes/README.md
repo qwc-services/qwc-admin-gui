@@ -14,4 +14,5 @@ Enable this plugin by setting the following options in `config` block of the `ad
     "input_config_path": "<path to the input configs>",
     "qwc2_path": "<path to the qwc2 prod build>",
     "qgs_resources_path": "<path to the qgs resources>",
+    "info_templates_path": "<path to the html info templates>"
     "ogc_service_url": "<ows service url>"

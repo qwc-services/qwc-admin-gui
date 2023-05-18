@@ -101,6 +101,10 @@
           "description": "The path to the QGIS projects. Required for 'themes' plugin.",
           "type": "string"
         },
+        "info_templates_path": {
+          "description": "The path to the html info templates. Required for 'themes' plugin.",
+          "type": "string"
+        },
         "ogc_service_url": {
           "description": "The OGC service URL. Required for 'themes' plugin.",
           "type": "string"
