@@ -7,6 +7,7 @@ This plugin allows managing some settings in the qwc_config.alkis table, which c
 
 New table qwc_conf.alkis needs to be created:
 
+```
 CREATE TABLE qwc_config.alkis (
 	name varchar NULL,
 	pgservice varchar NULL,
@@ -16,6 +17,7 @@ CREATE TABLE qwc_config.alkis (
 	id serial4 NOT NULL,
 	CONSTRAINT alkis_pk PRIMARY KEY (id)
 );
+```
 
 A new type with name "alkis" needs to be created in table qwc_config.resource_types.
 ![image](https://github.com/w0pr/qwc-admin-gui/assets/8257055/dcede457-99e4-4c07-934d-9027781c0561)
