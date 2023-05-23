@@ -108,6 +108,10 @@
         "ogc_service_url": {
           "description": "The OGC service URL. Required for 'themes' plugin.",
           "type": "string"
+        },
+        "default_qgis_server_url": {
+          "description": "The default Qgis server URL. Required for 'themes' plugin.",
+          "type": "string"
         }
       },
       "required": [

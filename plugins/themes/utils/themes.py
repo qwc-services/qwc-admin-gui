@@ -103,6 +103,104 @@ class ThemeUtils():
         return True
 
     @staticmethod
+    def load_featureinfo_config(app, handler):
+        """Load and return the 'resources' configuration for the 'featureInfo' service"""
+
+        current_handler = handler()
+        config_in_path = os.path.join(current_handler.config().get("input_config_path"), current_handler.tenant)
+        tenant_config_path = os.path.join(config_in_path, 'tenantConfig.json')
+
+        try:
+            with open(tenant_config_path, encoding='utf-8') as fh:
+                tenant_config = json.load(fh, object_pairs_hook=OrderedDict)
+        except IOError as e:
+            app.logger.error("Error reading tenantConfig.json: {}".format(e.strerror))
+            return {}
+        services = tenant_config.get("services", [])
+        for service in services:
+            if service.get("name") == "featureInfo":
+                resources_config = service.get("resources", {})
+                return resources_config
+
+        return {}
+
+    @staticmethod
+    def save_featureinfo_config(new_featureinfo_config, app, handler):
+        """Save featureInfo configuration
+
+        :param Dict new_featureinfo_config: New featureInfo configuration dictionary
+        :param Flask app: Flask application
+        """
+        current_handler = handler()
+        config_in_path = os.path.join(current_handler.config().get("input_config_path"), current_handler.tenant)
+        tenant_config_path = os.path.join(config_in_path, 'tenantConfig.json')
+
+        try:
+            with open(tenant_config_path, encoding='utf-8') as fh:
+                tenant_config = json.load(fh, object_pairs_hook=OrderedDict)
+        except IOError as e:
+            app.logger.error("Error reading tenantConfig.json: {}".format(e.strerror))
+            return False
+
+        baksuffix = ".bak%s" % datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+        services = tenant_config.get("services", [])
+
+        for service in services:
+            if service.get("name") == "featureInfo":
+                featureinfo_config = service.get("resources")
+                if isinstance(featureinfo_config, str):
+                    featureinfo_config_path = featureinfo_config
+                    try:
+                        if not os.path.isabs(featureinfo_config_path):
+                            featureinfo_config_path = os.path.join(config_in_path, featureinfo_config_path)
+
+                        with open(featureinfo_config_path) as f:
+                            featureinfo_config = json.load(f)
+
+                        with open(featureinfo_config_path + baksuffix, "w", encoding="utf-8") as fh:
+                            json.dump(featureinfo_config, fh, indent=2, separators=(',', ': '))
+
+                        with open(featureinfo_config_path, "w", encoding="utf-8") as fh:
+                            json.dump(new_featureinfo_config, fh, indent=2, separators=(',', ': '))
+
+                    except IOError as e:
+                        msg = "Failed to backup/save featureInfo configuration {}: {}".format(
+                            featureinfo_config_path, e.strerror)
+                        app.logger.error(msg)
+                        return False
+                elif isinstance(featureinfo_config, dict):
+                    try:
+                        with open(tenant_config_path + baksuffix, "w", encoding="utf-8") as fh:
+                            json.dump(tenant_config, fh, indent=2, separators=(',', ': '))
+
+                        service["resources"] = new_featureinfo_config
+                        with open(tenant_config_path, "w", encoding="utf-8") as fh:
+                            json.dump(tenant_config, fh, indent=2, separators=(',', ': '))
+
+                    except IOError as e:
+                        msg = "Failed to backup/save featureInfo configuration {}: {}".format(
+                            tenant_config_path, e.strerror)
+                        app.logger.error(msg)
+                        return False
+                else:
+                    msg = "Missing or invalid featureInfo configuration in tenantConfig.json"
+                    app.logger.error(msg)
+                    return False
+            try:
+                with open(tenant_config_path + baksuffix, "w", encoding="utf-8") as fh:
+                    json.dump(tenant_config, fh, indent=2, separators=(',', ': '))
+
+                with open(tenant_config_path, "w", encoding="utf-8") as fh:
+                    json.dump(tenant_config, fh, indent=2, separators=(',', ': '))
+            except IOError as e:
+                msg = "Failed to backup/save featureInfo configuration {}: {}".format(
+                    tenant_config_path, e.strerror)
+                app.logger.error(msg)
+                return False
+
+        return True
+
+    @staticmethod
     def get_layers(app, handler):
         """Return geospatial file names from QGIS_RESOURCES_PATH"""
         current_handler = handler()
