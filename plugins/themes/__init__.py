@@ -1,11 +1,12 @@
 import os
-from plugins.themes.controllers import BackgroundLayersController, MapthumbsController, ThemesController, FilesController
+from plugins.themes.controllers import BackgroundLayersController, MapthumbsController, ThemesController, FilesController, TemplatesController
 from plugins.themes.utils import ThemeUtils
 
 __background_layers_controller = None
 __mapthumbs_controller = None
 __themes_controller = None
 __files_controller = None
+__templates_controller = None
 
 
 name = "Themes"
@@ -19,15 +20,20 @@ def load_plugin(app, handler):
             raise RuntimeError("%s is not set or invalid" % setting)
     if not config.get("ogc_service_url", None):
         raise RuntimeError("ogc_service_url is not set")
+    if not config.get("default_qgis_server_url", None):
+        raise RuntimeError("default_qgis_server_url is not set")
 
     global __background_layers_controller
     global __mapthumbs_controller
     global __themes_controller
     global __files_controller
+    global __templates_controller
 
     themesconfig = ThemeUtils.load_themesconfig(app, handler)
+    featureInfoconfig = ThemeUtils.load_featureinfo_config(app, handler)
     __background_layers_controller = BackgroundLayersController(app, handler, themesconfig)
     __mapthumbs_controller = MapthumbsController(app, handler)
     __themes_controller = ThemesController(app, handler, themesconfig)
     __files_controller = FilesController(app, handler)
+    __templates_controller = TemplatesController(app, handler, featureInfoconfig)
 
