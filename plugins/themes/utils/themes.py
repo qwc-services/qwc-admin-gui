@@ -235,12 +235,12 @@ class ThemeUtils():
         return sorted(projects)
     
     @staticmethod
-    def get_templates(app, handler):
+    def get_info_templates(app, handler):
         """Return templates file names from INFO_TEMPLATES_PATH"""
         current_handler = handler()
         info_templates_path = current_handler.config().get("info_templates_path")
 
-        templates = []
+        info_templates = []
         app.logger.info(info_templates_path)
         for ext in ['*.html']:
             for path in pathlib.Path(info_templates_path).rglob(ext):
@@ -248,8 +248,8 @@ class ThemeUtils():
                 app.logger.info(path.relative_to(info_templates_path))
                 template = str(path.relative_to(info_templates_path))
                 if not template.startswith("."):
-                    templates.append(template)
-        return sorted(templates)
+                    info_templates.append(template)
+        return sorted(info_templates)
 
     @staticmethod
     def get_mapthumbs(app, handler):

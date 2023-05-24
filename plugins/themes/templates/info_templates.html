@@ -12,7 +12,7 @@
     <div class="panel-heading clearfix" style="overflow: hidden;">
       <div class="panel-title pull-left" style="padding-top: 7.5px;"><b>Templates</b></div>
       <div class="btn-group pull-right">
-        <a href="{{ url_for('template') }}" class="btn btn-success" role="button" title="New template">
+        <a href="{{ url_for('info_template') }}" class="btn btn-success" role="button" title="New template">
           {{ utils.icon('plus') }}
         </a>
       </div>
@@ -37,10 +37,10 @@
               <td style="vertical-align: middle">{{ layer["info_template"]["template_path"].split("/")[-1] }}</td>
               <td style="text-align: right">
                 <div class="btn-group">
-                  <a href="{{ url_for('edit_template', tid=loop.index0 , gid=item_loop.index0)}}" class="btn btn-primary" role="button" title="Edit theme">
+                  <a href="{{ url_for('edit_info_template', tid=loop.index0 , gid=item_loop.index0)}}" class="btn btn-primary" role="button" title="Edit theme">
                     {{ utils.icon('pencil') }}
                   </a>
-                  <a href="{{ url_for('delete_html_template', tid=loop.index0, gid=item_loop.index0) }}" class="btn btn-danger" role="button" title="Delete theme" onclick="return confirm('Really delete theme?');">
+                  <a href="{{ url_for('delete_info_template', tid=loop.index0, gid=item_loop.index0) }}" class="btn btn-danger" role="button" title="Delete theme" onclick="return confirm('Really delete theme?');">
                     {{ utils.icon('trash') }}
                   </a>
                 </div>
