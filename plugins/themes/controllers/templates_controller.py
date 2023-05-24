@@ -8,7 +8,7 @@ from plugins.themes.utils import ThemeUtils
 from qwc_services_core.config_models import ConfigModels
 from sqlalchemy.exc import IntegrityError, InternalError
 
-class TemplatesController():
+class InfoTemplatesController():
     """Controller for HTML template model"""
 
     def __init__(self, app, handler, featureInfoconfig):
@@ -28,19 +28,19 @@ class TemplatesController():
         self.resources = self.config_models.model('resources')
 
         app.add_url_rule(
-            '/themes/templates', 'templates', self.templates,
+            '/themes/info_templates', 'info_templates', self.info_templates,
             methods=["GET"]
         )
         app.add_url_rule(
-            '/themes/template', 'template', self.template,
+            '/themes/info_template', 'info_template', self.info_template,
             methods=["GET", "POST"]
         )
         app.add_url_rule(
-            '/themes/template/edit/<int:gid>/<int:tid>', 'edit_template', self.edit_template,
+            '/themes/info_template/edit/<int:gid>/<int:tid>', 'edit_info_template', self.edit_info_template,
             methods=["GET", "POST"]
         )
         app.add_url_rule(
-            '/themes/template/delete/<int:gid>/<int:tid>', 'delete_html_template', self.delete_html_template,
+            '/themes/info_template/delete/<int:gid>/<int:tid>', 'delete_info_template', self.delete_info_template,
             methods=["GET", "POST"]
         )
 
@@ -48,25 +48,25 @@ class TemplatesController():
         self.handler = handler
         self.template_dir = "plugins/themes/templates"
 
-    def template(self):
-        """Create template."""
+    def info_template(self):
+        """Create info_template."""
         form = InfoTemplateForm()
         form.url.choices = [("", "---")] + ThemeUtils.get_projects(self.app, self.handler)
-        form.template.choices = [("---")] + ThemeUtils.get_templates(self.app, self.handler)
+        form.template.choices = [("---")] + ThemeUtils.get_info_templates(self.app, self.handler)
         if form.validate_on_submit():
             try:
-                self.create_or_update_templates(form)
+                self.create_or_update_info_templates(form)
             except ValidationError:
                 flash("Could not create template.", "warning")
-            return redirect(url_for("templates"))
+            return redirect(url_for("info_templates"))
 
         return render_template(
             '%s/info_template.html' % self.template_dir, title='Add template',
             form=form
         )
 
-    def templates(self):
-        """Show templates."""
+    def info_templates(self):
+        """Show info_templates."""
         items = []
         for item in self.featureInfoconfig["wms_services"]:
             items.append(item)
@@ -75,18 +75,18 @@ class TemplatesController():
             '%s/info_templates.html' % self.template_dir, title='HTML templates', items=items
         )
 
-    def create_or_update_templates(self, template, tid=None, gid=None):
+    def create_or_update_info_templates(self, info_template, tid=None, gid=None):
         """Create or update HTML templates records in Tenantconfig."""
         ogc_service_url = self.ogc_service_url.rstrip("/") + "/"
         info_templates_path = self.info_templates_path.rstrip("/") + "/"
         default_qgis_server_url = self.default_qgis_server_url.rstrip("/") + "/"
-        project_name = template.url.data.replace((ogc_service_url), '')
+        project_name = info_template.url.data.replace((ogc_service_url), '')
         new_layer = OrderedDict({
-            "name": template.layer.data,
+            "name": info_template.layer.data,
             "info_template": OrderedDict({
                 "type": "wms",
                 "wms_url": f"{default_qgis_server_url}{project_name}",
-                "template_path": f"{info_templates_path}{template.template.data}"
+                "template_path": f"{info_templates_path}{info_template.template.data}"
             })
         })
         existing_item = next((item for item in self.featureInfoconfig["wms_services"] if item["name"] == project_name), None)
@@ -97,7 +97,7 @@ class TemplatesController():
                 self.featureInfoconfig["wms_services"][gid]["root_layer"]["layers"][tid]["info_template"]= new_layer["info_template"]
             elif existing_layer and tid == None: 
                     flash("A template already exist for this layer", "warning")
-                    return redirect(url_for("templates"))
+                    return redirect(url_for("info_templates"))
             else:
                 layers.append(new_layer)
                 resource = self.resources()
@@ -154,20 +154,20 @@ class TemplatesController():
 
         self.save_featureinfo_config()
 
-    def edit_template(self, gid, tid):
-        """Edit template."""
+    def edit_info_template(self, gid, tid):
+        """Edit info_template."""
         form = InfoTemplateForm()
         form.url.choices = [("", "---")] + ThemeUtils.get_projects(self.app, self.handler)
-        form.template.choices = [("---")] + ThemeUtils.get_templates(self.app, self.handler)
+        form.template.choices = [("---")] + ThemeUtils.get_info_templates(self.app, self.handler)
         try: 
             form.url.data = self.ogc_service_url.rstrip("/") + "/" + self.featureInfoconfig["wms_services"][gid]["name"]
             form.layer.data = self.featureInfoconfig["wms_services"][gid]["root_layer"]["layers"][tid]["name"]
             if form.validate_on_submit():
                 try:
-                    self.create_or_update_templates(form, tid, gid)
+                    self.create_or_update_info_templates(form, tid, gid)
                 except ValidationError:
                     flash("Could not update template.", "warning")
-                return redirect(url_for("templates"))
+                return redirect(url_for("info_templates"))
             form.template.data = self.featureInfoconfig["wms_services"][gid]["root_layer"]["layers"][tid]["info_template"]["template_path"].split("/")[-1]
             
             return render_template(
@@ -177,8 +177,8 @@ class TemplatesController():
         except Exception : 
             abort(404)
 
-    def delete_html_template(self, gid, tid):
-        """Delete template."""
+    def delete_info_template(self, gid, tid):
+        """Delete info_template."""
         session = self.config_models.session()
         resource = session.query(self.resources).filter_by(
             type="feature_info_layer", name=self.featureInfoconfig["wms_services"][gid]["root_layer"]["layers"][tid]["name"]
@@ -210,7 +210,7 @@ class TemplatesController():
             self.featureInfoconfig["wms_services"].pop(gid)
         self.save_featureinfo_config()
 
-        return redirect(url_for("templates"))
+        return redirect(url_for("info_templates"))
 
     def save_featureinfo_config(self):
         if ThemeUtils.save_featureinfo_config(self.featureInfoconfig, self.app, self.handler):

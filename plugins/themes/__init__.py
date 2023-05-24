@@ -1,12 +1,12 @@
 import os
-from plugins.themes.controllers import BackgroundLayersController, MapthumbsController, ThemesController, FilesController, TemplatesController
+from plugins.themes.controllers import BackgroundLayersController, MapthumbsController, ThemesController, FilesController, InfoTemplatesController
 from plugins.themes.utils import ThemeUtils
 
 __background_layers_controller = None
 __mapthumbs_controller = None
 __themes_controller = None
 __files_controller = None
-__templates_controller = None
+__info_templates_controller = None
 
 
 name = "Themes"
@@ -27,7 +27,7 @@ def load_plugin(app, handler):
     global __mapthumbs_controller
     global __themes_controller
     global __files_controller
-    global __templates_controller
+    global __info_templates_controller
 
     themesconfig = ThemeUtils.load_themesconfig(app, handler)
     featureInfoconfig = ThemeUtils.load_featureinfo_config(app, handler)
@@ -35,5 +35,5 @@ def load_plugin(app, handler):
     __mapthumbs_controller = MapthumbsController(app, handler)
     __themes_controller = ThemesController(app, handler, themesconfig)
     __files_controller = FilesController(app, handler)
-    __templates_controller = TemplatesController(app, handler, featureInfoconfig)
+    __info_templates_controller = InfoTemplatesController(app, handler, featureInfoconfig)
 
