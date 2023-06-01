@@ -70,7 +70,7 @@ class FilesController:
         form_template = TemplateForm()
         projects = ThemeUtils.get_projects(self.app, self.handler)
         layers = ThemeUtils.get_layers(self.app, self.handler)
-        templates = ThemeUtils.get_templates(self.app, self.handler)
+        templates = ThemeUtils.get_info_templates(self.app, self.handler)
 
         return render_template(
             "%s/files.html" % self.template_dir,
