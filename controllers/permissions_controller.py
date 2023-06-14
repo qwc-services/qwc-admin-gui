@@ -200,7 +200,7 @@ class PermissionsController(Controller):
         resource_roles = {}
         for res in all_resources:
             resource_roles[res.resource.type + ":" + res.resource.name] = \
-                resource_roles.get(res.resource.name, []) + [res.role.name]
+                resource_roles.get(res.resource.type + ":" + res.resource.name, []) + [res.role.name]
 
         role_warnings = []
         for res in all_resources:
