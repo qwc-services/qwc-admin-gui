@@ -2,6 +2,7 @@ from collections import OrderedDict
 from flask import abort, flash, redirect, render_template, request, url_for
 from wtforms import ValidationError
 from sqlalchemy.exc import IntegrityError, InternalError
+from urllib.parse import urlparse
 from qwc_services_core.config_models import ConfigModels
 
 from plugins.themes.forms import ThemeForm
@@ -419,11 +420,12 @@ class ThemesController:
         else:
             current_handler = self.handler()
             ogc_service_url = current_handler.config().get("ogc_service_url")
+            ows_prefix = current_handler.config().get("ows_prefix", urlparse(ogc_service_url).path)
             if "url" in theme:
-                if theme["url"].startswith(ogc_service_url):
+                if theme["url"].startswith(ows_prefix):
                     form.url.data = theme["url"]
                 else:
-                    form.url.data = ogc_service_url.rstrip("/") + "/" + theme["url"]
+                    form.url.data = ows_prefix.rstrip("/") + "/" + theme["url"]
             else:
                 form.url.data = None
             if "title" in theme:

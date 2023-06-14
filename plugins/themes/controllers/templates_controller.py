@@ -1,4 +1,5 @@
 import os
+from urllib.parse import urlparse
 
 from flask import flash, render_template, redirect, url_for, abort
 from wtforms import ValidationError
@@ -21,7 +22,8 @@ class InfoTemplatesController():
         self.mapthumb_path = os.path.join(qwc2_path, "assets/img/mapthumbs/")
         self.featureInfoconfig = featureInfoconfig
         self.info_templates_path = current_handler.config().get("info_templates_path")
-        self.ogc_service_url = current_handler.config().get("ogc_service_url")
+        ogc_service_url = current_handler.config().get("ogc_service_url")
+        self.ows_prefix = current_handler.config().get("ows_prefix", urlparse(ogc_service_url).path).rstrip("/") + "/"
         self.default_qgis_server_url = current_handler.config().get("default_qgis_server_url")
         db_engine = current_handler.db_engine()
         self.config_models = ConfigModels(db_engine, current_handler.conn_str())
@@ -77,10 +79,9 @@ class InfoTemplatesController():
 
     def create_or_update_info_templates(self, info_template, tid=None, gid=None):
         """Create or update HTML templates records in Tenantconfig."""
-        ogc_service_url = self.ogc_service_url.rstrip("/") + "/"
         info_templates_path = self.info_templates_path.rstrip("/") + "/"
         default_qgis_server_url = self.default_qgis_server_url.rstrip("/") + "/"
-        project_name = info_template.url.data.replace((ogc_service_url), '')
+        project_name = info_template.url.data.replace(self.ows_prefix, '')
         new_layer = OrderedDict({
             "name": info_template.layer.data,
             "info_template": OrderedDict({
@@ -160,7 +161,7 @@ class InfoTemplatesController():
         form.url.choices = [("", "---")] + ThemeUtils.get_projects(self.app, self.handler)
         form.template.choices = [("---")] + ThemeUtils.get_info_templates(self.app, self.handler)
         try: 
-            form.url.data = self.ogc_service_url.rstrip("/") + "/" + self.featureInfoconfig["wms_services"][gid]["name"]
+            form.url.data = self.ows_prefix + self.featureInfoconfig["wms_services"][gid]["name"]
             form.layer.data = self.featureInfoconfig["wms_services"][gid]["root_layer"]["layers"][tid]["name"]
             if form.validate_on_submit():
                 try:

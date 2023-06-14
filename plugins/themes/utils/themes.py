@@ -3,6 +3,7 @@ import json
 import pathlib
 from datetime import datetime
 from collections import OrderedDict
+from urllib.parse import urlparse
 
 
 class ThemeUtils():
@@ -223,6 +224,7 @@ class ThemeUtils():
         current_handler = handler()
         resources_path = current_handler.config().get("qgs_resources_path")
         ogc_service_url = current_handler.config().get("ogc_service_url")
+        ows_prefix = current_handler.config().get("ows_prefix", urlparse(ogc_service_url).path)
 
         projects = []
         app.logger.info(resources_path)
@@ -230,7 +232,7 @@ class ThemeUtils():
             app.logger.info(str(path))
             app.logger.info(path.relative_to(resources_path))
             project = str(path.relative_to(resources_path))[:-4].replace("\\", "/")
-            url = ogc_service_url.rstrip("/") + "/" + project
+            url = ows_prefix.rstrip("/") + "/" + project
             projects.append((url, project))
         return sorted(projects)
     

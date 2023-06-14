@@ -15,5 +15,5 @@ Enable this plugin by setting the following options in `config` block of the `ad
     "qwc2_path": "<path to the qwc2 prod build>",
     "qgs_resources_path": "<path to the qgs resources>",
     "info_templates_path": "<path to the html info templates>",
-    "ogc_service_url": "<ows service url>",
+    "ows_prefix": "<ows service prefix, i.e. /ows>",
     "default_qgis_server_url": "<qgis server url>"
