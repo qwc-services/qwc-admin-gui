@@ -206,6 +206,7 @@ class PermissionsController(Controller):
         for res in all_resources:
             parent = res.resource.parent
             if parent is not None and \
+                    'public' not in resource_roles.get(parent.type + ":" + parent.name, ['public']) and \
                     res.role.name not in resource_roles.get(parent.type + ":" + parent.name, ['public']):
                 role_warnings.append(
                     (
