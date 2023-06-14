@@ -85,15 +85,15 @@
     {% endif %}
     {{ form.csrf_token }}
 
-    {{ wtf.form_field(form.role_id, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.role_id, form_type="horizontal", horizontal_columns=('sm', 2, 7)) }}
 
     <div class="form-group required{{ ' has-error' if form.resource_id.errors }}">
       <label class="control-label col-sm-2" for="resource_id">{{ form.resource_id.label }}</label>
-      <div class="col-sm-5">
+      <div class="col-sm-7">
         <div class="row">
 
           {# resource type filter #}
-          <div id="resource_type_filter" class="col-sm-6 btn-group">
+          <div id="resource_type_filter" class="col-sm-4 btn-group">
             <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="display: flex; width: 100%; align-items: center;">
               <span id="resource_type_filter_label" style="flex: 1 1 auto; text-align: left;">Type Filter: All</span> <span class="caret"></span>
             </button>
@@ -111,7 +111,7 @@
           </div>
 
           {# custom select field with resource type as data in options for resource #}
-          <div class="col-sm-6">
+          <div class="col-sm-8">
             <select class="form-control chosen-select" data-placeholder="Select a resource" id="resource_id" name="resource_id">
               <option value=""></option>
               {% for group in form.resource_choices %}
@@ -138,8 +138,8 @@
       {% endif %}
     </div>
 
-    {{ wtf.form_field(form.priority, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.form_field(form.write, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.priority, form_type="horizontal", horizontal_columns=('sm', 2, 7)) }}
+    {{ wtf.form_field(form.write, form_type="horizontal", horizontal_columns=('sm', 2, 7)) }}
 
     {{ wtf.form_field(form.submit, class="col-sm-offset-2 btn btn-primary") }}
   </form>
