@@ -1,5 +1,6 @@
 from .controller import Controller
 from forms import RoleForm
+from flask import flash, Markup
 
 
 class RolesController(Controller):
@@ -92,7 +93,10 @@ class RolesController(Controller):
             role = resource
 
         # update role
-        role.name = form.name.data
+        if role.name != "admin":
+            role.name = form.name.data
+        elif form.name.data != "admin":
+            flash(Markup("The <code>admin</code> role cannot be renamed."), 'warning')
         role.description = form.description.data
 
         # update groups
