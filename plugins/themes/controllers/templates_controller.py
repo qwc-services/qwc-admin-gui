@@ -22,8 +22,7 @@ class InfoTemplatesController():
         self.mapthumb_path = os.path.join(qwc2_path, "assets/img/mapthumbs/")
         self.featureInfoconfig = featureInfoconfig
         self.info_templates_path = current_handler.config().get("info_templates_path")
-        ogc_service_url = current_handler.config().get("ogc_service_url")
-        self.ows_prefix = current_handler.config().get("ows_prefix", urlparse(ogc_service_url).path).rstrip("/") + "/"
+        self.ows_prefix = urlparse(current_handler.config().get("ows_prefix", "")).path.rstrip("/") + "/"
         self.default_qgis_server_url = current_handler.config().get("default_qgis_server_url")
         db_engine = current_handler.db_engine()
         self.config_models = ConfigModels(db_engine, current_handler.conn_str())
