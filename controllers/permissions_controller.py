@@ -202,18 +202,21 @@ class PermissionsController(Controller):
             resource_roles[res.resource.type + ":" + res.resource.name] = \
                 resource_roles.get(res.resource.type + ":" + res.resource.name, []) + [res.role.name]
 
+        public_default_allow_resources = ['attribute', 'layer', 'feature_info_layer', 'print_template']
+
         role_warnings = []
         for res in all_resources:
             parent = res.resource.parent
+            default_parent_roles = ['public'] if parent is not None and res.resource.type in public_default_allow_resources else []
             if parent is not None and \
-                    'public' not in resource_roles.get(parent.type + ":" + parent.name, ['public']) and \
-                    res.role.name not in resource_roles.get(parent.type + ":" + parent.name, ['public']):
+                    'public' not in resource_roles.get(parent.type + ":" + parent.name, default_parent_roles) and \
+                    res.role.name not in resource_roles.get(parent.type + ":" + parent.name, default_parent_roles):
                 role_warnings.append(
                     (
-                        "The permission for role <b>%s</b> on resource <b>%s</b> " +
+                        "The permission for role <b>%s</b> on the <b>%s</b> resource <b>%s</b> " +
                         "has no effect because <b>%s</b> has no permission on the " +
                         "parent resource <b>%s</b>."
-                     ) % (res.role.name, res.resource.name, res.role.name, parent.name)
+                     ) % (res.role.name, res.resource.type, res.resource.name, res.role.name, parent.name)
                 )
         if role_warnings:
             flash(Markup("<br />".join(role_warnings)), 'warning')
