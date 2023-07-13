@@ -1,10 +1,14 @@
 from .controller import Controller
 from forms import RoleForm
 from flask import flash, Markup
+from wtforms import ValidationError
 
 
 class RolesController(Controller):
     """Controller for role model"""
+
+    # name of admin iam.role
+    ADMIN_ROLE_NAME = 'admin'
 
     def __init__(self, app, handler):
         """Constructor
@@ -93,10 +97,10 @@ class RolesController(Controller):
             role = resource
 
         # update role
-        if role.name != "admin":
+        if role.name != self.ADMIN_ROLE_NAME:
             role.name = form.name.data
         elif form.name.data != "admin":
-            flash(Markup("The <code>admin</code> role cannot be renamed."), 'warning')
+            flash(Markup("The <code>admin</code> role cannot be renamed."), 'error')
         role.description = form.description.data
 
         # update groups
@@ -107,3 +111,15 @@ class RolesController(Controller):
         self.update_collection(
             role.users_collection, form.users, self.User, 'id', session
         )
+
+    def destroy_resource(self, resource, session):
+        """Delete existing resource in DB.
+
+        :param object resource: Resource object
+        :param Session session: DB session
+        """
+
+        if resource.name == self.ADMIN_ROLE_NAME:
+            raise ValidationError('The <code>admin</code> role cannot be deleted.')
+
+        Controller.destroy_resource(self, resource, session)

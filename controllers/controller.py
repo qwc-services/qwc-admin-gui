@@ -1,7 +1,7 @@
 from datetime import datetime
 import math
 
-from flask import abort, flash, redirect, render_template, request, url_for
+from flask import abort, flash, redirect, render_template, request, url_for, Markup
 from sqlalchemy.exc import IntegrityError, InternalError
 from wtforms import ValidationError
 
@@ -353,6 +353,8 @@ class Controller:
                 flash('InternalError: %s' % e.orig, 'error')
             except IntegrityError as e:
                 flash('IntegrityError: %s' % e.orig, 'error')
+            except Exception as e:
+                flash(Markup(str(e)), 'error')
 
             session.close()
 
