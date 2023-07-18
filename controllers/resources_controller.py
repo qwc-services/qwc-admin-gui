@@ -6,6 +6,7 @@ from urllib.parse import urljoin
 from operator import itemgetter
 
 from flask import abort, flash, redirect, render_template, request, url_for, session as flask_session
+from sqlalchemy.exc import IntegrityError, InternalError
 from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
@@ -34,7 +35,13 @@ class ResourcesController(Controller):
         app.add_url_rule(
             '/%s/<int:id>/cascaded' % base_route,
             'destroy_cascaded_%s' % suffix,
-            self.destroy_casacaded, methods=['DELETE', 'POST']
+            self.destroy_cascaded, methods=['DELETE', 'POST']
+        )
+        # delete selected
+        app.add_url_rule(
+            '/%s/delete_multiple' % base_route,
+            'destroy_multiple_%s' % suffix,
+            self.destroy_multiple, methods=['DELETE', 'POST']
         )
         # resource hierarchy
         app.add_url_rule(
@@ -232,7 +239,7 @@ class ResourcesController(Controller):
         """
         return session.query(self.Resource).filter_by(id=id).first()
 
-    def destroy_casacaded(self, id):
+    def destroy_cascaded(self, id):
         """Delete existing resource and its children.
 
         :param int id: Resource ID
@@ -292,6 +299,46 @@ class ResourcesController(Controller):
 
         # delete resource
         session.delete(resource)
+
+    def destroy_multiple(self):
+        """Delete selected resources.
+        """
+        # workaround for missing DELETE methods in HTML forms
+        #   using hidden form parameter '_method'
+        method = request.form.get('_method', request.method).upper()
+        if method != 'DELETE':
+            abort(405)
+
+        self.setup_models()
+
+        selected_id_resources = request.form.getlist("resource_checkbox")
+
+        session = self.session()
+        for id in selected_id_resources:
+            # find resource
+            resource = self.find_resource(id, session)
+
+            if resource is not None:
+                try:
+                    # delete and commit resource and its children
+                    self.destroy_resource(resource, session)
+                    session.commit()
+                    self.update_config_timestamp(session)
+                    flash(
+                        f"{self.resource_name} '{resource.name}' has been deleted.", 'success'
+                    )
+                except InternalError as e:
+                    flash('InternalError: %s' % e.orig, 'error')
+                except IntegrityError as e:
+                    flash('IntegrityError: %s' % e.orig, 'error')
+
+            else:
+                # resource not found
+                session.close()
+                abort(404)
+        session.close()
+        # redirect to resources list
+        return redirect(url_for(self.base_route))
 
     def create_form(self, resource=None, edit_form=False):
         """Return form with fields loaded from DB.

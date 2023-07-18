@@ -1,5 +1,37 @@
 {% extends "templates/base_index.html" %}
 
+{% block scripts %}
+{{super()}}
+<script src="{{ url_for('static', filename='js/chosen.jquery.min.js') }}"></script>
+<script type="text/javascript">
+  const select_all = document.getElementById("select_all");
+  const btn_remove_selected = document.getElementById("btn_remove_selected");
+  const checkboxes = document.getElementsByName("resource_checkbox");
+  let selected = 0;
+  select_all.addEventListener("click", function () {
+    for (let i = 0; i<checkboxes.length;i++) {
+      checkboxes[i].checked = select_all.checked
+    }
+    if (select_all.checked) {
+      selected = checkboxes.length;
+    } else {
+      selected = 0;
+    }
+    btn_remove_selected.disabled = selected <= 0;
+  });
+  checkboxes.forEach(item => {
+    item.addEventListener("click", function() {
+      if (item.checked) {
+        selected = selected + 1;
+      } else {
+        selected = selected - 1;
+      }
+      btn_remove_selected.disabled = selected <= 0;
+    })
+  });
+</script>
+{% endblock %}
+
 {% block title %}Resources{% endblock %}
 
 {% block buttons %}
@@ -54,9 +86,18 @@
   </a>
 {% endif %}
 
+<form action="{{ url_for('destroy_multiple_%s' % endpoint_suffix) }}" method="post" style="display: inline;">
+  <input type="hidden" name="_method" value="DELETE" />
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+  <button type="submit" class="btn btn-danger" id="btn_remove_selected" disabled="false" onclick="return confirm('{% block delete_selected_resources_confirmation %}Remove selected resources?{% endblock %}');">
+    {{ utils.icon('remove') }} Remove selected
+  </button>
 {% endblock %}
 
 {% block table_headers %}
+  <th>
+    <input type="checkbox" id="select_all">
+  </th>
   <th>{{ sortable_column("ID", 'id') }}</th>
   <th>{{ sortable_column("Type", 'type') }}</th>
   <th>{{ sortable_column("Name", 'name') }}</th>
@@ -64,6 +105,9 @@
 {% endblock %}
 
 {% block resource_fields %}
+  <td>
+    <input type="checkbox" id="checkbox_{{ resource.id }}" name="resource_checkbox" value="{{ resource.id }}">
+  </td>
   <td>{{ resource.id }}</td>
   <td>{{ resource_types[resource.type] }}</td>
   {% if check_unused and resource.not_referenced is true %}
@@ -80,5 +124,6 @@
     {% endif %}
   </td>
 {% endblock %}
+</form>
 
 {% block delete_resource_confirmation %}Remove resource?{% endblock %}
