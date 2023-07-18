@@ -34,7 +34,7 @@ class ResourcesController(Controller):
         app.add_url_rule(
             '/%s/<int:id>/cascaded' % base_route,
             'destroy_cascaded_%s' % suffix,
-            self.destroy_casacaded, methods=['DELETE', 'POST']
+            self.destroy_cascaded, methods=['DELETE', 'POST']
         )
         # resource hierarchy
         app.add_url_rule(
@@ -232,7 +232,7 @@ class ResourcesController(Controller):
         """
         return session.query(self.Resource).filter_by(id=id).first()
 
-    def destroy_casacaded(self, id):
+    def destroy_cascaded(self, id):
         """Delete existing resource and its children.
 
         :param int id: Resource ID
