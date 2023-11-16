@@ -1,10 +1,11 @@
+import json
+
 from collections import OrderedDict
 from flask import abort, flash, redirect, render_template, request, url_for
 from wtforms import ValidationError
 from sqlalchemy.exc import IntegrityError, InternalError
 from urllib.parse import urlparse
 from qwc_services_core.config_models import ConfigModels
-import json
 
 from plugins.themes.forms import ThemeForm
 from plugins.themes.utils import ThemeUtils
