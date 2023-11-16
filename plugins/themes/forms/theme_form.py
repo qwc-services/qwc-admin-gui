@@ -1,5 +1,6 @@
-from flask_wtf import FlaskForm
 import json
+
+from flask_wtf import FlaskForm
 from wtforms import FieldList, FormField, SelectField, BooleanField, \
         SelectMultipleField, IntegerField, StringField, SubmitField
 from wtforms.validators import DataRequired, Optional, Regexp
