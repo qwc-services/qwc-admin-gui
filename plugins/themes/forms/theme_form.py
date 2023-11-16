@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+import json
 from wtforms import FieldList, FormField, SelectField, BooleanField, \
         SelectMultipleField, IntegerField, StringField, SubmitField
 from wtforms.validators import DataRequired, Optional, Regexp
@@ -11,6 +12,26 @@ class BackgroundLayerForm(FlaskForm):
     printLayer = StringField(validators=[Optional()])
     visibility = BooleanField(validators=[Optional()])
 
+class JSONField(StringField):
+    def _value(self):
+        return json.dumps(self.data) if self.data else ''
+
+    def process_formdata(self, valuelist):
+        if valuelist:
+            try:
+                self.data = json.loads(valuelist[0])
+            except ValueError:
+                raise ValueError('This field contains invalid JSON')
+            else:
+                self.data = None
+
+    def pre_validate(self, form):
+        super().pre_validate(form)
+        if self.data:
+            try:
+                json.dumps(self.data)
+            except TypeError:
+                raise ValueError('This field contains invalid JSON')
 
 class ThemeForm(FlaskForm):
     """Main form for Theme GUI"""
@@ -53,6 +74,14 @@ class ThemeForm(FlaskForm):
         description="List of available search providers.",
         validators=[Optional()],
         default=("coordinates")
+    )
+    qgisSearchProvider = JSONField(
+        "Qgis search",
+        description="""Qgis search configuration, see
+                    <a target="_blank"
+                    href='https://qwc-services.github.io/topics/Search/#configuring-the-qgis-feature-search'>
+                    documentation</a>""",
+        validators=[Optional()]
     )
     scales = StringField(
         "Scales",

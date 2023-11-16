@@ -3,8 +3,28 @@
 
 {% block scripts %}
 {{super()}}
+<script src="{{ url_for('static', filename='js/ace/ace.js') }}"></script>
 <script type="text/javascript">
   var rowIndex = {{ form.backgroundLayers.last_index + 1 }};
+  $(function() {
+    var editor = ace.edit("qgisSearchProvider");
+    editor.session.setMode("ace/mode/json");
+    editor.setOptions({
+      maxLines: 45,
+      fontSize: 14,
+      tabSize: 2,
+      newLineMode: 'unix',
+      minLines: 8,
+      wrap: true
+    });
+    var configDataField = $('#qgisAceEditorContent');
+    function syncToFormField() {
+      console.log(editor.getValue())
+      configDataField.val(editor.getValue());
+    }
+    editor.session.on('change', syncToFormField);
+    syncToFormField();
+  });
 
   $(function() {
     $('table').on('click', 'button.remove-item', function() {
@@ -62,6 +82,8 @@
     {{ wtf.form_field(form.mapCrs, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.form_field(form.additionalMouseCrs, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.form_field(form.searchProviders, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.form_field(form.qgisSearchProvider , rows=8, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    <input type="hidden" id="qgisAceEditorContent" name="qgisAceEditorContent">
     {{ wtf.form_field(form.scales, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.form_field(form.printScales, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.form_field(form.printResolutions, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}

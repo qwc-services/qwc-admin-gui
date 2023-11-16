@@ -4,6 +4,7 @@ from wtforms import ValidationError
 from sqlalchemy.exc import IntegrityError, InternalError
 from urllib.parse import urlparse
 from qwc_services_core.config_models import ConfigModels
+import json
 
 from plugins.themes.forms import ThemeForm
 from plugins.themes.utils import ThemeUtils
@@ -451,6 +452,9 @@ class ThemesController:
                 form.additionalMouseCrs.data = theme["additionalMouseCrs"]
             if "searchProviders" in theme:
                 form.searchProviders.data = theme["searchProviders"]
+                qgis_search = [provider for provider in theme["searchProviders"] if "provider" in provider and isinstance(provider, dict)]
+                if qgis_search :
+                    form.qgisSearchProvider.data = qgis_search[0]
             if "scales" in theme:
                 form.scales.data = ", ".join(map(str, theme["scales"]))
             if "printScales" in theme:
@@ -509,11 +513,11 @@ class ThemesController:
         item["default"] = False
         if form.default.data:
             item["default"] = True
-        
+
         item["tiled"] = False
         if form.tiled.data:
             item["tiled"] = True
-        
+
         item["mapTips"] = False
         if form.mapTips.data:
             item["mapTips"] = True
@@ -544,9 +548,12 @@ class ThemesController:
             if "additionalMouseCrs" in item: del item["additionalMouseCrs"]
 
         item["searchProviders"] = []
+        qgisprovider = request.form.get('qgisAceEditorContent')
         if form.searchProviders.data:
             item["searchProviders"] = form.searchProviders.data
-        else:
+        if qgisprovider:
+            item["searchProviders"].append(json.loads(qgisprovider))
+        if not qgisprovider and not form.searchProviders.data:
             if "searchProviders" in item: del item["searchProviders"]
 
         if form.scales.data:
