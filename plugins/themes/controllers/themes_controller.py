@@ -453,7 +453,7 @@ class ThemesController:
                 form.additionalMouseCrs.data = theme["additionalMouseCrs"]
             if "searchProviders" in theme:
                 form.searchProviders.data = theme["searchProviders"]
-                qgis_search = [provider for provider in theme["searchProviders"] if "provider" in provider and isinstance(provider, dict)]
+                qgis_search = [provider for provider in theme["searchProviders"] if "provider" in provider and isinstance(provider, dict) and provider["provider"] == "qgis"]
                 if qgis_search :
                     form.qgisSearchProvider.data = qgis_search[0]
             if "scales" in theme:
