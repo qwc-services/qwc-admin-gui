@@ -121,4 +121,4 @@ class UserForm(FlaskForm):
         user = query.first()
         session.close()
         if user is not None:
-            raise ValidationError(i18n('interface.user.form_email_error'))
+            raise ValidationError(i18n('interface.users.form_email_error'))

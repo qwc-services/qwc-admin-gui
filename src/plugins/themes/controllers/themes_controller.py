@@ -336,7 +336,7 @@ class ThemesController:
     def add_theme_group(self):
         self.themesconfig["themes"]["groups"] = self.themesconfig["themes"].get("groups", [])
         self.themesconfig["themes"]["groups"].append({
-            "title": "new theme group",
+            "title": i18n('plugins.themes.themes.new_group'),
             "items": []
         })
         self.save_themesconfig()

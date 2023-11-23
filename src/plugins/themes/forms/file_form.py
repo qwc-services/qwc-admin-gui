@@ -23,7 +23,7 @@ class ProjectForm(FlaskForm):
         FileRequired(),
         FileAllowed(['qgs'], i18n('plugins.themes.files.form_project_allowed'))
     ])
-    submit = SubmitField(i18n('plugins.theme.files.form_submit'))
+    submit = SubmitField(i18n('plugins.themes.files.form_submit'))
     
 class TemplateForm(FlaskForm):
     """Main form for QGS Project GUI"""
@@ -32,5 +32,5 @@ class TemplateForm(FlaskForm):
         FileRequired(),
         FileAllowed(['html'], i18n('plugins.themes.files.form_project_allowed'))
     ])
-    submit = SubmitField(i18n('plugins.theme.files.form_submit'))
+    submit = SubmitField(i18n('plugins.themes.files.form_submit'))
 

@@ -75,7 +75,7 @@ class InfoTemplatesController():
             items.append(item)
 
         return render_template(
-            '%s/info_templates.html' % self.template_dir, title=i18n('plugins.themes.info_templates.menu_title'), items=items
+            '%s/info_templates.html' % self.template_dir, title=i18n('plugins.themes.info_templates.title'), items=items
         )
 
     def create_or_update_info_templates(self, info_template, tid=None, gid=None):

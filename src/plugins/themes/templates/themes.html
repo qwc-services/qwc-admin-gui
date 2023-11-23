@@ -80,7 +80,7 @@
                     <a href="{{ url_for('delete_theme', tid=loop.index0) }}" class="btn btn-danger" role="button" title="{{ i18n('plugins.theme.themes.delete_theme') }}" onclick="return confirm('{{ i18n('plugins.theme.themes.confirm_message_delete_theme') }}?');">
                       {{ utils.render_icon('trash') }}
                     </a>
-                    <a href="#" class="btn btn-warning move-to-group" role="button" title="Move theme to group" onclick="showMoveToGroupModal({{ loop.index0 }})">
+                    <a href="#" class="btn btn-warning move-to-group" role="button" title="{{ i18n('plugins.themes.themes.move_theme_to_group') }}" onclick="showMoveToGroupModal({{ loop.index0 }})">
                       {{ utils.render_icon('arrow-right') }}
                     </a>
                   </div>
@@ -168,7 +168,7 @@
                         <a href="{{ url_for('delete_theme', gid=group_loop.index0, tid=loop.index0) }}" class="btn btn-danger" role="button" title="{{ i18n('plugins.theme.themes.delete_theme') }}" onclick="return confirm('{{ i18n('plugins.theme.themes.confirm_message_delete_theme') }}?');">
                           {{ utils.render_icon('trash') }}
                         </a>
-                        <a href="#" class="btn btn-warning move-to-group" role="button" title="Move theme to group" onclick="showMoveToGroupModal({{ loop.index0 }}, {{ group_loop.index0 }})">
+                        <a href="#" class="btn btn-warning move-to-group" role="button" title="{{ i18n('plugins.themes.themes.move_theme_to_group') }}" onclick="showMoveToGroupModal({{ loop.index0 }}, {{ group_loop.index0 }})">
                           {{ utils.render_icon('arrow-right') }}
                         </a> 
                       </div>

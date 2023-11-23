@@ -89,8 +89,8 @@
 <form action="{{ url_for('destroy_multiple_%s' % endpoint_suffix) }}" method="post" style="display: inline;">
   <input type="hidden" name="_method" value="DELETE" />
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-  <button type="submit" class="btn btn-danger" id="btn_remove_selected" disabled="false" onclick="return confirm('{% block delete_selected_resources_confirmation %}Remove selected resources?{% endblock %}');">
-    {{ utils.icon('remove') }} Remove selected
+  <button type="submit" class="btn btn-danger" id="btn_remove_selected" disabled="false" onclick="return confirm('{% block delete_selected_resources_confirmation %}{{ i18n('interface.resources.confirm_message_remove_selected') }}{% endblock %}');">
+    {{ utils.icon('remove') }} {{ i18n('interface.resources.remove_selected') }}
   </button>
 {% endblock %}
 

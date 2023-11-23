@@ -11,4 +11,4 @@ class MapthumbForm(FlaskForm):
         FileRequired(),
         FileAllowed(['jpg', 'jpeg', 'png'], i18n('plugins.themes.mapthumbs.form_allowed'))
     ])
-    submit = SubmitField(i18n('plugins.themes.mapthumbs.form_submit'))
+    submit = SubmitField(i18n('plugins.themes.common.form_submit'))

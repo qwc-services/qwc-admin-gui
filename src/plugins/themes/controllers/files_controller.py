@@ -77,7 +77,7 @@ class FilesController:
             "%s/files.html" % self.template_dir,
             projects=projects, layers=layers, templates= templates,
             form_project=form_project, form_layer=form_layer, form_template = form_template,
-            title=i18n('plugins.theme.files.title'), i18n=i18n
+            title=i18n('plugins.themes.files.title'), i18n=i18n
         )
 
     def upload_project(self):
@@ -112,7 +112,7 @@ class FilesController:
             "%s/files.html" % self.template_dir,
             projects=projects, layers=layers, templates=templates,
             form_project=form_project, form_layer=form_layer, form_template=form_template,
-            title=i18n('plugins.theme.files.title'), i18n=i18n
+            title=i18n('plugins.themes.files.title'), i18n=i18n
         )
 
     def delete_project(self, projectname):
@@ -135,7 +135,7 @@ class FilesController:
             "%s/files.html" % self.template_dir,
             projects=projects, layers=layers, templates=templates,
             form_project=form_project, form_layer=form_layer, form_template=form_template,
-            title=i18n('plugins.theme.files.title'), i18n=i18n
+            title=i18n('plugins.themes.files.title'), i18n=i18n
         )
 
     def upload_layer(self):
@@ -181,7 +181,7 @@ class FilesController:
             "%s/files.html" % self.template_dir,
             projects=projects, layers=layers, templates=templates,
             form_project=form_project, form_layer=form_layer, form_template=form_template,
-            title=i18n('plugins.theme.files.title'), i18n=i18n
+            title=i18n('plugins.themes.files.title'), i18n=i18n
         )
 
     def delete_layer(self, layername):
@@ -210,7 +210,7 @@ class FilesController:
             "%s/files.html" % self.template_dir,
             projects=projects, layers=layers, templates=templates,
             form_project=form_project, form_layer=form_layer, form_template=form_template,
-            title=i18n('plugins.theme.files.title'), i18n=i18n
+            title=i18n('plugins.themes.files.title'), i18n=i18n
         )
 
     def upload_template(self):

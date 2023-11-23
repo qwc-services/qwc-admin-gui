@@ -81,12 +81,12 @@
   </form>
   <div class="panel panel-default">
     <div class="panel-heading clearfix" style="overflow: hidden;">
-      <div class="panel-title pull-left" style="padding-top: 7.5px;"><b>HTML templates</b></div>
+      <div class="panel-title pull-left" style="padding-top: 7.5px;"><b>{{ i18n('plugins.themes.info_templates.title') }}</b></div>
     </div>
     <div clas="panel-body">
       <table class="table">
         <thead>
-          <th>Template</th>
+          <th>{{ i18n('plugins.themes.info_templates.template') }}</th>
           <th></th>
         </thead>
         <tbody>
@@ -95,7 +95,7 @@
             <td>{{ template }}</td>
             <td style="text-align: right">
               <div class="btn-group">
-                <a href="{{ url_for('delete_template', templatename=template) }}" class="btn btn-danger" role="button" title="Delete template" onclick="return confirm('Really delete {{ template }}?');">
+                <a href="{{ url_for('delete_template', templatename=template) }}" class="btn btn-danger" role="button" title="{{ i18n('plugins.themes.info_templates.delete_template') }}" onclick="return confirm('{{ i18n('plugins.themes.info_templates.confirm_message_delete_template') }} {{ template }}?');">
                   {{ utils.render_icon('trash') }}
                 </a>
               </div>
