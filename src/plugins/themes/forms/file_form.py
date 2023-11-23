@@ -28,9 +28,9 @@ class ProjectForm(FlaskForm):
 class TemplateForm(FlaskForm):
     """Main form for QGS Project GUI"""
 
-    upload = FileField('HTML template (.html)', validators=[
+    upload = FileField('{0} (.html)'.format(i18n('plugins.themes.files.form_template_file')), validators=[
         FileRequired(),
-        FileAllowed(['html'], 'Please only use HTML files')
+        FileAllowed(['html'], i18n('plugins.themes.files.form_project_allowed'))
     ])
-    submit = SubmitField("Upload")
+    submit = SubmitField(i18n('plugins.theme.files.form_submit'))
 

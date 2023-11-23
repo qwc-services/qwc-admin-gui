@@ -9,11 +9,11 @@
 
   <div class="btn-group">
     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-{{ i18n('interface.permissions.role_filter') }}: {{ active_role if active_role is not none and active_role != 'all' else 'All' }} <span class="caret"></span>
+{{ i18n('interface.permissions.role_filter') }}: {{ active_role if active_role is not none and active_role != 'all' else i18n('interface.common.all') }} <span class="caret"></span>
     </button>
     <ul class="dropdown-menu">
       <li role="presentation" class="{{ 'active' if active_role is none or active_role == 'all' }}">
-        <a href="{{ url_for('permissions', role='all', type=active_resource_type) }}">{{ i18n('interface.permissions.all') }} </a>
+        <a href="{{ url_for('permissions', role='all', type=active_resource_type) }}">{{ i18n('interface.common.all') }} </a>
       </li>
       <li role="separator" class="divider"></li>
       {% for role in roles %}
@@ -26,11 +26,11 @@
 
   <div class="btn-group">
     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-{{ i18n('interface.permissions.type_filter') }}: {{ resource_types[active_resource_type] if active_resource_type is not none else 'All' }} <span class="caret"></span>
+{{ i18n('interface.permissions.type_filter') }}: {{ resource_types[active_resource_type] if active_resource_type is not none else i18n('interface.common.all') }} <span class="caret"></span>
     </button>
     <ul class="dropdown-menu">
       <li role="presentation" class="{{ 'active' if active_resource_type is none or active_resource_type == 'all' }}">
-        <a href="{{ url_for('permissions', role=active_role, type='all') }}">{{ i18n('interface.permissions.all') }} </a>
+        <a href="{{ url_for('permissions', role=active_role, type='all') }}">{{ i18n('interface.common.all') }} </a>
       </li>
       <li role="separator" class="divider"></li>
       {% for resource_type in resource_types %}

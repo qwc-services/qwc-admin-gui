@@ -221,19 +221,19 @@ class FilesController:
             filename = secure_filename(f.filename)
             try:
                 f.save(os.path.join(self.info_templates_path, filename))
-                flash("Template '{}' successfully uploaded".format(filename),
+                flash("{1}: '{0}'".format(filename, i18n('plugins.themes.files.template_upload_message_success')),
                       'success')
                 return redirect(url_for('files'))
             except IOError as e:
                 self.app.logger.error("Error writing template to {}: {}".format(
                     self.info_templates_path, e.strerror))
-                flash("Template could not be saved.", 'error')
+                flash(i18n('plugins.themes.files.template_save_message_error'), 'error')
         else:
             # TODO: validation error
             self.app.logger.error("Error uploading template: \
                                   {}".format(form.errors))
-            flash("Template could not be uploaded: \
-                  {}".format(form.upload.errors[0]), 'error')
+            flash("{1}: \
+                  {0}".format(form.upload.errors[0], i18n('plugins.themes.files.template_upload_message_error')), 'error')
         form_project = ProjectForm()
         form_layer = LayerForm()
         form_template = TemplateForm()
@@ -245,7 +245,7 @@ class FilesController:
             "%s/files.html" % self.template_dir,
             projects=projects, layers=layers, templates=templates,
             form_project=form_project, form_layer=form_layer, form_template = form_template,
-            title="Upload templates"
+            title=i18n('plugins.themes.files.template_upload_title')
         )
   
     def delete_template(self, templatename):
@@ -256,7 +256,7 @@ class FilesController:
         except IOError as e:
             self.app.logger.error("Error deleting file: \
                                   {}".format(e.strerror))
-            flash("File could not be deleted.", 'error')
+            flash(i18n('plugins.themes.files.template_delete_message_error'), 'error')
 
         form_project = ProjectForm()
         form_layer = LayerForm()
@@ -268,5 +268,5 @@ class FilesController:
             "%s/files.html" % self.template_dir,
             projects=projects, layers=layers, templates = templates,
             form_project=form_project, form_layer=form_layer, form_template=form_template,
-            title="Upload files"
+            title=i18n('plugins.themes.files.template_delete_title')
         )

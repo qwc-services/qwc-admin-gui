@@ -41,11 +41,11 @@
 
   <div class="btn-group">
     <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-{{ i18n('interface.resources.type_filter') }}: {{ resource_types[active_resource_type] if active_resource_type is not none else 'All' }} <span class="caret"></span>
+{{ i18n('interface.resources.type_filter') }}: {{ resource_types[active_resource_type] if active_resource_type is not none else i18n('interface.common.all') }} <span class="caret"></span>
     </button>
     <ul class="dropdown-menu">
       <li role="presentation" class="{{ 'active' if active_resource_type is none or active_resource_type == 'all' }}">
-        <a href="{{ url_for('resources', type='all') }}">{{ i18n('interface.resources.all') }}</a>
+        <a href="{{ url_for('resources', type='all') }}">{{ i18n('interface.common.all') }}</a>
       </li>
       <li role="separator" class="divider"></li>
       {% for resource_type in resource_types %}

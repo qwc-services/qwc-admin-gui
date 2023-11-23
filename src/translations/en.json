@@ -223,6 +223,12 @@
         "file_upload_message_error": "File could not be uploaded",
         "file_save_message_error": "File could not be saved.",
         "file_delete_message_error": "File could not be deleted.",
+        "template_upload_message_success": "Template successfully uploaded",
+        "template_save_message_error": "Template could not be saved.",
+        "template_upload_message_error": "Template could not be uploaded",
+        "template_delete_message_error": "File could not be deleted.",
+        "template_upload_title": "Upload templates",
+        "template_delete_title": "Delete templates",
 
         "qgis_projects": "QGIS Projects",
         "project": "Project",
@@ -234,7 +240,23 @@
         "form_layer_file": "Geospatial Layer",
         "form_layer_allowed": "Please only use geospatial files",
         "form_project_file": "QGIS Project",
-        "form_project_allowed": "Please only use QGS projects !"
+        "form_project_allowed": "Please only use QGS projects !",
+        "form_template_file": "HTML template",
+        "form_temlpate_allowed": "Please only use HTML files"
+      },
+      "info_templates": {
+        "project": "Project",
+        "template": "Template",
+        "menu_title": "HTML templates",
+        "create_message_warning": "Could not create template.",
+        "create_title": "Add template",
+        "update_message_template_warning": "A template already exist for this layer",
+        "update_message_resource_warning": "Resource for featureInfoLayer already exists",
+        "edit_message_warning": "Could not update template.",
+        "edit_title": "Edit template",
+        "delete_message_warning": "Could not delete resource for template",
+        "save_message_succes": "Template configuration was saved.",
+        "save_message_error": "Could not save template configuration."
       },
       "mapthumbs": {
         "title": "Mapthumbs",

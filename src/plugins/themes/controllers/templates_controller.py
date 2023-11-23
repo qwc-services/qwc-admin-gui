@@ -8,6 +8,8 @@ from plugins.themes.forms import InfoTemplateForm
 from plugins.themes.utils import ThemeUtils
 from qwc_services_core.config_models import ConfigModels
 from sqlalchemy.exc import IntegrityError, InternalError
+from utils import i18n
+
 
 class InfoTemplatesController():
     """Controller for HTML template model"""
@@ -58,11 +60,11 @@ class InfoTemplatesController():
             try:
                 self.create_or_update_info_templates(form)
             except ValidationError:
-                flash("Could not create template.", "warning")
+                flash(i18n('plugins.themes.info_templates.create_message_warning'), "warning")
             return redirect(url_for("info_templates"))
 
         return render_template(
-            '%s/info_template.html' % self.template_dir, title='Add template',
+            '%s/info_template.html' % self.template_dir, title=i18n('plugins.themes.info_templates.create_title'),
             form=form
         )
 
@@ -73,7 +75,7 @@ class InfoTemplatesController():
             items.append(item)
 
         return render_template(
-            '%s/info_templates.html' % self.template_dir, title='HTML templates', items=items
+            '%s/info_templates.html' % self.template_dir, title=i18n('plugins.themes.info_templates.menu_title'), items=items
         )
 
     def create_or_update_info_templates(self, info_template, tid=None, gid=None):
@@ -96,7 +98,7 @@ class InfoTemplatesController():
             if existing_layer and tid != None:
                 self.featureInfoconfig["wms_services"][gid]["root_layer"]["layers"][tid]["info_template"]= new_layer["info_template"]
             elif existing_layer and tid == None: 
-                    flash("A template already exist for this layer", "warning")
+                    flash(i18n('plugins.themes.info_templates.update_message_template_warning'), "warning")
                     return redirect(url_for("info_templates"))
             else:
                 layers.append(new_layer)
@@ -114,8 +116,8 @@ class InfoTemplatesController():
                 except InternalError as e:
                     flash("InternalError: {0}".format(e.orig), "error")
                 except IntegrityError as e:
-                    flash("Resource for featureInfoLayer '{0}' already exists!".format(
-                        resource.name), "warning")
+                    flash("{1}: {0}!".format(
+                        resource.name, i18n('plugins.themes.info_templates.update_message_resource_warning')), "warning")
         else:
             item = OrderedDict()
             item["name"] = project_name
@@ -133,8 +135,8 @@ class InfoTemplatesController():
             except InternalError as e:
                 flash("InternalError: {0}".format(e.orig), "error")
             except IntegrityError as e:
-                flash("Resource for featureInfoService '{0}' already exists!".format(
-                    resource.name), "warning")
+                flash("{1}: {0}!".format(
+                        resource.name, i18n('plugins.themes.info_templates.update_message_resource_warning')), "warning")
             resource = self.resources()
             resource.type = "feature_info_layer"
             resource.name = new_layer["name"]
@@ -149,8 +151,8 @@ class InfoTemplatesController():
             except InternalError as e:
                 flash("InternalError: {0}".format(e.orig), "error")
             except IntegrityError as e:
-                flash("Resource for featureInfoLayer '{0}' already exists!".format(
-                    resource.name), "warning")
+                flash("{1}: {0}!".format(
+                        resource.name, i18n('plugins.themes.info_templates.update_message_resource_warning')), "warning")
 
         self.save_featureinfo_config()
 
@@ -166,12 +168,12 @@ class InfoTemplatesController():
                 try:
                     self.create_or_update_info_templates(form, tid, gid)
                 except ValidationError:
-                    flash("Could not update template.", "warning")
+                    flash(i18n('plugins.themes.info_templates.edit_message_warning'), "warning")
                 return redirect(url_for("info_templates"))
             form.template.data = self.featureInfoconfig["wms_services"][gid]["root_layer"]["layers"][tid]["info_template"]["template_path"].split("/")[-1]
             
             return render_template(
-                '%s/info_template.html' % self.template_dir, title='Edit template', is_disabled = True,
+                '%s/info_template.html' % self.template_dir, title=i18n('plugins.themes.info_templates.edit_title'), is_disabled = True,
                 form=form
             )
         except Exception : 
@@ -190,8 +192,8 @@ class InfoTemplatesController():
             except InternalError as e:
                 flash("InternalError: %s" % e.orig, "error")
             except IntegrityError as e:
-                flash("Could not delete resource for template '{0}'!".format(
-                    resource.name), "warning")
+                flash("{1} '{0}'!".format(
+                    resource.name, i18n('plugins.themes.info_templates.delete_message_warning')), "warning")
         self.featureInfoconfig["wms_services"][gid]["root_layer"]["layers"].pop(tid)
         if not self.featureInfoconfig["wms_services"][gid]["root_layer"]["layers"] :
             session = self.config_models.session()
@@ -205,8 +207,8 @@ class InfoTemplatesController():
                 except InternalError as e:
                     flash("InternalError: %s" % e.orig, "error")
                 except IntegrityError as e:
-                    flash("Could not delete resource for template '{0}'!".format(
-                        resource.name), "warning")
+                    flash("{1} '{0}'!".format(
+                        resource.name, i18n('plugins.themes.info_templates.delete_message_warning')), "warning")
             self.featureInfoconfig["wms_services"].pop(gid)
         self.save_featureinfo_config()
 
@@ -214,7 +216,7 @@ class InfoTemplatesController():
 
     def save_featureinfo_config(self):
         if ThemeUtils.save_featureinfo_config(self.featureInfoconfig, self.app, self.handler):
-            flash("Template configuration was saved.", "success")
+            flash(i18n('plugins.themes.info_templates.save_message_succes'), "success")
         else:
-            flash("Could not save template configuration.",
+            flash(i18n('plugins.themes.info_templates.save_message_error'),
                   "error")
