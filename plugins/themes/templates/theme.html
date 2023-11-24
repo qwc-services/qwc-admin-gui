@@ -5,28 +5,43 @@
 {{super()}}
 <script src="{{ url_for('static', filename='js/ace/ace.js') }}"></script>
 <script type="text/javascript">
+  var editorOptions = {
+    mode: 'ace/mode/json',
+    fontSize: 14,
+    tabSize: 1,
+    newLineMode: 'unix',
+    minLines: 10,
+    maxLines: 10,
+    wrap: true
+  };
   var rowIndex = {{ form.backgroundLayers.last_index + 1 }};
-  $(function() {
-    var editor = ace.edit("qgisSearchProvider");
-    editor.session.setMode("ace/mode/json");
-    editor.setOptions({
-      maxLines: 45,
-      fontSize: 14,
-      tabSize: 2,
-      newLineMode: 'unix',
-      minLines: 8,
-      wrap: true
-    });
-    var configDataField = $('#qgisAceEditorContent');
-    function syncToFormField() {
-      console.log(editor.getValue())
-      configDataField.val(editor.getValue());
+  var searchIndex = {{form.qgisSearchProvider.last_index + 1}};
+  var newSearchIndex = 0;
+  function createEditor(textarea, editorOptions) {
+    var editor = ace.edit();
+    
+    for (var option in editorOptions) {
+        editor.setOption(option, editorOptions[option]);
     }
-    editor.session.on('change', syncToFormField);
-    syncToFormField();
-  });
-
+    editor.session.setValue(textarea.value);
+    $(textarea).hide().after(editor.container);
+    var form = $(textarea).closest("form");
+    form.on("submit", function() {
+        textarea.value = editor.getValue();
+        console.log(textarea.value)
+    });
+}
   $(function() {
+    $('.search-col').on('click','button.accordion', function(){
+      $(this).toggleClass("active");
+      var panel = $(this).next();
+      if (panel.css('max-height') !== '0px') {
+        panel.css('max-height', '0px');
+      }
+      else {
+        panel.css('max-height', panel.prop('scrollHeight') + 'px');
+      }
+    })
     $('table').on('click', 'button.remove-item', function() {
       // remove row from table
       $(this).closest('tr').remove();
@@ -63,38 +78,186 @@
       $('.checkbox').not(this).prop('checked', false);
     });
 
-  });
+    $('.search-col').on('click', 'button.remove-search', function() {
+      var confirmation = confirm("Are you sure you want to delete this search ?");
+      if(confirmation){
+      $(this).closest('.searchBlock').remove();
+      }
+    });
+
+    $(".search-col").on('click', 'input[type="checkbox"]', function() {
+        $('.search-col input[type="checkbox"]').not(this).prop('checked', false);
+    });
+
+    $('.search-col').on('click', 'button.add-search', function(){
+      searchIndex++;
+      newSearchIndex++;
+      html =`
+      <div class="searchBlock">
+      <button type="button" class="accordion" style="display:flex;justify-content:space-between;flex-direction:row;align-items: center;">
+        New Search ${newSearchIndex}
+        <span class="glyphicon glyphicon-minus"></span>
+      </button>
+      <div class="panel">
+        <div class="form-group  required" style="padding-top:10px;">
+          <label class="control-label" for="title">Title</label>
+          <input required="" id="qgisSearchProvider-${searchIndex}-title" name="qgisSearchProvider-${searchIndex}-title" type="text" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="control-label" for="featureCount">Feature Count</label>
+          <input id="qgisSearchProvider-${searchIndex}-featureCount" name="qgisSearchProvider-${searchIndex}-featureCount" type="number" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="control-label" for="group">Group</label>
+          <input id="qgisSearchProvider-${searchIndex}-group" name="qgisSearchProvider-${searchIndex}-group" type="text" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="control-label" for="searchDescription">Description</label>
+          <input id="qgisSearchProvider-${searchIndex}-searchDescription" name="qgisSearchProvider-${searchIndex}-searchDescription"type="text" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label class="control-label" for="expression">Expression</label>
+          <textarea id="qgisSearchProvider-${searchIndex}-expression" name="qgisSearchProvider-${searchIndex}-expression" type="text" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="control-label" for="expression">Fields</label>
+          <textarea id="qgisSearchProvider-${searchIndex}-fields" name="qgisSearchProvider-${searchIndex}-fields"type="text" class="form-control"></textarea>
+        </div>
+        <div class="checkbox">
+          <label>
+            <input id="qgisSearchProvider-${searchIndex}-defaultSearch" name="qgisSearchProvider-${searchIndex}-defaultSearch" type="checkbox" class="checkbox">
+            Default
+          </label>
+        </div>
+        <div  style="display:flex;justify-content:center;margin-bottom:10px;">
+          <button type="button" class="btn btn-danger remove-search">
+            Delete Search
+          </button>
+        </div>
+      </div>
+      </div>`
+      $('.search-col').append(html);
+      var expressionTextarea = $(`#qgisSearchProvider-${searchIndex}-expression`)[0];
+      var fieldsTextarea = $(`#qgisSearchProvider-${searchIndex}-fields`)[0];
+      createEditor(expressionTextarea, editorOptions);
+      createEditor(fieldsTextarea, editorOptions);
+    });
+});
+
+$('.search-col').find('textarea[id^="qgisSearchProvider-"]').each(function() {
+    createEditor(this, editorOptions);
+});
+
 </script>
+<style>
+  .accordion {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-weight: bold;
+  }
+  .active, .accordion:hover {
+    background-color: #ccc;
+  }
+  .panel {
+    padding: 0 18px;
+    max-height: 0;
+    border:none;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out;
+  }
+  
+</style>
 {% endblock %}
 
 {% block title %}{{ title }}{% endblock %}
 {% block container %}
-  <h1>{{ title }}</h1>
-
-  <form id="form" class="form form-horizontal" action="{{ action }}" method="post" style="padding-bottom: 25px;">
-    {{ form.csrf_token }}
-    {{ wtf.form_field(form.url, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.form_field(form.title, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {# TODO: default, extent #}
-    {{ wtf.form_field(form.thumbnail, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.form_field(form.attribution, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.form_field(form.format, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.form_field(form.mapCrs, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.form_field(form.additionalMouseCrs, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.form_field(form.searchProviders, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.form_field(form.qgisSearchProvider , rows=8, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    <input type="hidden" id="qgisAceEditorContent" name="qgisAceEditorContent">
-    {{ wtf.form_field(form.scales, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.form_field(form.printScales, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.form_field(form.printResolutions, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.form_field(form.printLabelBlacklist, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.form_field(form.collapseLayerGroupsBelowLevel, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.form_field(form.default, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.form_field(form.tiled, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.form_field(form.mapTips, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.form_field(form.skipEmptyFeatureAttributes, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    <div data-toggle="fieldset" class="form-group">
-      <div class="col-sm-7">
+<form id="form" class="form form-vertical" action="{{ action }}" method="post" style="padding-bottom:25px;">
+  <div style="display:flex;justify-content:space-around;flex-wrap:wrap;">
+    <div class="col-md-6">
+      <h1>{{ title }}</h1>
+      {{ form.csrf_token }}
+      {{ wtf.form_field(form.url, form_type="vertical") }}
+      {{ wtf.form_field(form.title, form_type="vertical") }}
+      {# TODO: default, extent #}
+      {{ wtf.form_field(form.thumbnail, form_type="vertical") }}
+      {{ wtf.form_field(form.attribution, form_type="vertical") }}
+      {{ wtf.form_field(form.format, form_type="vertical") }}
+      {{ wtf.form_field(form.mapCrs, form_type="vertical") }}
+      {{ wtf.form_field(form.additionalMouseCrs, form_type="vertical") }}
+      {{ wtf.form_field(form.searchProviders, form_type="vertical") }}
+      {{ wtf.form_field(form.scales, form_type="vertical") }}
+      {{ wtf.form_field(form.printScales, form_type="vertical") }}
+      {{ wtf.form_field(form.printResolutions, form_type="vertical") }}
+      {{ wtf.form_field(form.printLabelBlacklist, form_type="vertical") }}
+      {{ wtf.form_field(form.collapseLayerGroupsBelowLevel, form_type="vertical") }}
+      {{ wtf.form_field(form.default, form_type="vertical") }}
+      {{ wtf.form_field(form.tiled, form_type="vertical") }}
+      {{ wtf.form_field(form.mapTips, form_type="vertical") }}
+      {{ wtf.form_field(form.skipEmptyFeatureAttributes, form_type="vertical") }}
+    </div>
+    <div class="col-md-6 search-col">
+      <h1>Edit Qgis Searches</h1>
+      <button type="button" class="btn btn-success add-search">
+        Add a search
+      </button>
+      <hr>
+      {% for provider in form.qgisSearchProvider %}
+      <div class="searchBlock">
+        <button type="button" class="accordion" style="display:flex;justify-content:space-between;flex-direction:row;align-items: center;">
+            {{provider.title.data}}
+            <span class="glyphicon glyphicon-minus"></span>
+        </button>
+        <div class="panel">
+          <div class="form-group  required" style="padding-top:10px;">
+            <label class="control-label" for="title">Title</label>
+            {{ provider.title(class_='form-control') }}
+            </div>
+          <div class="form-group">
+            <label class="control-label" for="featureCount">Feature Count</label>
+            {{ provider.featureCount(class_='form-control') }}
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="group">Group</label>
+            {{ provider.group(class_='form-control') }}
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="searchDescription">Description</label>
+            {{ provider.searchDescription(class_='form-control') }}
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="expression">Expression</label>
+            {{ provider.expression(class_='form-control') }}
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="fields">Fields</label>
+            {{ provider.fields(class_='form-control') }}
+          </div>
+          <div class="checkbox">
+            <label>
+              {{ provider.defaultSearch(class_='checkbox') }}
+              Default
+            </label>
+          </div>
+          <div  style="display:flex;justify-content:center;margin-bottom:10px;">
+            <button type="button" class="btn btn-danger remove-search">
+              Delete Search
+            </button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div data-toggle="fieldset" class="form-group" style="width:100%;">
+      <div style="display:flex;justify-content:center;flex-wrap:wrap;">
+      <div class="col-md-8">
         <table id="bl-table" class="ui table">
           <thead>
             <th style="text-align: center;">Background layer</th>
@@ -139,6 +302,9 @@
         </table>
       </div>
     </div>
-    {{ wtf.form_field(form.submit, class="btn btn-primary") }}
-  </form>
+    <div style="display:flex;justify-content:center;flex-wrap:wrap;">
+    {{ wtf.form_field(form.submit, class="btn btn-primary col-md-4") }}
+    </div>
+  </div>
+</form>
 {% endblock %}

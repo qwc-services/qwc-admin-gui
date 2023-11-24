@@ -453,9 +453,6 @@ class ThemesController:
                 form.additionalMouseCrs.data = theme["additionalMouseCrs"]
             if "searchProviders" in theme:
                 form.searchProviders.data = theme["searchProviders"]
-                qgis_search = [provider for provider in theme["searchProviders"] if "provider" in provider and isinstance(provider, dict) and provider["provider"] == "qgis"]
-                if qgis_search :
-                    form.qgisSearchProvider.data = qgis_search[0]
             if "scales" in theme:
                 form.scales.data = ", ".join(map(str, theme["scales"]))
             if "printScales" in theme:
@@ -493,6 +490,36 @@ class ThemesController:
                     form.backgroundLayers.append_entry(data)
                     form.backgroundLayers[i].layerName.choices = self.get_backgroundlayers()
                     form.backgroundLayers[i].layerName.data = layer["name"]
+            qgis_search = [provider for provider in theme["searchProviders"] if "provider" in provider and provider["provider"] == "qgis"]
+            if qgis_search :
+                for provider in qgis_search:
+                    data = {
+                        "title": "",
+                        "featureCount": "",
+                        "resultTitle": "",
+                        "searchDescription" : "",
+                        "defaultSearch" : False,
+                        "group" : "",
+                        "expression":"",
+                        "fields": ""
+                    }
+                    if "title" in provider["params"]:
+                        data["title"] = provider["params"]["title"]
+                    if "featureCount" in provider["params"]:
+                        data["featureCount"] = provider["params"]["featureCount"]
+                    if "resultTitle" in provider["params"]:
+                        data["resultTitle"] = provider["params"]["resultTitle"]
+                    if "description"in provider["params"]:
+                        data["searchDescription"] = provider["params"]["description"]
+                    if "default" in provider["params"]:
+                        data["defaultSearch"] = provider["params"]["default"]
+                    if "group" in provider["params"]:
+                        data["group"] = provider["params"]["group"]
+                    if "expression" in provider["params"]:
+                        data["expression"] = provider["params"]["expression"]
+                    if "fields" in provider["params"]:
+                        data["fields"] = provider["params"]["fields"]
+                    form.qgisSearchProvider.append_entry(data)
 
             return form
 
@@ -549,12 +576,24 @@ class ThemesController:
             if "additionalMouseCrs" in item: del item["additionalMouseCrs"]
 
         item["searchProviders"] = []
-        qgisprovider = request.form.get('qgisAceEditorContent')
         if form.searchProviders.data:
             item["searchProviders"] = form.searchProviders.data
-        if qgisprovider:
-            item["searchProviders"].append(json.loads(qgisprovider))
-        if not qgisprovider and not form.searchProviders.data:
+        if form.qgisSearchProvider.data:
+            for search in form.qgisSearchProvider.data:
+                item["searchProviders"].append({
+                    "provider": "qgis",
+                    "params": {
+                    "title": search["title"],
+                    "featureCount": search["featureCount"],
+                    "resultTitle": search["resultTitle"],
+                    "description": search["searchDescription"],
+                    "default": search["defaultSearch"],
+                    "group": search["group"],
+                    "expression": search["expression"],
+                    "fields": search["fields"]
+                    }
+                })
+        if not form.qgisSearchProvider.data and not form.searchProviders.data:
             if "searchProviders" in item: del item["searchProviders"]
 
         if form.scales.data:
