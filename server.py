@@ -254,7 +254,7 @@ def generate_configs():
     current_handler = handler()
     config_generator_url = current_handler.config().get(
         "config_generator_service_url",
-        "http://qwc-config-service:9090")
+        "http://qwc-config-service:9090").rstrip('/') + '/'
 
     response = requests.post(
         urllib.parse.urljoin(
