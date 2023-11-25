@@ -228,6 +228,9 @@ Configure environment:
 
     echo FLASK_ENV=development >.flaskenv
 
+Update translation files:
+     python updateTranslations.py
+
 Start local service:
 
      python server.py
