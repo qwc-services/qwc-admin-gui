@@ -1,8 +1,22 @@
+import json
+
 from flask_wtf import FlaskForm
 from wtforms import FieldList, FormField, SelectField, BooleanField, \
-        SelectMultipleField, IntegerField, StringField, SubmitField
+        SelectMultipleField, IntegerField, StringField, SubmitField, \
+        TextAreaField
 from wtforms.validators import DataRequired, Optional, Regexp
 
+
+class JSONField(TextAreaField):
+    def _value(self):
+        return json.dumps(self.data) if self.data else ''
+
+    def process_formdata(self, valuelist):
+        if valuelist:
+            try:
+                self.data = json.loads(valuelist[0])
+            except ValueError:
+                raise ValueError('This field contains invalid JSON')
 
 class BackgroundLayerForm(FlaskForm):
     """Subform for backgroundlayers"""
@@ -11,6 +25,21 @@ class BackgroundLayerForm(FlaskForm):
     printLayer = StringField(validators=[Optional()])
     visibility = BooleanField(validators=[Optional()])
 
+class QgisSearchForm(FlaskForm):
+    """Subform for Qgis searches"""
+
+    title = StringField(
+        "Title",
+        description="Search provider name.",
+        validators=[DataRequired()]
+    )
+    featureCount = IntegerField(validators=[Optional()])
+    resultTitle = StringField(validators=[Optional()])
+    searchDescription = StringField(validators=[Optional()])
+    defaultSearch = BooleanField(validators=[Optional()])
+    group = StringField(validators=[Optional()])
+    expression = JSONField(validators=[Optional()])
+    fields = JSONField(validators=[Optional()])
 
 class ThemeForm(FlaskForm):
     """Main form for Theme GUI"""
@@ -54,6 +83,7 @@ class ThemeForm(FlaskForm):
         validators=[Optional()],
         default=("coordinates")
     )
+    qgisSearchProvider = FieldList(FormField(QgisSearchForm))
     scales = StringField(
         "Scales",
         description="List of available map scales.",
@@ -83,7 +113,7 @@ class ThemeForm(FlaskForm):
     )
     collapseLayerGroupsBelowLevel = IntegerField(
         "collapse layer groups below level",
-        description="Optional, layer tree level below which to initially collapse groups. By default the tree is completely expanded.",
+        description="Optional, layer tree level below which to initially \n collapse groups. By default the tree is completely expanded.",
         validators=[Optional()]
     )
     default = BooleanField(
