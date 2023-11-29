@@ -5,21 +5,25 @@
 {{super()}}
 <script src="{{ url_for('static', filename='js/ace/ace.js') }}"></script>
 <script type="text/javascript">
+
   var editorOptions = {
     mode: 'ace/mode/json',
     fontSize: 14,
-    tabSize: 1,
+    tabSize: 4,
     newLineMode: 'unix',
     minLines: 10,
     maxLines: 10,
-    wrap: true
+    wrap: true,
+    showGutter: false,
   };
+
   var rowIndex = {{ form.backgroundLayers.last_index + 1 }};
   var searchIndex = {{form.qgisSearchProvider.last_index + 1}};
   var newSearchIndex = 0;
+
   function createEditor(textarea, editorOptions) {
     var editor = ace.edit();
-    
+
     for (var option in editorOptions) {
         editor.setOption(option, editorOptions[option]);
     }
@@ -28,9 +32,9 @@
     var form = $(textarea).closest("form");
     form.on("submit", function() {
         textarea.value = editor.getValue();
-        console.log(textarea.value)
     });
 }
+
   $(function() {
     $('.search-col').on('click','button.accordion', function(){
       $(this).toggleClass("active");
@@ -56,7 +60,7 @@
         html += '<option value="{{ value }}">{{ value }}</option>';
       {% endfor %}
       html += '<td style="width: 40%;"><input class="form-control" id="backgroundLayers-' + rowIndex + '-printLayer" name="backgroundLayers-' + rowIndex + '-printLayer" type="text" value=""></td>';
-      html += '<td style="width: 5%;"><input class="form-control checkbox" id="backgroundLayers-' + rowIndex + '-visibility" name="backgroundLayers-' + rowIndex + '-visibility" type="checkbox" value="y"></td>';
+      html += '<td style="width: 5%;vertical-align: middle;height:100%;"><div style="display: flex; justify-content: center;"><input class="form-control checkbox" id="backgroundLayers-' + rowIndex + '-visibility" name="backgroundLayers-' + rowIndex + '-visibility" type="checkbox" value="y"></div></td>';
       html += '<td style="width: 10%;"><div class="btn-group" role="group" style="display: flex;"><button type="button" class="btn-sm btn-default move-up"><span class="glyphicon glyphicon-chevron-up"></span>';
       html += '</button><button type="button" class="btn-sm btn-default move-down"><span class="glyphicon glyphicon-chevron-down"></span></button></div></td>';
       html += '<td style="width: 5%;"><button type="button" class="btn-sm btn-danger remove-item"><span class="glyphicon glyphicon-minus"></span></button></td></tr>';
@@ -143,6 +147,7 @@
       createEditor(expressionTextarea, editorOptions);
       createEditor(fieldsTextarea, editorOptions);
     });
+
 });
 
 $('.search-col').find('textarea[id^="qgisSearchProvider-"]').each(function() {
@@ -172,139 +177,155 @@ $('.search-col').find('textarea[id^="qgisSearchProvider-"]').each(function() {
     overflow: hidden;
     transition: max-height 0.5s ease-out;
   }
-  
+  .full-width {
+    position: absolute;
+    width: 90vw;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  td .checkbox {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+  }
 </style>
 {% endblock %}
 
 {% block title %}{{ title }}{% endblock %}
 {% block container %}
-<form id="form" class="form form-vertical" action="{{ action }}" method="post" style="padding-bottom:25px;">
-  <div style="display:flex;justify-content:space-around;flex-wrap:wrap;">
-    <div class="col-md-6">
-      <h1>{{ title }}</h1>
-      {{ form.csrf_token }}
-      {{ wtf.form_field(form.url, form_type="vertical") }}
-      {{ wtf.form_field(form.title, form_type="vertical") }}
-      {# TODO: default, extent #}
-      {{ wtf.form_field(form.thumbnail, form_type="vertical") }}
-      {{ wtf.form_field(form.attribution, form_type="vertical") }}
-      {{ wtf.form_field(form.format, form_type="vertical") }}
-      {{ wtf.form_field(form.mapCrs, form_type="vertical") }}
-      {{ wtf.form_field(form.additionalMouseCrs, form_type="vertical") }}
-      {{ wtf.form_field(form.searchProviders, form_type="vertical") }}
-      {{ wtf.form_field(form.scales, form_type="vertical") }}
-      {{ wtf.form_field(form.printScales, form_type="vertical") }}
-      {{ wtf.form_field(form.printResolutions, form_type="vertical") }}
-      {{ wtf.form_field(form.printLabelBlacklist, form_type="vertical") }}
-      {{ wtf.form_field(form.collapseLayerGroupsBelowLevel, form_type="vertical") }}
-      {{ wtf.form_field(form.default, form_type="vertical") }}
-      {{ wtf.form_field(form.tiled, form_type="vertical") }}
-      {{ wtf.form_field(form.mapTips, form_type="vertical") }}
-      {{ wtf.form_field(form.skipEmptyFeatureAttributes, form_type="vertical") }}
-    </div>
-    <div class="col-md-6 search-col">
-      <h1>Edit Qgis Searches</h1>
-      <button type="button" class="btn btn-success add-search">
-        Add a search
-      </button>
-      <hr>
-      {% for provider in form.qgisSearchProvider %}
-      <div class="searchBlock">
-        <button type="button" class="accordion" style="display:flex;justify-content:space-between;flex-direction:row;align-items: center;">
-            {{provider.title.data}}
-            <span class="glyphicon glyphicon-minus"></span>
+<div class="full-width">
+  <form id="form" class="form form-vertical" action="{{ action }}" method="post" style="padding-bottom:25px;">
+    <div style="display:flex;justify-content:space-around;flex-wrap:wrap;">
+      <div class="col-md-4">
+        <h1>{{ title }}</h1>
+        {{ form.csrf_token }}
+        {{ wtf.form_field(form.url, form_type="vertical") }}
+        {{ wtf.form_field(form.title, form_type="vertical") }}
+        {# TODO: default, extent #}
+        {{ wtf.form_field(form.thumbnail, form_type="vertical") }}
+        {{ wtf.form_field(form.attribution, form_type="vertical") }}
+        {{ wtf.form_field(form.format, form_type="vertical") }}
+        {{ wtf.form_field(form.mapCrs, form_type="vertical") }}
+        {{ wtf.form_field(form.additionalMouseCrs, form_type="vertical") }}
+        {{ wtf.form_field(form.searchProviders, form_type="vertical") }}
+        {{ wtf.form_field(form.scales, form_type="vertical") }}
+        {{ wtf.form_field(form.printScales, form_type="vertical") }}
+        {{ wtf.form_field(form.printResolutions, form_type="vertical") }}
+        {{ wtf.form_field(form.printLabelBlacklist, form_type="vertical") }}
+        {{ wtf.form_field(form.collapseLayerGroupsBelowLevel, form_type="vertical") }}
+        {{ wtf.form_field(form.default, form_type="vertical") }}
+        {{ wtf.form_field(form.tiled, form_type="vertical") }}
+        {{ wtf.form_field(form.mapTips, form_type="vertical") }}
+        {{ wtf.form_field(form.skipEmptyFeatureAttributes, form_type="vertical") }}
+      </div>
+      <div class="col-md-4 search-col">
+        <h1>Edit Qgis Searches</h1>
+        <button type="button" class="btn btn-success add-search">
+          Add a search
         </button>
-        <div class="panel">
-          <div class="form-group  required" style="padding-top:10px;">
-            <label class="control-label" for="title">Title</label>
-            {{ provider.title(class_='form-control') }}
+        <hr>
+        {% for provider in form.qgisSearchProvider %}
+        <div class="searchBlock">
+          <button type="button" class="accordion" style="display:flex;justify-content:space-between;flex-direction:row;align-items: center;">
+              {{provider.title.data}}
+              <span class="glyphicon glyphicon-minus"></span>
+          </button>
+          <div class="panel">
+            <div class="form-group  required" style="padding-top:10px;">
+              <label class="control-label" for="title">Title</label>
+              {{ provider.title(class_='form-control') }}
+              </div>
+            <div class="form-group">
+              <label class="control-label" for="featureCount">Feature Count</label>
+              {{ provider.featureCount(class_='form-control') }}
             </div>
-          <div class="form-group">
-            <label class="control-label" for="featureCount">Feature Count</label>
-            {{ provider.featureCount(class_='form-control') }}
-          </div>
-          <div class="form-group">
-            <label class="control-label" for="group">Group</label>
-            {{ provider.group(class_='form-control') }}
-          </div>
-          <div class="form-group">
-            <label class="control-label" for="searchDescription">Description</label>
-            {{ provider.searchDescription(class_='form-control') }}
-          </div>
-          <div class="form-group">
-            <label class="control-label" for="expression">Expression</label>
-            {{ provider.expression(class_='form-control') }}
-          </div>
-          <div class="form-group">
-            <label class="control-label" for="fields">Fields</label>
-            {{ provider.fields(class_='form-control') }}
-          </div>
-          <div class="checkbox">
-            <label>
-              {{ provider.defaultSearch(class_='checkbox') }}
-              Default
-            </label>
-          </div>
-          <div  style="display:flex;justify-content:center;margin-bottom:10px;">
-            <button type="button" class="btn btn-danger remove-search">
-              Delete Search
-            </button>
+            <div class="form-group">
+              <label class="control-label" for="group">Group</label>
+              {{ provider.group(class_='form-control') }}
+            </div>
+            <div class="form-group">
+              <label class="control-label" for="searchDescription">Description</label>
+              {{ provider.searchDescription(class_='form-control') }}
+            </div>
+            <div class="form-group">
+              <label class="control-label" for="expression">Expression</label>
+              {{ provider.expression(class_='form-control') }}
+            </div>
+            <div class="form-group">
+              <label class="control-label" for="fields">Fields</label>
+              {{ provider.fields(class_='form-control') }}
+            </div>
+            <div class="checkbox">
+              <label>
+                {{ provider.defaultSearch(class_='checkbox') }}
+                Default
+              </label>
+            </div>
+            <div  style="display:flex;justify-content:center;margin-bottom:10px;">
+              <button type="button" class="btn btn-danger remove-search">
+                Delete Search
+              </button>
+            </div>
           </div>
         </div>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
-  </div>
-  <div data-toggle="fieldset" class="form-group" style="width:100%;">
-      <div style="display:flex;justify-content:center;flex-wrap:wrap;">
-      <div class="col-md-8">
-        <table id="bl-table" class="ui table">
-          <thead>
-            <th style="text-align: center;">Background layer</th>
-            <th style="text-align: center;">
-              Print Layer
-              <span class="glyphicon glyphicon-info-sign" title="(Optional): Name of a layer of the QGIS Project which should be used when printing."/>
-            </th>
-            <th style="text-align: center;">
-              <span class="glyphicon glyphicon-eye-open" title="(Optional): The initial visibility of this background layer when loading the theme."/>
-            </th>
-            <th></th>
-            <th>
-              <button type="button" class="btn-sm btn-success add-item">
-                <span class="glyphicon glyphicon-plus"></span>
-              </button>
-            </th>
-          </thead>
-          <tbody>
-          {% for layer in form.backgroundLayers %}
-            <tr data-toggle="fieldset-entry">
-              <td style="width: 40%;">{{ layer.layerName(class_='form-control') }}</td>
-              <td style="width: 40%;">{{ layer.printLayer(class_='form-control') }}</td>
-              <td style="width: 5%;">{{ layer.visibility(class_='form-control checkbox') }}</td>
-              <td style="width: 10%;">
-                <div class="btn-group" role="group" style="display: flex;">
-                  <button type="button" class="btn-sm btn-default move-up">
-                    <span class="glyphicon glyphicon-chevron-up"></span>
-                  </button>
-                  <button type="button" class="btn-sm btn-default move-down">
-                    <span class="glyphicon glyphicon-chevron-down"></span>
-                  </button>
-                </div>
-              </td>
-              <td style="width: 5%;">
-                <button type="button" class="btn-sm btn-danger remove-item">
-                  <span class="glyphicon glyphicon-minus"></span>
+    <div data-toggle="fieldset" class="form-group" style="width:100%;">
+        <div style="display:flex;justify-content:center;flex-wrap:wrap;">
+        <div class="col-md-8">
+          <table id="bl-table" class="ui table">
+            <thead>
+              <th style="text-align: center;">Background layer</th>
+              <th style="text-align: center;">
+                Print Layer
+                <span class="glyphicon glyphicon-info-sign" title="(Optional): Name of a layer of the QGIS Project which should be used when printing."/>
+              </th>
+              <th style="text-align: center;">
+                <span class="glyphicon glyphicon-eye-open" title="(Optional): The initial visibility of this background layer when loading the theme."/>
+              </th>
+              <th></th>
+              <th>
+                <button type="button" class="btn-sm btn-success add-item">
+                  <span class="glyphicon glyphicon-plus"></span>
                 </button>
-              </td>
-            </tr>
-          {% endfor %}
-          </tbody>
-        </table>
+              </th>
+            </thead>
+            <tbody>
+            {% for layer in form.backgroundLayers %}
+              <tr data-toggle="fieldset-entry">
+                <td style="width: 40%;">{{ layer.layerName(class_='form-control') }}</td>
+                <td style="width: 40%;">{{ layer.printLayer(class_='form-control') }}</td>
+                <td style="width: 5%; text-align: center;vertical-align: middle;">
+                  <div style="display: flex; justify-content: center;flex-direction:column;align-items:center;">
+                    {{ layer.visibility(class_='form-control checkbox') }}
+                  </div>
+                </td>
+                <td style="width: 10%;">
+                  <div class="btn-group" role="group" style="display: flex;">
+                    <button type="button" class="btn-sm btn-default move-up">
+                      <span class="glyphicon glyphicon-chevron-up"></span>
+                    </button>
+                    <button type="button" class="btn-sm btn-default move-down">
+                      <span class="glyphicon glyphicon-chevron-down"></span>
+                    </button>
+                  </div>
+                </td>
+                <td style="width: 5%;">
+                  <button type="button" class="btn-sm btn-danger remove-item">
+                    <span class="glyphicon glyphicon-minus"></span>
+                  </button>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:center;flex-wrap:wrap;">
+      {{ wtf.form_field(form.submit, class="btn btn-primary col-md-4") }}
       </div>
     </div>
-    <div style="display:flex;justify-content:center;flex-wrap:wrap;">
-    {{ wtf.form_field(form.submit, class="btn btn-primary col-md-4") }}
-    </div>
-  </div>
-</form>
+  </form>
+</div>
 {% endblock %}

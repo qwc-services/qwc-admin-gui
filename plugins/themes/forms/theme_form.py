@@ -26,6 +26,8 @@ class BackgroundLayerForm(FlaskForm):
     visibility = BooleanField(validators=[Optional()])
 
 class QgisSearchForm(FlaskForm):
+    """Subform for Qgis searches"""
+
     title = StringField(
         "Title",
         description="Search provider name.",

@@ -1,5 +1,3 @@
-import json
-
 from collections import OrderedDict
 from flask import abort, flash, redirect, render_template, request, url_for
 from wtforms import ValidationError
