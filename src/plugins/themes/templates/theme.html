@@ -1,0 +1,338 @@
+{% import "bootstrap5/form.html" as wtf %}
+{% extends "templates/base.html" %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{ url_for('static', filename='js/ace/ace.js') }}"></script>
+<script type="text/javascript">
+
+  var editorOptions = {
+    mode: 'ace/mode/json',
+    fontSize: 14,
+    tabSize: 4,
+    newLineMode: 'unix',
+    minLines: 10,
+    maxLines: 10,
+    wrap: true,
+    showGutter: false,
+  };
+
+  var rowIndex = {{ form.backgroundLayers.last_index + 1 }};
+
+  var searchIndex = {{form.qgisSearchProvider.last_index + 1}};
+  var newSearchIndex = 0;
+
+  function createEditor(textarea, editorOptions) {
+    var editor = ace.edit();
+
+    for (var option in editorOptions) {
+        editor.setOption(option, editorOptions[option]);
+    }
+    editor.session.setValue(textarea.value);
+    $(textarea).hide().after(editor.container);
+    var form = $(textarea).closest("form");
+    form.on("submit", function() {
+        textarea.value = editor.getValue();
+    });
+  }
+
+  $(function() {
+    $('.search-col').on('click','button.accordion', function(){
+      $(this).toggleClass("active");
+      var panel = $(this).next();
+      if (panel.css('max-height') !== '0px') {
+        panel.css('max-height', '0px');
+      }
+      else {
+        panel.css('max-height', panel.prop('scrollHeight') + 'px');
+      }
+    })
+    $('table').on('click', 'button.remove-item', function() {
+      // remove row from table
+      $(this).closest('tr').remove();
+    });
+
+    $('table').on('click', 'button.add-item', function() {
+      // add row to table
+      rowIndex++;
+      var html = '<tr data-toggle="fieldset-entry"><td style="width: 40%;">';
+      html += '<select class="form-control" id="backgroundLayers-' + rowIndex + '-layerName" name="backgroundLayers-' + rowIndex + '-layerName">';
+      {% for value, title in form.backgroundLayersList %}
+        html += '<option value="{{ value }}">{{ value }}</option>';
+      {% endfor %}
+      html += '<td style="width: 40%;">';
+      html += '  <input class="form-control" id="backgroundLayers-' + rowIndex + '-printLayer" name="backgroundLayers-' + rowIndex + '-printLayer" type="text" value="">';
+      html += '</td>';
+      html += '<td style="width: 5%;">';
+      html += '  <input class="form-check-input" id="backgroundLayers-' + rowIndex + '-visibility" name="backgroundLayers-' + rowIndex + '-visibility" type="checkbox" value="y">';
+      html += '</td>';
+      html += '<td style="width: 10%;"><div class="btn-group" role="group">';
+      html += `  <button class="btn btn-sm btn-outline-secondary move-up" role="button" type="button">{{ utils.render_icon('chevron-up') }}</button>`;
+      html += `  <button class="btn btn-sm btn-outline-secondary move-down" role="button" type="button">{{ utils.render_icon('chevron-down') }}</button>`;
+      html += '</div></td>';
+      html += '<td style="width: 5%;">';
+      html += `  <button class="btn btn-sm btn-danger remove-item" role="button" type="button">{{ utils.render_icon('trash') }}</button>`;
+      html += '</td></tr>';
+      $('#bl-table > tbody:last-child').append(html);
+    });
+
+    $(document).on("click", "button.move-up, button.move-down", function() {
+      // move row in table
+      var row = $(this).closest('tr');
+      if ($(this).is(".move-up")) {
+        row.insertBefore(row.prev());
+      } else {
+        row.insertAfter(row.next());
+      }
+    });
+
+    $("#bl-table tbody").on("click", ".checkbox", function() {
+      // allow only one checkbox checked
+      $('.checkbox').not(this).prop('checked', false);
+    });
+
+    $('.search-col').on('click', 'button.remove-search', function() {
+      var confirmation = confirm("Are you sure you want to delete this search ?");
+      if(confirmation){
+      $(this).closest('.searchBlock').remove();
+      }
+    });
+
+    $(".search-col").on('click', 'input[type="checkbox"]', function() {
+        $('.search-col input[type="checkbox"]').not(this).prop('checked', false);
+    });
+
+    $('.search-col').on('click', 'button.add-search', function(){
+      searchIndex++;
+      newSearchIndex++;
+      html =`
+      <div class="searchBlock">
+      <button type="button" class="accordion" style="display:flex;justify-content:space-between;flex-direction:row;align-items: center;">
+        New Search ${newSearchIndex}
+        <span class="glyphicon glyphicon-minus"></span>
+      </button>
+      <div class="panel">
+        <div class="form-group  required" style="padding-top:10px;">
+          <label class="control-label" for="title">Title</label>
+          <input required="" id="qgisSearchProvider-${searchIndex}-title" name="qgisSearchProvider-${searchIndex}-title" type="text" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="control-label" for="featureCount">Feature Count</label>
+          <input id="qgisSearchProvider-${searchIndex}-featureCount" name="qgisSearchProvider-${searchIndex}-featureCount" type="number" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="control-label" for="group">Group</label>
+          <input id="qgisSearchProvider-${searchIndex}-group" name="qgisSearchProvider-${searchIndex}-group" type="text" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="control-label" for="searchDescription">Description</label>
+          <input id="qgisSearchProvider-${searchIndex}-searchDescription" name="qgisSearchProvider-${searchIndex}-searchDescription"type="text" class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label class="control-label" for="expression">Expression</label>
+          <textarea id="qgisSearchProvider-${searchIndex}-expression" name="qgisSearchProvider-${searchIndex}-expression" type="text" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="control-label" for="expression">Fields</label>
+          <textarea id="qgisSearchProvider-${searchIndex}-fields" name="qgisSearchProvider-${searchIndex}-fields"type="text" class="form-control"></textarea>
+        </div>
+        <div class="checkbox">
+          <label>
+            <input id="qgisSearchProvider-${searchIndex}-defaultSearch" name="qgisSearchProvider-${searchIndex}-defaultSearch" type="checkbox" class="checkbox">
+            Default
+          </label>
+        </div>
+        <div  style="display:flex;justify-content:center;margin-bottom:10px;">
+          <button type="button" class="btn btn-danger remove-search">
+            Delete Search
+          </button>
+        </div>
+      </div>
+      </div>`
+      $('.search-col').append(html);
+      var expressionTextarea = $(`#qgisSearchProvider-${searchIndex}-expression`)[0];
+      var fieldsTextarea = $(`#qgisSearchProvider-${searchIndex}-fields`)[0];
+      createEditor(expressionTextarea, editorOptions);
+      createEditor(fieldsTextarea, editorOptions);
+    });
+  });
+
+  $('.search-col').find('textarea[id^="qgisSearchProvider-"]').each(function() {
+    createEditor(this, editorOptions);
+  });
+
+</script>
+{% endblock %}
+{% block styles %}
+<style>
+  .accordion {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-weight: bold;
+  }
+  .active, .accordion:hover {
+    background-color: #ccc;
+  }
+  .panel {
+    padding: 0 18px;
+    max-height: 0;
+    border:none;
+    overflow: hidden;
+    transition: max-height 0.5s ease-out;
+  }
+  .full-width {
+    position: absolute;
+    width: 90vw;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  td .checkbox {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+  }
+
+  .ace_editor {
+    border: 1px solid #ccc;
+  }
+</style>
+{% endblock %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block container %}
+  <h1>{{ title }}</h1>
+
+  <form id="form" class="form form-horizontal" action="{{ action }}" method="post" style="padding-bottom: 25px;">
+    {{ form.csrf_token }}
+    {{ wtf.render_field(form.url, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.title, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {# TODO: default, extent #}
+    {{ wtf.render_field(form.thumbnail, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.attribution, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.format, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.mapCrs, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.additionalMouseCrs, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.searchProviders, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.scales, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.printScales, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.printResolutions, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.printLabelBlacklist, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.collapseLayerGroupsBelowLevel, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.default, form_type="horizontal", horizontal_columns=('sm', 0, 7)) }}
+    {{ wtf.render_field(form.tiled, form_type="horizontal", horizontal_columns=('sm', 0, 7)) }}
+    {{ wtf.render_field(form.mapTips, form_type="horizontal", horizontal_columns=('sm', 0, 7)) }}
+    {{ wtf.render_field(form.skipEmptyFeatureAttributes, form_type="horizontal", horizontal_columns=('sm', 0, 7)) }}
+
+    <div class="col-md-7 search-col">
+      <h3>QGIS searches</h3>
+      <button type="button" class="btn btn-success add-search">
+        Add a search
+      </button>
+      <hr>
+      {% for provider in form.qgisSearchProvider %}
+      <div class="searchBlock">
+        <button type="button" class="accordion" style="display:flex;justify-content:space-between;flex-direction:row;align-items: center;">
+            {{provider.title.data}}
+            <span class="glyphicon glyphicon-minus"></span>
+        </button>
+        <div class="panel">
+          <div class="form-group  required" style="padding-top:10px;">
+            <label class="control-label" for="title">Title</label>
+            {{ provider.title(class_='form-control') }}
+            </div>
+          <div class="form-group">
+            <label class="control-label" for="featureCount">Feature Count</label>
+            {{ provider.featureCount(class_='form-control') }}
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="group">Group</label>
+            {{ provider.group(class_='form-control') }}
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="searchDescription">Description</label>
+            {{ provider.searchDescription(class_='form-control') }}
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="expression">Expression</label>
+            {{ provider.expression(class_='form-control') }}
+          </div>
+          <div class="form-group">
+            <label class="control-label" for="fields">Fields</label>
+            {{ provider.fields(class_='form-control') }}
+          </div>
+          <div class="checkbox">
+            <label>
+              {{ provider.defaultSearch(class_='checkbox') }}
+              Default
+            </label>
+          </div>
+          <div  style="display:flex;justify-content:center;margin-bottom:10px;">
+            <button type="button" class="btn btn-danger remove-search">
+              Delete Search
+              </button>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div data-toggle="fieldset" class="form-group">
+      <div class="col-sm-7">
+      <h3>Background layers</h3>
+        <table id="bl-table" class="table align-middle">
+          <thead>
+            <tr class="align-middle">
+              <th style="text-align: center;">Background layer</th>
+              <th style="text-align: center;">
+                Print Layer
+                <span class="glyphicon glyphicon-info-sign" title="(Optional): Name of a layer of the QGIS Project which should be used when printing."/>
+              </th>
+              <th style="text-align: center;">
+                <span title="(Optional): The initial visibility of this background layer when loading the theme.">{{ utils.render_icon('eye') }}</span>
+              </th>
+              <th></th>
+              <th>
+                <button class="btn btn-sm btn-success add-item" role="button" type="button" title="Add background layer">
+                  {{ utils.render_icon('plus-lg') }}
+                </button>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+          {% for layer in form.backgroundLayers %}
+            <tr data-toggle="fieldset-entry">
+              <td style="width: 40%;">{{ layer.layerName(class_='form-control') }}</td>
+              <td style="width: 40%;">{{ layer.printLayer(class_='form-control') }}</td>
+              <td style="width: 5%;">{{ layer.visibility(class_='form-check-input') }}</td>
+              <td style="width: 10%;">
+                <div class="btn-group" role="group">
+                  <button class="btn btn-sm btn-outline-secondary move-up" role="button" type="button">
+                    {{ utils.render_icon('chevron-up') }}
+                  </button>
+                  <button class="btn btn-sm btn-outline-secondary move-down" role="button" type="button">
+                    {{ utils.render_icon('chevron-down') }}
+                  </button>
+                </div>
+              </td>
+              <td style="width: 5%;">
+                <button class="btn btn-sm btn-danger remove-item" role="button" type="button">
+                  {{ utils.render_icon('trash') }}
+                </button>
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    {{ wtf.render_field(form.submit, class="btn btn-primary") }}
+    <button class="col-sm-offset-2 btn btn-danger" onclick="history.back()">Cancel</button>
+  </form>
+{% endblock %}

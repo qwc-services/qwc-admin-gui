@@ -1,0 +1,36 @@
+{% import "bootstrap5/form.html" as wtf %}
+{% extends "plugins/themes/templates/index.html" %}
+{% block title %}{{ title }}{% endblock %}
+{%- block styles %}
+    {{ super() }}
+    <link href="{{ url_for('plugin_static', plugin='themes', filename='application.css') }}" rel="stylesheet">
+{%- endblock styles %}
+{% block themes_container %}
+<h1>{{ title }}</h1>
+<div style="padding-top: 1em;"/>
+  <div class="panel panel-default">
+    <div clas="panel-body">
+      <form id="form" class="form" action="{{ url_for('upload_mapthumb') }}" method="post" style="padding-bottom: 25px;" enctype="multipart/form-data">
+        <div class="well form-group">
+          {{ form.csrf_token }}
+          {{ wtf.render_field(form.upload, form_type="horizontal") }}
+          {{ wtf.render_field(form.submit, class="btn btn-primary") }}
+        </div>
+      </form>
+      <div class="container-fluid">
+          {% for mapthumb in mapthumbs %}
+          <li class="theme-item">
+            <div class="theme-item-title">{{ mapthumb }}</div>
+            <img src="{{ url_for('load_mapthumb', image=mapthumb) }}"></img>
+            <span class="icon">
+              <a href="{{ url_for('delete_mapthumb', image=mapthumb) }}" class="btn btn-danger btn-xs" role="button" title="Delete mapthumb" onclick="return confirm('Really delete {{ mapthumb }}?');">
+                {{ utils.render_icon('trash') }}
+              </a>
+            </span>
+          </li>
+          {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

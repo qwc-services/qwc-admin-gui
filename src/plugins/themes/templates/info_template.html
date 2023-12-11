@@ -1,0 +1,22 @@
+{% import "bootstrap5/form.html" as wtf %}
+{% extends "plugins/themes/templates/index.html" %}
+{% block title %}{{ title }}{% endblock %}
+{%- block styles %}
+    {{ super() }}
+    <link href="{{ url_for('plugin_static', plugin='themes', filename='application.css') }}" rel="stylesheet">
+{%- endblock styles %}
+{% block themes_container %}
+<h1>{{ title }}</h1>
+<form id="form" class="form form-horizontal" action="{{ action }}" method="post" style="padding-bottom: 25px;">
+{{ form.csrf_token }}
+{% if is_disabled %}
+{{ wtf.render_field(form.url, form_type="horizontal", horizontal_columns=('sm', 2, 5), disabled=True) }}
+{{ wtf.render_field(form.layer, form_type="horizontal", horizontal_columns=('sm', 2, 5), disabled=True) }}
+{% else %}
+{{ wtf.render_field(form.url, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+{{ wtf.render_field(form.layer, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+{% endif %}
+{{ wtf.render_field(form.template, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+{{ wtf.render_field(form.submit, form_type="horizontal", class="btn btn-primary", horizontal_columns=('sm', 2, 5)) }}
+</form>
+{% endblock %}

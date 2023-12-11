@@ -1,0 +1,26 @@
+{% import "bootstrap5/form.html" as wtf %}
+{% extends "templates/base.html" %}
+
+{%- block styles %}
+    {{ super() }}
+    <link href="{{ url_for('plugin_static', plugin='themes', filename='application.css') }}" rel="stylesheet">
+{%- endblock styles %}
+
+{% block title %}Add XYZ background layer{% endblock %}
+{% block container %}
+  <h1>Add XYZ background layer</h1>
+
+<div class="col-md-6 col-lg-offset-3" style="margin-top:25px;">
+    <form id="form" class="form form-horizontal" action="{{ url_for('create_backgroundlayer', type=type) }}" method="post" style="padding-top: 2.5em 0;">
+      {{ form.csrf_token }}
+      {{ wtf.render_field(form.url, placeholder="https://tile.openstreetmap.org/{z}/{x}/{y}.png", form_type="horizontal") }}
+      {{ wtf.render_field(form.name, form_type="horizontal") }}
+      {{ wtf.render_field(form.title, form_type="horizontal") }}
+      {{ wtf.render_field(form.attribution, form_type="horizontal") }}
+      {{ wtf.render_field(form.crs, form_type="horizontal") }}
+      {{ wtf.render_field(form.thumbnail, form_type="horizontal") }}
+      {{ wtf.render_field(form.submit, class="btn btn-primary") }}
+      <button class="col-sm-offset-2 btn btn-danger" onclick="history.back()">Cancel</button>
+    </form>
+  </div>
+{% endblock %}

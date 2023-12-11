@@ -1,0 +1,79 @@
+{% extends "templates/base_index.html" %}
+
+{% block title %}Permissions{% endblock %}
+
+{% block new_resource_label %}New Permission{% endblock %}
+
+{% block extra_buttons %}
+
+  <div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle h-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Role Filter: {{ active_role if active_role is not none and active_role != 'all' else 'All' }}
+    </button>
+    <ul class="dropdown-menu">
+      <li>
+        <a
+          class="dropdown-item {{ 'active' if active_role is none or active_role == 'all' }}"
+          href="{{ url_for('permissions', role='all', type=active_resource_type) }}"
+        >All</a>
+      </li>
+      <li><hr class="dropdown-divider"></li>
+      {% for role in roles %}
+        <li>
+          <a
+            class="dropdown-item  {{ 'active' if role.name == active_role }}"
+            href="{{ url_for('permissions', role=role.name, type=active_resource_type) }}"
+          >{{ role.name }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+
+  <div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle h-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Type Filter: {{ resource_types[active_resource_type] if active_resource_type is not none else 'All' }}
+    </button>
+    <ul class="dropdown-menu">
+      <li>
+        <a
+          class="dropdown-item {{ 'active' if active_resource_type is none or active_resource_type == 'all' }}"
+          href="{{ url_for('permissions', role=active_role, type='all') }}"
+        >All</a>
+      </li>
+      <li><hr class="dropdown-divider"></li>
+      {% for resource_type in resource_types %}
+        <li>
+          <a
+            class="dropdown-item  {{ 'active' if resource_type == active_resource_type }}"
+            href="{{ url_for('permissions', role=active_role, type=resource_type) }}"
+          >{{ resource_types[resource_type] }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+{% endblock %}
+
+{% block table_headers %}
+  <th>{{ sortable_column("ID", 'id') }}</th>
+  <th>{{ sortable_column("Role", 'role') }}</th>
+  <th>{{ sortable_column("Resource type", 'type') }}</th>
+  <th>{{ sortable_column("Resource", 'resource') }}</th>
+  <th>{{ sortable_column("Priority", 'priority') }}</th>
+  <th>{{ sortable_column("Write", 'write') }}</th>
+{% endblock %}
+
+{% block resource_fields %}
+  <td>{{ resource.id }}</td>
+  <td>{{ resource.role.name }}</td>
+  <td>{{ resource_types[resource.resource.type] }}</td>
+  <td>{{ resource.resource.name }}
+    {% if resource.resource.parent %}
+      (<i>{{ parents_dict[resource.resource.parent.id] }}</i>)</td>
+    {% endif %}
+  <td>{{ resource.priority }}</td>
+  <td>{{ resource.write }}</td>
+{% endblock %}
+
+{% block delete_resource_confirmation %}Remove permission?{% endblock %}

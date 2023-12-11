@@ -1,0 +1,35 @@
+{% extends "templates/base_index.html" %}
+
+{% block title %}Pending Registration Requests{% endblock %}
+
+{% block buttons %}
+  <div class="btn-group search-group">
+    <form action="{{ url_for(base_route) }}" method="get">
+      <div class="input-group">
+        <input name="search" type="text" class="form-control" placeholder="Search" value="{{ search_text if search_text }}">
+        <span class="input-group-btn">
+          <button class="btn btn-default" type="submit">{{ utils.render_icon('search') }}</button>
+        </span>
+      </div>
+    </form>
+  </div>
+{% endblock %}
+
+{% block table_headers %}
+  <th>{{ sortable_column("ID", 'id') }}</th>
+  <th>{{ sortable_column("User", 'user') }}</th>
+  <th>{{ sortable_column("Requested registrable group", 'group') }}</th>
+  <th>{{ sortable_column("Created at", 'created') }}</th>
+{% endblock %}
+
+{% block resource_fields %}
+  <td>{{ resource.id }}</td>
+  <td>{{ resource.user.name }}</td>
+  <td>
+    {% set icon = 'minus-lg' if resource.unsubscribe else 'plus-lg' %}
+    {{ utils.icon(icon) }} {{ resource.registrable_group.title }}
+  </td>
+  <td>{{ resource.created_at.strftime("%Y-%m-%d %H:%M:%S") }}</td>
+{% endblock %}
+
+{% block delete_resource_confirmation %}Remove registration request?{% endblock %}

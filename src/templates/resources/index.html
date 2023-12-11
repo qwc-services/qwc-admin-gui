@@ -1,0 +1,125 @@
+{% extends "templates/base_index.html" %}
+
+{% block scripts %}
+{{super()}}
+<script type="text/javascript">
+  const btn_remove_selected = $("#btn_remove_selected");
+  const resource_checkboxes = $("[name=resource_checkbox]");
+  let selected = 0;
+  resource_checkboxes.each(function() {
+    selected += $(this).prop('checked');
+  });
+
+  $("#select_all").click(function() {
+    const checked = $(this).prop('checked');
+    resource_checkboxes.each(function() {
+      $(this).prop('checked', checked);
+    });
+    btn_remove_selected.prop('disabled', !checked);
+    selected = checked ? resource_checkboxes.length : 0;
+  });
+
+  resource_checkboxes.each(function() {
+    $(this).click(function() {
+      selected += $(this).prop('checked') ? 1 : -1;
+      btn_remove_selected.prop('disabled', selected <= 0);
+    });
+  });
+
+  function remove_selected() {
+    if (confirm('Remove the ' + selected + ' selected resources?')) {
+      $("#form_remove_selected").submit();
+    }
+  }
+</script>
+{% endblock %}
+
+{% block title %}Resources{% endblock %}
+
+{% block new_resource_label %}New Resource{% endblock %}
+
+{% block extra_buttons %}
+  <div class="dropdown">
+    <button class="btn btn-secondary dropdown-toggle h-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      Type Filter: {{ resource_types[active_resource_type] if active_resource_type is not none else 'All' }}
+    </button>
+    <ul class="dropdown-menu">
+      <li>
+        <a
+          class="dropdown-item {{ 'active' if active_resource_type is none or active_resource_type == 'all' }}"
+          href="{{ url_for('resources', type='all') }}"
+        >All</a>
+      </li>
+      <li><hr class="dropdown-divider"></li>
+      {% for resource_type in resource_types %}
+        <li>
+          <a
+            class="dropdown-item  {{ 'active' if resource_type == active_resource_type }}"
+            href="{{ url_for('resources', type=resource_type, check_unused=check_unused) if check_unused else url_for('resources', type=resource_type) }}"
+          >{{ resource_types[resource_type] }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  {% if have_config_generator %}
+    <form action="{{ url_for('import_maps_%s' % endpoint_suffix) }}" method="post" style="display: inline;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+      <button id="import_maps" type="submit" class="btn btn-success btn-spin-on-click h-100" data-spinning-msg="Importing maps...">
+        {{ utils.render_icon('download') }} Import maps
+      </button>
+    </form>
+
+    <a href="{{ url_for('resources', check_unused=True) }}" class="btn btn-success" role="button">
+      {{ utils.render_icon('exclamation-triangle') }} Check unused
+    </a>
+  {% endif %}
+
+
+  <button type="submit" class="btn btn-danger" id="btn_remove_selected" onclick="remove_selected()" disabled>
+    {{ utils.render_icon('x') }} Remove selected
+  </button>
+{% endblock %}
+
+{% block table %}
+<form action="{{ url_for('destroy_multiple_%s' % endpoint_suffix) }}" id="form_remove_selected" method="post">
+<input type="hidden" name="_method" value="DELETE" />
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+{{super()}}
+
+</form>
+{% endblock %}
+
+{% block table_headers %}
+  <th>
+    <input type="checkbox" id="select_all">
+  </th>
+  <th>{{ sortable_column("ID", 'id') }}</th>
+  <th>{{ sortable_column("Type", 'type') }}</th>
+  <th>{{ sortable_column("Name", 'name') }}</th>
+  <th>Parent</th>
+{% endblock %}
+
+{% block resource_fields %}
+  <td>
+    <input type="checkbox" id="checkbox_{{ resource.id }}" name="resource_checkbox" value="{{ resource.id }}">
+  </td>
+  <td>{{ resource.id }}</td>
+  <td>{{ resource_types[resource.type] }}</td>
+  {% if check_unused and resource.not_referenced is true %}
+    <td data-toggle="tooltip" title="Resource was not found in any service configuration">{{ utils.render_icon('exclamation-triangle') }} {{ resource.name }}</td>
+  {% else %}
+    <td>{{ resource.name }}</td>
+  {% endif %}
+  <td>
+    <a href="{{ url_for('hierarchy_%s' % endpoint_suffix, id=resource[pkey]) }}" class="btn btn-default btn-xs" role="button" title="Resource hierarchy">
+      {{ utils.render_icon('list') }}
+    </a>
+    {% if resource.parent %}
+      {{ resource.parent.name }} ({{ resource_types[resource.parent.type] }})
+    {% endif %}
+  </td>
+{% endblock %}
+
+{% block delete_resource_confirmation %}Remove resource?{% endblock %}

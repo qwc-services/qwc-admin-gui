@@ -1,0 +1,38 @@
+{% extends "templates/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block container %}
+  <ul class="nav nav-tabs mb-2" id="tabbar">
+    <li class="nav-item">
+      <a class="nav-link" aria-current="page" href="{{ url_for('themes') }}">Theme configuration</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" aria-current="page" href="{{ url_for('backgroundlayers') }}">Background layers</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" aria-current="page" href="{{ url_for('mapthumbs') }}">Mapthumbs</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" aria-current="page" href="{{ url_for('info_templates') }}">Info templates</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" aria-current="page" href="{{ url_for('files') }}">Upload files</a>
+    </li>
+  </ul>
+
+  <div class="container pb-4">
+    {% block themes_container %}
+    {% endblock %}
+  </div>
+{% endblock %}
+
+{% block scripts %}
+  {{ super() }}
+  <script type="text/javascript">
+    $('#tabbar a').each(function() {
+        $(this).removeClass('active');
+        if($(this).attr('href') === location.pathname) {
+            $(this).addClass('active');
+        }
+    });
+  </script>
+{% endblock %}

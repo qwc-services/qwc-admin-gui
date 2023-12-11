@@ -1,0 +1,45 @@
+{% import "bootstrap5/form.html" as wtf %}
+{% extends "templates/base.html" %}
+
+{% block scripts %}
+{{super()}}
+<script src="{{ url_for('static', filename='js/jquery.multi-select.js') }}"></script>
+<script type="text/javascript">
+  $(function() {
+    // initialize multi-select
+    $('#groups').multiSelectWithSearch({
+      selectableHeader: '<div class="ms-header">Groups</div>',
+      selectionHeader: '<div class="ms-header">Assigned groups</div>'
+    });
+    $('#users').multiSelectWithSearch({
+      selectableHeader: '<div class="ms-header">Users</div>',
+      selectionHeader: '<div class="ms-header">Assigned users</div>'
+    });
+  });
+</script>
+{% endblock %}
+
+{%- block styles %}
+  {{ super() }}
+  <link href="{{ url_for('static', filename='css/multi-select.css') }}" rel="stylesheet">
+{%- endblock styles %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block container %}
+  <h1>{{ title }}</h1>
+
+  <form class="form form-horizontal" action="{{ action }}" method="post">
+    {% if method != 'POST' %}
+      <input type="hidden" name="_method" value="{{method}}" />
+    {% endif %}
+    {{ form.csrf_token }}
+
+    {{ wtf.render_field(form.name, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.description, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.groups, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.users, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+
+    {{ wtf.render_field(form.submit, class="col-sm-offset-2 btn btn-primary") }}
+    <button class="col-sm-offset-2 btn btn-danger" onclick="history.back()">Cancel</button>
+  </form>
+{% endblock %}

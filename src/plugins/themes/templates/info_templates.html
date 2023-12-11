@@ -1,0 +1,56 @@
+{% import "bootstrap5/form.html" as wtf %}
+{% extends "plugins/themes/templates/index.html" %}
+{% block title %}{{ title }}{% endblock %}
+{%- block styles %}
+    {{ super() }}
+    <link href="{{ url_for('plugin_static', plugin='themes', filename='application.css') }}" rel="stylesheet">
+{%- endblock styles %}
+{% block themes_container %}
+<h1>{{ title }}</h1>
+<div style="padding-top: 1em;"/>
+<div class="panel panel-default">
+    <div class="panel-heading clearfix" style="overflow: hidden;">
+      <div class="panel-title pull-left" style="padding-top: 7.5px;"><b>Templates</b></div>
+      <div class="btn-group pull-right">
+        <a href="{{ url_for('info_template') }}" class="btn btn-success" role="button" title="New template">
+          {{ utils.render_icon('plus-lg') }}
+        </a>
+      </div>
+    </div>
+    <div clas="panel-body">
+        <table class="table">
+          <thead>
+            <th>ID</th>
+            <th>Project</th>
+            <th>Layer</th>
+            <th>Template</th>
+          </thead>
+          <tbody>
+          {% set ns = namespace(item_index=1) %}
+          {% for item in items %}
+          {% set item_loop = loop %}
+          {% for layer in item['root_layer']['layers'] %}
+            <tr>
+              <td style="vertical-align: middle">{{ ns.item_index }}</td>
+              <td style="vertical-align: middle">{{ item['name'] }}</td>
+              <td style="vertical-align: middle">{{ layer['name'] }}</td>
+              <td style="vertical-align: middle">{{ layer.get("info_template", {}).get("template_path", "").split("/")[-1] }}</td>
+              <td style="text-align: right">
+                <div class="btn-group">
+                  <a href="{{ url_for('edit_info_template', tid=loop.index0 , gid=item_loop.index0)}}" class="btn btn-primary" role="button" title="Edit theme">
+                    {{ utils.render_icon('pencil') }}
+                  </a>
+                  <a href="{{ url_for('delete_info_template', tid=loop.index0, gid=item_loop.index0) }}" class="btn btn-danger" role="button" title="Delete theme" onclick="return confirm('Really delete theme?');">
+                    {{ utils.render_icon('trash') }}
+                  </a>
+                </div>
+              </td>
+            </tr>
+          {% set ns.item_index = ns.item_index + 1 %}
+          {% endfor %}
+          {% endfor %}
+          </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

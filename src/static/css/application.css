@@ -1,0 +1,33 @@
+:root {
+  --bs-body-font-size: 14px;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  padding-top: 70px;
+  --bs-body-font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --bs-body-font-size: 14px;
+}
+
+.btn {
+  --bs-btn-font-size: 14px;
+}
+
+.nav-link {
+  --bs-nav-link-font-size: 14px;
+}
+
+.table {
+  font-size: 14px;
+}
+
+form {
+  margin-bottom: 0;
+}
+
+input:invalid {
+  background-color: #FFAAAA;
+}

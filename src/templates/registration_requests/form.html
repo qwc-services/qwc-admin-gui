@@ -1,0 +1,113 @@
+{% import "bootstrap5/form.html" as wtf %}
+{% extends "templates/base.html" %}
+
+{%- block styles %}
+  {{ super() }}
+  <style type="text/css">
+    {# use default button style if inactive #}
+    .btn-group .btn-success, .btn-group .btn-danger {
+      color: #333;
+      background-color: #fff;
+      border-color: #ccc;
+    }
+    .btn-group .btn-success.active {
+      color: #fff;
+      background-color: #449d44;
+      border-color: #398439;
+    }
+    .btn-group .btn-danger.active {
+      color: #fff;
+      background-color: #c9302c;
+      border-color: #ac2925;
+    }
+  </style>  
+{%- endblock styles %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block container %}
+  <h1>{{ title }}</h1>
+
+  <form class="form form-horizontal" action="{{ action }}" method="post">
+    {% if method != 'POST' %}
+      <input type="hidden" name="_method" value="{{method}}" />
+    {% endif %}
+    {{ form.csrf_token }}
+
+    <div class="form-group">
+      <label class="control-label col-sm-2">User</label>
+      <div class="col-sm-8">
+        <p class="form-control-static">{{ form.username }}</p>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2">Email</label>
+      <div class="col-sm-8">
+        <p class="form-control-static">{{ form.user_email }}</p>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="title">Registration requests</label>
+      <div class=" col-sm-8">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th></th>
+              <th>Registrable Group</th>
+              <th>Group</th>
+              <th>Created at</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for req in form.registration_requests %}
+              <tr>
+                {% if req.unsubscribe.data %}
+                  {# unsubscribe from group #}
+                  <td>
+                    {{ req.request_id }}
+                    <div class="btn-group" data-toggle="buttons">
+                      <label class="btn btn-sm btn-default active" title="Skip">
+                        <input type="radio" name="{{ req.action.name }}" value="skip" autocomplete="off" checked> {{ utils.render_icon('hourglass') }}
+                      </label>
+                      <label class="btn btn-sm btn-success" title="Remove from group">
+                        <input type="radio" name="{{ req.action.name }}" value="accept" autocomplete="off"> {{ utils.render_icon('ban') }}
+                      </label>
+                      <label class="btn btn-sm btn-danger" title="Reject request">
+                        <input type="radio" name="{{ req.action.name }}" value="reject" autocomplete="off"> {{ utils.render_icon('x') }}
+                      </label>
+                    </div>
+                  </td>
+                  <td>{{ utils.render_icon('dash-lg') }} <b>{{ req.title.data }}</b></td>
+                {% elif req.member.data %}
+                  {# already a group member #}
+                  <td></td>
+                  <td>{{ utils.render_icon('check') }} <b>{{ req.title.data }}</b></td>
+                {% else %}
+                  {# add to group #}
+                  <td>
+                    {{ req.request_id }}
+                    <div class="btn-group" data-toggle="buttons">
+                      <label class="btn btn-sm btn-default active" title="Skip">
+                        <input type="radio" name="{{ req.action.name }}" value="skip" autocomplete="off" checked> {{ utils.render_icon('hourglass') }}
+                      </label>
+                      <label class="btn btn-sm btn-success" title="Add to group">
+                        <input type="radio" name="{{ req.action.name }}" value="accept" autocomplete="off"> {{ utils.render_icon('check') }}
+                      </label>
+                      <label class="btn btn-sm btn-danger" title="Reject request">
+                        <input type="radio" name="{{ req.action.name }}" value="reject" autocomplete="off"> {{ utils.render_icon('x') }}
+                      </label>
+                    </div>
+                  </td>
+                  <td>{{ utils.render_icon('plus-lg') }} <b>{{ req.title.data }}</b></td>
+                {% endif %}
+                <td>{{ req.group.data }}</td>
+                <td>{{ req.created_at.data.strftime("%Y-%m-%d %H:%M:%S") if req.created_at.data }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {{ wtf.render_field(form.submit, class="col-sm-offset-2 btn btn-primary") }}
+  </form>
+{% endblock %}

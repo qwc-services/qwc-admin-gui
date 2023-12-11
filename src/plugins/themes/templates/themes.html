@@ -1,0 +1,214 @@
+{% extends "plugins/themes/templates/index.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block themes_container %}
+{% block scripts %}
+{{super()}}
+<script>
+  function copyToClipboard(text) {
+    var input = document.createElement('input')
+    input.id="__copyToClipboard__";
+    input.value = window.location.origin + text;
+    document.body.appendChild(input);
+    input.select();
+    document.execCommand('copy')
+    input.remove();
+  }
+  function showMoveToGroupModal(themeIndex, groupIndex) {
+    let form = document.getElementById('moveToGroupForm');
+    let selectElement = document.getElementById('group');
+    let newGroupId = selectElement.value;
+    originalActionUrl = "{{ url_for('move_theme_to_group',tid='tid_placeholder', old_gid='old_placeholder',  gid='gid_placeholder') }}";
+    if (typeof groupIndex !== 'undefined' && typeof themeIndex !== 'undefined') {
+      actionUrl = originalActionUrl.replace('tid_placeholder',  themeIndex).replace('old_placeholder', groupIndex).replace('gid_placeholder', newGroupId);
+    } else if (typeof themeIndex !== 'undefined') {
+      actionUrl = originalActionUrl.replace('tid_placeholder', themeIndex).replace('old_placeholder', 'undefined').replace('gid_placeholder', newGroupId);
+    }
+    form.action = actionUrl;
+    $('#moveToGroupModal').modal('show');
+    selectElement.addEventListener('change', function() {
+      newGroupId = selectElement.value;
+      actionUrl = originalActionUrl.replace('tid_placeholder', themeIndex).replace('old_placeholder', groupIndex).replace('gid_placeholder', newGroupId);
+      form.action = actionUrl;
+    });
+  } 
+</script>
+{% endblock scripts %}
+  <h1>{{ title }}</h1>
+  <div style="padding-top: 1em;"/>
+  {% for key, list in themes.items() %}
+    {% if key == "items" %}
+      <div class="panel panel-default">
+        <div class="panel-heading clearfix" style="overflow: hidden;">
+          <h3>Themes</h3>
+          <div class="btn-group pull-right">
+            <a href="{{ url_for('new_theme') }}" class="btn btn-success" role="button" title="New theme">
+              {{ utils.render_icon('plus-lg') }} New Theme
+            </a>
+          </div>
+        </div>
+        <div clas="panel-body">
+          <table class="table">
+            <thead>
+              <th>ID</th>
+              <th>Theme</th>
+              <th>Url</th>
+              <th></th>
+              <th></th>
+            </thead>
+            <tbody>
+            {% for item in list %}
+              <tr>
+                <td style="vertical-align: middle">{{ loop.index }}</td>
+                <td style="vertical-align: middle">{{ item.name }}</td>
+                <td style="vertical-align: middle">{{ item.url }}</td>
+                <td>
+                  <a href="#" onclick="copyToClipboard('{{ item.url }}')" class="btn btn-default copy" role="button" title="Copy url to clipboard">
+                    {{ utils.render_icon('copy') }}
+                  </a>
+                </td>
+                <td style="text-align: right">
+                  <div class="btn-group">
+                    <a href="{{ url_for('move_theme', tid=loop.index0, direction='up') }}" class="btn btn-outline-secondary move-up" role="button" title="Move theme up">
+                      {{ utils.render_icon('chevron-up') }}
+                    </a>
+                    <a href="{{ url_for('move_theme', tid=loop.index0, direction='down') }}" class="btn btn-outline-secondary move-up" role="button" title="Move theme down">
+                      {{ utils.render_icon('chevron-down') }}
+                    </a>
+                    <a href="{{ url_for('edit_theme', tid=loop.index0) }}" class="btn btn-primary" role="button" title="Edit theme">
+                      {{ utils.render_icon('pencil') }}
+                    </a>
+                    <a href="{{ url_for('delete_theme', tid=loop.index0) }}" class="btn btn-danger" role="button" title="Delete theme" onclick="return confirm('Really delete theme?');">
+                      {{ utils.render_icon('trash') }}
+                    </a>
+                    <a href="#" class="btn btn-warning move-to-group" role="button" title="Move theme to group" onclick="showMoveToGroupModal({{ loop.index0 }})">
+                      {{ utils.render_icon('arrow-right') }}
+                    </a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    {% elif key == "groups" %}
+      <div class="panel panel-default">
+        <div class="panel-heading clearfix" style="overflow: hidden;">
+          <h3>Theme groups</h3>
+          <div class="btn-group pull-right">
+            <a href="{{ url_for('add_theme_group') }}" class="btn btn-success" role="button" title="New theme group">
+              {{ utils.render_icon('plus-lg') }} New Group
+            </a>
+          </div>
+        </div>
+        <div clas="panel-body">
+        {% for group in list %}
+        {% set group_loop = loop %}
+          <div class="panel panel-default" style="padding: 1em;">
+            <div class="btn-toolbar gap-2" role="toolbar">
+              <div class="btn-group">
+                <a href="{{ url_for('new_theme', gid=group_loop.index0) }}" class="btn btn-success" role="button" title="New theme">
+                  {{ utils.render_icon('plus-lg') }} New Theme
+                </a>
+                <a href="{{ url_for('move_theme_group', gid=group_loop.index0, direction='up') }}" class="btn btn-outline-secondary" role="button" title="Move theme group up">
+                  {{ utils.render_icon('chevron-up') }}
+                </button>
+                <a href="{{ url_for('move_theme_group', gid=group_loop.index0, direction='down') }}" class="btn btn-outline-secondary" role="button" title="Move theme group down">
+                  {{ utils.render_icon('chevron-down') }}
+                </button>
+                <a href="{{ url_for('delete_theme_group', gid=group_loop.index0) }}" class="btn btn-danger" role="button" title="Delete theme group" onclick="return confirm('Really delete theme group?');">
+                  {{ utils.render_icon('trash') }}
+                </a>
+              </div>
+              <div class="btn-group">
+                <form class="form-inline" action="{{ url_for('update_theme_group', gid=group_loop.index0) }}" method="post">
+                  <input type="hidden" name="_method" value="POST" />
+                  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                    <div class="input-group">
+                      <div class="input-group-text" id="btnGroupAddon">Title</div>
+                      <input type="text" class="form-control" name="group_title" value="{{ group.title }}"/>
+                      <button class="btn btn-primary" type="submit" role="button" title="Edit title">
+                        {{ utils.render_icon('check') }}
+                      </button>
+                    </div>
+                </form>
+              </div>
+            </div>
+            <div clas="panel-body">
+              <table class="table">
+                <thead>
+                  <th>ID</th>
+                  <th>Theme</th>
+                  <th>Url</th>
+                  <th></th>
+                  <th></th>
+                </thead>
+                <tbody>
+                {% for item in group["items"] %}
+                  <tr>
+                    <td style="vertical-align: middle">{{ loop.index }}</td>
+                    <td style="vertical-align: middle">{{ item.name }}</td>
+                    <td style="vertical-align: middle">{{ item.url }}</td>
+                    <td>
+                      <a href="#" onclick="copyToClipboard('{{ item.url }}')" class="btn btn-default copy" role="button" title="Copy url to clipboard">
+                        {{ utils.render_icon('copy') }}
+                      </a>
+                    </td>
+                    <td style="text-align: right">
+                      <div class="btn-group">
+                        <a href="{{ url_for('move_theme', gid=group_loop.index0, tid=loop.index0, direction='up') }}" class="btn btn-outline-secondary move-up" role="button" title="Move theme up">
+                          {{ utils.render_icon('chevron-up') }}
+                        </a>
+                        <a href="{{ url_for('move_theme', gid=group_loop.index0, tid=loop.index0, direction='down') }}" class="btn btn-outline-secondary move-down" role="button" title="Move theme down">
+                          {{ utils.render_icon('chevron-down') }}
+                        </a>
+                        <a href="{{ url_for('edit_theme', gid=group_loop.index0, tid=loop.index0) }}" class="btn btn-primary" role="button" title="Edit theme">
+                          {{ utils.render_icon('pencil') }}
+                        </a>
+                        <a href="{{ url_for('delete_theme', gid=group_loop.index0, tid=loop.index0) }}" class="btn btn-danger" role="button" title="Delete theme" onclick="return confirm('Really delete theme?');">
+                          {{ utils.render_icon('trash') }}
+                        </a>
+                        <a href="#" class="btn btn-warning move-to-group" role="button" title="Move theme to group" onclick="showMoveToGroupModal({{ loop.index0 }}, {{ group_loop.index0 }})">
+                          {{ utils.render_icon('arrow-right') }}
+                        </a> 
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+  {% endfor %}
+  {% block modals %}
+  <div class="modal fade" id="moveToGroupModal" tabindex="-1" role="dialog" aria-labelledby="moveToGroupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <form id="moveToGroupForm" method="get">
+            <input type="hidden" name="_method" value="GET" />
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+            <div class="form-group">
+              <label for="group">Select Group:</label>
+              <select class="form-control" id="group" name="group">
+                <option value='undefined'>No group</option>
+                {% for group in themes["groups"] %}
+                  <option value="{{ loop.index0 }}">{{ group.title }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Move</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endblock modals %}
+{% endblock %}
