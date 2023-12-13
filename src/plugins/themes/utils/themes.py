@@ -314,6 +314,12 @@ class ThemeUtils():
                     themes_config = config["themesConfig"]
                     if "defaultSearchProviders" in themes_config:
                         return themes_config["defaultSearchProviders"]
+                    elif type(config["themesConfig"]) is str :  # defaultSearchProviders is in themesConfig file if used
+                        themeConfig =  os.path.join(config_in_path, current_handler.tenant, config["themesConfig"])
+                        with open(themeConfig, encoding="utf-8") as fht:
+                            config_theme = json.load(fht)
+                            if "defaultSearchProviders" in config_theme:
+                                return config_theme["defaultSearchProviders"]
         except IOError as e:
             app.logger.error("Error reading tenantConfig.json: {}".format(
                 e.strerror))
