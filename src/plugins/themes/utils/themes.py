@@ -1,7 +1,7 @@
 import os
 import json
 import pathlib
-from datetime import datetime
+import datetime
 from collections import OrderedDict
 from urllib.parse import urlparse
 
@@ -63,7 +63,7 @@ class ThemeUtils():
                 e.strerror))
             return False
 
-        baksuffix = "%s.bak" % datetime.utcnow().strftime("-%Y%m%d-%H%M%S")
+        baksuffix = "%s.bak" % datetime.datetime.now(datetime.UTC).strftime("-%Y%m%d-%H%M%S")
         themes_config = tenant_config.get("themesConfig", None)
 
         if isinstance(themes_config, str):
@@ -143,7 +143,7 @@ class ThemeUtils():
             app.logger.error("Error reading tenantConfig.json: {}".format(e.strerror))
             return False
 
-        baksuffix = "%s.bak" % datetime.utcnow().strftime("-%Y%m%d-%H%M%S")
+        baksuffix = "%s.bak" % datetime.datetime.now(datetime.UTC).strftime("-%Y%m%d-%H%M%S")
         services = tenant_config.get("services", [])
 
         for service in services:

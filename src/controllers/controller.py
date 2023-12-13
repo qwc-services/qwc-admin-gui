@@ -1,4 +1,4 @@
-from datetime import datetime
+import datetime
 import math
 
 from flask import abort, flash, redirect, render_template, request, url_for
@@ -427,7 +427,7 @@ class Controller:
             session.add(last_update)
 
         # update and commit new timestamp
-        last_update.updated_at = datetime.utcnow()
+        last_update.updated_at = datetime.datetime.now(datetime.UTC)
         session.commit()
 
     def update_form_collection(

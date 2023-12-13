@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from datetime import datetime
+import datetime
 import os
 from shutil import copyfile
 
@@ -186,7 +186,7 @@ class ConfigsController():
 
             # save backup of current config file
             # as '<file_name>-YYYYmmdd-HHMMSS.bak'
-            timestamp = datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+            timestamp = datetime.datetime.now(datetime.UTC).strftime("%Y%m%d-%H%M%S")
             backup_file_name = "%s-%s.bak" % (file_name, timestamp)
             backup_file_path = os.path.join(config_path, backup_file_name)
             self.logger.info(
