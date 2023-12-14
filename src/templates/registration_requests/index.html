@@ -26,8 +26,8 @@
   <td>{{ resource.id }}</td>
   <td>{{ resource.user.name }}</td>
   <td>
-    {% set icon = 'minus-lg' if resource.unsubscribe else 'plus-lg' %}
-    {{ utils.icon(icon) }} {{ resource.registrable_group.title }}
+    {% set icon = 'dash-lg' if resource.unsubscribe else 'plus-lg' %}
+    {{ utils.render_icon(icon) }} {{ resource.registrable_group.title }}
   </td>
   <td>{{ resource.created_at.strftime("%Y-%m-%d %H:%M:%S") }}</td>
 {% endblock %}
