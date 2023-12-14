@@ -107,14 +107,14 @@
     <link href="{{ url_for('plugin_static', plugin='themes', filename='application.css') }}" rel="stylesheet">
 {%- endblock styles %}
 
-{% block title %}Add WMTS background layer{% endblock %}
+{% block title %}{{ i18n('plugins.themes.wmtslayer.add') }}{% endblock %}
 {% block container %}
-  <h1>Add WMTS background layer</h1>
+  <h1>{{ i18n('plugins.themes.wmtslayer.add') }}</h1>
   <div class="col-sm-7">
     <div class="row" style="padding: 2.5em 0">
       <div class="btn-group">
-        <input type="text" id="input-url" class="form-control" placeholder="{{ i18n('plugins.theme.wmtslayer.capabilities_url') }}">
-        <button id="btn-connect" class="btn btn-secondary" type="button">{{ i18n('plugins.theme.common.connect') }}</button>
+        <input type="text" id="input-url" class="form-control" placeholder="{{ i18n('plugins.themes.wmtslayer.capabilities_url') }}">
+        <button id="btn-connect" class="btn btn-secondary" type="button">{{ i18n('plugins.themes.common.connect') }}</button>
       </div>
     </div>
     <div class="table-wrapper">

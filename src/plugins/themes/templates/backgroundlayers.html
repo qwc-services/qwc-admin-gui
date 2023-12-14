@@ -34,7 +34,7 @@
                   {{ utils.render_icon('pencil') }}
                 </a>
               {% endif %}
-              <a href="{{ url_for('delete_backgroundlayer', index=loop.index0) }}" class="btn btn-danger" role="button" title="{{ i18n('plugins.themes.common.delete_layer') }}" onclick="return confirm('{{ i18n('plugins.themes.common.confirm_message_delete_layer') }} {{ layer.title }}?');">
+              <a href="{{ url_for('delete_backgroundlayer', index=loop.index0) }}" class="btn btn-danger" role="button" title="{{ i18n('plugins.themes.common.delete_layer') }}" onclick="return confirm('{{ i18n('plugins.themes.common.confirm_message_delete_layer', [layer.title]) }}');">
                 {{ utils.render_icon('trash') }}
               </a>
             </td>

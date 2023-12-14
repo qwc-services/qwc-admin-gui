@@ -213,7 +213,7 @@ class Controller:
                 session.commit()
                 self.update_config_timestamp(session)
                 session.close()
-                flash('%s %s' % (self.resource_name, i18n('interface.main.new_resource_message_success')), 'success')
+                flash(i18n('interface.main.new_resource_message_success', [self.resource_name]), 'success')
 
                 return redirect(url_for(self.base_route))
             except InternalError as e:
@@ -221,12 +221,10 @@ class Controller:
             except IntegrityError as e:
                 flash('IntegrityError: %s' % e.orig, 'error')
             except ValidationError as e:
-                flash('%s %s.' % (
-                      i18n('interface.main.new_resource_message_error'), self.resource_name), 
+                flash(i18n('interface.main.new_resource_message_error', [self.resource_name]), 
                       'warning')
         else:
-            flash('%s %s.' % (
-                i18n('interface.main.new_resource_message_error'), self.resource_name),
+            flash(i18n('interface.main.new_resource_message_error', [self.resource_name]),
                   'warning')
 
         # show validation errors
@@ -297,7 +295,7 @@ class Controller:
                     session.commit()
                     self.update_config_timestamp(session)
                     session.close()
-                    flash('%s %s' % (self.resource_name, i18n('interface.main.update_resource_message_success')),
+                    flash(i18n('interface.main.update_resource_message_success', [self.resource_name]),
                           'success')
 
                     return redirect(url_for(self.base_route))
@@ -306,12 +304,10 @@ class Controller:
                 except IntegrityError as e:
                     flash('IntegrityError: %s' % e.orig, 'error')
                 except ValidationError as e:
-                    flash('%s %s.' % (
-                          i18n('interface.main.update_resource_message_error'), self.resource_name), 
+                    flash(i18n('interface.main.update_resource_message_error', [self.resource_name]), 
                           'warning')
             else:
-                flash('%s %s.' % (
-                      i18n('interface.main.update_resource_message_error'), self.resource_name), 
+                flash(i18n('interface.main.update_resource_message_error', [self.resource_name]), 
                       'warning')
 
             session.close()
@@ -355,7 +351,7 @@ class Controller:
                 self.destroy_resource(resource, session)
                 session.commit()
                 self.update_config_timestamp(session)
-                flash('%s %s' % (self.resource_name, i18n('interface.main.delete_resource_message_success')), 
+                flash(i18n('interface.main.delete_resource_message_success', [self.resource_name]), 
                 'success')
             except InternalError as e:
                 flash('InternalError: %s' % e.orig, 'error')

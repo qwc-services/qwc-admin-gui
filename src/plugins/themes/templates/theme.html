@@ -285,21 +285,21 @@
 
     <div data-toggle="fieldset" class="form-group">
       <div class="col-sm-7">
-      <h3>Background layers</h3>
+      <h3>{{ i18n('plugins.themes.backgroundlayers.title') }}</h3>
         <table id="bl-table" class="table align-middle">
           <thead>
             <tr class="align-middle">
-              <th style="text-align: center;">Background layer</th>
+              <th style="text-align: center;">{{ i18n('plugins.themes.theme.background_layer') }}</th>
               <th style="text-align: center;">
-                Print Layer
-                <span class="glyphicon glyphicon-info-sign" title="(Optional): Name of a layer of the QGIS Project which should be used when printing."/>
+                {{ i18n('plugins.themes.theme.print_layer') }}
+                <span class="glyphicon glyphicon-info-sign" title="{{ i18n('plugins.themes.theme.print_layer_message') }}"/>
               </th>
               <th style="text-align: center;">
-                <span title="(Optional): The initial visibility of this background layer when loading the theme.">{{ utils.render_icon('eye') }}</span>
+                <span title="{{ i18n('plugins.themes.theme.background_layer_message') }}">{{ utils.render_icon('eye') }}</span>
               </th>
               <th></th>
               <th>
-                <button class="btn btn-sm btn-success add-item" role="button" type="button" title="Add background layer">
+                <button class="btn btn-sm btn-success add-item" role="button" type="button" title="{{ i18n('plugins.themes.backgroundlayers.create_title') }}">
                   {{ utils.render_icon('plus-lg') }}
                 </button>
               </th>
@@ -333,6 +333,6 @@
       </div>
     </div>
     {{ wtf.render_field(form.submit, class="btn btn-primary") }}
-    <button class="col-sm-offset-2 btn btn-danger" onclick="history.back()">Cancel</button>
+    <button class="col-sm-offset-2 btn btn-danger" onclick="history.back()">{{ i18n('interface.common.form_cancel') }}</button>
   </form>
 {% endblock %}

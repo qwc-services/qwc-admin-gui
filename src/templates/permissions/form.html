@@ -97,11 +97,11 @@
         {# resource type filter #}
           <div class="dropdown" id="resource_type_filter">
             <button class="btn btn-secondary dropdown-toggle" type="button" id="parent_resource" data-bs-toggle="dropdown" aria-expanded="false">
-              <span id="resource_type_filter_label">{{ i18n('interface.permissions.type_filter') }}: {{ i18n('interface.permissions.all') }}</span>
+              <span id="resource_type_filter_label">{{ i18n('interface.permissions.type_filter') }}: {{ i18n('interface.common.all') }}</span>
             </button>
             <ul class="dropdown-menu">
               <li>
-                <a class="dropdown-item" href="#" data-type="" data-description="All">{{ i18n('interface.permissions.all') }}</a>
+                <a class="dropdown-item" href="#" data-type="" data-description="All">{{ i18n('interface.common.all') }}</a>
               </li>
               <li><hr class="dropdown-divider"></li>
               {% for name, description in form.resource_types %}

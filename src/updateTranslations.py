@@ -65,7 +65,7 @@ def list_dir(directory):
 
 def update_ts_config(topdir, tsconfig):
     files = list_dir(topdir)
-    tr_regex = re.compile(r"i18n\('([A-Za-z0-9\._]+)'\)") 
+    tr_regex = re.compile(r"i18n\('([A-Za-z0-9\._]+)'") 
     msg_ids = set()
     for file in files:
         with open(file, 'r') as file_content:

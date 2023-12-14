@@ -3,19 +3,19 @@
 {% block container %}
   <ul class="nav nav-tabs mb-2" id="tabbar">
     <li class="nav-item">
-      <a class="nav-link" aria-current="page" href="{{ url_for('themes') }}">Theme configuration</a>
+      <a class="nav-link" aria-current="page" href="{{ url_for('themes') }}">{{ i18n('plugins.themes.themes.title') }}</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" aria-current="page" href="{{ url_for('backgroundlayers') }}">Background layers</a>
+      <a class="nav-link" aria-current="page" href="{{ url_for('backgroundlayers') }}">{{ i18n('plugins.themes.backgroundlayers.title') }}</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" aria-current="page" href="{{ url_for('mapthumbs') }}">Mapthumbs</a>
+      <a class="nav-link" aria-current="page" href="{{ url_for('mapthumbs') }}">{{ i18n('plugins.themes.mapthumbs.title') }}</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" aria-current="page" href="{{ url_for('info_templates') }}">Info templates</a>
+      <a class="nav-link" aria-current="page" href="{{ url_for('info_templates') }}">{{ i18n('plugins.themes.info_templates.title') }}</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" aria-current="page" href="{{ url_for('files') }}">Upload files</a>
+      <a class="nav-link" aria-current="page" href="{{ url_for('files') }}">{{ i18n('plugins.themes.files.title') }}</a>
     </li>
   </ul>
 

@@ -201,14 +201,14 @@
     <link href="{{ url_for('plugin_static', plugin='themes', filename='application.css') }}" rel="stylesheet">
 {%- endblock styles %}
 
-{% block title %}Add WMS background layer{% endblock %}
+{% block title %}{{ i18n('plugins.themes.wmslayer.add') }}{% endblock %}
 {% block container %}
-  <h1>Add WMS background layer</h1>
+  <h1>{{ i18n('plugins.themes.wmslayer.add') }}</h1>
   <div class="col-sm-7">
     <div class="row" style="padding: 2.5em 0">
       <div class="btn-group">
-        <input type="text" id="input-url" class="form-control" placeholder="{{ i18n('plugins.theme.wmslayer.capabilities_url') }}">
-        <button id="btn-connect" class="btn btn-secondary" type="button">{{ i18n('plugins.theme.common.connect') }}</button>
+        <input type="text" id="input-url" class="form-control" placeholder="{{ i18n('plugins.themes.wmslayer.capabilities_url') }}">
+        <button id="btn-connect" class="btn btn-secondary" type="button">{{ i18n('plugins.themes.common.connect') }}</button>
       </div>
     </div>
     <div class="table-wrapper">
@@ -227,13 +227,13 @@
       {{ form.csrf_token }}
       {{ wtf.render_field(form.title, form_type="horizontal", horizontal_columns=('sm', 2, 10)) }}
       <div class="mb-3 row">
-        <label class="col-form-label col-sm-2" for="select-crs">{{ i18n('plugins.theme.common.crs') }}</label>
+        <label class="col-form-label col-sm-2" for="select-crs">{{ i18n('plugins.themes.common.crs') }}</label>
         <div class="col-sm-10">
           <select class="form-control" id="select-srs"></select>
         </div>
       </div>
       <div class="mb-3 row">
-        <label class="col-form-label col-sm-2" for="select-format">{{ i18n('plugins.theme.common.format') }}</label>
+        <label class="col-form-label col-sm-2" for="select-format">{{ i18n('plugins.themes.common.format') }}</label>
         <div class="col-sm-10">
           <select class="form-control" id="select-format"></select>
         </div>

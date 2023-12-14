@@ -39,9 +39,9 @@
     {% if key == "items" %}
       <div class="panel panel-default">
         <div class="panel-heading clearfix" style="overflow: hidden;">
-          <h3>{{ i18n('plugins.theme.themes.themes') }}</h3>
+          <h3>{{ i18n('plugins.themes.themes.themes') }}</h3>
           <div class="btn-group pull-right">
-            <a href="{{ url_for('new_theme') }}" class="btn btn-success" role="button" title="{{ i18n('plugins.theme.themes.new_theme') }}">
+            <a href="{{ url_for('new_theme') }}" class="btn btn-success" role="button" title="{{ i18n('plugins.themes.themes.new_theme') }}">
               {{ utils.render_icon('plus-lg') }}
             </a>
           </div>
@@ -62,22 +62,22 @@
                 <td style="vertical-align: middle">{{ item.name }}</td>
                 <td style="vertical-align: middle">{{ item.url }}</td>
                 <td>
-                  <a href="#" onclick="copyToClipboard('{{ item.url }}')" class="btn btn-default copy" role="button" title="{{ i18n('plugins.theme.themes.copy_url') }}">
+                  <a href="#" onclick="copyToClipboard('{{ item.url }}')" class="btn btn-default copy" role="button" title="{{ i18n('plugins.themes.themes.copy_url') }}">
                     {{ utils.render_icon('copy') }}
                   </a>
                 </td>
                 <td style="text-align: right">
                   <div class="btn-group">
-                    <a href="{{ url_for('move_theme', tid=loop.index0, direction='up') }}" class="btn btn-outline-secondary move-up" role="button" title="{{ i18n('plugins.theme.themes.move_up') }}">
+                    <a href="{{ url_for('move_theme', tid=loop.index0, direction='up') }}" class="btn btn-outline-secondary move-up" role="button" title="{{ i18n('plugins.themes.themes.move_up') }}">
                       {{ utils.render_icon('chevron-up') }}
                     </a>
-                    <a href="{{ url_for('move_theme', tid=loop.index0, direction='down') }}" class="btn btn-outline-secondary move-up" role="button" title="{{ i18n('plugins.theme.themes.move_down') }}">
+                    <a href="{{ url_for('move_theme', tid=loop.index0, direction='down') }}" class="btn btn-outline-secondary move-up" role="button" title="{{ i18n('plugins.themes.themes.move_down') }}">
                       {{ utils.render_icon('chevron-down') }}
                     </a>
-                    <a href="{{ url_for('edit_theme', tid=loop.index0) }}" class="btn btn-primary" role="button" title="{{ i18n('plugins.theme.themes.edit_theme') }}">
+                    <a href="{{ url_for('edit_theme', tid=loop.index0) }}" class="btn btn-primary" role="button" title="{{ i18n('plugins.themes.themes.edit_theme') }}">
                       {{ utils.render_icon('pencil') }}
                     </a>
-                    <a href="{{ url_for('delete_theme', tid=loop.index0) }}" class="btn btn-danger" role="button" title="{{ i18n('plugins.theme.themes.delete_theme') }}" onclick="return confirm('{{ i18n('plugins.theme.themes.confirm_message_delete_theme') }}?');">
+                    <a href="{{ url_for('delete_theme', tid=loop.index0) }}" class="btn btn-danger" role="button" title="{{ i18n('plugins.themes.themes.delete_theme') }}" onclick="return confirm('{{ i18n('plugins.themes.themes.confirm_message_delete_theme') }}');">
                       {{ utils.render_icon('trash') }}
                     </a>
                     <a href="#" class="btn btn-warning move-to-group" role="button" title="{{ i18n('plugins.themes.themes.move_theme_to_group') }}" onclick="showMoveToGroupModal({{ loop.index0 }})">
@@ -94,10 +94,10 @@
     {% elif key == "groups" %}
       <div class="panel panel-default">
         <div class="panel-heading clearfix" style="overflow: hidden;">
-          <h3>{{ i18n('plugins.theme.themes.theme_groups') }}</h3>
+          <h3>{{ i18n('plugins.themes.themes.theme_groups') }}</h3>
           <div class="btn-group pull-right">
-            <a href="{{ url_for('add_theme_group') }}" class="btn btn-success" role="button" title="{{ i18n('plugins.theme.themes.new_group') }}">
-              {{ utils.btn-outline-secondary('plus-lg') }}
+            <a href="{{ url_for('add_theme_group') }}" class="btn btn-success" role="button" title="{{ i18n('plugins.themes.themes.new_group') }}">
+              {{ utils.render_icon('plus-lg') }}
             </a>
           </div>
         </div>
@@ -107,16 +107,16 @@
           <div class="panel panel-default" style="padding: 1em;">
             <div class="btn-toolbar gap-2" role="toolbar">
               <div class="btn-group">
-                <a href="{{ url_for('new_theme', gid=group_loop.index0) }}" class="btn btn-success" role="button" title="{{ i18n('plugins.theme.themes.new_theme') }}">
-                  {{ utils.render_icon('plus-lg') }} {{ i18n('plugins.theme.themes.new_theme') }}
+                <a href="{{ url_for('new_theme', gid=group_loop.index0) }}" class="btn btn-success" role="button" title="{{ i18n('plugins.themes.themes.new_theme') }}">
+                  {{ utils.render_icon('plus-lg') }} {{ i18n('plugins.themes.themes.new_theme') }}
                 </a>
-                <a href="{{ url_for('move_theme_group', gid=group_loop.index0, direction='up') }}" class="btn btn-outline-secondary" role="button" title="{{ i18n('plugins.theme.themes.group_move_up') }}">
+                <a href="{{ url_for('move_theme_group', gid=group_loop.index0, direction='up') }}" class="btn btn-outline-secondary" role="button" title="{{ i18n('plugins.themes.themes.group_move_up') }}">
                   {{ utils.render_icon('chevron-up') }}
                 </button>
-                <a href="{{ url_for('move_theme_group', gid=group_loop.index0, direction='down') }}" class="btn btn-outline-secondary" role="button" title="{{ i18n('plugins.theme.themes.group_move_down') }}">
+                <a href="{{ url_for('move_theme_group', gid=group_loop.index0, direction='down') }}" class="btn btn-outline-secondary" role="button" title="{{ i18n('plugins.themes.themes.group_move_down') }}">
                   {{ utils.render_icon('chevron-down') }}
                 </button>
-                <a href="{{ url_for('delete_theme_group', gid=group_loop.index0) }}" class="btn btn-danger" role="button" title="{{ i18n('plugins.theme.themes.group_delete') }}" onclick="return confirm('{{ i18n('plugins.theme.themes.group_confirm_message_delete') }}?');">
+                <a href="{{ url_for('delete_theme_group', gid=group_loop.index0) }}" class="btn btn-danger" role="button" title="{{ i18n('plugins.themes.themes.group_delete') }}" onclick="return confirm('{{ i18n('plugins.themes.themes.group_confirm_message_delete') }}');">
                   {{ utils.render_icon('trash') }}
                 </a>
               </div>
@@ -125,9 +125,9 @@
                   <input type="hidden" name="_method" value="POST" />
                   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
                     <div class="input-group">
-                      <div class="input-group-text" id="btnGroupAddon">{{ i18n('plugins.theme.themes.group_title') }}</div>
+                      <div class="input-group-text" id="btnGroupAddon">{{ i18n('plugins.themes.themes.group_title') }}</div>
                       <input type="text" class="form-control" name="group_title" value="{{ group.title }}"/>
-                      <button class="btn btn-primary" type="submit" role="button" title="{{ i18n('plugins.theme.themes.group_title_edit') }}">
+                      <button class="btn btn-primary" type="submit" role="button" title="{{ i18n('plugins.themes.themes.group_title_edit') }}">
                         {{ utils.render_icon('check') }}
                       </button>
                     </div>
@@ -150,22 +150,22 @@
                     <td style="vertical-align: middle">{{ item.name }}</td>
                     <td style="vertical-align: middle">{{ item.url }}</td>
                     <td>
-                      <a href="#" onclick="copyToClipboard('{{ item.url }}')" class="btn btn-default copy" role="button" title="{{ i18n('plugins.theme.themes.copy_url') }}">
+                      <a href="#" onclick="copyToClipboard('{{ item.url }}')" class="btn btn-default copy" role="button" title="{{ i18n('plugins.themes.themes.copy_url') }}">
                         {{ utils.render_icon('copy') }}
                       </a>
                     </td>
                     <td style="text-align: right">
                       <div class="btn-group">
-                        <a href="{{ url_for('move_theme', gid=group_loop.index0, tid=loop.index0, direction='up') }}" class="btn btn-outline-secondary move-up" role="button" title="{{ i18n('plugins.theme.themes.move_up') }}">
+                        <a href="{{ url_for('move_theme', gid=group_loop.index0, tid=loop.index0, direction='up') }}" class="btn btn-outline-secondary move-up" role="button" title="{{ i18n('plugins.themes.themes.move_up') }}">
                           {{ utils.render_icon('chevron-up') }}
                         </a>
-                        <a href="{{ url_for('move_theme', gid=group_loop.index0, tid=loop.index0, direction='down') }}" class="btn btn-outline-secondary move-down" role="button" title="{{ i18n('plugins.theme.themes.move_down') }}">
+                        <a href="{{ url_for('move_theme', gid=group_loop.index0, tid=loop.index0, direction='down') }}" class="btn btn-outline-secondary move-down" role="button" title="{{ i18n('plugins.themes.themes.move_down') }}">
                           {{ utils.render_icon('chevron-down') }}
                         </a>
-                        <a href="{{ url_for('edit_theme', gid=group_loop.index0, tid=loop.index0) }}" class="btn btn-primary" role="button" title="{{ i18n('plugins.theme.themes.edit_theme') }}">
+                        <a href="{{ url_for('edit_theme', gid=group_loop.index0, tid=loop.index0) }}" class="btn btn-primary" role="button" title="{{ i18n('plugins.themes.themes.edit_theme') }}">
                           {{ utils.render_icon('pencil') }}
                         </a>
-                        <a href="{{ url_for('delete_theme', gid=group_loop.index0, tid=loop.index0) }}" class="btn btn-danger" role="button" title="{{ i18n('plugins.theme.themes.delete_theme') }}" onclick="return confirm('{{ i18n('plugins.theme.themes.confirm_message_delete_theme') }}?');">
+                        <a href="{{ url_for('delete_theme', gid=group_loop.index0, tid=loop.index0) }}" class="btn btn-danger" role="button" title="{{ i18n('plugins.themes.themes.delete_theme') }}" onclick="return confirm('{{ i18n('plugins.themes.themes.confirm_message_delete_theme') }}');">
                           {{ utils.render_icon('trash') }}
                         </a>
                         <a href="#" class="btn btn-warning move-to-group" role="button" title="{{ i18n('plugins.themes.themes.move_theme_to_group') }}" onclick="showMoveToGroupModal({{ loop.index0 }}, {{ group_loop.index0 }})">

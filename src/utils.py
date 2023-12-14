@@ -17,7 +17,7 @@ except Exception as e:
         % (locale, path, e)
     )
 
-def i18n(value, locale = DEFAULT_LOCALE) : 
+def i18n(value, args = [],locale = DEFAULT_LOCALE) : 
     # traverse translations dict for locale
     parts = value.split('.')
     lookup = translations.get(locale, {})
@@ -32,4 +32,4 @@ def i18n(value, locale = DEFAULT_LOCALE) :
             # return input value if not found
             lookup = value
             break
-    return lookup
+    return lookup.format(*args)

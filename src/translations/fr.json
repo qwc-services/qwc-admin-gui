@@ -11,6 +11,7 @@
       "delete": "Supprimer",
       "description": "Description",
       "edit": "Modifier",
+      "form_cancel": "Annuler",
       "form_name_error": "Ce nom existe déjà.",
       "form_priority": "Priorité",
       "form_priority_message": "La priorité doit être supérieure ou égale à 0",
@@ -22,6 +23,7 @@
       "import_resources": "Importer les ressources",
       "message_required": "Ce champ est obligatoire.",
       "name": "Nom",
+      "new": "New",
       "new_permission": "Nouvelle Permission",
       "ph_search": "Recherche",
       "registrable_group": "Groupe enregistrable",
@@ -42,18 +44,21 @@
       "title": "Groupes"
     },
     "main": {
-      "delete_resource_message_success": "a été supprimé.",
+      "delete_resource_message_success": "{} a été supprimé.",
       "generate_configs": "Générer la configuration des services",
       "home_title": "Accueil",
       "logout": "Déconnexion",
-      "new_resource_message_error": "Impossible de créer",
-      "new_resource_message_success": "a été créé.",
+      "new_resource_message_error": "Impossible de créer {}.",
+      "new_resource_message_success": "{} a été créé.",
+      "next": "Suivant",
+      "page_navigation": "Navigation",
       "per_page": "par page",
+      "previous": "Précédent",
       "registration_title": "Enregistrement",
       "subtitle": "Outil d'administration pour les services QWC",
       "title": "Administration QWC",
-      "update_resource_message_error": "Impossible de modifier",
-      "update_resource_message_success": "a été modifié."
+      "update_resource_message_error": "Impossible de modifier {}.",
+      "update_resource_message_success": "{} a été modifié."
     },
     "permissions": {
       "confirm_message_delete": "Voulez-vous supprimer la permission?",
@@ -101,7 +106,7 @@
       "check_unused": "Vérifier les ressources inutilisées",
       "confirm_message_delete": "Voulez-vous supprimer la ressource?",
       "confirm_message_remove_cascaded": "Voulez-vous supprimer la ressource et ses enfants?",
-      "confirm_message_remove_selected": "Voulez-vous supprimer les ressources sélectionnées?",
+      "confirm_message_remove_selected": "Voulez-vous supprimer les ${} ressources sélectionnées?",
       "form_import_type": "Type de ressources à importer depuis la carte",
       "form_role": "Permission du rôle des ressources à importer depuis la carte",
       "form_write": "Ecriture",
@@ -180,7 +185,7 @@
         "update_message_error": "Impossible de modifier le fond de plan"
       },
       "common": {
-        "confirm_message_delete_layer": "Voulez-vous vraiment supprimer la couche",
+        "confirm_message_delete_layer": "Voulez-vous vraiment supprimer la couche {} ?",
         "connect": "Connecter",
         "crs": "CRS",
         "delete_layer": "Supprimer la couche",
@@ -192,7 +197,7 @@
         "title": "Thèmes"
       },
       "files": {
-        "confirm_message_delete_project": "Voulez-vous vraiment supprimer",
+        "confirm_message_delete_project": "Voulez-vous vraiment supprimer {}?",
         "delete_project": "Supprimer le projet",
         "file_delete_message_error": "Impossible de supprimer ce fichier.",
         "file_extract_message_success": "et extrait",
@@ -221,7 +226,7 @@
         "title": "Envoyer des fichiers"
       },
       "info_templates": {
-        "confirm_message_delete_template": "Voulez vous vraiment supprimer le modèle ",
+        "confirm_message_delete_template": "Voulez vous vraiment supprimer le modèle {} ?",
         "create_message_warning": "Le modèle n'a pas été créé.",
         "create_title": "Ajouter un modèle",
         "delete_message_warning": "Impossible de supprimer la ressource pour le modèle",
@@ -237,7 +242,7 @@
         "update_message_template_warning": "Un modèle existe déjà pour cette couche"
       },
       "mapthumbs": {
-        "confirm_message_delete_mapthumb": "Voulez-vous vraiment supprimer",
+        "confirm_message_delete_mapthumb": "Voulez-vous vraiment supprimer {} ?",
         "delete_mapthumb": "Supprimer la miniature",
         "delete_message_error": "La miniature n'a pas pu être supprimée.",
         "form_allowed": "Choisir uniquement des fichiers jpg ou png svp!",
@@ -286,7 +291,7 @@
         "print_layer_message": "(Optionnel): Nom de la couche du projet QGIS qui doit être utilisée lors de l'impression."
       },
       "themes": {
-        "confirm_message_delete_theme": "Voulez-vous vraiment supprimer ce thème",
+        "confirm_message_delete_theme": "Voulez-vous vraiment supprimer ce thème?",
         "copy_url": "Copier l'url",
         "create_theme_message_error": "Impossible de créer le thème",
         "create_theme_message_integrity_error": "La ressource pour cette carte existe déjà",
@@ -297,7 +302,7 @@
         "edit_theme": "Modifier le thème",
         "edit_theme_message_integrity_error": "La ressource pour cette carte ne peut pas être modifiée",
         "edit_theme_title": "Modifier le thème",
-        "group_confirm_message_delete": "Voulez-vous vraiment supprimer ce groupe de thèmes",
+        "group_confirm_message_delete": "Voulez-vous vraiment supprimer ce groupe de thèmes?",
         "group_delete": "Supprimer le groupe de thèmes",
         "group_move_down": "Déplacer le groupe de thèmes vers le bas",
         "group_move_up": "Déplacer le groupe de thèmes vers le haut",
@@ -320,14 +325,19 @@
         "update_theme_title": "Modification d'un thème"
       },
       "wmslayer": {
+        "add": "Ajouter un fond de plan WMS",
         "capabilities_url": "URL des capacités WMS",
         "form_tiled": "tuilé"
       },
       "wmtslayer": {
+        "add": "Ajouter un fond de plan WMTS",
         "capabilities_url": "URL des capacités WMTS",
         "form_with_capabilities": "Enregistrer les capacités? (Uniquement nécessaire pour les QGIS Server WMTS!)",
         "style": "Style",
         "tilematrix": "Matrice tuilée"
+      },
+      "xyzlayer": {
+        "add": "Ajouter un fond de plan XYZ"
       }
     }
   },
