@@ -38,6 +38,7 @@ app.config['QWC_GROUP_REGISTRATION_ENABLED'] = os.environ.get(
     'GROUP_REGISTRATION_ENABLED', 'True').lower() == 'true'
 app.config['IDLE_TIMEOUT'] = os.environ.get('IDLE_TIMEOUT', 0)
 
+# JWT CSRF protection conflicts with WTF CSRF protection
 app.config['JWT_COOKIE_CSRF_PROTECT'] = False
 app.config['WTF_CSRF_SSL_STRICT'] = os.environ.get(
     'WTF_CSRF_SSL_STRICT', 'True').lower() == 'true'
