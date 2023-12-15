@@ -8,12 +8,12 @@
   $(function() {
     // initialize multi-select
     $('#users').multiSelectWithSearch({
-      selectableHeader: '<div class="ms-header">Users</div>',
-      selectionHeader: '<div class="ms-header">Group members</div>'
+      selectableHeader: '<div class="ms-header">{{ i18n('interface.common.users') }}</div>',
+      selectionHeader: '<div class="ms-header">{{ i18n('interface.common.group_members') }}</div>'
     });
     $('#roles').multiSelectWithSearch({
-      selectableHeader: '<div class="ms-header">Roles</div>',
-      selectionHeader: '<div class="ms-header">Assigned roles</div>'
+      selectableHeader: '<div class="ms-header">{{ i18n('interface.common.roles') }}</div>',
+      selectionHeader: '<div class="ms-header">{{ i18n('interface.common.assigned_roles') }}</div>'
     });
   });
 </script>

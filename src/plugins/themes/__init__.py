@@ -1,6 +1,7 @@
 import os
 from plugins.themes.controllers import BackgroundLayersController, MapthumbsController, ThemesController, FilesController, InfoTemplatesController
 from plugins.themes.utils import ThemeUtils
+from utils import i18n
 
 __background_layers_controller = None
 __mapthumbs_controller = None
@@ -9,7 +10,7 @@ __files_controller = None
 __info_templates_controller = None
 
 
-name = "Themes"
+name = i18n('plugins.themes.common.title')
 
 def load_plugin(app, handler):
 

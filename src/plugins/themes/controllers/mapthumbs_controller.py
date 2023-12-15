@@ -4,6 +4,7 @@ from flask import flash, redirect, render_template, url_for, send_from_directory
 from werkzeug.utils import secure_filename
 from plugins.themes.forms import MapthumbForm
 from plugins.themes.utils import ThemeUtils
+from utils import i18n
 
 
 class MapthumbsController():
@@ -45,8 +46,8 @@ class MapthumbsController():
         mapthumbs = ThemeUtils.get_mapthumbs(self.app, self.handler)
 
         return render_template(
-            '%s/mapthumbs.html' % self.template_dir, mapthumbs=mapthumbs, title='Mapthumbs',
-            form=form
+            '%s/mapthumbs.html' % self.template_dir, mapthumbs=mapthumbs, title=i18n('plugins.themes.mapthumbs.title'),
+            form=form, i18n=i18n
         )
 
     def upload(self):
@@ -57,24 +58,26 @@ class MapthumbsController():
             filename = secure_filename(f.filename)
             try:
                 f.save(os.path.join(self.mapthumb_path, filename))
-                flash("Mapthumb '{}' successfully uploaded".format(filename),
-                      'success')
+                flash(": '{1}'".format(
+                    i18n('plugins.themes.mapthumbs.upload_message_success'), filename),
+                    'success')
                 return redirect(url_for('mapthumbs'))
             except IOError as e:
                 self.app.logger.error("Error writing mapthumb: \
                                       {}".format(e.strerror))
-                flash("Mapthumb could not be saved.", 'error')
+                flash(i18n('plugins.themes.mapthumbs.save_message_error'), 'error')
         else:
             # TODO: validation error
             self.app.logger.error("Error uploading mapthumb: \
                                   {}".format(form.errors))
-            flash("Mapthumb could not be uploaded: \
-                  {}".format(form.upload.errors[0]), 'error')
+            flash("{0}: {1}".format(
+                    i18n('plugins.themes.mapthumbs.upload_message_error'), form.upload.errors[0]), 
+                    'error')
 
         mapthumbs = ThemeUtils.get_mapthumbs(self.app, self.handler)
         return render_template(
-            '%s/mapthumbs.html' % self.template_dir, mapthumbs=mapthumbs, title='Mapthumbs',
-            form=form
+            '%s/mapthumbs.html' % self.template_dir, mapthumbs=mapthumbs, title=i18n('plugins.themes.mapthumbs.title'),
+            form=form, i18n=i18n
         )
 
     def delete(self, image=None):
@@ -85,13 +88,13 @@ class MapthumbsController():
         except IOError as e:
             self.app.logger.error("Error deleting mapthumb: \
                                   {}".format(e.strerror))
-            flash("Mapthumb could not be deleted.", 'error')
+            flash(i18n('plugins.themes.mapthumbs.delete_message_error'), 'error')
 
         form = MapthumbForm()
         mapthumbs = ThemeUtils.get_mapthumbs(self.app, self.handler)
         return render_template(
-            '%s/mapthumbs.html' % self.template_dir, mapthumbs=mapthumbs, title='Mapthumbs',
-            form=form
+            '%s/mapthumbs.html' % self.template_dir, mapthumbs=mapthumbs, title=i18n('plugins.themes.mapthumbs.title'),
+            form=form, i18n=i18n
         )
 
     def load_mapthumb(self, image=None):

@@ -5,44 +5,46 @@ from wtforms.validators import DataRequired, Optional, Email, EqualTo, \
     Length, NumberRange
 from wtforms.widgets import NumberInput
 
+from utils import i18n
+
 
 class UserForm(FlaskForm):
     """Main form for User GUI"""
-    name = StringField('User name', validators=[DataRequired()])
-    description = TextAreaField('Description', validators=[Optional()])
-    email = StringField('Email', validators=[Optional(), Email()])
+    name = StringField(i18n('interface.users.form_name'), validators=[DataRequired()])
+    description = TextAreaField(i18n('interface.common.description'), validators=[Optional()])
+    email = StringField(i18n('interface.users.form_email'), validators=[Optional(), Email()])
 
     # custom user fields
     # NOTE: actual subform added in add_custom_fields()
-    user_info = FormField(FlaskForm, "User info", _meta={'csrf': False})
+    user_info = FormField(FlaskForm, i18n('interface.users.user_info'), _meta={'csrf': False})
 
-    password = PasswordField('Password')
+    password = PasswordField(i18n('interface.users.form_password'))
     password2 = PasswordField(
-        'Repeat Password', validators=[EqualTo('password')])
+        i18n('interface.users.form_password_repeat'), validators=[EqualTo('password')])
     totp_enabled = False
     totp_secret = StringField(
-        'TOTP secret', validators=[Optional(), Length(max=128)]
+        i18n('interface.users.form_totp'), validators=[Optional(), Length(max=128)]
     )
-    last_sign_in_at = StringField('Last sign in', validators=[Optional()])
+    last_sign_in_at = StringField(i18n('interface.users.form_last_sign_in'), validators=[Optional()])
     failed_sign_in_count = IntegerField(
-        'Failed login attempts',
+        i18n('interface.users.form_failed_login'),
         widget=NumberInput(min=0),
         validators=[
             Optional(),
-            NumberRange(min=0, message="Number must be greater or equal 0")
+            NumberRange(min=0, message=i18n('interface.users.form_failed_login_message'))
         ]
     )
 
     groups = SelectMultipleField(
-        'Assigned groups',
+        i18n('interface.common.assigned_groups'),
         coerce=int, validators=[Optional()]
     )
     roles = SelectMultipleField(
-        'Assigned roles',
+        i18n('interface.common.assigned_roles'),
         coerce=int, validators=[Optional()]
     )
 
-    submit = SubmitField('Save')
+    submit = SubmitField(i18n('interface.common.form_submit'))
 
     def __init__(self, config_models, user_info_fields, **kwargs):
         """Constructor
@@ -72,7 +74,7 @@ class UserForm(FlaskForm):
             pass
 
         # override form_class in user_info FormField
-        self.user_info.args = (UserInfoForm, "User info")
+        self.user_info.args = (UserInfoForm, i18n('interface.users.user_info'))
 
         # add custom fields
         for field in user_info_fields:
@@ -108,7 +110,7 @@ class UserForm(FlaskForm):
         user = query.first()
         session.close()
         if user is not None:
-            raise ValidationError('Name has already been taken.')
+            raise ValidationError(i18n('interface.common.form_name_error'))
 
     def validate_email(self, email):
         session = self.config_models.session()
@@ -119,4 +121,4 @@ class UserForm(FlaskForm):
         user = query.first()
         session.close()
         if user is not None:
-            raise ValidationError('Please use a different email address.')
+            raise ValidationError(i18n('interface.users.form_email_error'))

@@ -1,17 +1,18 @@
 from flask_wtf import FlaskForm
 from wtforms import FieldList, FormField, HiddenField, SelectField, SubmitField
 from wtforms.validators import DataRequired, Optional
+from utils import i18n
 
 
 class RequestForm(FlaskForm):
     """Subform for a single registration request"""
     request_id = HiddenField('ID', validators=[DataRequired()])
     action = SelectField(
-        'Action',
+        i18n('interface.registration_requests.form_action'),
         choices=[
-            ('skip', "Skip"),
-            ('accept', "Accept"),
-            ('reject', "Reject")
+            ('skip', i18n('interface.registration_requests.skip')),
+            ('accept', i18n('interface.registration_requests.accept')),
+            ('reject', i18n('interface.registration_requests.reject'))
         ],
         default='skip'
     )
@@ -32,4 +33,4 @@ class RegistrationRequestForm(FlaskForm):
     # pending registration requests of user
     registration_requests = FieldList(FormField(RequestForm))
 
-    submit = SubmitField("Update group memberships")
+    submit = SubmitField(i18n('interface.registration_requests.form_submit'))

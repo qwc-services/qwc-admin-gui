@@ -1,14 +1,14 @@
 {% extends "templates/base_index.html" %}
 
-{% block title %}Registrable Groups{% endblock %}
+{% block title %}{{ i18n('interface.registrable_groups.title') }}{% endblock %}
 
-{% block new_resource_label %}New Registrable Group{% endblock %}
+{% block new_resource_label %}{{ i18n('interface.registrable_groups.new_registrable_group') }}{% endblock %}
 
 {% block table_headers %}
-  <th>{{ sortable_column("ID", 'id') }}</th>
-  <th>{{ sortable_column("Title", 'title') }}</th>
-  <th>{{ sortable_column("Description", 'description') }}</th>
-  <th>{{ sortable_column("Group", 'group') }}</th>
+  <th>{{ sortable_column(i18n('interface.common.id'), 'id') }}</th>
+  <th>{{ sortable_column(i18n('interface.common.title'), 'title') }}</th>
+  <th>{{ sortable_column(i18n('interface.common.description'), 'description') }}</th>
+  <th>{{ sortable_column(i18n('interface.common.group'), 'group') }}</th>
 {% endblock %}
 
 {% block resource_fields %}
@@ -20,4 +20,4 @@
   <td>{{ resource.group.name }}</td>
 {% endblock %}
 
-{% block delete_resource_confirmation %}Remove registrable group?{% endblock %}
+{% block delete_resource_confirmation %}{{ i18n('interface.registrable_groups.confirm_message_delete') }}{% endblock %}

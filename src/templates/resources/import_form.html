@@ -25,7 +25,7 @@
     {{ wtf.render_field(form.priority, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.write, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     <button type="submit" class="col-sm-offset-2 btn btn-success btn-spin-on-click" data-spinning-msg="Importing resources...">
-      {{ utils.render_icon('download') }} Import resources
+      {{ utils.render_icon('download-alt') }} {{ i18n('interface.resources.import_resources') }}
     </button>
   </form>
 {% endblock %}

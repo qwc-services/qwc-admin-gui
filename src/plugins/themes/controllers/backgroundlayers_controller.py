@@ -7,6 +7,7 @@ from wtforms import ValidationError
 
 from plugins.themes.forms import WMSLayerForm, WMTSLayerForm, XYZLayerForm
 from plugins.themes.utils import ThemeUtils
+from utils import i18n
 
 
 class BackgroundLayersController():
@@ -59,7 +60,7 @@ class BackgroundLayersController():
 
         return render_template(
             "%s/backgroundlayers.html" % self.template_dir, backgroundlayers=layers,
-            title="Background layers"
+            title=i18n('plugins.themes.backgroundlayers.title'), i18n=i18n
         )
 
     def new(self, type="wms"):
@@ -77,7 +78,7 @@ class BackgroundLayersController():
 
         form.thumbnail.choices = list(map(lambda x: (x, x), ThemeUtils.get_mapthumbs(self.app, self.handler)))
         return render_template(
-            template, title="Add background layer", action=action, type=type, form=form
+            template, title=i18n('plugins.themes.backgroundlayers.create_title'), action=action, type=type, form=form, i18n=i18n
         )
 
     def create(self, type="wms"):
@@ -94,12 +95,15 @@ class BackgroundLayersController():
                 self.create_or_update_backgroundlayer(type, form)
                 return redirect(url_for("backgroundlayers"))
             except ValidationError:
-                flash("Could not create background layer {0}.".format(
-                    form.title.data), "warning")
+                flash("{0} {1}.".format(
+                    i18n('plugins.themes.backgroundlayers.create_message_error'), form.title.data), 
+                    "warning")
         else:
             # TODO: form.errors
-            flash("Could not create background layer {0}. {1}".format(form.title.data, form.errors),
-                  "error")
+            flash("{0} {1}. {2}".format(
+                i18n('plugins.themes.backgroundlayers.create_message_error'), form.title.data, 
+                form.errors),
+                "error")
             self.app.logger.error("Error adding backgroundlayer: \
                                   {}".format(form.errors))
 
@@ -113,8 +117,8 @@ class BackgroundLayersController():
         action = url_for("create_backgroundlayer", type=type)
 
         return render_template(
-            template, title="Add background layer", action=action, type=type, form=form,
-            method="POST"
+            template, title=i18n('plugins.themes.backgroundlayers.create_title'), action=action, type=type, form=form,
+            method="POST", i18n=i18n
         )
 
     def edit(self, index=None):
@@ -134,12 +138,12 @@ class BackgroundLayersController():
             elif backgroundlayer["type"] == "xyz":
                 template = "%s/xyzlayer.html" % self.template_dir
             form = self.create_form(type=backgroundlayer["type"], backgroundlayer=backgroundlayer)
-            title = "Edit background layer"
+            title = i18n('plugins.themes.backgroundlayers.edit_title')
             action = url_for("update_backgroundlayer", index=index)
 
             return render_template(
                 template, title=title, type=backgroundlayer["type"], form=form, action=action,
-                index=index, method="POST"
+                index=index, method="POST", i18n=i18n
             )
         else:
             # theme not found
@@ -162,11 +166,13 @@ class BackgroundLayersController():
                     self.create_or_update_backgroundlayer(backgroundlayer["type"], form, index=index)
                     return redirect(url_for("backgroundlayers"))
                 except ValidationError:
-                    flash("Could not update background layer {0}.".format(
-                        form.title.data), "warning")
+                    flash("{0} {1}.".format(
+                        i18n('plugins.themes.backgroundlayers.update_message_error'), form.title.data), 
+                        "warning")
             else:
-                flash("Could not update background layer {0}. {1}".format(
-                      form.title.data, form.errors), "warning")
+                flash("{0} {1}. {2}".format(
+                      i18n('plugins.themes.backgroundlayers.update_message_error'), form.title.data, form.errors), 
+                      "warning")
             
             # show validation errors
             if backgroundlayer["type"] == "wms":
@@ -175,12 +181,12 @@ class BackgroundLayersController():
                 template = "%s/wmtslayer.html" % self.template_dir
             elif backgroundlayer["type"] == "xyz":
                 template = "%s/xyzlayer.html" % self.template_dir
-            title = "Edit background layer"
+            title = i18n('plugins.themes.backgroundlayers.edit_title')
             action = url_for("update_backgroundlayer", index=index)
 
             return render_template(
                 template, title=title, type=backgroundlayer["type"], form=form, action=action,
-                method="POST"
+                method="POST", i18n=i18n
             )
         else:
             # backgroundlayer not found
@@ -192,13 +198,13 @@ class BackgroundLayersController():
         if index is None or index > count - 1:
             self.app.logger.error("Error saving backgroundLayer: index not defined \
                     or out of range. index={0} count={1}".format(index, count))
-            flash("Could not delete background layer.", "error")
+            flash(i18n('plugins.themes.backgroundlayers.delete_message_error'), "error")
         else:
             self.themesconfig["themes"]["backgroundLayers"].pop(index)
             if ThemeUtils.save_themesconfig(self.themesconfig, self.app, self.handler):
-                flash("Background layer deleted.", "success")
+                flash(i18n('plugins.themes.backgroundlayers.delete_message_success'), "success")
             else:
-                flash("Could not delete background layer.", "error")
+                flash(i18n('plugins.themes.backgroundlayers.delete_message_error'), "error")
         return redirect(url_for("backgroundlayers"))
 
     def find_backgroundlayer(self, index=None):
@@ -370,19 +376,21 @@ class BackgroundLayersController():
 
         # edit background layer
         if index:
-            action_name = "updated"
+            action_name = i18n('plugins.themes.backgroundlayers.action_updated')
             self.themesconfig["themes"]["backgroundLayers"][index] = item
         # new background layer
         else:
-            action_name = "created"
+            action_name = i18n('plugins.themes.backgroundlayers.action_created')
             self.themesconfig["themes"]["backgroundLayers"].append(
                 item)
 
         if ThemeUtils.save_themesconfig(self.themesconfig, self.app, self.handler):
-            message = "Background layer '{0}' {1}.\
-                    ".format(item.get("title", ""), action_name)
+            message = "{0} '{1}' {2}.\
+                    ".format(
+                        i18n('plugins.themes.backgroundlayers.save_action_message_success'), item.get("title", ""), action_name)
             flash(message, "success")
         else:
-            message = "Could not save background layer '{0}'.\
-                    ".format(item["title"])
+            message = "{0} '{1}'.\
+                    ".format(
+                        i18n('plugins.themes.backgroundlayers.save_action_message_error'), item["title"])
             flash(message, "error")

@@ -21,20 +21,20 @@
   <a href="{{ url_for(base_route, **params) }}">{{ label }}{{ icon | safe }}</a>
 {%- endmacro -%}
 
-{% block title %}Resources{% endblock %}
+{% block title %}{{ i18n('interface.resources.title') }}{% endblock %}
 {% block container %}
   <h1>{{ self.title() }}</h1>
 
   {% block buttons %}
     <div class="btn-toolbar mb-2 gap-1">
       <a href="{{ url_for('new_%s' % endpoint_suffix) }}" class="btn btn-primary" role="button">
-        {{ utils.render_icon('plus-lg') }} {% block new_resource_label %}New{% endblock %}
+        {{ utils.render_icon('plus-lg') }} {% block new_resource_label %}{{ i18n('interface.common.new') }}{% endblock %}
       </a>
 
       <div class="btn-group search-group">
         <form action="{{ url_for(base_route) }}" method="get">
           <div class="input-group">
-            <input name="search" type="text" class="form-control" placeholder="Search" value="{{ search_text if search_text }}">
+            <input name="search" type="text" class="form-control" placeholder="{{ i18n('interface.common.ph_search') }}" value="{{ search_text if search_text }}">
             <button class="btn btn-secondary" type="button">{{ utils.render_icon('search') }}</button>
           </div>
         </form>
@@ -67,12 +67,12 @@
       {% endif %}
 
       <div class="btn-toolbar mb-2 gap-1">
-        <nav aria-label="Page navigation">
+        <nav aria-label="{{ i18n('interface.main.page_navigation') }}">
           <ul class="pagination mb-0">
 
             {# prev page #}
             <li class="page-item {{ 'disabled' if page <= 1 else '' }}">
-              <a class="page-link" href="{{ url_for(base_route, page=page-1, **params) }}" aria-label="Previous">
+              <a class="page-link" href="{{ url_for(base_route, page=page-1, **params) }}" aria-label="{{ i18n('interface.main.previous') }}">
                 <span aria-hidden="true">&laquo;</span>
               </a>
             </li>
@@ -118,7 +118,7 @@
 
             {# next page #}
             <li class="page-item {{ 'disabled' if page >= num_pages else '' }}">
-              <a class="page-link" href="{{ url_for(base_route, page=page+1, **params) }}" aria-label="Next">
+              <a class="page-link" href="{{ url_for(base_route, page=page+1, **params) }}" aria-label="{{ i18n('interface.main.next') }}">
                 <span aria-hidden="true">&raquo;</span>
               </a>
             </li>
@@ -135,7 +135,7 @@
               <li>
                 {% set page_params_items = (params.items()|list) + [('per_page', pp)] %}
                 {% set page_params = dict.from_keys(page_params_items) %}
-                <a class="dropdown-item {{ 'active' if pp == params['per_page'] }}" href="{{ url_for(base_route, **page_params) }}">{{ pp }} per page</a>
+                <a class="dropdown-item {{ 'active' if pp == params['per_page'] }}" href="{{ url_for(base_route, **page_params) }}">{{ pp }} {{ i18n('interface.main.per_page') }}</a>
               </li>
             {% endfor %}
             </ul>
@@ -151,7 +151,7 @@
       <thead>
         <tr>
           {% block table_headers %}
-            <th>ID</th>
+            <th>{{ i18n('interface.common.id') }}</th>
           {% endblock %}
           <th></th>
         </tr>
@@ -164,23 +164,23 @@
           {% endblock %}
           <td>
             <a href="{{ url_for('edit_%s' % endpoint_suffix, id=resource[pkey]) }}" class="btn btn-primary" role="button">
-              {{ utils.render_icon('pencil') }} Edit
+              {{ utils.render_icon('pencil') }} {{ i18n('interface.common.edit') }}
             </a>
             {% if endpoint_suffix == "resource" %}
               <a href="{{ url_for('new_permission', resource_id=resource['id']) }}" class="btn btn-success" role="button">
-                {{ utils.render_icon('plus-lg') }} New Permission
+                {{ utils.render_icon('plus-lg') }} {{ i18n('interface.common.new_permission') }}
               </a>
               {% if resource['type'] == 'map' %}
                 <a href="{{ url_for('import_resource', id=resource['id']) }}" method="post" class="btn btn-success" role="button">
-                  {{ utils.render_icon('plus-lg') }} Import Resources
+                  {{ utils.render_icon('plus-lg') }} {{ i18n('interface.common.import_resources') }}
                 </a>
               {% endif %}
             {% endif %}
             <form action="{{ url_for('destroy_%s' % endpoint_suffix, id=resource[pkey]) }}" method="post" style="display: inline;">
               <input type="hidden" name="_method" value="DELETE" />
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-              <button type="submit" class="btn btn-danger" onclick="return confirm('{% block delete_resource_confirmation %}Remove resource?{% endblock %}');">
-                {{ utils.render_icon('x') }} Remove
+              <button type="submit" class="btn btn-danger" onclick="return confirm('{% block delete_resource_confirmation %}{{ i18n('interface.common.confirm_message_remove') }}{% endblock %}');">
+                {{ utils.render_icon('x') }} {{ i18n('interface.common.remove') }}
               </button>
             </form>
           </td>

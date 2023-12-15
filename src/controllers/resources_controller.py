@@ -12,6 +12,7 @@ from sqlalchemy.ext.declarative import DeclarativeMeta
 
 from .controller import Controller
 from forms import ImportResourceForm, ResourceForm
+from utils import i18n
 
 
 class ResourcesController(Controller):
@@ -228,7 +229,7 @@ class ResourcesController(Controller):
             sort=sort, sort_asc=sort_asc, check_unused=active_check_unused,
             base_route=self.base_route, resource_types=resource_types,
             active_resource_type=active_resource_type,
-            have_config_generator=have_config_generator
+            have_config_generator=have_config_generator, i18n=i18n
         )
 
     def find_resource(self, id, session):
@@ -496,7 +497,7 @@ class ResourcesController(Controller):
                 '%s/hierarchy.html' % self.templates_dir, items=items,
                 selected_item_id=resource.id,
                 endpoint_suffix=self.endpoint_suffix,
-                pkey=self.resource_pkey(), resource_types=resource_types
+                pkey=self.resource_pkey(), resource_types=resource_types, i18n=i18n
             )
         else:
             # resource not found
@@ -562,8 +563,9 @@ class ResourcesController(Controller):
                     (response.url, response.content)
                 )
                 flash(
-                    'Could not import maps: Status %s' %
-                    response.status_code, 'error'
+                    '%s Status %s' %(
+                    i18n('interface.resources.import_maps_message_error'), response.status_code), 
+                    'error'
                 )
                 return redirect(url_for(self.base_route))
 
@@ -594,11 +596,12 @@ class ResourcesController(Controller):
                 self.update_config_timestamp(session)
 
                 flash(
-                    '%d new maps have been added.' %
-                    len(new_maps), 'success'
+                    '%d %s' % (
+                    len(new_maps), i18n('interface.resources.add_maps_message_success')), 
+                    'success'
                 )
             else:
-                flash('No additional maps found.', 'info')
+                flash(i18n('interface.resources.add_maps_message_error'), 'info')
 
             session.close()
 
@@ -606,7 +609,7 @@ class ResourcesController(Controller):
         except Exception as e:
             if session:
                 session.close()
-            msg = "Could not import maps: %s" % e
+            msg = "%s %s" % (i18n('interface.resources.import_maps_message_error'), e)
             self.logger.error(msg)
             flash(msg, 'error')
             return redirect(url_for(self.base_route))
@@ -727,7 +730,7 @@ class ResourcesController(Controller):
                     resource, config_generator_service_url, session
                 )
             else:
-                flash('Child import not supported for this resource type.',
+                flash(i18n('interface.resources.import_children_message_error'),
                       'warning')
 
             session.close()
@@ -761,8 +764,8 @@ class ResourcesController(Controller):
                     (response.url, response.content)
                 )
                 flash(
-                    'Could not import layers: Status %s' %
-                    response.status_code, 'error'
+                    '%s Status %s' %(
+                    i18n('interface.resources.import_layers_message_error'), response.status_code), 'error'
                 )
                 return redirect(url_for(self.base_route))
 
@@ -795,16 +798,16 @@ class ResourcesController(Controller):
                     self.update_config_timestamp(session)
 
                     flash(
-                        '%d new layers have been added.' %
-                        len(new_layers), 'success'
+                        '%d %s' %(
+                        len(new_layers), i18n('interface.resources.add_layers_message_success')), 'success'
                     )
                 else:
-                    flash('No additional layers found.', 'info')
+                    flash(i18n('interface.resources.add_map_message_error'), 'info')
             else:
                 # map not found or no layers
-                flash('No layers found for this map.', 'warning')
+                flash(i18n('interface.resources.add_layers_map_message_error'), 'warning')
         except Exception as e:
-            msg = "Could not import layers: %s" % e
+            msg = "%s %s" % (i18n('interface.resources.import_layers_message_error'), e)
             self.logger.error(msg)
             flash(msg, 'error')
 
@@ -818,11 +821,11 @@ class ResourcesController(Controller):
         self.setup_models()
         template = '%s/import_form.html' % self.templates_dir
         form = self.create_import_form()
-        title = "Import %s" % self.resource_name
+        title = "%s %s" % (i18n('interface.resources.import_resources_title'), self.resource_name)
         action = url_for('import_%s_from_parent_map' % self.endpoint_suffix, id=id)
 
         return render_template(
-            template, title=title, form=form, action=action, method='POST'
+            template, title=title, form=form, action=action, method='POST', i18n=i18n
         )
 
     def import_resources_from_parent_map(self, id):
@@ -858,8 +861,8 @@ class ResourcesController(Controller):
                                 (response.url, response.content)
                             )
                             flash(
-                                'Could not import layers: Status %s' %
-                                response.status_code, 'error'
+                                '%s Status %s' % (
+                                i18n('interface.resources.import_resources_message_error'), response.status_code), 'error'
                             )
                             return redirect(url_for(self.base_route))
 
@@ -928,25 +931,26 @@ class ResourcesController(Controller):
 
                             if new_resources:
                                 flash(
-                                    '%d new resources have been added.' %
-                                    len(new_resources), 'success'
+                                    '%d %s' % (
+                                    len(new_resources), i18n('interface.resources.add_resources_message_success')), 
+                                    'success'
                                 )
                             else:
-                                flash('No additional resources found.', 'info')
+                                flash(i18n('interface.resources.add_resources_message_error'), 'info')
 
                             if new_permissions:
                                 flash(
-                                    '%d new permissions have been added.' %
-                                    len(new_permissions), 'success'
+                                    '%d %s' % (
+                                    len(new_permissions), i18n('interface.resources.add_permissions_message_success')), 'success'
                                 )
                             else:
-                                flash('No additional permissions found.', 'info')
+                                flash(i18n('interface.resources.add_permissions_message_error'), 'info')
                         else:
                             # map not found or no layers
-                            flash('No layers found for this map.', 'warning')
+                            flash(i18n('interface.resources.add_layers_map_message_error'), 'warning')
 
                     else:
-                        flash('Child import not supported for this resource type.',
+                        flash(i18n('interface.resources.import_children_message_error'),
                             'warning')
 
                 else:
@@ -962,14 +966,14 @@ class ResourcesController(Controller):
             except Exception as e:
                 if session:
                     session.close()
-                msg = "Could not import resources: %s" % e
+                msg = "%s %s" % (i18n('interface.resources.import_resources_message_error'), e)
                 self.logger.error(msg)
                 flash(msg, 'error')
                 return redirect(
                     url_for(self.base_route)
                 )
         else:
-            flash('Could not import resources from %s.' % parent_resource,
+            flash('%s %s.' % (i18n('interface.resources.import_ressources_parent_message_error'), parent_resource),
                   'warning')
 
 class AlchemyEncoder(json.JSONEncoder):

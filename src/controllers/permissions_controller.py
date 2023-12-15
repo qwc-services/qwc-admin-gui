@@ -7,6 +7,7 @@ from sqlalchemy.orm import joinedload
 
 from .controller import Controller
 from forms import PermissionForm
+from utils import i18n
 
 
 class PermissionsController(Controller):
@@ -231,7 +232,7 @@ class PermissionsController(Controller):
             pagination=pagination, sort=sort, sort_asc=sort_asc,
             base_route=self.base_route, roles=roles, active_role=active_role,
             resource_types=resource_types,
-            active_resource_type=active_resource_type
+            active_resource_type=active_resource_type, i18n = i18n
         )
 
     def find_resource(self, id, session):

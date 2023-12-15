@@ -7,7 +7,7 @@
 {%- endblock styles %}
 {% block themes_container %}
 <h1>{{ title }}</h1>
-<div style="padding-top: 1em;"/>
+<div style="padding-top: 1em;">
   <div class="panel panel-default">
     <div clas="panel-body">
       <form id="form" class="form" action="{{ url_for('upload_mapthumb') }}" method="post" style="padding-bottom: 25px;" enctype="multipart/form-data">
@@ -23,7 +23,7 @@
             <div class="theme-item-title">{{ mapthumb }}</div>
             <img src="{{ url_for('load_mapthumb', image=mapthumb) }}"></img>
             <span class="icon">
-              <a href="{{ url_for('delete_mapthumb', image=mapthumb) }}" class="btn btn-danger btn-xs" role="button" title="Delete mapthumb" onclick="return confirm('Really delete {{ mapthumb }}?');">
+              <a href="{{ url_for('delete_mapthumb', image=mapthumb) }}" class="btn btn-danger btn-xs" role="button" title="{{ i18n('plugins.themes.mapthumbs.delete_mapthumb') }}" onclick="return confirm('{{ i18n('plugins.themes.mapthumbs.confirm_message_delete_mapthumb', [mapthumb]) }}');">
                 {{ utils.render_icon('trash') }}
               </a>
             </span>

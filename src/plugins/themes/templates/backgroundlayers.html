@@ -2,13 +2,13 @@
 {% block title %}{{ title }}{% endblock %}
 {% block themes_container %}
   <h1>{{ title }}</h1>
-  <a href="{{ url_for('new_backgroundlayer', type='wms') }}" class="btn btn-success" role="button" title="New WMS layer">
+  <a href="{{ url_for('new_backgroundlayer', type='wms') }}" class="btn btn-success" role="button" title="{{ i18n('plugins.themes.backgroundlayers.new_wms_layer') }}">
     {{ utils.render_icon('plus-lg') }} WMS
   </a>
-  <a href="{{ url_for('new_backgroundlayer', type='wmts') }}" class="btn btn-success" role="button" title="New WMTS layer">
+  <a href="{{ url_for('new_backgroundlayer', type='wmts') }}" class="btn btn-success" role="button" title="{{ i18n('plugins.themes.backgroundlayers.new_wmts_layer') }}">
     {{ utils.render_icon('plus-lg') }} WMTS
   </a>
-  <a href="{{ url_for('new_backgroundlayer', type='xyz') }}" class="btn btn-success" role="button" title="New XYZ layer">
+  <a href="{{ url_for('new_backgroundlayer', type='xyz') }}" class="btn btn-success" role="button" title="{{ i18n('plugins.themes.backgroundlayers.new_xyz_layer') }}">
     {{ utils.render_icon('plus-lg') }} XYZ
   </a>
   <div style="padding-top: 1em;"/>
@@ -16,9 +16,9 @@
       <table class="table">
         <thead>
           <th>ID</th>
-          <th>Type</th>
-          <th>Name</th>
-          <th>Title</th>
+          <th>{{ i18n('interface.common.type') }}</th>
+          <th>{{ i18n('interface.common.name') }}</th>
+          <th>{{ i18n('interface.common.title') }}</th>
           <th></th>
         </thead>
         <tbody>
@@ -29,16 +29,14 @@
             <td>{{ layer.name }}</td>
             <td>{{ layer.title }}</td>
             <td style="text-align: right">
-              <div class="btn-group" role="group">
-                {% if layer.type == "wms" %}
-                  <a href="{{ url_for('edit_backgroundlayer', index=loop.index0) }}" class="btn btn-primary" role="button" title="Edit layer">
-                    {{ utils.render_icon('pencil') }}
-                  </a>
-                {% endif %}
-                <a href="{{ url_for('delete_backgroundlayer', index=loop.index0) }}" class="btn btn-danger" role="button" title="Delete layer" onclick="return confirm('Really delete layer {{ layer.title }}?');">
-                  {{ utils.render_icon('trash') }}
+              {% if layer.type == "wms" %}
+                <a href="{{ url_for('edit_backgroundlayer', index=loop.index0) }}" class="btn btn-primary" role="button" title="{{ i18n('plugins.themes.backgroundlayers.edit_layer') }}">
+                  {{ utils.render_icon('pencil') }}
                 </a>
-              </div>
+              {% endif %}
+              <a href="{{ url_for('delete_backgroundlayer', index=loop.index0) }}" class="btn btn-danger" role="button" title="{{ i18n('plugins.themes.common.delete_layer') }}" onclick="return confirm('{{ i18n('plugins.themes.common.confirm_message_delete_layer', [layer.title]) }}');">
+                {{ utils.render_icon('trash') }}
+              </a>
             </td>
           </tr>
         {% endfor %}

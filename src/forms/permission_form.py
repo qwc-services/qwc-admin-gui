@@ -2,17 +2,18 @@ from flask_wtf import FlaskForm
 from wtforms import BooleanField, IntegerField, SelectField, StringField, \
     SubmitField
 from wtforms.validators import DataRequired, NumberRange, Optional
+from utils import i18n
 
 
 class PermissionForm(FlaskForm):
     """Main form for Permission GUI"""
     role_id = SelectField(
-        'Role', coerce=int, validators=[DataRequired()]
+        i18n('interface.common.role'), coerce=int, validators=[DataRequired()]
     )
     # list of resource types with (name, description)
     resource_types = []
     resource_id = SelectField(
-        'Resource', coerce=int, validators=[DataRequired()]
+        i18n('interface.common.resource'), coerce=int, validators=[DataRequired()]
     )
     """ list of resource choices grouped by resource type
 
@@ -28,12 +29,12 @@ class PermissionForm(FlaskForm):
     """
     resource_choices = []
     priority = IntegerField(
-        'Priority',
+        i18n('interface.common.form_priority'),
         validators=[
             Optional(),
-            NumberRange(min=0, message="Priority must be greater or equal 0")
+            NumberRange(min=0, message=i18n('interface.common.form_priority_message'))
         ]
     )
-    write = BooleanField('Write')
+    write = BooleanField(i18n('interface.permissions.write'))
 
-    submit = SubmitField('Save')
+    submit = SubmitField(i18n('interface.common.form_submit'))

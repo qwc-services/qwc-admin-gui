@@ -23,7 +23,7 @@ from access_control import AccessControl
 from controllers import UsersController, GroupsController, RolesController, \
     ResourcesController, PermissionsController, RegistrableGroupsController, \
     RegistrationRequestsController
-
+from utils import i18n
 
 AUTH_PATH = os.environ.get('AUTH_PATH', '/auth')
 SKIP_LOGIN = os.environ.get('SKIP_LOGIN', False)
@@ -70,51 +70,6 @@ def mail_config_from_env(app):
 
 mail_config_from_env(app)
 mail = Mail(app)
-
-# Load translation strings
-DEFAULT_LOCALE = os.environ.get('DEFAULT_LOCALE', 'en')
-translations = {}
-try:
-    locale = DEFAULT_LOCALE
-    path = os.path.join(app.root_path, 'translations/%s.json' % locale)
-    with open(path, 'r') as f:
-        translations[locale] = json.load(f)
-except Exception as e:
-    app.logger.error(
-        "Failed to load translation strings for locale '%s' from %s\n%s"
-        % (locale, path, e)
-    )
-
-
-# Setup translation helper
-@app.template_filter('i18n')
-def i18n(value, locale=DEFAULT_LOCALE):
-    """Lookup string in translations.
-
-    Usage:
-        Python: i18n('example.path_to.string')
-        Jinja2 filter for templates: 'example.path_to.string' | i18n
-
-    :param str value: Dot-separated path to translation string
-    :param str locale: Override locale (optional)
-    """
-    # traverse translations dict for locale
-    parts = value.split('.')
-    lookup = translations.get(locale, {})
-    for part in parts:
-        if isinstance(lookup, dict):
-            # get next lookup level
-            lookup = lookup.get(part)
-        else:
-            # lookup level too deep
-            lookup = None
-        if lookup is None:
-            # return input value if not found
-            lookup = value
-            break
-
-    return lookup
-
 
 tenant_handler = TenantHandler(app.logger)
 db_engine = DatabaseEngine()
@@ -167,7 +122,7 @@ ResourcesController(app, handler)
 PermissionsController(app, handler)
 if app.config.get('QWC_GROUP_REGISTRATION_ENABLED'):
     RegistrableGroupsController(app, handler)
-    RegistrationRequestsController(app, handler, i18n, mail)
+    RegistrationRequestsController(app, handler, mail)
 
 access_control = AccessControl(handler, app.logger)
 
@@ -225,8 +180,8 @@ def logout():
 @app.route('/')
 def home():
     config = handler().config()
-    admin_gui_title = config.get('admin_gui_title', 'QWC Admin')
-    admin_gui_subtitle = config.get('admin_gui_subtitle', 'Administration tool for QWC services')
+    admin_gui_title = config.get('admin_gui_title', i18n('interface.main.title'))
+    admin_gui_subtitle = config.get('admin_gui_subtitle', i18n('interface.main.subtitle'))
     have_config_generator = True if config.get(
         "config_generator_service_url",
         "http://qwc-config-service:9090"
@@ -237,7 +192,7 @@ def home():
         admin_gui_title=admin_gui_title,
         admin_gui_subtitle=admin_gui_subtitle,
         have_config_generator=have_config_generator,
-        solr_index_update_enabled=solr_index_update_enabled
+        solr_index_update_enabled=solr_index_update_enabled, i18n=i18n
     )
 
 

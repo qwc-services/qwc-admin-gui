@@ -6,9 +6,9 @@
     <link href="{{ url_for('plugin_static', plugin='themes', filename='application.css') }}" rel="stylesheet">
 {%- endblock styles %}
 
-{% block title %}Add XYZ background layer{% endblock %}
+{% block title %}{{ i18n('plugins.themes.xyzlayer.add') }}{% endblock %}
 {% block container %}
-  <h1>Add XYZ background layer</h1>
+  <h1>{{ i18n('plugins.themes.xyzlayer.add') }}</h1>
 
 <div class="col-md-6 col-lg-offset-3" style="margin-top:25px;">
     <form id="form" class="form form-horizontal" action="{{ url_for('create_backgroundlayer', type=type) }}" method="post" style="padding-top: 2.5em 0;">

@@ -1,16 +1,16 @@
 {% extends "templates/base.html" %}
 
-{% block title %}Resource hierarchy{% endblock %}
+{% block title %}{{ i18n('interface.resources.hierarchy_title') }}{% endblock %}
 {% block container %}
   <h1>{{ self.title() }}</h1>
 
   <table class="table table-striped hierarchy">
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Name</th>
-        <th>Type</th>
-        <th>Permissions</th>
+        <th>{{ i18n('interface.common.id') }}</th>
+        <th>{{ i18n('interface.common.name') }}</th>
+        <th>{{ i18n('interface.common.type') }}</th>
+        <th>{{ i18n('interface.resources.permissions') }}</th>
         <th></th>
       </tr>
     </thead>
@@ -31,30 +31,30 @@
             {% for permission in item['permissions']%}
               {{ permission.role }} {{ utils.render_icon('pencil') if permission.write }}<br/>
             {% endfor %}
-            <a href="{{ url_for('permissions', resource_id=resource.id) }}" class="btn btn-default btn-xs" role="button" title="Resource permissions">
+            <a href="{{ url_for('permissions', resource_id=resource.id) }}" class="btn btn-default btn-xs" role="button" title="{{ i18n('interface.resources.resource_permissions') }}">
               {{ utils.render_icon('lock') }}
             </a>
           {% endif %}
         </td>
         <td>
           <a href="{{ url_for('edit_%s' % endpoint_suffix, id=resource[pkey]) }}" class="btn btn-primary" role="button">
-            {{ utils.render_icon('pencil') }} Edit
+            {{ utils.render_icon('pencil') }} {{ i18n('interface.common.edit') }}
           </a>
           <a href="{{ url_for('new_permission', resource_id=resource['id']) }}" class="btn btn-success" role="button">
-            {{ utils.render_icon('plus-lg') }} New Permission
+            {{ utils.render_icon('plus-lg') }} {{ i18n('interface.common.new_permission') }}
           </a>
           <form action="{{ url_for('destroy_%s' % endpoint_suffix, id=resource[pkey]) }}" method="post" style="display: inline;">
             <input type="hidden" name="_method" value="DELETE" />
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-            <button type="submit" class="btn btn-danger" onclick="return confirm('Remove resource?');">
-              {{ utils.render_icon('x') }} Remove
+            <button type="submit" class="btn btn-danger" onclick="return confirm('{{ i18n('interface.common.confirm_message_remove') }}');">
+              {{ utils.render_icon('remove') }} {{ i18n('interface.common.delete') }}
             </button>
           </form>
           <form action="{{ url_for('destroy_cascaded_%s' % endpoint_suffix, id=resource[pkey]) }}" method="post" style="display: inline;">
             <input type="hidden" name="_method" value="DELETE" />
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-            <button type="submit" class="btn btn-danger" onclick="return confirm('Remove resource and its children?');">
-              {{ utils.render_icon('x') }} Remove cascaded
+            <button type="submit" class="btn btn-danger" onclick="return confirm('{{ i18n('interface.resources.confirm_message_remove_cascaded') }}');">
+              {{ utils.render_icon('remove') }} {{ i18n('interface.resources.remove_cascaded') }}
             </button>
           </form>
         </td>

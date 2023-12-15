@@ -118,9 +118,9 @@
 
     {# custom select field with resource type as data in options for parent resource #}
     <div class="mb-3 row required">
-      <label class="col-form-label col-sm-2" for="name">Parent resource</label>
+      <label class="col-form-label col-sm-2" for="name">{{ i18n('interface.resources.parent_resource') }}</label>
       <div class="col-sm-5">
-        <select class="form-control chosen-select" data-placeholder="Select a resource" id="parent_id" name="parent_id">
+        <select class="form-control chosen-select" data-placeholder="{{ i18n('interface.resources.resource') }}" id="parent_id" name="parent_id">
           <option value="0"></option>
           {% for group in form.parent_choices %}
             <optgroup label="{{ group['group_label'] }}" data-type="{{ group['resource_type'] }}">
@@ -141,8 +141,8 @@
     <br>
     <form action="{{ url_for('import_children_resource', id=id) }}" method="post" style="display: inline;">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-      <button type="submit" class="col-sm-offset-2 btn btn-success btn-spin-on-click" data-spinning-msg="Importing layers...">
-        {{ utils.render_icon('download') }} Import layers
+      <button type="submit" class="col-sm-offset-2 btn btn-success btn-spin-on-click" data-spinning-msg="{{ i18n('interface.resources.message_import_layers') }}">
+        {{ utils.render_icon('download-alt') }} {{ i18n('interface.resources.parent_resource') }}
       </button>
     </form>
   {% endif %}
