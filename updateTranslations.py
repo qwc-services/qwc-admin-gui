@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import json
 import re
 from pathlib import Path
@@ -83,7 +85,7 @@ def update_ts_config(topdir, tsconfig):
 
 
 # Generate application translations
-current_dir = Path(__file__).parent.absolute()
+current_dir = Path(__file__).parent.absolute() / 'src'
 tsconfig = current_dir / 'translations/tsconfig.json'
 update_ts_config(current_dir, tsconfig)
 config = read_json(tsconfig)
