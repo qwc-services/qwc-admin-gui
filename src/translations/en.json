@@ -56,6 +56,7 @@
       "previous": "Previous",
       "registration_title": "Registration",
       "subtitle": "Administration tool for QWC services",
+      "timeout_error": "The generation of the configuration took too long. Likely causes:\n- There is a network connectivity issue\n- Fetching the Capabilities took too long (too many themes / too many layers / slow remote layers)\n- The 'proxy_read_timeout' of the qwc-api-gateway is too low",
       "title": "QWC Admin",
       "update_resource_message_error": "Could not update {}.",
       "update_resource_message_success": "{} has been updated."

@@ -56,6 +56,7 @@
       "previous": "Précédent",
       "registration_title": "Enregistrement",
       "subtitle": "Outil d'administration pour les services QWC",
+      "timeout_error": "La génération de la configuration a pris trop de temps. Causes probables:\n- Il y a un problème de connectivité\n - La récupération des Capabilities a pris trop de temps (trop de thèmes / trop de couches / couches distantes lentes)\n- Le 'proxy_read_timeout' de qwc-api-gateway est trop bas",
       "title": "Administration QWC",
       "update_resource_message_error": "Impossible de modifier {}.",
       "update_resource_message_success": "{} a été modifié."

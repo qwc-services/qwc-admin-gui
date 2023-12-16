@@ -44,8 +44,11 @@
 
           // show errors
           var msg = jqXHR.statusText;
-          if (jqXHR.responseJSON) {
-            msg = jqXHR.responseText.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;");
+          if (jqXHR.status === 504) {
+            msg = `{{ i18n('interface.main.timeout_error') }}`.replace(/\n/g, "<br/>");
+          }
+          else if (jqXHR.responseJSON) {
+            msg = jqXHR.responseJSON.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;");
           }
           else if (jqXHR.responseText.indexOf("<p>The CSRF token is invalid.</p>") != -1) {
             msg = "The CSRF token is invalid. Please reload this page and retry.";
