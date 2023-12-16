@@ -186,7 +186,7 @@
         "update_message_error": "Hintergrundebene konnte nicht aktualisert werden"
       },
       "common": {
-        "confirm_message_delete_layer": "Ebene löschen {} ?",
+        "confirm_message_delete_layer": "Ebene löschen {}?",
         "connect": "Verbinden",
         "crs": "KBS",
         "delete_layer": "Ebene löschen",
@@ -198,7 +198,7 @@
         "title": "Themen"
       },
       "files": {
-        "confirm_message_delete_project": "Wirklich löschen: {} ?",
+        "confirm_message_delete_project": "Wirklich löschen: {}?",
         "delete_project": "Projekt löschen",
         "file_delete_message_error": "Datei konnte nicht gelöscht werden.",
         "file_extract_message_success": "und extrahiert",
@@ -227,7 +227,7 @@
         "title": "Dateien hochladen"
       },
       "info_templates": {
-        "confirm_message_delete_template": "Wirklich löschen {} ?",
+        "confirm_message_delete_template": "Wirklich löschen {}?",
         "create_message_warning": "Vorlage konnte nicht erstellt werden.",
         "create_title": "Vorlage hinzufügen",
         "delete_message_warning": "Konnte Ressource für Vorlage nicht löschen",
@@ -243,7 +243,7 @@
         "update_message_template_warning": "Eine Vorlage existiert bereits für diese Ebene"
       },
       "mapthumbs": {
-        "confirm_message_delete_mapthumb": "Wirklich löschen: {} ?",
+        "confirm_message_delete_mapthumb": "Wirklich löschen: {}?",
         "delete_mapthumb": "Vorschaubild löschen",
         "delete_message_error": "Vorschaubild konnte nicht gelöscht werden.",
         "form_allowed": "Bitte nur jpg oder png benutzen!",
@@ -303,7 +303,7 @@
         "edit_theme": "Thema editieren",
         "edit_theme_message_integrity_error": "Konnte die Ressource für das Thema nicht editieren",
         "edit_theme_title": "Thema editieren",
-        "group_confirm_message_delete": "Themengruppe wirklich löschen ?",
+        "group_confirm_message_delete": "Themengruppe wirklich löschen?",
         "group_delete": "Themengruppe löschen",
         "group_move_down": "Themengruppe nach unten verschieben",
         "group_move_up": "Themengruppe nach oben verschieben",

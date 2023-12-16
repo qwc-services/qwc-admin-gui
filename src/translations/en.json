@@ -186,7 +186,7 @@
         "update_message_error": "Could not update background layer"
       },
       "common": {
-        "confirm_message_delete_layer": "Really delete layer {} ?",
+        "confirm_message_delete_layer": "Really delete layer {}?",
         "connect": "Connect",
         "crs": "CRS",
         "delete_layer": "Delete layer",
@@ -198,7 +198,7 @@
         "title": "Themes"
       },
       "files": {
-        "confirm_message_delete_project": "Really delete {} ?",
+        "confirm_message_delete_project": "Really delete {}?",
         "delete_project": "Delete project",
         "file_delete_message_error": "File could not be deleted.",
         "file_extract_message_success": "and extracted",
@@ -227,7 +227,7 @@
         "title": "Upload files"
       },
       "info_templates": {
-        "confirm_message_delete_template": "Really delete {} ?",
+        "confirm_message_delete_template": "Really delete {}?",
         "create_message_warning": "Could not create template.",
         "create_title": "Add template",
         "delete_message_warning": "Could not delete resource for template",
@@ -292,7 +292,7 @@
         "print_layer_message": "(Optional): Name of a layer of the QGIS Project which should be used when printing."
       },
       "themes": {
-        "confirm_message_delete_theme": "Really delete theme ?",
+        "confirm_message_delete_theme": "Really delete theme?",
         "copy_url": "Copy url to clipboard",
         "create_theme_message_error": "Could not create theme",
         "create_theme_message_integrity_error": "Resource for this map already exists",
@@ -303,7 +303,7 @@
         "edit_theme": "Edit theme",
         "edit_theme_message_integrity_error": "Resource for this map could not be edited",
         "edit_theme_title": "Edit theme",
-        "group_confirm_message_delete": "Really delete theme group ?",
+        "group_confirm_message_delete": "Really delete theme group?",
         "group_delete": "Delete theme group",
         "group_move_down": "Move theme group down",
         "group_move_up": "Move theme group up",

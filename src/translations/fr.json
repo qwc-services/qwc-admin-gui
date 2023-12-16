@@ -186,7 +186,7 @@
         "update_message_error": "Impossible de modifier le fond de plan"
       },
       "common": {
-        "confirm_message_delete_layer": "Voulez-vous vraiment supprimer la couche {} ?",
+        "confirm_message_delete_layer": "Voulez-vous vraiment supprimer la couche {}?",
         "connect": "Connecter",
         "crs": "CRS",
         "delete_layer": "Supprimer la couche",
@@ -227,7 +227,7 @@
         "title": "Envoyer des fichiers"
       },
       "info_templates": {
-        "confirm_message_delete_template": "Voulez vous vraiment supprimer le modèle {} ?",
+        "confirm_message_delete_template": "Voulez vous vraiment supprimer le modèle {}?",
         "create_message_warning": "Le modèle n'a pas été créé.",
         "create_title": "Ajouter un modèle",
         "delete_message_warning": "Impossible de supprimer la ressource pour le modèle",
@@ -243,7 +243,7 @@
         "update_message_template_warning": "Un modèle existe déjà pour cette couche"
       },
       "mapthumbs": {
-        "confirm_message_delete_mapthumb": "Voulez-vous vraiment supprimer {} ?",
+        "confirm_message_delete_mapthumb": "Voulez-vous vraiment supprimer {}?",
         "delete_mapthumb": "Supprimer la miniature",
         "delete_message_error": "La miniature n'a pas pu être supprimée.",
         "form_allowed": "Choisir uniquement des fichiers jpg ou png svp!",
@@ -298,7 +298,7 @@
         "create_theme_message_integrity_error": "La ressource pour cette carte existe déjà",
         "create_theme_message_success": "Thème créé",
         "create_theme_title": "Créer un thème",
-        "delete_theme": "",
+        "delete_theme": "Supprimer un thème",
         "delete_theme_message_error": "Impossible de supprimer la ressource pour la carte",
         "edit_theme": "Modifier le thème",
         "edit_theme_message_integrity_error": "La ressource pour cette carte ne peut pas être modifiée",
