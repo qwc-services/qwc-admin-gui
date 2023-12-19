@@ -299,29 +299,3 @@ class ThemeUtils():
         return (["EPSG:3857", "EPSG:3857"],
                 ["EPSG:4647", "EPSG:4647"],
                 ["EPSG:25832", "EPSG:25832"])
-
-    @staticmethod
-    def get_default_search_providers(app, handler):
-        """Return default search providers"""
-        current_handler = handler()
-        config_in_path = current_handler.config().get("input_config_path")
-        tenantConfig = os.path.join(config_in_path, current_handler.tenant, 'tenantConfig.json')
-
-        try:
-            with open(tenantConfig, encoding="utf-8") as fh:
-                config = json.load(fh)
-                if "themesConfig" in config:
-                    themes_config = config["themesConfig"]
-                    if "defaultSearchProviders" in themes_config:
-                        return themes_config["defaultSearchProviders"]
-                    elif type(config["themesConfig"]) is str :  # defaultSearchProviders is in themesConfig file if used
-                        themeConfig =  os.path.join(config_in_path, current_handler.tenant, config["themesConfig"])
-                        with open(themeConfig, encoding="utf-8") as fht:
-                            config_theme = json.load(fht)
-                            if "defaultSearchProviders" in config_theme:
-                                return config_theme["defaultSearchProviders"]
-        except IOError as e:
-            app.logger.error("Error reading tenantConfig.json: {}".format(
-                e.strerror))
-
-        return (["coordinates"])

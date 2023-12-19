@@ -401,7 +401,7 @@ class ThemesController:
             form = ThemeForm(url=theme["url"])
 
         crslist = ThemeUtils.get_crs(self.app, self.handler)
-        defaultSearchProvidersList = ThemeUtils.get_default_search_providers(self.app, self.handler)
+        defaultSearchProvidersList = self.themesconfig.get('defaultSearchProviders', [])
 
         form.url.choices = [("", "---")] + ThemeUtils.get_projects(self.app, self.handler)
         form.thumbnail.choices = ThemeUtils.get_mapthumbs(self.app, self.handler)
