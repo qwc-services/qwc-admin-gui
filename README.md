@@ -233,4 +233,4 @@ Update translation files:
 
 Start local service:
 
-     python server.py
+     python src/server.py
