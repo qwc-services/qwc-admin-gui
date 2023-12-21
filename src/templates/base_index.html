@@ -35,7 +35,7 @@
         <form action="{{ url_for(base_route) }}" method="get">
           <div class="input-group">
             <input name="search" type="text" class="form-control" placeholder="{{ i18n('interface.common.ph_search') }}" value="{{ search_text if search_text }}">
-            <button class="btn btn-secondary" type="button">{{ utils.render_icon('search') }}</button>
+            <button class="btn btn-secondary" type="submit">{{ utils.render_icon('search') }}</button>
           </div>
         </form>
       </div>
