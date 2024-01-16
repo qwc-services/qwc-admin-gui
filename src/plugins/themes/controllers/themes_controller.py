@@ -495,7 +495,7 @@ class ThemesController:
                     form.backgroundLayers.append_entry(data)
                     form.backgroundLayers[i].layerName.choices = self.get_backgroundlayers()
                     form.backgroundLayers[i].layerName.data = layer["name"]
-            qgis_search = [provider for provider in theme["searchProviders"] if "provider" in provider and provider["provider"] == "qgis"]
+            qgis_search = [provider for provider in theme.get("searchProviders", []) if "provider" in provider and provider.get("provider") == "qgis"]
             if qgis_search :
                 for provider in qgis_search:
                     data = {
