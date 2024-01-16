@@ -65,7 +65,7 @@ class InfoTemplatesController():
 
         return render_template(
             '%s/info_template.html' % self.template_dir, title=i18n('plugins.themes.info_templates.create_title'),
-            form=form
+            form=form, i18n=i18n
         )
 
     def info_templates(self):
@@ -75,7 +75,7 @@ class InfoTemplatesController():
             items.append(item)
 
         return render_template(
-            '%s/info_templates.html' % self.template_dir, title=i18n('plugins.themes.info_templates.title'), items=items
+            '%s/info_templates.html' % self.template_dir, title=i18n('plugins.themes.info_templates.title'), items=items, i18n=i18n
         )
 
     def create_or_update_info_templates(self, info_template, tid=None, gid=None):
@@ -174,7 +174,7 @@ class InfoTemplatesController():
             
             return render_template(
                 '%s/info_template.html' % self.template_dir, title=i18n('plugins.themes.info_templates.edit_title'), is_disabled = True,
-                form=form
+                form=form, i18n=i18n
             )
         except Exception : 
             abort(404)
