@@ -68,7 +68,8 @@ To add custom user fields, add new columns to your `qwc_config.user_infos` table
   {
     "title": "<field title>",
     "name": "<column name>",
-    "type": "<field type (text|textarea|integer, default: text)>",
+    "type": "<field type (text|textarea|integer|list, default: text)>",
+    "values": "<field values in dropdown list ([(value1, label1), (value2, label2), ...]|[value1, value2, ...])>",
     "required" "<whether field is required (true|false, default: false)>"
   }
 ]

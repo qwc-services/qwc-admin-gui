@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import FormField, IntegerField, SelectMultipleField, \
+from wtforms import FormField, IntegerField, SelectField, SelectMultipleField, \
     StringField, SubmitField, TextAreaField, ValidationError, PasswordField
 from wtforms.validators import DataRequired, Optional, Email, EqualTo, \
     Length, NumberRange
@@ -84,9 +84,12 @@ class UserForm(FlaskForm):
                 field_class = StringField
             if field.get('type') == 'textarea':
                 field_class = TextAreaField
-            elif field.get('type') == 'integer':
+            if field.get('type') == 'integer':
                 field_class = IntegerField
                 widget = NumberInput()
+            elif field.get('type') == "list":
+                field_class = SelectField
+                choices = field.get('values', []) 
 
             validators = [Optional()]
             if field.get('required', False):
@@ -95,7 +98,8 @@ class UserForm(FlaskForm):
             form_field = field_class(
                 field['title'],
                 widget=widget,
-                validators=validators
+                validators=validators,
+                **({'choices': choices} if field.get('type') == "list" else {}),
             )
             # add custom field to UserInfoForm
             setattr(UserInfoForm, field['name'], form_field)
