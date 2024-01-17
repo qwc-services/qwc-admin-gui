@@ -80,16 +80,19 @@ class UserForm(FlaskForm):
         for field in user_info_fields:
             field_class = StringField
             widget = None
-            if field.get('type') == 'string':
-                field_class = StringField
-            if field.get('type') == 'textarea':
-                field_class = TextAreaField
-            if field.get('type') == 'integer':
-                field_class = IntegerField
-                widget = NumberInput()
-            elif field.get('type') == "list":
-                field_class = SelectField
-                choices = field.get('values', []) 
+            match field.get('type'):
+                case 'string':
+                    field_class = StringField
+                case 'textarea':
+                    field_class = TextAreaField
+                case 'integer':
+                    field_class = IntegerField
+                    widget = NumberInput()
+                case 'list':
+                    field_class = SelectField
+                    choices = field.get('values', [])
+                case _:
+                    field_class = StringField
 
             validators = [Optional()]
             if field.get('required', False):
