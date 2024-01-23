@@ -8,7 +8,10 @@ DEFAULT_LOCALE = os.environ.get('DEFAULT_LOCALE', 'en')
 translations = {}
 try:
     locale = DEFAULT_LOCALE
-    path =  pathlib.Path().absolute() / 'translations/{}.json'.format(locale)
+    # Get the directory of utils.py
+    script_directory = pathlib.Path(__file__).resolve().parent
+    # Adjust the path based on the script directory
+    path = script_directory / 'translations/{}.json'.format(locale)
     with open(path, 'r') as f:
         translations[locale] = json.load(f)
 except Exception as e:
