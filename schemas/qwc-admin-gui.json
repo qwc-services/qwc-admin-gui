@@ -82,6 +82,10 @@
           "description": "Max number of retries for checks during Solr index update",
           "type": "integer"
         },
+        "favicon":{
+          "description": "URL to favicon",
+          "type": "string"
+        },
         "plugins": {
           "description": "List of plugins to load",
           "type": "array",

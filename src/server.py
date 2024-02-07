@@ -182,6 +182,7 @@ def home():
     config = handler().config()
     admin_gui_title = config.get('admin_gui_title', i18n('interface.main.title'))
     admin_gui_subtitle = config.get('admin_gui_subtitle', i18n('interface.main.subtitle'))
+    favicon = config.get('favicon')
     have_config_generator = True if config.get(
         "config_generator_service_url",
         "http://qwc-config-service:9090"
@@ -191,6 +192,7 @@ def home():
         'templates/home.html',
         admin_gui_title=admin_gui_title,
         admin_gui_subtitle=admin_gui_subtitle,
+        favicon=favicon,
         have_config_generator=have_config_generator,
         solr_index_update_enabled=solr_index_update_enabled, i18n=i18n
     )
