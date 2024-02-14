@@ -42,7 +42,7 @@ class AccessControl:
         public role.
 
         :param str username: User name
-        :param str groups: Groups name
+        :param list(str) groups: List of groups name
         :param Session session: DB session
         """
         Role = self.config_models.model('roles')
@@ -63,7 +63,7 @@ class AccessControl:
 
         # query permissions from group roles
         group_roles_query = query.join(Role.groups_collection) \
-            .filter(Group.name.in_(groups))
+            .filter(Group.name.in_(groups or []))
 
         # combine queries
         query = groups_roles_query.union(user_roles_query) \
