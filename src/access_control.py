@@ -25,7 +25,7 @@ class AccessControl:
         # Extract user infos from identity
         if isinstance(identity, dict):
             username = identity.get('username')
-            groups = identity.get('groups')
+            groups = identity.get('groups', [])
         else:
             username = identity
             groups = []
@@ -63,7 +63,7 @@ class AccessControl:
 
         # query permissions from group roles
         group_roles_query = query.join(Role.groups_collection) \
-            .filter(Group.name.in_(groups or []))
+            .filter(Group.name.in_(groups))
 
         # combine queries
         query = groups_roles_query.union(user_roles_query) \
