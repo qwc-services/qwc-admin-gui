@@ -25,24 +25,24 @@ class AccessControl:
         # Extract user infos from identity
         if isinstance(identity, dict):
             username = identity.get('username')
-            group = identity.get('group')
+            groups = identity.get('groups')
         else:
             username = identity
-            group = None
+            groups = []
         session = self.config_models.session()
-        admin_role = self.admin_role_query(username, group, session)
+        admin_role = self.admin_role_query(username, groups, session)
         session.close()
 
         return admin_role
 
-    def admin_role_query(self, username, group, session):
+    def admin_role_query(self, username, groups, session):
         """Create base query for all permissions of a user and group.
 
         Combine permissions from roles of user and user groups, group roles and
         public role.
 
         :param str username: User name
-        :param str group: Group name
+        :param str groups: Groups name
         :param Session session: DB session
         """
         Role = self.config_models.model('roles')
@@ -63,7 +63,7 @@ class AccessControl:
 
         # query permissions from group roles
         group_roles_query = query.join(Role.groups_collection) \
-            .filter(Group.name == group)
+            .filter(Group.name.in_(groups))
 
         # combine queries
         query = groups_roles_query.union(user_roles_query) \
