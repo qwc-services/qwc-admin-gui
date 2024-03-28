@@ -47,14 +47,14 @@
             <input type="hidden" name="_method" value="DELETE" />
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <button type="submit" class="btn btn-danger" onclick="return confirm('{{ i18n('interface.common.confirm_message_remove') }}');">
-              {{ utils.render_icon('remove') }} {{ i18n('interface.common.delete') }}
+              {{ utils.render_icon('x') }} {{ i18n('interface.common.delete') }}
             </button>
           </form>
           <form action="{{ url_for('destroy_cascaded_%s' % endpoint_suffix, id=resource[pkey]) }}" method="post" style="display: inline;">
             <input type="hidden" name="_method" value="DELETE" />
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <button type="submit" class="btn btn-danger" onclick="return confirm('{{ i18n('interface.resources.confirm_message_remove_cascaded') }}');">
-              {{ utils.render_icon('remove') }} {{ i18n('interface.resources.remove_cascaded') }}
+              {{ utils.render_icon('x') }} {{ i18n('interface.resources.remove_cascaded') }}
             </button>
           </form>
         </td>
