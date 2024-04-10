@@ -140,6 +140,7 @@ class UsersController(Controller):
                     user_info = self.UserInfo()
                     # assign to user
                     user_info.user = user
+                    session.add(user_info)
 
                 # update user info fields
                 for field, value in user_info_data.items():
