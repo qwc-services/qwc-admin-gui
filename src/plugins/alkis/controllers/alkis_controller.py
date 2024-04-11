@@ -55,9 +55,8 @@ class ALKISController():
 
     def index(self):
         """Show alkis configs."""
-        session = self.config_models.session()
-        resources = session.query(self.alkis).order_by(self.alkis.name)
-        session.close()
+        with self.config_models.session() as session:
+            resources = session.query(self.alkis).order_by(self.alkis.name)
         return render_template(
             "%s/index.html" % self.plugindir, resources=resources, title="ALKIS"
         )
@@ -77,33 +76,31 @@ class ALKISController():
         form = ALKISForm()
         form.pgservice.choices = self.get_pgservices()
         form.header_template.choices = self.get_templates()
-        session = self.config_models.session()
-        if form.validate_on_submit():
-            alkis = self.alkis()
-            alkis.name = form.name.data
-            alkis.pgservice = ','.join(form.pgservice.data)
-            alkis.enable_alkis = form.enable_alkis.data
-            alkis.enable_owner = form.enable_owner.data
-            alkis.header_template = form.header_template.data
-            resource = self.resources()
-            resource.type = "alkis"
-            resource.name = alkis.name
-            try:
-                session.add(alkis)
-                session.add(resource)
-                session.commit()
-                flash("ALKIS Konfiguration hinzugefügt.")
-                return redirect(url_for("alkis"))
-            except InternalError as e:
-                flash("InternalError: %s" % e.orig, "error")
-            except IntegrityError as e:
-                flash("Name existiert bereits! Bitte einen anderen Namen \
-                      verwenden.", "error")
+        with self.config_models.session() as session, session.begin():
+            if form.validate_on_submit():
+                alkis = self.alkis()
+                alkis.name = form.name.data
+                alkis.pgservice = ','.join(form.pgservice.data)
+                alkis.enable_alkis = form.enable_alkis.data
+                alkis.enable_owner = form.enable_owner.data
+                alkis.header_template = form.header_template.data
+                resource = self.resources()
+                resource.type = "alkis"
+                resource.name = alkis.name
+                try:
+                    session.add(alkis)
+                    session.add(resource)
+                    flash("ALKIS Konfiguration hinzugefügt.")
+                    return redirect(url_for("alkis"))
+                except InternalError as e:
+                    flash("InternalError: %s" % e.orig, "error")
+                except IntegrityError as e:
+                    flash("Name existiert bereits! Bitte einen anderen Namen \
+                        verwenden.", "error")
 
-        else:
-            flash("ALKIS Konfuration konnte nicht erzeugt werden.", "error")
+            else:
+                flash("ALKIS Konfuration konnte nicht erzeugt werden.", "error")
 
-        session.close()
         return render_template(
             "%s/form.html" % self.plugindir, title="neue ALKIS Konfiguration",
             action=url_for("create_alkis"), form=form
@@ -111,18 +108,17 @@ class ALKISController():
 
     def edit(self, index=None):
         """Edit alkis config."""
-        session = self.config_models.session()
-        alkis = session.query(self.alkis).filter_by(id=index).first()
-        form = ALKISForm(
-            pgservice=[alkis.pgservice],
-            name=alkis.name,
-            enable_alkis=alkis.enable_alkis,
-            enable_owner=alkis.enable_owner,
-            header_template=alkis.header_template
-        )
-        form.pgservice.choices = self.get_pgservices()
-        form.header_template.choices = self.get_templates()
-        session.close()
+        with self.config_models.session() as session:
+            alkis = session.query(self.alkis).filter_by(id=index).first()
+            form = ALKISForm(
+                pgservice=[alkis.pgservice],
+                name=alkis.name,
+                enable_alkis=alkis.enable_alkis,
+                enable_owner=alkis.enable_owner,
+                header_template=alkis.header_template
+            )
+            form.pgservice.choices = self.get_pgservices()
+            form.header_template.choices = self.get_templates()
         return render_template(
             "%s/form.html" % self.plugindir, title="ALKIS Konfiguration bearbeiten",
             action=url_for("update_alkis") + "/" + str(index), form=form
@@ -133,32 +129,30 @@ class ALKISController():
         form = ALKISForm()
         form.pgservice.choices = self.get_pgservices()
         form.header_template.choices = self.get_templates()
-        session = self.config_models.session()
-        if form.validate_on_submit():
-            alkis = session.query(self.alkis).filter_by(id=index).first()
-            resource = session.query(self.resources).filter_by(
-                type="alkis", name=alkis.name
-            ).first()
-            alkis.name = form.name.data
-            alkis.pgservice = ','.join(form.pgservice.data)
-            alkis.enable_alkis = form.enable_alkis.data
-            alkis.enable_owner = form.enable_owner.data
-            alkis.header_template = form.header_template.data
-            resource.type = "alkis"
-            resource.name = alkis.name
-            try:
-                session.commit()
-                flash("ALKIS Konfiguration aktualisiert.")
-                return redirect(url_for("alkis"))
-            except InternalError as e:
-                flash('InternalError: %s' % e.orig, 'error')
-            except IntegrityError as e:
-                flash('IntegrityError: %s' % e.orig, 'error')
+        with self.config_models.session() as session, session.begin():
+            if form.validate_on_submit():
+                alkis = session.query(self.alkis).filter_by(id=index).first()
+                resource = session.query(self.resources).filter_by(
+                    type="alkis", name=alkis.name
+                ).first()
+                alkis.name = form.name.data
+                alkis.pgservice = ','.join(form.pgservice.data)
+                alkis.enable_alkis = form.enable_alkis.data
+                alkis.enable_owner = form.enable_owner.data
+                alkis.header_template = form.header_template.data
+                resource.type = "alkis"
+                resource.name = alkis.name
+                try:
+                    flash("ALKIS Konfiguration aktualisiert.")
+                    return redirect(url_for("alkis"))
+                except InternalError as e:
+                    flash('InternalError: %s' % e.orig, 'error')
+                except IntegrityError as e:
+                    flash('IntegrityError: %s' % e.orig, 'error')
 
-        else:
-            flash("ALKIS Konfuration konnte nicht erzeugt werden.", "error")
+            else:
+                flash("ALKIS Konfuration konnte nicht erzeugt werden.", "error")
 
-        session.close()
         return render_template(
             "%s/form.html" % self.plugindir, title="ALKIS Konfiguration bearbeiten",
             action=url_for("update_alkis") + "/" + str(index), form=form
@@ -166,23 +160,21 @@ class ALKISController():
 
     def delete(self, index=None):
         """Delete alkis config."""
-        session = self.config_models.session()
-        alkis = session.query(self.alkis).filter_by(id=index).first()
-        resource = session.query(self.resources).filter_by(
-            type="alkis", name=alkis.name
-        ).first()
-        try:
-            # delete and commit
-            session.delete(alkis)
-            session.delete(resource)
-            session.commit()
-            flash("ALKIS Konfiguration wurde gelöscht.", "success")
-        except InternalError as e:
-            flash("InternalError: %s" % e.orig, "error")
-        except IntegrityError as e:
-            flash("IntegrityError: %s" % e.orig, "error")
+        with self.config_models.session() as session, session.begin():
+            alkis = session.query(self.alkis).filter_by(id=index).first()
+            resource = session.query(self.resources).filter_by(
+                type="alkis", name=alkis.name
+            ).first()
+            try:
+                # delete and commit
+                session.delete(alkis)
+                session.delete(resource)
+                flash("ALKIS Konfiguration wurde gelöscht.", "success")
+            except InternalError as e:
+                flash("InternalError: %s" % e.orig, "error")
+            except IntegrityError as e:
+                flash("IntegrityError: %s" % e.orig, "error")
 
-        session.close()
         return redirect(url_for("alkis"))
 
     def get_pgservices(self):

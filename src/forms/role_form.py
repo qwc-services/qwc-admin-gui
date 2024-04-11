@@ -35,12 +35,11 @@ class RoleForm(FlaskForm):
 
     def validate_name(self, field):
         # check if role name exists
-        session = self.config_models.session()
-        query = session.query(self.Role).filter_by(name=field.data)
-        if self.obj:
-            # ignore current role
-            query = query.filter(self.Role.id != self.obj.id)
-        role = query.first()
-        session.close()
+        with self.config_models.session() as session:
+            query = session.query(self.Role).filter_by(name=field.data)
+            if self.obj:
+                # ignore current role
+                query = query.filter(self.Role.id != self.obj.id)
+            role = query.first()
         if role is not None:
             raise ValidationError(i18n('interface.common.form_name_error'))

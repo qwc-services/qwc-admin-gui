@@ -68,16 +68,15 @@ class RolesController(Controller):
         """
         form = RoleForm(self.config_models, obj=resource)
 
-        session = self.session()
-        self.update_form_collection(
-            resource, edit_form, form.groups, self.Group, 'sorted_groups',
-            'id', 'name', session
-        )
-        self.update_form_collection(
-            resource, edit_form, form.users, self.User, 'sorted_users', 'id',
-            'name', session
-        )
-        session.close()
+        with self.session() as session:
+            self.update_form_collection(
+                resource, edit_form, form.groups, self.Group, 'sorted_groups',
+                'id', 'name', session
+            )
+            self.update_form_collection(
+                resource, edit_form, form.users, self.User, 'sorted_users', 'id',
+                'name', session
+            )
 
         return form
 

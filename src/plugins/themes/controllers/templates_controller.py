@@ -105,19 +105,18 @@ class InfoTemplatesController():
                 resource = self.resources()
                 resource.type = "feature_info_layer"
                 resource.name = new_layer["name"]
-                session = self.config_models.session()
-                parent_ressource = session.query(self.resources).filter_by(
-                    type="feature_info_service", name=project_name
-                ).first()
-                resource.parent_id = parent_ressource.id
-                try:
-                    session.add(resource)
-                    session.commit()
-                except InternalError as e:
-                    flash("InternalError: {0}".format(e.orig), "error")
-                except IntegrityError as e:
-                    flash("{1}: {0}!".format(
-                        resource.name, i18n('plugins.themes.info_templates.update_message_resource_warning')), "warning")
+                with self.config_models.session() as session, session.begin():
+                    parent_ressource = session.query(self.resources).filter_by(
+                        type="feature_info_service", name=project_name
+                    ).first()
+                    resource.parent_id = parent_ressource.id
+                    try:
+                        session.add(resource)
+                    except InternalError as e:
+                        flash("InternalError: {0}".format(e.orig), "error")
+                    except IntegrityError as e:
+                        flash("{1}: {0}!".format(
+                            resource.name, i18n('plugins.themes.info_templates.update_message_resource_warning')), "warning")
         else:
             item = OrderedDict()
             item["name"] = project_name
@@ -125,34 +124,32 @@ class InfoTemplatesController():
             item["root_layer"]["name"] = project_name
             item["root_layer"]["layers"] = [new_layer]
             self.featureInfoconfig["wms_services"].append(item)
-            session = self.config_models.session()
-            resource = self.resources()
-            resource.type = "feature_info_service"
-            resource.name = project_name
-            try:
-                session.add(resource)
-                session.commit()
-            except InternalError as e:
-                flash("InternalError: {0}".format(e.orig), "error")
-            except IntegrityError as e:
-                flash("{1}: {0}!".format(
-                        resource.name, i18n('plugins.themes.info_templates.update_message_resource_warning')), "warning")
+            with self.config_models.session() as session, session.begin():
+                resource = self.resources()
+                resource.type = "feature_info_service"
+                resource.name = project_name
+                try:
+                    session.add(resource)
+                except InternalError as e:
+                    flash("InternalError: {0}".format(e.orig), "error")
+                except IntegrityError as e:
+                    flash("{1}: {0}!".format(
+                            resource.name, i18n('plugins.themes.info_templates.update_message_resource_warning')), "warning")
             resource = self.resources()
             resource.type = "feature_info_layer"
             resource.name = new_layer["name"]
-            session = self.config_models.session()
-            parent_ressource = session.query(self.resources).filter_by(
-                type="feature_info_service", name=project_name
-            ).first()
-            resource.parent_id = parent_ressource.id
-            try:
-                session.add(resource)
-                session.commit()
-            except InternalError as e:
-                flash("InternalError: {0}".format(e.orig), "error")
-            except IntegrityError as e:
-                flash("{1}: {0}!".format(
-                        resource.name, i18n('plugins.themes.info_templates.update_message_resource_warning')), "warning")
+            with self.config_models.session() as session, session.begin():
+                parent_ressource = session.query(self.resources).filter_by(
+                    type="feature_info_service", name=project_name
+                ).first()
+                resource.parent_id = parent_ressource.id
+                try:
+                    session.add(resource)
+                except InternalError as e:
+                    flash("InternalError: {0}".format(e.orig), "error")
+                except IntegrityError as e:
+                    flash("{1}: {0}!".format(
+                            resource.name, i18n('plugins.themes.info_templates.update_message_resource_warning')), "warning")
 
         self.save_featureinfo_config()
 
@@ -181,34 +178,32 @@ class InfoTemplatesController():
 
     def delete_info_template(self, gid, tid):
         """Delete info_template."""
-        session = self.config_models.session()
-        resource = session.query(self.resources).filter_by(
-            type="feature_info_layer", name=self.featureInfoconfig["wms_services"][gid]["root_layer"]["layers"][tid]["name"]
-        ).first()
-        if resource:
-            try:
-                session.delete(resource)
-                session.commit()
-            except InternalError as e:
-                flash("InternalError: %s" % e.orig, "error")
-            except IntegrityError as e:
-                flash("{1} '{0}'!".format(
-                    resource.name, i18n('plugins.themes.info_templates.delete_message_warning')), "warning")
-        self.featureInfoconfig["wms_services"][gid]["root_layer"]["layers"].pop(tid)
-        if not self.featureInfoconfig["wms_services"][gid]["root_layer"]["layers"] :
-            session = self.config_models.session()
+        with self.config_models.session() as session, session.begin():
             resource = session.query(self.resources).filter_by(
-                type="feature_info_service", name=self.featureInfoconfig["wms_services"][gid]["name"]
+                type="feature_info_layer", name=self.featureInfoconfig["wms_services"][gid]["root_layer"]["layers"][tid]["name"]
             ).first()
             if resource:
                 try:
                     session.delete(resource)
-                    session.commit()
                 except InternalError as e:
                     flash("InternalError: %s" % e.orig, "error")
                 except IntegrityError as e:
                     flash("{1} '{0}'!".format(
                         resource.name, i18n('plugins.themes.info_templates.delete_message_warning')), "warning")
+        self.featureInfoconfig["wms_services"][gid]["root_layer"]["layers"].pop(tid)
+        if not self.featureInfoconfig["wms_services"][gid]["root_layer"]["layers"] :
+            with self.config_models.session() as session, session.begin():
+                resource = session.query(self.resources).filter_by(
+                    type="feature_info_service", name=self.featureInfoconfig["wms_services"][gid]["name"]
+                ).first()
+                if resource:
+                    try:
+                        session.delete(resource)
+                    except InternalError as e:
+                        flash("InternalError: %s" % e.orig, "error")
+                    except IntegrityError as e:
+                        flash("{1} '{0}'!".format(
+                            resource.name, i18n('plugins.themes.info_templates.delete_message_warning')), "warning")
             self.featureInfoconfig["wms_services"].pop(gid)
         self.save_featureinfo_config()
 

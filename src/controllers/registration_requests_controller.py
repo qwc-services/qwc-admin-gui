@@ -108,20 +108,17 @@ class RegistrationRequestsController(Controller):
         form = RegistrationRequestForm(obj=resource)
 
         if edit_form:
-            session = self.session()
+            with self.session() as session:
+                # find user for registration request
+                query = session.query(self.User).filter_by(id=resource.user_id)
+                user = query.first()
 
-            # find user for registration request
-            query = session.query(self.User).filter_by(id=resource.user_id)
-            user = query.first()
+                # query all pending registration requests of same user
+                pending_requests = self.pending_requests(user.id, session)
 
-            # query all pending registration requests of same user
-            pending_requests = self.pending_requests(user.id, session)
-
-            # query group memberships
-            user_groups = user.sorted_groups
-            user_group_ids = [g.id for g in user_groups]
-
-            session.close()
+                # query group memberships
+                user_groups = user.sorted_groups
+                user_group_ids = [g.id for g in user_groups]
 
             # user details
             form.username = user.name
