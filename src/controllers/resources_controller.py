@@ -690,29 +690,30 @@ class ResourcesController(Controller):
         self.setup_models()
 
         # find resource
-        with self.session() as session, session.begin():
+        with self.session() as session:
             resource = self.find_resource(id, session)
 
-            if resource is not None:
-                # get config generator URL
-                config_generator_service_url = self.handler().config().get(
-                    "config_generator_service_url",
-                    "http://qwc-config-service:9090"
-                )
-                if resource.type == 'map':
+        if resource is not None:
+            # get config generator URL
+            config_generator_service_url = self.handler().config().get(
+                "config_generator_service_url",
+                "http://qwc-config-service:9090"
+            )
+            if resource.type == 'map':
+                with self.session() as session, session.begin():
                     self.import_layers(
                         resource, config_generator_service_url, session
                     )
-                else:
-                    flash(i18n('interface.resources.import_children_message_error'),
-                        'warning')
-
-                return redirect(
-                    url_for('hierarchy_%s' % self.endpoint_suffix, id=id)
-                )
             else:
-                # resource not found
-                abort(404)
+                flash(i18n('interface.resources.import_children_message_error'),
+                    'warning')
+
+            return redirect(
+                url_for('hierarchy_%s' % self.endpoint_suffix, id=id)
+            )
+        else:
+            # resource not found
+            abort(404)
 
     def import_layers(self, map_resource, config_generator_service_url,
                       session):
@@ -756,22 +757,30 @@ class ResourcesController(Controller):
                     list(set(layers_from_config) - set(layers))
                 )
                 if new_layers:
+                    imported_layers = 0
                     for layer in new_layers:
-                        # create new layer resource
-                        resource = self.Resource()
-                        resource.type = 'layer'
-                        resource.name = layer
-                        resource.parent_id = map_resource.id
-                        session.add(resource)
+                        try:
+                            # create new layer resource
+                            resource = self.Resource()
+                            resource.type = 'layer'
+                            resource.name = layer
+                            resource.parent_id = map_resource.id
+                            session.add(resource)
 
-                    self.update_config_timestamp(session)
+                            self.update_config_timestamp(session)
+                            imported_layers += 1
+                        except Exception as e:
+                            msg = f"{i18n('interface.resources.import_layer_message_error', layer)} - {e}"
+                            self.logger.error(msg)
+                            flash(msg, 'error')
 
-                    flash(
-                        '%d %s' %(
-                        len(new_layers), i18n('interface.resources.add_layers_message_success')), 'success'
-                    )
+                    if imported_layers > 0:
+                        flash(
+                            '%d %s' %(
+                            len(new_layers), i18n('interface.resources.add_layers_message_success')), 'success'
+                        )
                 else:
-                    flash(i18n('interface.resources.add_map_message_error'), 'info')
+                    flash(i18n('interface.resources.add_layers_map_message_error'), 'info')
             else:
                 # map not found or no layers
                 flash(i18n('interface.resources.add_layers_map_message_error'), 'warning')
@@ -807,122 +816,127 @@ class ResourcesController(Controller):
         if form.validate_on_submit():
             try:
                 # find resource
-                with self.session() as session, session.begin():
+                with self.session() as session:
                     parent_resource = self.find_resource(id, session)
-                    if parent_resource is not None:
-                        # get config generator URL
-                        config_generator_service_url = self.handler().config().get(
-                            "config_generator_service_url",
-                            "http://qwc-config-service:9090"
+                if parent_resource is not None:
+                    # get config generator URL
+                    config_generator_service_url = self.handler().config().get(
+                        "config_generator_service_url",
+                        "http://qwc-config-service:9090"
+                    )
+                    type = form.import_type.data
+                    if parent_resource.type == 'map':
+
+                        # get map details from config generator service
+                        url = urljoin(
+                            config_generator_service_url, 'maps/%s' % parent_resource.name
                         )
-                        type = form.import_type.data
-                        if parent_resource.type == 'map':
-
-                            # get map details from config generator service
-                            url = urljoin(
-                                config_generator_service_url, 'maps/%s' % parent_resource.name
+                        tenant = self.handler().tenant
+                        response = requests.get(url, params={'tenant': tenant})
+                        if response.status_code != requests.codes.ok:
+                            self.logger.error(
+                                "Could not get map details from %s:\n%s" %
+                                (response.url, response.content)
                             )
-                            tenant = self.handler().tenant
-                            response = requests.get(url, params={'tenant': tenant})
-                            if response.status_code != requests.codes.ok:
-                                self.logger.error(
-                                    "Could not get map details from %s:\n%s" %
-                                    (response.url, response.content)
-                                )
-                                flash(
-                                    '%s Status %s' % (
-                                    i18n('interface.resources.import_resources_message_error'), response.status_code), 'error'
-                                )
-                                return redirect(url_for(self.base_route))
+                            flash(
+                                '%s Status %s' % (
+                                i18n('interface.resources.import_resources_message_error'), response.status_code), 'error'
+                            )
+                            return redirect(url_for(self.base_route))
 
-                            layers_from_config = response.json().get('layers', [])
+                        layers_from_config = response.json().get('layers', [])
 
-                            if layers_from_config:
-                                new_resources = []
-                                new_permissions = []
-                                for layer in layers_from_config:
-                                    # first query to know if resource already exists
-                                    query = session.query(self.Resource) \
-                                        .filter(self.Resource.name == layer) \
-                                        .filter(self.Resource.type == type) \
-                                        .filter(self.Resource.parent_id == parent_resource.id)
-                                    resources = query.all()
-
-                                    if not resources:
-                                        # resource does not exist in database so create new resource
-                                        resource = self.Resource()
-                                        resource.type = type
-                                        resource.name = layer
-                                        resource.parent_id = parent_resource.id
-                                        new_resources.append(resource)
-                                        session.add(resource)
-
-                                        # new query to get id of new resource
+                        if layers_from_config:
+                            new_resources = []
+                            new_permissions = []
+                            for layer in layers_from_config:
+                                try:
+                                    with self.session() as session, session.begin():
+                                        # first query to know if resource already exists
                                         query = session.query(self.Resource) \
                                             .filter(self.Resource.name == layer) \
                                             .filter(self.Resource.type == type) \
                                             .filter(self.Resource.parent_id == parent_resource.id)
                                         resources = query.all()
 
-                                    # handle permission for existing or new resource if role has been chosen
-                                    role = form.role_id.data
-                                    if role > 0:
-                                        for resource in resources:
-                                            resource_id = resource.__dict__.get('id')
-                                            # query resource permissions
-                                            query = session.query(self.Permission) \
-                                                .filter(self.Permission.resource_id == resource_id) \
-                                                .filter(self.Permission.role_id == role)
+                                        if not resources:
+                                            # resource does not exist in database so create new resource
+                                            resource = self.Resource()
+                                            resource.type = type
+                                            resource.name = layer
+                                            resource.parent_id = parent_resource.id
+                                            new_resources.append(resource)
+                                            session.add(resource)
 
-                                            permissions = []
-                                            for permission in query.all():
-                                                permissions.append({
-                                                    "role": permission.role.name,
-                                                    "write": permission.write
-                                                })
-                                            if not permissions:
-                                                # create new permission for resource
-                                                permission = self.Permission()
-                                                session.add(permission)
+                                            # new query to get id of new resource
+                                            query = session.query(self.Resource) \
+                                                .filter(self.Resource.name == layer) \
+                                                .filter(self.Resource.type == type) \
+                                                .filter(self.Resource.parent_id == parent_resource.id)
+                                            resources = query.all()
 
-                                                # update permission
-                                                permission.priority = form.priority.data
-                                                permission.write = form.write.data
+                                        # handle permission for existing or new resource if role has been chosen
+                                        role = form.role_id.data
+                                        if role > 0:
+                                            for resource in resources:
+                                                resource_id = resource.__dict__.get('id')
+                                                # query resource permissions
+                                                query = session.query(self.Permission) \
+                                                    .filter(self.Permission.resource_id == resource_id) \
+                                                    .filter(self.Permission.role_id == role)
 
-                                                permission.role_id = role
+                                                permissions = []
+                                                for permission in query.all():
+                                                    permissions.append({
+                                                        "role": permission.role.name,
+                                                        "write": permission.write
+                                                    })
+                                                if not permissions:
+                                                    # create new permission for resource
+                                                    permission = self.Permission()
+                                                    session.add(permission)
 
-                                                permission.resource_id = resource_id
-                                                new_permissions.append(permission)                                
+                                                    # update permission
+                                                    permission.priority = form.priority.data
+                                                    permission.write = form.write.data
 
-                                self.update_config_timestamp(session)
+                                                    permission.role_id = role
 
-                                if new_resources:
-                                    flash(
-                                        '%d %s' % (
-                                        len(new_resources), i18n('interface.resources.add_resources_message_success')), 
-                                        'success'
-                                    )
-                                else:
-                                    flash(i18n('interface.resources.add_resources_message_error'), 'info')
+                                                    permission.resource_id = resource_id
+                                                    new_permissions.append(permission)                                
 
-                                if new_permissions:
-                                    flash(
-                                        '%d %s' % (
-                                        len(new_permissions), i18n('interface.resources.add_permissions_message_success')), 'success'
-                                    )
-                                else:
-                                    flash(i18n('interface.resources.add_permissions_message_error'), 'info')
+                                        self.update_config_timestamp(session)
+                                except Exception as e:
+                                    msg = f"{i18n('interface.resources.add_resource_message_error', layer)} - {e}"
+                                    self.logger.error(msg)
+                                    flash(msg, 'error')                                    
+                            if new_resources:
+                                flash(
+                                    '%d %s' % (
+                                    len(new_resources), i18n('interface.resources.add_resources_message_success')), 
+                                    'success'
+                                )
                             else:
-                                # map not found or no layers
-                                flash(i18n('interface.resources.add_layers_map_message_error'), 'warning')
+                                flash(i18n('interface.resources.add_resources_message_error'), 'info')
 
+                            if new_permissions:
+                                flash(
+                                    '%d %s' % (
+                                    len(new_permissions), i18n('interface.resources.add_permissions_message_success')), 'success'
+                                )
+                            else:
+                                flash(i18n('interface.resources.add_permissions_message_error'), 'info')
                         else:
-                            flash(i18n('interface.resources.import_children_message_error'),
-                                'warning')
+                            # map not found or no layers
+                            flash(i18n('interface.resources.add_layers_map_message_error'), 'warning')
 
                     else:
-                        # resource not found
-                        abort(404)
+                        flash(i18n('interface.resources.import_children_message_error'),
+                            'warning')
+
+                else:
+                    # resource not found
+                    abort(404)
 
                 return redirect(
                     url_for('hierarchy_%s' % self.endpoint_suffix, id=id)
