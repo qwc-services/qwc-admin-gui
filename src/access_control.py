@@ -29,9 +29,8 @@ class AccessControl:
         else:
             username = identity
             groups = []
-        session = self.config_models.session()
-        admin_role = self.admin_role_query(username, groups, session)
-        session.close()
+        with self.config_models.session() as session:
+            admin_role = self.admin_role_query(username, groups, session)
 
         return admin_role
 

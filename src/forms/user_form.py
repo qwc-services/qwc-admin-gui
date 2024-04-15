@@ -109,23 +109,21 @@ class UserForm(FlaskForm):
 
     def validate_name(self, field):
         # check if user name exists
-        session = self.config_models.session()
-        query = session.query(self.User).filter_by(name=field.data)
-        if self.obj:
-            # ignore current user
-            query = query.filter(self.User.id != self.obj.id)
-        user = query.first()
-        session.close()
+        with self.config_models.session() as session:
+            query = session.query(self.User).filter_by(name=field.data)
+            if self.obj:
+                # ignore current user
+                query = query.filter(self.User.id != self.obj.id)
+            user = query.first()
         if user is not None:
             raise ValidationError(i18n('interface.common.form_name_error'))
 
     def validate_email(self, email):
-        session = self.config_models.session()
-        query = session.query(self.User).filter_by(email=email.data)
-        if self.obj:
-            # ignore current user
-            query = query.filter(self.User.id != self.obj.id)
-        user = query.first()
-        session.close()
+        with self.config_models.session() as session:
+            query = session.query(self.User).filter_by(email=email.data)
+            if self.obj:
+                # ignore current user
+                query = query.filter(self.User.id != self.obj.id)
+            user = query.first()
         if user is not None:
             raise ValidationError(i18n('interface.users.form_email_error'))

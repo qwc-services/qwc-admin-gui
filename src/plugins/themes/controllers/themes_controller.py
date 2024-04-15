@@ -270,21 +270,20 @@ class ThemesController:
             name = name.split("/")[-1]
             self.themesconfig["themes"]["groups"][gid]["items"].pop(tid)
 
-        session = self.config_models.session()
-        resource = session.query(self.resources).filter_by(
-            type="map", name=name
-        ).first()
+        with self.config_models.session() as session, session.begin():
+            resource = session.query(self.resources).filter_by(
+                type="map", name=name
+            ).first()
 
-        if resource:
-            try:
-                session.delete(resource)
-                session.commit()
-            except InternalError as e:
-                flash("InternalError: %s" % e.orig, "error")
-            except IntegrityError as e:
-                flash("{0} '{1}'!".format(
-                    i18n('plugins.themes.themes.delete_theme_message_error'), resource.name), 
-                    "warning")
+            if resource:
+                try:
+                    session.delete(resource)
+                except InternalError as e:
+                    flash("InternalError: %s" % e.orig, "error")
+                except IntegrityError as e:
+                    flash("{0} '{1}'!".format(
+                        i18n('plugins.themes.themes.delete_theme_message_error'), resource.name), 
+                        "warning")
 
         self.save_themesconfig()
         return redirect(url_for("themes"))
@@ -645,50 +644,40 @@ class ThemesController:
                 })
 
         new_name = form.url.data.split("/")[-1]
-        session = self.config_models.session()
+        with self.config_models.session() as session, session.begin():
+            # edit theme
+            if theme:
+                if gid is None:
+                    name = self.themesconfig["themes"]["items"][tid]["url"]
+                    self.themesconfig["themes"]["items"][tid] = item
+                else:
+                    name = self.themesconfig["themes"]["groups"][gid]["items"][tid]["url"]
+                    self.themesconfig["themes"]["groups"][gid]["items"][tid] = item
 
-        # edit theme
-        if theme:
-            if gid is None:
-                name = self.themesconfig["themes"]["items"][tid]["url"]
-                self.themesconfig["themes"]["items"][tid] = item
+                name = name.split("/")[-1]
+                resource = session.query(self.resources).filter_by(name=name).first()
+                if resource:
+                    resource.name = new_name
+
+            # new theme
             else:
-                name = self.themesconfig["themes"]["groups"][gid]["items"][tid]["url"]
-                self.themesconfig["themes"]["groups"][gid]["items"][tid] = item
-
-            name = name.split("/")[-1]
-            resource = session.query(self.resources).filter_by(name=name).first()
-            if resource:
+                resource = self.resources()
+                resource.type = "map"
                 resource.name = new_name
                 try:
-                    session.commit()
+                    session.add(resource)
                 except InternalError as e:
                     flash("InternalError: {0}".format(e.orig), "error")
                 except IntegrityError as e:
                     flash("{0}: '{1}'!".format(
-                        i18n('plugins.themes.themes.edit_theme_message_integrity_error'), resource.name), 
+                        i18n('plugins.themes.themes.create_theme_message_integrity_error'), resource.name), 
                         "warning")
 
-        # new theme
-        else:
-            resource = self.resources()
-            resource.type = "map"
-            resource.name = new_name
-            try:
-                session.add(resource)
-                session.commit()
-            except InternalError as e:
-                flash("InternalError: {0}".format(e.orig), "error")
-            except IntegrityError as e:
-                flash("{0}: '{1}'!".format(
-                    i18n('plugins.themes.themes.create_theme_message_integrity_error'), resource.name), 
-                    "warning")
-
-            if gid is None:
-                self.themesconfig["themes"]["items"].append(item)
-            else:
-                self.themesconfig["themes"]["groups"][gid]["items"].append(
-                    item)
+                if gid is None:
+                    self.themesconfig["themes"]["items"].append(item)
+                else:
+                    self.themesconfig["themes"]["groups"][gid]["items"].append(
+                        item)
 
         self.save_themesconfig()
 

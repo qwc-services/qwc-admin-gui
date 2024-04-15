@@ -133,49 +133,47 @@ class Controller:
         """Show resources list."""
         self.setup_models()
 
-        session = self.session()
+        with self.session() as session:
 
-        # get resources query
-        search_text = self.search_text_arg()
-        query = self.resources_for_index_query(search_text, session)
+            # get resources query
+            search_text = self.search_text_arg()
+            query = self.resources_for_index_query(search_text, session)
 
-        # order by sort args
-        sort, sort_asc = self.sort_args()
-        sort_param = None
-        if sort is not None:
-            order_by = self.order_by_criterion(sort, sort_asc)
-            if order_by is not None:
-                if type(order_by) is tuple:
-                    # order by multiple sort columns
-                    query = query.order_by(None).order_by(*order_by)
-                else:
-                    # order by single sort column
-                    query = query.order_by(None).order_by(order_by)
+            # order by sort args
+            sort, sort_asc = self.sort_args()
+            sort_param = None
+            if sort is not None:
+                order_by = self.order_by_criterion(sort, sort_asc)
+                if order_by is not None:
+                    if type(order_by) is tuple:
+                        # order by multiple sort columns
+                        query = query.order_by(None).order_by(*order_by)
+                    else:
+                        # order by single sort column
+                        query = query.order_by(None).order_by(order_by)
 
-                sort_param = sort
-                if not sort_asc:
-                    # append sort direction suffix
-                    sort_param = "%s-" % sort
-        # else use default order from index query
+                    sort_param = sort
+                    if not sort_asc:
+                        # append sort direction suffix
+                        sort_param = "%s-" % sort
+            # else use default order from index query
 
-        # paginate
-        page, per_page = self.pagination_args()
-        num_pages = math.ceil(query.count() / per_page)
-        resources = query.limit(per_page).offset((page - 1) * per_page).all()
+            # paginate
+            page, per_page = self.pagination_args()
+            num_pages = math.ceil(query.count() / per_page)
+            resources = query.limit(per_page).offset((page - 1) * per_page).all()
 
-        pagination = {
-            'page': page,
-            'num_pages': num_pages,
-            'per_page': per_page,
-            'per_page_options': self.PER_PAGE_OPTIONS,
-            'per_page_default': self.DEFAULT_PER_PAGE,
-            'params': {
-                'search': search_text,
-                'sort': sort_param
+            pagination = {
+                'page': page,
+                'num_pages': num_pages,
+                'per_page': per_page,
+                'per_page_options': self.PER_PAGE_OPTIONS,
+                'per_page_default': self.DEFAULT_PER_PAGE,
+                'params': {
+                    'search': search_text,
+                    'sort': sort_param
+                }
             }
-        }
-
-        session.close()
 
         return render_template(
             '%s/index.html' % self.templates_dir, resources=resources,
@@ -208,11 +206,9 @@ class Controller:
         if form.validate_on_submit():
             try:
                 # create and commit resource
-                session = self.session()
-                self.create_or_update_resources(None, form, session)
-                session.commit()
-                self.update_config_timestamp(session)
-                session.close()
+                with self.session() as session, session.begin():
+                    self.create_or_update_resources(None, form, session)
+                    self.update_config_timestamp(session)
                 flash(i18n('interface.main.new_resource_message_success', [self.resource_name]), 'success')
 
                 return redirect(url_for(self.base_route))
@@ -255,24 +251,22 @@ class Controller:
         """
         self.setup_models()
         # find resource
-        session = self.session()
-        resource = self.find_resource(id, session)
+        with self.session() as session:
+            resource = self.find_resource(id, session)
 
-        if resource is not None:
-            template = '%s/form.html' % self.templates_dir
-            form = self.create_form(resource, True)
-            session.close()
-            title = "%s %s" % (i18n('interface.common.edit'), self.resource_name)
-            action = url_for('update_%s' % self.endpoint_suffix, id=id)
+            if resource is not None:
+                template = '%s/form.html' % self.templates_dir
+                form = self.create_form(resource, True)
+                title = "%s %s" % (i18n('interface.common.edit'), self.resource_name)
+                action = url_for('update_%s' % self.endpoint_suffix, id=id)
 
-            return render_template(
-                template, title=title, form=form, action=action, id=id,
-                method='PUT', i18n=i18n
-            )
-        else:
-            # resource not found
-            session.close()
-            abort(404)
+                return render_template(
+                    template, title=title, form=form, action=action, id=id,
+                    method='PUT', i18n=i18n
+                )
+            else:
+                # resource not found
+                abort(404)
 
     # update
 
@@ -283,47 +277,42 @@ class Controller:
         """
         self.setup_models()
         # find resource
-        session = self.session()
-        resource = self.find_resource(id, session)
+        with self.session() as session, session.begin():
+            resource = self.find_resource(id, session)
 
-        if resource is not None:
-            form = self.create_form(resource)
-            if form.validate_on_submit():
-                try:
-                    # update and commit resource
-                    self.create_or_update_resources(resource, form, session)
-                    session.commit()
-                    self.update_config_timestamp(session)
-                    session.close()
-                    flash(i18n('interface.main.update_resource_message_success', [self.resource_name]),
-                          'success')
+            if resource is not None:
+                form = self.create_form(resource)
+                if form.validate_on_submit():
+                    try:
+                        # update and commit resource
+                        self.create_or_update_resources(resource, form, session)
+                        self.update_config_timestamp(session)
+                        flash(i18n('interface.main.update_resource_message_success', [self.resource_name]),
+                            'success')
 
-                    return redirect(url_for(self.base_route))
-                except InternalError as e:
-                    flash('InternalError: %s' % e.orig, 'error')
-                except IntegrityError as e:
-                    flash('IntegrityError: %s' % e.orig, 'error')
-                except ValidationError as e:
+                        return redirect(url_for(self.base_route))
+                    except InternalError as e:
+                        flash('InternalError: %s' % e.orig, 'error')
+                    except IntegrityError as e:
+                        flash('IntegrityError: %s' % e.orig, 'error')
+                    except ValidationError as e:
+                        flash(i18n('interface.main.update_resource_message_error', [self.resource_name]), 
+                            'warning')
+                else:
                     flash(i18n('interface.main.update_resource_message_error', [self.resource_name]), 
-                          'warning')
+                        'warning')
+
+                # show validation errors
+                template = '%s/form.html' % self.templates_dir
+                title = "%s %s" % (i18n('interface.common.edit'), self.resource_name)
+                action = url_for('update_%s' % self.endpoint_suffix, id=id)
+
+                return render_template(
+                    template, title=title, form=form, action=action, method='PUT', i18n=i18n
+                )
             else:
-                flash(i18n('interface.main.update_resource_message_error', [self.resource_name]), 
-                      'warning')
-
-            session.close()
-
-            # show validation errors
-            template = '%s/form.html' % self.templates_dir
-            title = "%s %s" % (i18n('interface.common.edit'), self.resource_name)
-            action = url_for('update_%s' % self.endpoint_suffix, id=id)
-
-            return render_template(
-                template, title=title, form=form, action=action, method='PUT', i18n=i18n
-            )
-        else:
-            # resource not found
-            session.close()
-            abort(404)
+                # resource not found
+                abort(404)
 
     # destroy
 
@@ -342,31 +331,27 @@ class Controller:
         """
         self.setup_models()
         # find resource
-        session = self.session()
-        resource = self.find_resource(id, session)
+        with self.session() as session, session.begin():
+            resource = self.find_resource(id, session)
 
-        if resource is not None:
-            try:
-                # update and commit resource
-                self.destroy_resource(resource, session)
-                session.commit()
-                self.update_config_timestamp(session)
-                flash(i18n('interface.main.delete_resource_message_success', [self.resource_name]), 
-                'success')
-            except InternalError as e:
-                flash('InternalError: %s' % e.orig, 'error')
-            except IntegrityError as e:
-                flash('IntegrityError: %s' % e.orig, 'error')
-            except Exception as e:
-                flash(Markup(str(e)), 'error')
+            if resource is not None:
+                try:
+                    # update and commit resource
+                    self.destroy_resource(resource, session)
+                    self.update_config_timestamp(session)
+                    flash(i18n('interface.main.delete_resource_message_success', [self.resource_name]), 
+                    'success')
+                except InternalError as e:
+                    flash('InternalError: %s' % e.orig, 'error')
+                except IntegrityError as e:
+                    flash('IntegrityError: %s' % e.orig, 'error')
+                except Exception as e:
+                    flash(Markup(str(e)), 'error')
 
-            session.close()
-
-            return redirect(url_for(self.base_route))
-        else:
-            # resource not found
-            session.close()
-            abort(404)
+                return redirect(url_for(self.base_route))
+            else:
+                # resource not found
+                abort(404)
 
     def modify(self, id):
         """Workaround for missing PUT and DELETE methods in HTML forms
@@ -431,7 +416,6 @@ class Controller:
 
         # update and commit new timestamp
         last_update.updated_at = datetime.datetime.now(datetime.UTC)
-        session.commit()
 
     def update_form_collection(
         self, resource, edit_form, multi_select, relation_model,

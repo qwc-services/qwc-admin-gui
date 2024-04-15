@@ -81,16 +81,15 @@ class UsersController(Controller):
         form.totp_enabled = self.handler().config().get(
             "totp_enabled", False)
 
-        session = self.session()
-        self.update_form_collection(
-            resource, edit_form, form.groups, self.Group, 'sorted_groups',
-            'id', 'name', session
-        )
-        self.update_form_collection(
-            resource, edit_form, form.roles, self.Role, 'sorted_roles', 'id',
-            'name', session
-        )
-        session.close()
+        with self.session() as session:
+            self.update_form_collection(
+                resource, edit_form, form.groups, self.Group, 'sorted_groups',
+                'id', 'name', session
+            )
+            self.update_form_collection(
+                resource, edit_form, form.roles, self.Role, 'sorted_roles', 'id',
+                'name', session
+            )
 
         return form
 

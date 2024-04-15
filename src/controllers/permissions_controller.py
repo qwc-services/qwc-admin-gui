@@ -107,7 +107,6 @@ class PermissionsController(Controller):
                 "params": {}
             }
 
-        session = self.session()
         # get resources filtered by resource type
         search_text = request.args.get('search')
         # First check wether user deleted the filter
@@ -133,97 +132,96 @@ class PermissionsController(Controller):
             flask_session["permissions"]['params']["type"] = resource_type
         active_resource_type = flask_session["permissions"]['params'].get("type", None)
 
-        resource_id = request.args.get('resource_id')
-        query = self.resources_for_index_query(
-            active_search_text, active_role, active_resource_type, resource_id, session
-        )
+        with self.session() as session:
+            resource_id = request.args.get('resource_id')
+            query = self.resources_for_index_query(
+                active_search_text, active_role, active_resource_type, resource_id, session
+            )
 
-        # order by sort args
-        sort, sort_asc = self.sort_args()
-        sort_param = None
-        if sort is not None:
-            order_by = self.order_by_criterion(sort, sort_asc)
-            if order_by is not None:
-                if type(order_by) is tuple:
-                    # order by multiple sort columns
-                    query = query.order_by(None).order_by(*order_by)
-                else:
-                    # order by single sort column
-                    query = query.order_by(None).order_by(order_by)
+            # order by sort args
+            sort, sort_asc = self.sort_args()
+            sort_param = None
+            if sort is not None:
+                order_by = self.order_by_criterion(sort, sort_asc)
+                if order_by is not None:
+                    if type(order_by) is tuple:
+                        # order by multiple sort columns
+                        query = query.order_by(None).order_by(*order_by)
+                    else:
+                        # order by single sort column
+                        query = query.order_by(None).order_by(order_by)
 
-                sort_param = sort
-                if not sort_asc:
-                    # append sort direction suffix
-                    sort_param = "%s-" % sort
-                flask_session["permissions"]['params']["sort"] = sort_param
+                    sort_param = sort
+                    if not sort_asc:
+                        # append sort direction suffix
+                        sort_param = "%s-" % sort
+                    flask_session["permissions"]['params']["sort"] = sort_param
 
-        # paginate
-        page, per_page = self.pagination_args(flask_session["permissions"]['params'])
-        num_pages = math.ceil(query.count() / per_page)
-        resources = query.limit(per_page).offset((page - 1) * per_page).all()
-        flask_session["permissions"]['params']['per_page'] = per_page
+            # paginate
+            page, per_page = self.pagination_args(flask_session["permissions"]['params'])
+            num_pages = math.ceil(query.count() / per_page)
+            resources = query.limit(per_page).offset((page - 1) * per_page).all()
+            flask_session["permissions"]['params']['per_page'] = per_page
 
-        # Set modified property to True so that the flask_session object
-        # updates our cookie
-        # Without this, the presistence of data stored in the cookie is not reliable
-        # (Sometimes the data is not saved, this fixes the issue)
-        # See https://stackoverflow.com/questions/39261260/flask-session-variable-not-persisting-between-requests/39261335#39261335
-        flask_session.modified = True
+            # Set modified property to True so that the flask_session object
+            # updates our cookie
+            # Without this, the presistence of data stored in the cookie is not reliable
+            # (Sometimes the data is not saved, this fixes the issue)
+            # See https://stackoverflow.com/questions/39261260/flask-session-variable-not-persisting-between-requests/39261335#39261335
+            flask_session.modified = True
 
-        pagination = {
-            'page': page,
-            'num_pages': num_pages,
-            'per_page_options': self.PER_PAGE_OPTIONS,
-            'per_page_default': self.DEFAULT_PER_PAGE,
-            'params': flask_session["permissions"]["params"]
-        }
+            pagination = {
+                'page': page,
+                'num_pages': num_pages,
+                'per_page_options': self.PER_PAGE_OPTIONS,
+                'per_page_default': self.DEFAULT_PER_PAGE,
+                'params': flask_session["permissions"]["params"]
+            }
 
-        # query roles
-        roles = session.query(self.Role).order_by(self.Role.name).all()
+            # query roles
+            roles = session.query(self.Role).order_by(self.Role.name).all()
 
-        # query resource types
-        resource_types = OrderedDict()
-        query = session.query(self.ResourceType) \
-            .order_by(self.ResourceType.list_order, self.ResourceType.name)
-        for resource_type in query.all():
-            resource_types[resource_type.name] = resource_type.description
+            # query resource types
+            resource_types = OrderedDict()
+            query = session.query(self.ResourceType) \
+                .order_by(self.ResourceType.list_order, self.ResourceType.name)
+            for resource_type in query.all():
+                resource_types[resource_type.name] = resource_type.description
 
-        # Create dict with all defined parents from resource objects
-        all_resources = self.resources_for_index_query(
-            None, None, None, resource_id, session
-        ).all()
-        parents_dict = {}
-        for res in all_resources:
-            if res.resource.parent is not None and \
-                    res.resource.parent.id not in parents_dict.keys():
-                parents_dict[res.resource.parent.id] = res.resource.parent.name
+            # Create dict with all defined parents from resource objects
+            all_resources = self.resources_for_index_query(
+                None, None, None, resource_id, session
+            ).all()
+            parents_dict = {}
+            for res in all_resources:
+                if res.resource.parent is not None and \
+                        res.resource.parent.id not in parents_dict.keys():
+                    parents_dict[res.resource.parent.id] = res.resource.parent.name
 
-        # Warn if role does not have permission on resource parent
-        resource_roles = {}
-        for res in all_resources:
-            resource_roles[res.resource.type + ":" + res.resource.name] = \
-                resource_roles.get(res.resource.type + ":" + res.resource.name, []) + [res.role.name]
+            # Warn if role does not have permission on resource parent
+            resource_roles = {}
+            for res in all_resources:
+                resource_roles[res.resource.type + ":" + res.resource.name] = \
+                    resource_roles.get(res.resource.type + ":" + res.resource.name, []) + [res.role.name]
 
-        public_default_allow_resources = ['attribute', 'layer', 'feature_info_layer', 'print_template']
+            public_default_allow_resources = ['attribute', 'layer', 'feature_info_layer', 'print_template']
 
-        role_warnings = []
-        for res in all_resources:
-            parent = res.resource.parent
-            default_parent_roles = ['public'] if parent is not None and res.resource.type in public_default_allow_resources else []
-            if parent is not None and \
-                    'public' not in resource_roles.get(parent.type + ":" + parent.name, default_parent_roles) and \
-                    res.role.name not in resource_roles.get(parent.type + ":" + parent.name, default_parent_roles):
-                role_warnings.append(
-                    (
-                        "The permission for role <b>%s</b> on the <b>%s</b> resource <b>%s</b> " +
-                        "has no effect because <b>%s</b> has no permission on the " +
-                        "parent resource <b>%s</b>."
-                     ) % (res.role.name, res.resource.type, res.resource.name, res.role.name, parent.name)
-                )
-        if role_warnings:
-            flash(Markup("<br />".join(role_warnings)), 'warning')
-
-        session.close()
+            role_warnings = []
+            for res in all_resources:
+                parent = res.resource.parent
+                default_parent_roles = ['public'] if parent is not None and res.resource.type in public_default_allow_resources else []
+                if parent is not None and \
+                        'public' not in resource_roles.get(parent.type + ":" + parent.name, default_parent_roles) and \
+                        res.role.name not in resource_roles.get(parent.type + ":" + parent.name, default_parent_roles):
+                    role_warnings.append(
+                        (
+                            "The permission for role <b>%s</b> on the <b>%s</b> resource <b>%s</b> " +
+                            "has no effect because <b>%s</b> has no permission on the " +
+                            "parent resource <b>%s</b>."
+                        ) % (res.role.name, res.resource.type, res.resource.name, res.role.name, parent.name)
+                    )
+            if role_warnings:
+                flash(Markup("<br />".join(role_warnings)), 'warning')
 
         return render_template(
             '%s/index.html' % self.templates_dir, resources=resources,
@@ -252,37 +250,34 @@ class PermissionsController(Controller):
         form = PermissionForm(obj=resource)
 
         # load related resources from DB
-        session = self.session()
+        with self.session() as session:
+            # query roles
+            query = session.query(self.Role).order_by(self.Role.name)
+            roles = query.all()
 
-        # query roles
-        query = session.query(self.Role).order_by(self.Role.name)
-        roles = query.all()
+            # query resource types
+            query = session.query(self.ResourceType) \
+                .order_by(self.ResourceType.list_order, self.ResourceType.name)
+            resource_types = query.all()
 
-        # query resource types
-        query = session.query(self.ResourceType) \
-            .order_by(self.ResourceType.list_order, self.ResourceType.name)
-        resource_types = query.all()
+            # query resources
+            query = session.query(self.Resource) \
+                .join(self.Resource.resource_type) \
+                .order_by(self.ResourceType.list_order, self.Resource.type,
+                        self.Resource.name)
+            # eager load relations
+            query = query.options(
+                joinedload(self.Resource.resource_type)
+            )
+            resources = query.all()
 
-        # query resources
-        query = session.query(self.Resource) \
-            .join(self.Resource.resource_type) \
-            .order_by(self.ResourceType.list_order, self.Resource.type,
-                      self.Resource.name)
-        # eager load relations
-        query = query.options(
-            joinedload(self.Resource.resource_type)
-        )
-        resources = query.all()
-
-        # This small code is needed to make sure that the parent object
-        # of all resources is called at least once before closing the session.
-        # Doing this allows us to call the parent object even after the session
-        # was closed.
-        for res in resources:
-            if res.parent is not None:
-                res.parent.name
-
-        session.close()
+            # This small code is needed to make sure that the parent object
+            # of all resources is called at least once before closing the session.
+            # Doing this allows us to call the parent object even after the session
+            # was closed.
+            for res in resources:
+                if res.parent is not None:
+                    res.parent.name
 
         # set choices for role select field
         form.role_id.choices = [(0, "")] + [

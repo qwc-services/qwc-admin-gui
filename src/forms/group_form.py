@@ -35,12 +35,11 @@ class GroupForm(FlaskForm):
 
     def validate_name(self, field):
         # check if group name exists
-        session = self.config_models.session()
-        query = session.query(self.Group).filter_by(name=field.data)
-        if self.obj:
-            # ignore current group
-            query = query.filter(self.Group.id != self.obj.id)
-        group = query.first()
-        session.close()
+        with self.config_models.session() as session:
+            query = session.query(self.Group).filter_by(name=field.data)
+            if self.obj:
+                # ignore current group
+                query = query.filter(self.Group.id != self.obj.id)
+            group = query.first()
         if group is not None:
             raise ValidationError(i18n('interface.common.form_name_error'))

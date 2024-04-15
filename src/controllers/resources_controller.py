@@ -136,8 +136,6 @@ class ResourcesController(Controller):
                 "params": {}
             }
 
-        session = self.session()
-
         # get resources filtered by resource type
         search_text = request.args.get('search')
         # First check wether user deleted the filter
@@ -156,66 +154,65 @@ class ResourcesController(Controller):
             flask_session["resources"]['params']["type"] = resource_type
         active_resource_type = flask_session["resources"]['params'].get("type", None)
 
-        query = self.resources_for_index_query(
-            active_search_text, active_resource_type, session
-        )
+        with self.session() as session:
+            query = self.resources_for_index_query(
+                active_search_text, active_resource_type, session
+            )
 
-        # order by sort args
-        sort, sort_asc = self.sort_args()
-        sort_param = None
-        if sort is not None:
-            order_by = self.order_by_criterion(sort, sort_asc)
-            if order_by is not None:
-                if type(order_by) is tuple:
-                    # order by multiple sort columns
-                    query = query.order_by(None).order_by(*order_by)
-                else:
-                    # order by single sort column
-                    query = query.order_by(None).order_by(order_by)
+            # order by sort args
+            sort, sort_asc = self.sort_args()
+            sort_param = None
+            if sort is not None:
+                order_by = self.order_by_criterion(sort, sort_asc)
+                if order_by is not None:
+                    if type(order_by) is tuple:
+                        # order by multiple sort columns
+                        query = query.order_by(None).order_by(*order_by)
+                    else:
+                        # order by single sort column
+                        query = query.order_by(None).order_by(order_by)
 
-                sort_param = sort
-                if not sort_asc:
-                    # append sort direction suffix
-                    sort_param = "%s-" % sort
-                flask_session["resources"]['params']["sort"] = sort_param
+                    sort_param = sort
+                    if not sort_asc:
+                        # append sort direction suffix
+                        sort_param = "%s-" % sort
+                    flask_session["resources"]['params']["sort"] = sort_param
 
-        # paginate
-        page, per_page = self.pagination_args(flask_session["resources"]['params'])
-        num_pages = math.ceil(query.count() / per_page)
-        resources = query.limit(per_page).offset((page - 1) * per_page).all()
-        flask_session["resources"]['params']['per_page'] = per_page
+            # paginate
+            page, per_page = self.pagination_args(flask_session["resources"]['params'])
+            num_pages = math.ceil(query.count() / per_page)
+            resources = query.limit(per_page).offset((page - 1) * per_page).all()
+            flask_session["resources"]['params']['per_page'] = per_page
 
-        check_unused = request.args.get('check_unused')
-        if check_unused == "True":
-            flask_session["resources"]['params']['check_unused'] = check_unused
-            self._check_unused_resources(resources)
-        else:
-            flask_session["resources"]['params'].pop('check_unused', None)
-        active_check_unused = flask_session["resources"]['params'].get('check_unused', None)
+            check_unused = request.args.get('check_unused')
+            if check_unused == "True":
+                flask_session["resources"]['params']['check_unused'] = check_unused
+                self._check_unused_resources(resources)
+            else:
+                flask_session["resources"]['params'].pop('check_unused', None)
+            active_check_unused = flask_session["resources"]['params'].get('check_unused', None)
 
-        # Set modified property to True so that the flask_session object
-        # updates our cookie
-        # Without this, the presistence of data stored in the cookie is not reliable
-        # (Sometimes the data is not saved, this fixes the issue)
-        # See https://stackoverflow.com/questions/39261260/flask-session-variable-not-persisting-between-requests/39261335#39261335
-        flask_session.modified = True
+            # Set modified property to True so that the flask_session object
+            # updates our cookie
+            # Without this, the presistence of data stored in the cookie is not reliable
+            # (Sometimes the data is not saved, this fixes the issue)
+            # See https://stackoverflow.com/questions/39261260/flask-session-variable-not-persisting-between-requests/39261335#39261335
+            flask_session.modified = True
 
-        pagination = {
-            'page': page,
-            'num_pages': num_pages,
-            'per_page_options': self.PER_PAGE_OPTIONS,
-            'per_page_default': self.DEFAULT_PER_PAGE,
-            'params': flask_session["resources"]["params"]
-        }
+            pagination = {
+                'page': page,
+                'num_pages': num_pages,
+                'per_page_options': self.PER_PAGE_OPTIONS,
+                'per_page_default': self.DEFAULT_PER_PAGE,
+                'params': flask_session["resources"]["params"]
+            }
 
-        # query resource types
-        resource_types = OrderedDict()
-        query = session.query(self.ResourceType) \
-            .order_by(self.ResourceType.list_order, self.ResourceType.name)
-        for resource_type in query.all():
-            resource_types[resource_type.name] = resource_type.description
-
-        session.close()
+            # query resource types
+            resource_types = OrderedDict()
+            query = session.query(self.ResourceType) \
+                .order_by(self.ResourceType.list_order, self.ResourceType.name)
+            for resource_type in query.all():
+                resource_types[resource_type.name] = resource_type.description
 
         have_config_generator = True if self.handler().config().get(
             "config_generator_service_url",
@@ -254,39 +251,35 @@ class ResourcesController(Controller):
         self.setup_models()
 
         # find resource
-        session = self.session()
-        resource = self.find_resource(id, session)
+        with self.session() as session, session.begin():
+            resource = self.find_resource(id, session)
 
-        if resource is not None:
-            parent_id = resource.parent_id
+            if resource is not None:
+                parent_id = resource.parent_id
 
-            try:
-                # delete and commit resource and its children
-                self.destroy_resource_cascaded(resource, session)
-                session.commit()
-                self.update_config_timestamp(session)
-                flash(
-                    'Resource and its children have been deleted.', 'success'
-                )
-            except InternalError as e:
-                flash('InternalError: %s' % e.orig, 'error')
-            except IntegrityError as e:
-                flash('IntegrityError: %s' % e.orig, 'error')
+                try:
+                    # delete and commit resource and its children
+                    self.destroy_resource_cascaded(resource, session)
+                    self.update_config_timestamp(session)
+                    flash(
+                        'Resource and its children have been deleted.', 'success'
+                    )
+                except InternalError as e:
+                    flash('InternalError: %s' % e.orig, 'error')
+                except IntegrityError as e:
+                    flash('IntegrityError: %s' % e.orig, 'error')
 
-            session.close()
-
-            if parent_id:
-                # redirect to hierarchy view of parent resource
-                return redirect(url_for(
-                    'hierarchy_%s' % self.endpoint_suffix, id=parent_id
-                ))
+                if parent_id:
+                    # redirect to hierarchy view of parent resource
+                    return redirect(url_for(
+                        'hierarchy_%s' % self.endpoint_suffix, id=parent_id
+                    ))
+                else:
+                    # redirect to resources list
+                    return redirect(url_for(self.base_route))
             else:
-                # redirect to resources list
-                return redirect(url_for(self.base_route))
-        else:
-            # resource not found
-            session.close()
-            abort(404)
+                # resource not found
+                abort(404)
 
     def destroy_resource_cascaded(self, resource, session):
         """Recursively delete existing resource and its children in DB.
@@ -314,30 +307,27 @@ class ResourcesController(Controller):
 
         selected_id_resources = request.form.getlist("resource_checkbox")
 
-        session = self.session()
-        for id in selected_id_resources:
-            # find resource
-            resource = self.find_resource(id, session)
+        with self.session() as session, session.begin():
+            for id in selected_id_resources:
+                # find resource
+                resource = self.find_resource(id, session)
 
-            if resource is not None:
-                try:
-                    # delete and commit resource and its children
-                    self.destroy_resource(resource, session)
-                    session.commit()
-                    self.update_config_timestamp(session)
-                    flash(
-                        f"{self.resource_name} '{resource.name}' has been deleted.", 'success'
-                    )
-                except InternalError as e:
-                    flash('InternalError: %s' % e.orig, 'error')
-                except IntegrityError as e:
-                    flash('IntegrityError: %s' % e.orig, 'error')
+                if resource is not None:
+                    try:
+                        # delete and commit resource and its children
+                        self.destroy_resource(resource, session)
+                        self.update_config_timestamp(session)
+                        flash(
+                            f"{self.resource_name} '{resource.name}' has been deleted.", 'success'
+                        )
+                    except InternalError as e:
+                        flash('InternalError: %s' % e.orig, 'error')
+                    except IntegrityError as e:
+                        flash('IntegrityError: %s' % e.orig, 'error')
 
-            else:
-                # resource not found
-                session.close()
-                abort(404)
-        session.close()
+                else:
+                    # resource not found
+                    abort(404)
         # redirect to resources list
         return redirect(url_for(self.base_route))
 
@@ -349,25 +339,22 @@ class ResourcesController(Controller):
         """
         form = ResourceForm(obj=resource)
 
-        session = self.session()
+        with self.session() as session:
+            # query resource types
+            query = session.query(self.ResourceType) \
+                .order_by(self.ResourceType.list_order, self.ResourceType.name)
+            resource_types = query.all()
 
-        # query resource types
-        query = session.query(self.ResourceType) \
-            .order_by(self.ResourceType.list_order, self.ResourceType.name)
-        resource_types = query.all()
-
-        # query resources
-        query = session.query(self.Resource) \
-            .join(self.Resource.resource_types) \
-            .order_by(self.ResourceType.list_order, self.Resource.type,
-                      self.Resource.name)
-        # eager load relations
-        query = query.options(
-            joinedload(self.Resource.resource_type)
-        )
-        resources = query.all()
-
-        session.close()
+            # query resources
+            query = session.query(self.Resource) \
+                .join(self.Resource.resource_types) \
+                .order_by(self.ResourceType.list_order, self.Resource.type,
+                        self.Resource.name)
+            # eager load relations
+            query = query.options(
+                joinedload(self.Resource.resource_type)
+            )
+            resources = query.all()
 
         # set choices for type select field
         form.type.choices = [
@@ -412,18 +399,15 @@ class ResourcesController(Controller):
         """
         form = ImportResourceForm()
 
-        session = self.session()
+        with self.session() as session:
+            # query resource types
+            query = session.query(self.ResourceType) \
+                .order_by(self.ResourceType.list_order, self.ResourceType.name) \
+                .filter(self.ResourceType.name.in_(('layer', 'data', 'data_create', 'data_read', 'data_update', 'data_delete')))
+            resource_types_to_import_from_map = query.all()
 
-        # query resource types
-        query = session.query(self.ResourceType) \
-            .order_by(self.ResourceType.list_order, self.ResourceType.name) \
-            .filter(self.ResourceType.name.in_(('layer', 'data', 'data_create', 'data_read', 'data_update', 'data_delete')))
-        resource_types_to_import_from_map = query.all()
-
-        # query permission roles
-        roles = session.query(self.Role).order_by(self.Role.name).all()
-
-        session.close()
+            # query permission roles
+            roles = session.query(self.Role).order_by(self.Role.name).all()
 
         # set choices for import_type select field
         form.import_type.choices = [
@@ -469,40 +453,37 @@ class ResourcesController(Controller):
         self.setup_models()
 
         # find resource
-        session = self.session()
-        resource = self.find_resource(id, session)
+        with self.session() as session:
+            resource = self.find_resource(id, session)
 
-        if resource is not None:
-            # get root resource
-            root = resource
-            parent = root.parent
-            while parent is not None:
-                root = parent
+            if resource is not None:
+                # get root resource
+                root = resource
                 parent = root.parent
+                while parent is not None:
+                    root = parent
+                    parent = root.parent
 
-            # recursively collect hierarchy
-            items = []
-            self.collect_resources(root, 0, items, session)
+                # recursively collect hierarchy
+                items = []
+                self.collect_resources(root, 0, items, session)
 
-            # query resource types
-            resource_types = OrderedDict()
-            query = session.query(self.ResourceType) \
-                .order_by(self.ResourceType.list_order, self.ResourceType.name)
-            for resource_type in query.all():
-                resource_types[resource_type.name] = resource_type.description
+                # query resource types
+                resource_types = OrderedDict()
+                query = session.query(self.ResourceType) \
+                    .order_by(self.ResourceType.list_order, self.ResourceType.name)
+                for resource_type in query.all():
+                    resource_types[resource_type.name] = resource_type.description
 
-            session.close()
-
-            return render_template(
-                '%s/hierarchy.html' % self.templates_dir, items=items,
-                selected_item_id=resource.id,
-                endpoint_suffix=self.endpoint_suffix,
-                pkey=self.resource_pkey(), resource_types=resource_types, i18n=i18n
-            )
-        else:
-            # resource not found
-            session.close()
-            abort(404)
+                return render_template(
+                    '%s/hierarchy.html' % self.templates_dir, items=items,
+                    selected_item_id=resource.id,
+                    endpoint_suffix=self.endpoint_suffix,
+                    pkey=self.resource_pkey(), resource_types=resource_types, i18n=i18n
+                )
+            else:
+                # resource not found
+                abort(404)
 
     def collect_resources(self, resource, depth, items, session):
         """Recursively collect resource hierarchy from DB.
@@ -572,43 +553,36 @@ class ResourcesController(Controller):
             maps_from_config = response.json()
 
             self.setup_models()
-            session = self.session()
+            with self.session() as session, session.begin():
+                # get maps from ConfigDB
+                query = session.query(self.Resource) \
+                    .filter(self.Resource.type == 'map')
+                maps = [
+                    resource.name for resource in query.all()
+                ]
 
-            # get maps from ConfigDB
-            query = session.query(self.Resource) \
-                .filter(self.Resource.type == 'map')
-            maps = [
-                resource.name for resource in query.all()
-            ]
+                # add additional maps to ConfigDB
+                new_maps = sorted(list(set(maps_from_config) - set(maps)))
+                if new_maps:
+                    for map_name in new_maps:
+                        # create new map resource
+                        resource = self.Resource()
+                        resource.type = 'map'
+                        resource.name = map_name
+                        session.add(resource)
 
-            # add additional maps to ConfigDB
-            new_maps = sorted(list(set(maps_from_config) - set(maps)))
-            if new_maps:
-                for map_name in new_maps:
-                    # create new map resource
-                    resource = self.Resource()
-                    resource.type = 'map'
-                    resource.name = map_name
-                    session.add(resource)
+                    self.update_config_timestamp(session)
 
-                # commit resources
-                session.commit()
-                self.update_config_timestamp(session)
-
-                flash(
-                    '%d %s' % (
-                    len(new_maps), i18n('interface.resources.add_maps_message_success')), 
-                    'success'
-                )
-            else:
-                flash(i18n('interface.resources.add_maps_message_error'), 'info')
-
-            session.close()
+                    flash(
+                        '%d %s' % (
+                        len(new_maps), i18n('interface.resources.add_maps_message_success')), 
+                        'success'
+                    )
+                else:
+                    flash(i18n('interface.resources.add_maps_message_error'), 'info')
 
             return redirect(url_for(self.base_route, type='map'))
         except Exception as e:
-            if session:
-                session.close()
             msg = "%s %s" % (i18n('interface.resources.import_maps_message_error'), e)
             self.logger.error(msg)
             flash(msg, 'error')
@@ -716,8 +690,8 @@ class ResourcesController(Controller):
         self.setup_models()
 
         # find resource
-        session = self.session()
-        resource = self.find_resource(id, session)
+        with self.session() as session:
+            resource = self.find_resource(id, session)
 
         if resource is not None:
             # get config generator URL
@@ -726,21 +700,19 @@ class ResourcesController(Controller):
                 "http://qwc-config-service:9090"
             )
             if resource.type == 'map':
-                self.import_layers(
-                    resource, config_generator_service_url, session
-                )
+                with self.session() as session, session.begin():
+                    self.import_layers(
+                        resource, config_generator_service_url, session
+                    )
             else:
                 flash(i18n('interface.resources.import_children_message_error'),
-                      'warning')
-
-            session.close()
+                    'warning')
 
             return redirect(
                 url_for('hierarchy_%s' % self.endpoint_suffix, id=id)
             )
         else:
             # resource not found
-            session.close()
             abort(404)
 
     def import_layers(self, map_resource, config_generator_service_url,
@@ -785,24 +757,30 @@ class ResourcesController(Controller):
                     list(set(layers_from_config) - set(layers))
                 )
                 if new_layers:
+                    imported_layers = 0
                     for layer in new_layers:
-                        # create new layer resource
-                        resource = self.Resource()
-                        resource.type = 'layer'
-                        resource.name = layer
-                        resource.parent_id = map_resource.id
-                        session.add(resource)
+                        try:
+                            # create new layer resource
+                            resource = self.Resource()
+                            resource.type = 'layer'
+                            resource.name = layer
+                            resource.parent_id = map_resource.id
+                            session.add(resource)
 
-                    # commit resources
-                    session.commit()
-                    self.update_config_timestamp(session)
+                            self.update_config_timestamp(session)
+                            imported_layers += 1
+                        except Exception as e:
+                            msg = f"{i18n('interface.resources.import_layer_message_error', layer)} - {e}"
+                            self.logger.error(msg)
+                            flash(msg, 'error')
 
-                    flash(
-                        '%d %s' %(
-                        len(new_layers), i18n('interface.resources.add_layers_message_success')), 'success'
-                    )
+                    if imported_layers > 0:
+                        flash(
+                            '%d %s' %(
+                            len(new_layers), i18n('interface.resources.add_layers_message_success')), 'success'
+                        )
                 else:
-                    flash(i18n('interface.resources.add_map_message_error'), 'info')
+                    flash(i18n('interface.resources.add_layers_map_message_error'), 'info')
             else:
                 # map not found or no layers
                 flash(i18n('interface.resources.add_layers_map_message_error'), 'warning')
@@ -838,8 +816,8 @@ class ResourcesController(Controller):
         if form.validate_on_submit():
             try:
                 # find resource
-                session = self.session()
-                parent_resource = self.find_resource(id, session)
+                with self.session() as session:
+                    parent_resource = self.find_resource(id, session)
                 if parent_resource is not None:
                     # get config generator URL
                     config_generator_service_url = self.handler().config().get(
@@ -872,63 +850,66 @@ class ResourcesController(Controller):
                             new_resources = []
                             new_permissions = []
                             for layer in layers_from_config:
-                                # first query to know if resource already exists
-                                query = session.query(self.Resource) \
-                                    .filter(self.Resource.name == layer) \
-                                    .filter(self.Resource.type == type) \
-                                    .filter(self.Resource.parent_id == parent_resource.id)
-                                resources = query.all()
+                                try:
+                                    with self.session() as session, session.begin():
+                                        # first query to know if resource already exists
+                                        query = session.query(self.Resource) \
+                                            .filter(self.Resource.name == layer) \
+                                            .filter(self.Resource.type == type) \
+                                            .filter(self.Resource.parent_id == parent_resource.id)
+                                        resources = query.all()
 
-                                if not resources:
-                                    # resource does not exist in database so create new resource
-                                    resource = self.Resource()
-                                    resource.type = type
-                                    resource.name = layer
-                                    resource.parent_id = parent_resource.id
-                                    new_resources.append(resource)
-                                    session.add(resource)
+                                        if not resources:
+                                            # resource does not exist in database so create new resource
+                                            resource = self.Resource()
+                                            resource.type = type
+                                            resource.name = layer
+                                            resource.parent_id = parent_resource.id
+                                            new_resources.append(resource)
+                                            session.add(resource)
 
-                                    # new query to get id of new resource
-                                    query = session.query(self.Resource) \
-                                        .filter(self.Resource.name == layer) \
-                                        .filter(self.Resource.type == type) \
-                                        .filter(self.Resource.parent_id == parent_resource.id)
-                                    resources = query.all()
+                                            # new query to get id of new resource
+                                            query = session.query(self.Resource) \
+                                                .filter(self.Resource.name == layer) \
+                                                .filter(self.Resource.type == type) \
+                                                .filter(self.Resource.parent_id == parent_resource.id)
+                                            resources = query.all()
 
-                                # handle permission for existing or new resource if role has been chosen
-                                role = form.role_id.data
-                                if role > 0:
-                                    for resource in resources:
-                                        resource_id = resource.__dict__.get('id')
-                                        # query resource permissions
-                                        query = session.query(self.Permission) \
-                                            .filter(self.Permission.resource_id == resource_id) \
-                                            .filter(self.Permission.role_id == role)
+                                        # handle permission for existing or new resource if role has been chosen
+                                        role = form.role_id.data
+                                        if role > 0:
+                                            for resource in resources:
+                                                resource_id = resource.__dict__.get('id')
+                                                # query resource permissions
+                                                query = session.query(self.Permission) \
+                                                    .filter(self.Permission.resource_id == resource_id) \
+                                                    .filter(self.Permission.role_id == role)
 
-                                        permissions = []
-                                        for permission in query.all():
-                                            permissions.append({
-                                                "role": permission.role.name,
-                                                "write": permission.write
-                                            })
-                                        if not permissions:
-                                            # create new permission for resource
-                                            permission = self.Permission()
-                                            session.add(permission)
+                                                permissions = []
+                                                for permission in query.all():
+                                                    permissions.append({
+                                                        "role": permission.role.name,
+                                                        "write": permission.write
+                                                    })
+                                                if not permissions:
+                                                    # create new permission for resource
+                                                    permission = self.Permission()
+                                                    session.add(permission)
 
-                                            # update permission
-                                            permission.priority = form.priority.data
-                                            permission.write = form.write.data
+                                                    # update permission
+                                                    permission.priority = form.priority.data
+                                                    permission.write = form.write.data
 
-                                            permission.role_id = role
+                                                    permission.role_id = role
 
-                                            permission.resource_id = resource_id
-                                            new_permissions.append(permission)                                
+                                                    permission.resource_id = resource_id
+                                                    new_permissions.append(permission)                                
 
-                            # commit resources
-                            session.commit()
-                            self.update_config_timestamp(session)
-
+                                        self.update_config_timestamp(session)
+                                except Exception as e:
+                                    msg = f"{i18n('interface.resources.add_resource_message_error', layer)} - {e}"
+                                    self.logger.error(msg)
+                                    flash(msg, 'error')                                    
                             if new_resources:
                                 flash(
                                     '%d %s' % (
@@ -955,17 +936,12 @@ class ResourcesController(Controller):
 
                 else:
                     # resource not found
-                    session.close()
                     abort(404)
-
-                session.close()
 
                 return redirect(
                     url_for('hierarchy_%s' % self.endpoint_suffix, id=id)
                 )                
             except Exception as e:
-                if session:
-                    session.close()
                 msg = "%s %s" % (i18n('interface.resources.import_resources_message_error'), e)
                 self.logger.error(msg)
                 flash(msg, 'error')

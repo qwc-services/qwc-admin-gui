@@ -78,13 +78,10 @@ class RegistrableGroupsController(Controller):
         """
         form = RegistrableGroupForm(obj=resource)
 
-        session = self.session()
-
-        # query groups
-        query = session.query(self.Group).order_by(self.Group.name)
-        groups = query.all()
-
-        session.close()
+        with self.session() as session:
+            # query groups
+            query = session.query(self.Group).order_by(self.Group.name)
+            groups = query.all()
 
         # set choices for group select field
         form.group_id.choices = [(0, "")] + [
