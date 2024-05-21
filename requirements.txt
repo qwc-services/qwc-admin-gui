@@ -5,7 +5,7 @@ Flask-Mail2==1.0.2
 Flask-WTF==1.2.1
 flask_login==0.6.3
 psycopg2==2.9.9
-requests==2.31.0
+requests==2.32.0
 SQLAlchemy==2.0.29
 Werkzeug==3.0.3
 email_validator==2.1.0.post1
