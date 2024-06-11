@@ -28,6 +28,14 @@
 
   function remove_selected() {
     if (confirm(`{{ i18n('interface.resources.confirm_message_remove_selected', ['{selected}']) }}`)) {
+      const resource_checkboxes = $("[name=resource_checkbox]");
+      resource_checkboxes.each(function() {
+        if ($(this).prop('checked')) {
+          $("#form_remove_selected").append(
+            '<input name="resource_checkbox" type="hidden" value="' + $(this).prop('value') + '" />'
+          );
+        }
+      });
       $("#form_remove_selected").submit();
     }
   }
@@ -85,10 +93,10 @@
 <form action="{{ url_for('destroy_multiple_%s' % endpoint_suffix) }}" id="form_remove_selected" method="post">
 <input type="hidden" name="_method" value="DELETE" />
 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+</form>
 
 {{super()}}
 
-</form>
 {% endblock %}
 
 {% block table_headers %}
