@@ -34,6 +34,7 @@ app = Flask(__name__, template_folder='.')
 jwt = auth_manager(app)
 app.secret_key = app.config['JWT_SECRET_KEY']
 
+app.config['BOOTSTRAP_SERVE_LOCAL'] = True
 app.config['QWC_GROUP_REGISTRATION_ENABLED'] = os.environ.get(
     'GROUP_REGISTRATION_ENABLED', 'True').lower() == 'true'
 app.config['IDLE_TIMEOUT'] = os.environ.get('IDLE_TIMEOUT', 0)
