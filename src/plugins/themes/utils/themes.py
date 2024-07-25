@@ -239,6 +239,28 @@ class ThemeUtils():
             project = str(path.relative_to(resources_path))[:-4].replace("\\", "/")
             url = ows_prefix.rstrip("/") + "/" + project
             projects.append((url, project))
+
+        # Look in database
+        db_url = 'postgresql:///?service=qgisprojects'
+        db = db_engine.db_engine(db_url)
+        db_projects = []
+        sql = sql_text("SELECT schema_name FROM information_schema.schemata")
+        with db.begin() as connection:
+            schema_rows = connection.execute(sql).mappings()
+        for schema_row in schema_rows:
+            try:
+                sql = sql_text('SELECT name FROM "{schema}"."qgis_projects"'.format(schema=schema_row["schema_name"]))
+                with db.begin() as connection:
+                    db_project_rows = connection.execute(sql).mappings()
+                for db_project_row in db_project_rows:
+                    db_projects.append({"name": db_project_row["name"], "schema": schema_row["schema_name"]})
+            except Exception as e:
+                pass
+
+        for project in db_projects:
+            url = ows_prefix.rstrip("/") + "/pg/" + project["schema"] + "/" + project["name"]
+            projects.append((url, project["name"] + " (DB)"))
+
         return sorted(projects)
     
     @staticmethod
