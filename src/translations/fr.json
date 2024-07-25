@@ -284,7 +284,7 @@
         "form_searchProviders": "Fournisseurs de recherche",
         "form_searchProviders_description": "Liste des fournisseurs de recherche disponibles.",
         "form_skipEmptyFeatureAttributes": "Ne pas afficher les attributs vides",
-        "form_skipEmptyFeatureAttributes_description": "form_skipEmptyFeatureAttributes_description",
+        "form_skipEmptyFeatureAttributes_description": "S'il faut omettre les attributs vides dans les informations de l'objet.",
         "form_thumbnail_description": "Nom du fichier de la miniature du thème. Par défaut, la miniature est autogénérée grâce à un GetMap WMS.",
         "form_tiled": "Tuilé",
         "form_tiled_description": "Tuiler les couches",
