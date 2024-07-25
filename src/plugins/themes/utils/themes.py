@@ -3,8 +3,12 @@ import json
 import pathlib
 import datetime
 from collections import OrderedDict
+from sqlalchemy.sql import text as sql_text
 from urllib.parse import urlparse
 
+from qwc_services_core.database import DatabaseEngine
+
+db_engine = DatabaseEngine()
 
 class ThemeUtils():
     """ Utils for Themes"""
@@ -225,10 +229,11 @@ class ThemeUtils():
         resources_path = current_handler.config().get("qgs_resources_path")
         ogc_service_url = current_handler.config().get("ogc_service_url")
         ows_prefix = current_handler.config().get("ows_prefix", urlparse(ogc_service_url).path)
+        project_ext = current_handler.config().get("qgis_project_extension", ".qgs")
 
         projects = []
         app.logger.info(resources_path)
-        for path in pathlib.Path(resources_path).rglob("*.qgs"):
+        for path in pathlib.Path(resources_path).rglob("*" + project_ext):
             app.logger.info(str(path))
             app.logger.info(path.relative_to(resources_path))
             project = str(path.relative_to(resources_path))[:-4].replace("\\", "/")
