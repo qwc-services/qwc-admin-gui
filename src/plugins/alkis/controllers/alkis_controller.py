@@ -47,7 +47,10 @@ class ALKISController():
         self.handler = handler
         config_handler = handler()
         db_engine = config_handler.db_engine()
-        self.config_models = ConfigModels(db_engine, config_handler.conn_str(), ["alkis"])
+        self.config_models = ConfigModels(
+            db_engine, config_handler.conn_str(), ["alkis"],
+            qwc_config_schema=config_handler.qwc_config_schema()
+        )
         self.resources = self.config_models.model('resources')
         self.alkis = self.config_models.model('alkis')
 

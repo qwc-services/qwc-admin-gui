@@ -24,6 +24,10 @@
           "description": "DB connection URL",
           "type": "string"
         },
+        "qwc_config_schema": {
+          "description": "The name of the DB schema which stores the qwc config. Default: qwc_config",
+          "type": "string"
+        },
         "config_generator_service_url": {
           "description": "Config generator URL",
           "type": "string"

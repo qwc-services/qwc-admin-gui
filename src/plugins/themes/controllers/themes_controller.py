@@ -122,7 +122,10 @@ class ThemesController:
 
         config_handler = handler()
         db_engine = config_handler.db_engine()
-        self.config_models = ConfigModels(db_engine, config_handler.conn_str())
+        self.config_models = ConfigModels(
+            db_engine, config_handler.conn_str(),
+            qwc_config_schema=current_handler.qwc_config_schema()
+        )
         self.resources = self.config_models.model('resources')
 
     def index(self):

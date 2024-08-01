@@ -95,6 +95,9 @@ class TenantConfigHandler:
         return self._config.get(
             'db_url', 'postgresql:///?service=qwc_configdb')
 
+    def qwc_config_schema(self):
+        return self._config.get('qwc_config_schema', 'qwc_config')
+
 
 def handler():
     tenant = tenant_handler.tenant()

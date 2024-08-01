@@ -20,7 +20,10 @@ class AccessControl:
 
     def is_admin(self, identity):
         db_engine = self.handler().db_engine()
-        self.config_models = ConfigModels(db_engine, self.handler().conn_str())
+        self.config_models = ConfigModels(
+            db_engine, self.handler().conn_str(),
+            qwc_config_schema=self.handler().qwc_config_schema()
+        )
 
         # Extract user infos from identity
         if isinstance(identity, dict):

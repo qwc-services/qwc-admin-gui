@@ -91,7 +91,10 @@ class Controller:
         self.config = config_handler.config()
 
         db_engine = config_handler.db_engine()
-        self.config_models = ConfigModels(db_engine, config_handler.conn_str())
+        self.config_models = ConfigModels(
+            db_engine, config_handler.conn_str(),
+            qwc_config_schema=config_handler.qwc_config_schema()
+        )
 
         self.Group = self.config_models.model('groups')
         self.Permission = self.config_models.model('permissions')

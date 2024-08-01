@@ -27,7 +27,10 @@ class InfoTemplatesController():
         self.ows_prefix = urlparse(current_handler.config().get("ows_prefix", "")).path.rstrip("/") + "/"
         self.default_qgis_server_url = current_handler.config().get("default_qgis_server_url")
         db_engine = current_handler.db_engine()
-        self.config_models = ConfigModels(db_engine, current_handler.conn_str())
+        self.config_models = ConfigModels(
+            db_engine, current_handler.conn_str(),
+            qwc_config_schema=current_handler.qwc_config_schema()
+        )
         self.resources = self.config_models.model('resources')
 
         app.add_url_rule(
