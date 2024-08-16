@@ -121,6 +121,7 @@ class ThemesController:
         self.template_dir = "plugins/themes/templates"
 
         config_handler = handler()
+        current_handler = handler()
         db_engine = config_handler.db_engine()
         self.config_models = ConfigModels(
             db_engine, config_handler.conn_str(),
