@@ -59,7 +59,8 @@
       "timeout_error": "Das Generieren der Konfiguration hat zu lange gedauert. Mögliche Gründe:\n- Es besteht ein Netzwerkproblem\n- Das Laden der Capabilities hat zu lange gedauert (zu viele Themen / zu viele Ebenen / langsame ferne Ebenen)\n- Der 'proxy_read_timeout' des `qwc-api-gateway` ist zu tief",
       "title": "QWC Admin",
       "update_resource_message_error": "Könnte nicht aktualisert werden: {}.",
-      "update_resource_message_success": "{} wurde aktualisiert."
+      "update_resource_message_success": "{} wurde aktualisiert.",
+      "use_cached_project_metadata": "Gecachte Projektmetadaten verwenden falls verfügbar"
     },
     "permissions": {
       "confirm_message_delete": "Berechtigung entfernen?",

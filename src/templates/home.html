@@ -12,16 +12,23 @@
       $('#alerts').find(alertSelector).append(html);
     }
 
-    var setupAPIRequestButton = function(buttonSelector, url, alertSelector, titleSuccess, titleError) {
+    var setupAPIRequestButton = function(buttonSelector, url, options, alertSelector, titleSuccess, titleError) {
       var button = $(buttonSelector);
       button.click(function() {
         clearAlert(alertSelector);
         button.attr("disabled", true);
         $(document.body).css("cursor", 'wait');
 
+        let reqUrl = url;
+        options.forEach(option => {
+          if ($('#' + option).prop('checked')) {
+            reqUrl += (reqUrl.includes('?') ? '&' : '?') + option + '=1';
+          }
+        });
+
         // call Admin GUI service
         $.post(
-          url,
+          reqUrl,
           {
             csrf_token: '{{ csrf_token() }}'
           }
@@ -71,6 +78,7 @@
       setupAPIRequestButton(
         '#generate_configs',
         "{{ url_for('generate_configs') }}",
+        ['use_cached_project_metadata'],
         '#alert-generate_configs',
         "Service configurations generated:",
         "Error while refreshing config cache:"
@@ -81,6 +89,7 @@
       setupAPIRequestButton(
         '#update_solr_index',
         "{{ url_for('update_solr_index') }}",
+        [],
         '#alert-update_solr_index',
         "Solr search index update:",
         "Error while updating Solr search index:"
@@ -101,6 +110,8 @@
   <button id="generate_configs" class="btn btn-success">
     {{ utils.render_icon('arrow-clockwise') }} {{ i18n('interface.main.generate_configs') }}
   </button>
+  <br>
+  <label style="padding-top: 0.5em"><input id="use_cached_project_metadata" type="checkbox" /> {{ i18n('interface.main.use_cached_project_metadata') }}</label>
   {% endif %}
 
   {% if solr_index_update_enabled %}

@@ -61,6 +61,7 @@
     "interface.main.title",
     "interface.main.update_resource_message_error",
     "interface.main.update_resource_message_success",
+    "interface.main.use_cached_project_metadata",
     "interface.permissions.confirm_message_delete",
     "interface.permissions.ph_select_resource",
     "interface.permissions.priority",

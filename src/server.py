@@ -218,10 +218,14 @@ def generate_configs():
         "config_generator_service_url",
         "http://qwc-config-service:9090").rstrip('/') + '/'
 
+    params = {
+        "tenant": current_handler.tenant,
+    }
+    params.update(request.args)
     response = requests.post(
-        urllib.parse.urljoin(
-            config_generator_url,
-            "generate_configs?tenant=" + current_handler.tenant))
+        urllib.parse.urljoin(config_generator_url, "generate_configs"),
+        params=params
+    )
 
     return (response.text, response.status_code)
 
