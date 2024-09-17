@@ -64,8 +64,8 @@
   <form class="form form-horizontal" action="{{ action }}" method="post" style="display: none">
     <input id="csrf_token" name="csrf_token" type="hidden" value="{{ csrf_token() }}">
     <input id="news_contents" name="news_contents" type="hidden" value="">
-    <div style="display: flex; align-items: center">
-      <label class="col-form-label" for="news_version">News&nbsp;version:&nbsp;</label>
+    <div style="display: flex; align-items: center" class="py-2">
+      <label class="col-form-label" for="news_version" style="white-space: nowrap">News version (leave empty to disable news):&nbsp;</label>
       <input class="form-control" id="news_version" name="news_version" type="text" value="{{ news_version }}">
     </div>
 

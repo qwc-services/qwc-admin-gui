@@ -52,6 +52,8 @@ class NewsPopupController():
                         news_plugin_conf = next((e for e in data["plugins"]["mobile"] if e["name"] == "NewsPopup"), None)
                         if news_plugin_conf:
                             news_version = news_plugin_conf["cfg"]["newsRev"]
+                if news_version is None:
+                    news_version = ""
         except Exception as e:
             self.logger.warn("Unable to read news version: %s" % (str(e)))
 
@@ -79,16 +81,17 @@ class NewsPopupController():
         try:
             with open(viewer_config_file, 'r+') as fh:
                 data = json.load(fh)
+                news_version = request.values.get('news_version', '')
 
                 news_plugin_conf = next((e for e in data["plugins"]["common"] if e["name"] == "NewsPopup"), None)
                 if news_plugin_conf:
-                    news_plugin_conf["cfg"]["newsRev"] = request.values.get('news_version')
+                    news_plugin_conf["cfg"]["newsRev"] = news_version
                 news_plugin_conf = next((e for e in data["plugins"]["desktop"] if e["name"] == "NewsPopup"), None)
                 if news_plugin_conf:
-                    news_plugin_conf["cfg"]["newsRev"] = request.values.get('news_version')
+                    news_plugin_conf["cfg"]["newsRev"] = news_version
                 news_plugin_conf = next((e for e in data["plugins"]["mobile"] if e["name"] == "NewsPopup"), None)
                 if news_plugin_conf:
-                    news_plugin_conf["cfg"]["newsRev"] = request.values.get('news_version')
+                    news_plugin_conf["cfg"]["newsRev"] = news_version
 
                 fh.seek(0)
                 json.dump(data, fh, indent=2)
