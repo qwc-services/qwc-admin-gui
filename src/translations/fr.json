@@ -60,7 +60,8 @@
       "title": "Administration QWC",
       "update_resource_message_error": "Impossible de modifier {}.",
       "update_resource_message_success": "{} a été modifié.",
-      "use_cached_project_metadata": "Utiliser les métadonnées du projet mises en cache si elles sont disponibles"
+      "use_cached_project_metadata": "Utiliser les métadonnées du projet mises en cache si elles sont disponibles",
+      "force_readonly_datasets": "Rendre tous les ensembles de données en lecture seule"
     },
     "permissions": {
       "confirm_message_delete": "Voulez-vous supprimer la permission?",

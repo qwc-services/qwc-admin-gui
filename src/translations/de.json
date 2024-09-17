@@ -60,7 +60,8 @@
       "title": "QWC Admin",
       "update_resource_message_error": "Könnte nicht aktualisert werden: {}.",
       "update_resource_message_success": "{} wurde aktualisiert.",
-      "use_cached_project_metadata": "Gecachte Projektmetadaten verwenden falls verfügbar"
+      "use_cached_project_metadata": "Gecachte Projektmetadaten verwenden falls verfügbar",
+      "force_readonly_datasets": "Alle Datensätze schreibgeschützt machen"
     },
     "permissions": {
       "confirm_message_delete": "Berechtigung entfernen?",
