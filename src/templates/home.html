@@ -78,7 +78,7 @@
       setupAPIRequestButton(
         '#generate_configs',
         "{{ url_for('generate_configs') }}",
-        ['use_cached_project_metadata'],
+        ['use_cached_project_metadata', 'force_readonly_datasets'],
         '#alert-generate_configs',
         "Service configurations generated:",
         "Error while refreshing config cache:"
@@ -112,6 +112,8 @@
   </button>
   <br>
   <label style="padding-top: 0.5em"><input id="use_cached_project_metadata" type="checkbox" /> {{ i18n('interface.main.use_cached_project_metadata') }}</label>
+  <br>
+  <label style="padding-top: 0.5em; font-weight: bold; color: red;"><input id="force_readonly_datasets" type="checkbox" /> {{ i18n('interface.main.force_readonly_datasets') }}</label>
   {% endif %}
 
   {% if solr_index_update_enabled %}
