@@ -61,7 +61,7 @@
       "update_resource_message_error": "Could not update {}.",
       "update_resource_message_success": "{} has been updated.",
       "use_cached_project_metadata": "Use cached project metadata if available",
-      "force_readonly_datasets": "Make all datasets read-only"
+      "force_readonly_datasets": "Make all edit datasets read-only"
     },
     "permissions": {
       "confirm_message_delete": "Remove permission?",
