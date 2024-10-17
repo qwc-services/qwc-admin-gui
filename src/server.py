@@ -191,6 +191,10 @@ def home():
         "config_generator_service_url",
         "http://qwc-config-service:9090"
     ) else False
+    have_qgis_server = True if config.get(
+        "default_qgis_server_url",
+        "http://qwc-qgis-server/ows"
+    ) else False
     solr_index_update_enabled = True if config.get('solr_service_url', '') else False
     return render_template(
         'templates/home.html',
@@ -198,6 +202,7 @@ def home():
         admin_gui_subtitle=admin_gui_subtitle,
         favicon=favicon,
         have_config_generator=have_config_generator,
+        have_qgis_server=have_qgis_server,
         solr_index_update_enabled=solr_index_update_enabled, i18n=i18n
     )
 
@@ -229,6 +234,38 @@ def generate_configs():
 
     return (response.text, response.status_code)
 
+@app.route('/qgis_server_logs', methods=['POST'])
+def qgis_server_logs():
+    """ Return qgis server logs """
+
+    current_handler = handler()
+    default_qgis_server_url = current_handler.config().get(
+        "default_qgis_server_url",
+        "http://qwc-qgis-server/ows").rstrip('/')
+    ows_prefix = current_handler.config().get(
+        "ows_prefix",
+        "/ows").rstrip('/')
+    if default_qgis_server_url.endswith(ows_prefix):
+        default_qgis_server_url = default_qgis_server_url[:-len(ows_prefix)]
+
+    params = {
+        "n": request.args.get('qgis_server_log_lines', '100')
+    }
+    response = requests.post(
+        urllib.parse.urljoin(default_qgis_server_url, "logs"),
+        params=params
+    )
+
+    def colorize(line):
+        if line[9:16] == "WARNING":
+            return f'<b style="color: orange">{line}</b>'
+        elif line[9:17] == "CRITICAL":
+            return f'<b style="color: red">{line}</b>'
+        else:
+            return line
+    text = "\n".join(map(colorize, response.text.split("\n")))
+
+    return (text, response.status_code)
 
 @app.route('/update_solr_index', methods=['POST'])
 def update_solr_index():

@@ -45,6 +45,7 @@
     },
     "main": {
       "delete_resource_message_success": "{} has been deleted.",
+      "force_readonly_datasets": "Make all edit datasets read-only",
       "generate_configs": "Generate service configuration",
       "home_title": "Home",
       "logout": "Logout",
@@ -54,14 +55,15 @@
       "page_navigation": "Page navigation",
       "per_page": "per page",
       "previous": "Previous",
+      "qgis_server_log_lines": "Number of lines",
+      "read_qgis_server_logs": "Read QGIS Server logs",
       "registration_title": "Registration",
       "subtitle": "Administration tool for QWC services",
       "timeout_error": "The generation of the configuration took too long. Likely causes:\n- There is a network connectivity issue\n- Fetching the Capabilities took too long (too many themes / too many layers / slow remote layers)\n- The 'proxy_read_timeout' of the qwc-api-gateway is too low",
       "title": "QWC Admin",
       "update_resource_message_error": "Could not update {}.",
       "update_resource_message_success": "{} has been updated.",
-      "use_cached_project_metadata": "Use cached project metadata if available",
-      "force_readonly_datasets": "Make all edit datasets read-only"
+      "use_cached_project_metadata": "Use cached project metadata if available"
     },
     "permissions": {
       "confirm_message_delete": "Remove permission?",
@@ -114,7 +116,6 @@
       "form_role": "Role permission of resources to import from map",
       "form_write": "Write",
       "hierarchy_title": "Resource hierarchy",
-      "import_children_layers": "Import layers",
       "import_children_message_error": "Child import not supported for this resource type.",
       "import_layer_message_error": "Could not import layer {}",
       "import_layers_message_error": "Could not import layers:",

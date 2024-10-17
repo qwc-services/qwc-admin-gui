@@ -45,6 +45,7 @@
     },
     "main": {
       "delete_resource_message_success": "{} wurde gelöscht.",
+      "force_readonly_datasets": "Alle Edit-Datensätze schreibgeschützt machen",
       "generate_configs": "Dienstkonfiguration generieren",
       "home_title": "Home",
       "logout": "Logout",
@@ -54,14 +55,15 @@
       "page_navigation": "Seitennavigation",
       "per_page": "pro Seite",
       "previous": "Previous",
+      "qgis_server_log_lines": "Anzahl Zeilen",
+      "read_qgis_server_logs": "QGIS Server Logs laden",
       "registration_title": "Registrierung",
       "subtitle": "Administrationswerkzeug für QWC Services",
       "timeout_error": "Das Generieren der Konfiguration hat zu lange gedauert. Mögliche Gründe:\n- Es besteht ein Netzwerkproblem\n- Das Laden der Capabilities hat zu lange gedauert (zu viele Themen / zu viele Ebenen / langsame ferne Ebenen)\n- Der 'proxy_read_timeout' des qwc-api-gateway ist zu tief",
       "title": "QWC Admin",
       "update_resource_message_error": "Könnte nicht aktualisert werden: {}.",
       "update_resource_message_success": "{} wurde aktualisiert.",
-      "use_cached_project_metadata": "Gecachte Projektmetadaten verwenden falls verfügbar",
-      "force_readonly_datasets": "Alle Edit-Datensätze schreibgeschützt machen"
+      "use_cached_project_metadata": "Gecachte Projektmetadaten verwenden falls verfügbar"
     },
     "permissions": {
       "confirm_message_delete": "Berechtigung entfernen?",
@@ -114,7 +116,6 @@
       "form_role": "Rollenberechtigung der aus der Karte zu importierenden Ressourcen",
       "form_write": "Schreiben",
       "hierarchy_title": "Ressourcenhierarchie",
-      "import_children_layers": "Ebenen importieren",
       "import_children_message_error": "Kindimport für diesen Ressourcentyp nicht unterstützt.",
       "import_layer_message_error": "Ebene kann nicht importiert werden: {}",
       "import_layers_message_error": "Konnte Ebenen nicht importieren:",

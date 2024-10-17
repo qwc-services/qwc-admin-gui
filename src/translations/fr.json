@@ -45,6 +45,7 @@
     },
     "main": {
       "delete_resource_message_success": "{} a été supprimé.",
+      "force_readonly_datasets": "Rendre tous les ensembles de données en lecture seule",
       "generate_configs": "Générer la configuration des services",
       "home_title": "Accueil",
       "logout": "Déconnexion",
@@ -54,14 +55,15 @@
       "page_navigation": "Navigation",
       "per_page": "par page",
       "previous": "Précédent",
+      "qgis_server_log_lines": "Nombre de lignes",
+      "read_qgis_server_logs": "Charger les logs du QGIS Server",
       "registration_title": "Enregistrement",
       "subtitle": "Outil d'administration pour les services QWC",
       "timeout_error": "La génération de la configuration a pris trop de temps. Causes probables:\n- Il y a un problème de connectivité\n - La récupération des Capabilities a pris trop de temps (trop de thèmes / trop de couches / couches distantes lentes)\n- Le 'proxy_read_timeout' de qwc-api-gateway est trop bas",
       "title": "Administration QWC",
       "update_resource_message_error": "Impossible de modifier {}.",
       "update_resource_message_success": "{} a été modifié.",
-      "use_cached_project_metadata": "Utiliser les métadonnées du projet mises en cache si elles sont disponibles",
-      "force_readonly_datasets": "Rendre tous les ensembles de données en lecture seule"
+      "use_cached_project_metadata": "Utiliser les métadonnées du projet mises en cache si elles sont disponibles"
     },
     "permissions": {
       "confirm_message_delete": "Voulez-vous supprimer la permission?",
@@ -114,7 +116,6 @@
       "form_role": "Permission du rôle des ressources à importer depuis la carte",
       "form_write": "Ecriture",
       "hierarchy_title": "Hierarchie des resources",
-      "import_children_layers": "Importer les couches",
       "import_children_message_error": "L'import des enfants n'est pas supporté pour ce type de ressource.",
       "import_layer_message_error": "Impossible d'importer la couche {}",
       "import_layers_message_error": "Impossible d'importer les couches:",
