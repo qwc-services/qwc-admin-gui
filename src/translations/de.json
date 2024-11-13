@@ -44,10 +44,13 @@
       "title": "Gruppen"
     },
     "main": {
+      "access_denied": "Zugriff verweigert",
+      "access_denied_detail": "Der Benutzer ist nicht berechtigt, auf das Verwaltungs-Backend zuzugreifen.",
       "delete_resource_message_success": "{} wurde gelöscht.",
       "force_readonly_datasets": "Alle Edit-Datensätze schreibgeschützt machen",
       "generate_configs": "Dienstkonfiguration generieren",
       "home_title": "Home",
+      "login": "Als Admin einloggen",
       "logout": "Logout",
       "new_resource_message_error": "Konnte nicht erstellt werden: {}.",
       "new_resource_message_success": "{} wurde erstellt.",

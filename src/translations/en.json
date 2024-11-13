@@ -44,10 +44,13 @@
       "title": "Groups"
     },
     "main": {
+      "access_denied": "Access denied",
+      "access_denied_detail": "The user is not allowed to access the administration backend.",
       "delete_resource_message_success": "{} has been deleted.",
       "force_readonly_datasets": "Make all edit datasets read-only",
       "generate_configs": "Generate service configuration",
       "home_title": "Home",
+      "login": "Login as Admin",
       "logout": "Logout",
       "new_resource_message_error": "Could not create {}.",
       "new_resource_message_success": "{} has been created.",

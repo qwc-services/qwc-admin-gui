@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>{{ admin_gui_title }}</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  {% if favicon %}
+  <link rel="icon" href="{{favicon}}">
+  {% endif %}
+  {{ bootstrap.load_css() }}
+  {{ bootstrap.load_js() }}
+</head>
+<body>
+  <div class="container py-4">
+    <h1>{{ i18n('interface.main.access_denied') }}</h1>
+    <div class="py-4">{{ i18n('interface.main.access_denied_detail') }}</div>
+
+    <div>
+      <a class="btn btn-success" href="{{ login_url }}">
+        {{ i18n('interface.main.login') }}
+      </a>
+    </div>
+  </div>
+</body>

@@ -158,6 +158,9 @@ def load_plugins():
 @app.before_request
 @optional_auth
 def assert_admin_role():
+    if request.path.startswith('/bootstrap/static/'):
+        return
+
     identity = get_identity()
     app.logger.debug("Access with identity %s" % identity)
     if not access_control.is_admin(identity):
@@ -169,7 +172,16 @@ def assert_admin_role():
             prefix = auth_path_prefix()
             if identity:
                 # Already logged in, but not with admin role
-                return redirect(prefix + '/logout?url=%s' % request.url)
+                config = handler().config()
+                admin_gui_title = config.get('admin_gui_title', i18n('interface.main.title'))
+                favicon = config.get('favicon')
+                return render_template(
+                    'templates/access_denied.html',
+                    admin_gui_title=admin_gui_title,
+                    favicon=favicon,
+                    i18n=i18n,
+                    login_url=prefix + '/logout?url=%s' % request.url
+                )
             else:
                 return redirect(prefix + '/login?url=%s' % request.url)
 
