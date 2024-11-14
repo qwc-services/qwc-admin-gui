@@ -18,7 +18,7 @@ def load_plugin(app, handler):
     config = handler().config()
     for setting in ["input_config_path", "qwc2_path", "qgs_resources_path", "info_templates_path"]:
         if not os.path.isdir(config.get(setting, "")):
-            raise RuntimeError("%s is not set or invalid" % setting)
+            raise RuntimeError("%s is not set, is invalid or doesn't have the required permissions" % setting)
     if not config.get("ows_prefix", None):
         raise RuntimeError("ows_prefix is not set")
     if not config.get("default_qgis_server_url", None):
