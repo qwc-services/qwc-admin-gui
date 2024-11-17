@@ -175,6 +175,9 @@
       "title": "Config Editor",
       "update_message_success": "has been updated"
     },
+    "json_editor": {
+      "title": "title"
+    },
     "themes": {
       "backgroundlayers": {
         "action_created": "created",

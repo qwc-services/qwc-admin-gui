@@ -159,6 +159,7 @@
     "plugins.config_editor.subtitle",
     "plugins.config_editor.title",
     "plugins.config_editor.update_message_success",
+    "plugins.json_editor.title",
     "plugins.themes.backgroundlayers.action_created",
     "plugins.themes.backgroundlayers.action_updated",
     "plugins.themes.backgroundlayers.create_message_error",

@@ -175,6 +175,9 @@
       "title": "Konfigurationseditor",
       "update_message_success": "wurde aktualisiert"
     },
+    "json_editor": {
+      "title": "title"
+    },
     "themes": {
       "backgroundlayers": {
         "action_created": "erstellt",
