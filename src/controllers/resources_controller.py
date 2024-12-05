@@ -949,8 +949,12 @@ class ResourcesController(Controller):
                     url_for(self.base_route)
                 )
         else:
-            flash('%s %s.' % (i18n('interface.resources.import_ressources_parent_message_error'), parent_resource),
-                  'warning')
+            msg = "%s" % (i18n('interface.resources.import_resources_message_error'))
+            self.logger.error(msg)
+            flash(msg, 'error')
+            return redirect(
+                url_for(self.base_route)
+            )
 
 class AlchemyEncoder(json.JSONEncoder):
 
