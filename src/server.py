@@ -271,7 +271,7 @@ def qgis_server_logs():
     def colorize(line):
         if line[9:16] == "WARNING":
             return f'<b style="color: orange">{line}</b>'
-        elif line[9:17] == "CRITICAL":
+        elif line[9:17] == "CRITICAL" or line.startswith("Traceback"):
             return f'<b style="color: red">{line}</b>'
         else:
             return line
