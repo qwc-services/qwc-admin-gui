@@ -120,6 +120,7 @@
       "form_write": "Write",
       "hierarchy_title": "Resource hierarchy",
       "import_children_message_error": "Child import not supported for this resource type.",
+      "import_layers": "Import layers",
       "import_layer_message_error": "Could not import layer {}",
       "import_layers_message_error": "Could not import layers:",
       "import_maps": "Import maps",

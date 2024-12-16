@@ -120,6 +120,7 @@
       "form_write": "Schreiben",
       "hierarchy_title": "Ressourcenhierarchie",
       "import_children_message_error": "Kindimport für diesen Ressourcentyp nicht unterstützt.",
+      "import_layers": "Ebenen importieren",
       "import_layer_message_error": "Ebene kann nicht importiert werden: {}",
       "import_layers_message_error": "Konnte Ebenen nicht importieren:",
       "import_maps": "Karten importieren",
