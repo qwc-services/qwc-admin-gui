@@ -158,7 +158,7 @@ def load_plugins():
 @app.before_request
 @optional_auth
 def assert_admin_role():
-    if request.path.startswith('/bootstrap/static/'):
+    if request.path.startswith(('/bootstrap/static/', '/ready', '/healthz')):
         return
 
     identity = get_identity()
