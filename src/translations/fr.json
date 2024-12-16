@@ -113,6 +113,8 @@
       "form_write": "Ecriture",
       "hierarchy_title": "Hierarchie des resources",
       "import_children_message_error": "L'import des enfants n'est pas supporté pour ce type de ressource.",
+      "import_layers": "Importer couches",
+      "import_layer_message_error": "Impossible d'importer la couche {}",
       "import_layers_message_error": "Impossible d'importer les couches:",
       "import_maps": "Importer les cartes",
       "import_maps_message_error": "Impossible d'importer les cartes:",

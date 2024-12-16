@@ -142,7 +142,7 @@
     <form action="{{ url_for('import_children_resource', id=id) }}" method="post" style="display: inline;">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
       <button type="submit" class="col-sm-offset-2 btn btn-success btn-spin-on-click" data-spinning-msg="{{ i18n('interface.resources.message_import_layers') }}">
-        {{ utils.render_icon('download-alt') }} {{ i18n('interface.resources.parent_resource') }}
+        {{ utils.render_icon('download') }} {{ i18n('interface.resources.import_layers') }}
       </button>
     </form>
   {% endif %}
