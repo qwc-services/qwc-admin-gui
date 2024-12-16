@@ -135,7 +135,7 @@
     </div>
 
     {{ wtf.render_field(form.submit, class="col-sm-offset-2 btn btn-primary") }}
-    <button class="col-sm-offset-2 btn btn-danger" onclick="history.back()">Cancel</button>
+    <button class="col-sm-offset-2 btn btn-danger" onclick="history.back()" type="button">Cancel</button>
   </form>
 
   {% if form.type.data == 'map' and id %}
