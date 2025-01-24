@@ -209,17 +209,9 @@ For more information please visit: https://github.com/qwc-services/qwc-docker
 Development
 -----------
 
-Create a virtual environment:
-
-    python3 -m venv .venv
-
-Activate virtual environment:
-
-    source .venv/bin/activate
-
 Install requirements:
 
-    pip install -r requirements.txt
+    uv sync
 
 Set the `CONFIG_PATH` environment variable to the path containing the service config and permission files when starting this service (default: `config`).
 
@@ -230,8 +222,9 @@ Configure environment:
     echo FLASK_ENV=development >.flaskenv
 
 Update translation files:
-     python ./updateTranslations.py
+
+     uv run ./updateTranslations.py
 
 Start local service:
 
-     python src/server.py
+     uv run src/server.py
