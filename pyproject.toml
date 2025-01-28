@@ -1,6 +1,6 @@
 [project]
 name = "qwc-admin-gui"
-version = "v2025.01.24"
+version = "v2025.01.28"
 description = "QWC Admin GUI"
 readme = "README.md"
 requires-python = ">=3.10"
