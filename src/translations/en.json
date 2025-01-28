@@ -27,6 +27,7 @@
       "new_permission": "New Permission",
       "ph_search": "Search",
       "registrable_group": "Registrable Group",
+      "registration_request": "Registration Requests",
       "remove": "Remove",
       "resource": "Resource",
       "role": "Role",
@@ -80,8 +81,8 @@
     },
     "registrable_groups": {
       "confirm_message_delete": "Remove registrable group?",
-      "new_registrable_group": "New Registrable Group",
-      "title": "Registrable Groups"
+      "new_registrable_group": "New registrable group",
+      "title": "Registrable groups"
     },
     "registration_requests": {
       "accept": "Accept",
@@ -99,7 +100,7 @@
       "send_message_error": "Failed to send user notification:",
       "send_message_success": "User has been notified of registration request updates.",
       "skip": "Skip",
-      "title": "Pending Registration Requests"
+      "title": "Pending registration requests"
     },
     "resources": {
       "add_layers_map_message_error": "No layers found for this map.",

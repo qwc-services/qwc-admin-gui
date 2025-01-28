@@ -1,4 +1,4 @@
-{{ i18n('registration_requests.user_notification.salutation') | format(username=user.name) }}
+{{ i18n('registration_requests.user_notification.salutation') | format(username=username) }}
 {% if groups_joined | length > 0 %}
 {{ i18n('registration_requests.user_notification.user_added_to_groups') }}
   {%- for group in groups_joined %}
