@@ -258,12 +258,6 @@ class RegistrationRequestsController(Controller):
             # no changes in registration requests
             return
 
-        # successfully commit changes before sending user notification
-        try:
-            session.commit()
-        except Exception as e:
-            raise(e)
-
         # send notification to user
         try:
             msg = Message(
