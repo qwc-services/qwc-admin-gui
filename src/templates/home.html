@@ -60,7 +60,7 @@
           else if (jqXHR.responseJSON) {
             msg = jqXHR.responseJSON.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;");
           }
-          else if (jqXHR.responseText.indexOf("<p>The CSRF token is invalid.</p>") != -1) {
+          else if (jqXHR.responseText && jqXHR.responseText.indexOf("<p>The CSRF token is invalid.</p>") != -1) {
             msg = "The CSRF token is invalid. Please reload this page and retry.";
           }
           else if (jqXHR.responseText) {
