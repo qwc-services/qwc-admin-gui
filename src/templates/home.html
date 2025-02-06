@@ -113,6 +113,23 @@
   });
 </script>
 {% endblock %}
+{%- block styles %}
+  {{ super() }}
+  <style type="text/css">
+    span.question {
+      display: inline-flex;
+      font-weight: bold;
+      align-items: center;
+      justify-content: center;
+      width: 1.8ex;
+      height: 1.8ex;
+      border-radius: 1.2ex;
+      padding: 1px;
+      color: white;
+      background: black;
+    }
+  </style>
+{% endblock %}
 
 {% block title %}{{ i18n('interface.main.home_title') }}{% endblock %}
 {% block container %}
@@ -127,8 +144,10 @@
   </button>
   <br>
   <label style="padding-top: 0.5em"><input id="use_cached_project_metadata" type="checkbox" /> {{ i18n('interface.main.use_cached_project_metadata') }}</label>
+  <span class="question" title="{{ i18n('interface.main.use_cached_project_metadata_help') }}">?</span>
   <br>
   <label style="padding-top: 0.5em; font-weight: bold; color: red;"><input id="force_readonly_datasets" type="checkbox" /> {{ i18n('interface.main.force_readonly_datasets') }}</label>
+  <span class="question" title="{{ i18n('interface.main.force_readonly_datasets_help') }}">?</span>
   {% endif %}
 
   {% if have_qgis_server %}
