@@ -73,6 +73,9 @@ mail_config_from_env(app)
 mail = Mail(app)
 
 tenant_handler = TenantHandler(app.logger)
+app.wsgi_app = TenantPrefixMiddleware(app.wsgi_app)
+app.session_interface = TenantSessionInterface()
+
 db_engine = DatabaseEngine()
 
 
@@ -107,10 +110,6 @@ def handler():
             'handler', tenant,
             TenantConfigHandler(tenant, db_engine, app.logger))
     return handler
-
-
-app.wsgi_app = TenantPrefixMiddleware(app.wsgi_app)
-app.session_interface = TenantSessionInterface(os.environ)
 
 
 def auth_path_prefix():
