@@ -398,7 +398,7 @@ wheels = [
 
 [[package]]
 name = "qwc-admin-gui"
-version = "2025.2.6"
+version = "2025.2.8"
 source = { virtual = "." }
 dependencies = [
     { name = "bootstrap-flask" },
