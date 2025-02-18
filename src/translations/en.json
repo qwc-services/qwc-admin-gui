@@ -68,7 +68,7 @@
       "update_resource_message_error": "Could not update {}.",
       "update_resource_message_success": "{} has been updated.",
       "use_cached_project_metadata": "Use cached project metadata if available",
-      "use_cached_project_metadata_help": "Use cached WMS/WMTS capabilities for themes and external layers, if available, and skips regeneration of the theme thumbnails. Useful to quickly regenerate the configuration with only permission or service configuration changes were performed but no changes to the project files."
+      "use_cached_project_metadata_help": "Use cached WMS/WMTS capabilities for themes and external layers, if available, and skips regeneration of the theme thumbnails. Useful to quickly regenerate the configuration if only permission or service configuration changes were performed but no changes to the project files."
     },
     "permissions": {
       "confirm_message_delete": "Remove permission?",
