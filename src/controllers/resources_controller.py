@@ -537,7 +537,8 @@ class ResourcesController(Controller):
             # get maps for tenant from config generator service
             url = urljoin(config_generator_service_url, 'maps')
             tenant = self.handler().tenant
-            response = requests.get(url, params={'tenant': tenant})
+            params = {'tenant': tenant, 'use_cached_project_metadata': '1'}
+            response = requests.get(url, params=params)
             if response.status_code != requests.codes.ok:
                 self.logger.error(
                     "Could not get maps from %s:\n%s" %
@@ -597,7 +598,8 @@ class ResourcesController(Controller):
         )
         url = urljoin(config_generator_service_url, "resources")
         tenant = self.handler().tenant
-        response = requests.get(url, params={'tenant': tenant})
+        params = {'tenant': tenant, 'use_cached_project_metadata': '1'}
+        response = requests.get(url, params=params)
         if response.status_code != requests.codes.ok:
             self.logger.error(
                 "Could not get all resources from %s:\n%s" %
@@ -729,7 +731,8 @@ class ResourcesController(Controller):
                 config_generator_service_url, 'maps/%s' % map_resource.name
             )
             tenant = self.handler().tenant
-            response = requests.get(url, params={'tenant': tenant})
+            params = {'tenant': tenant, 'use_cached_project_metadata': '1'}
+            response = requests.get(url, params=params)
             if response.status_code != requests.codes.ok:
                 self.logger.error(
                     "Could not get map details from %s:\n%s" %
@@ -832,7 +835,8 @@ class ResourcesController(Controller):
                             config_generator_service_url, 'maps/%s' % parent_resource.name
                         )
                         tenant = self.handler().tenant
-                        response = requests.get(url, params={'tenant': tenant})
+                        params = {'tenant': tenant, 'use_cached_project_metadata': '1'}
+                        response = requests.get(url, params=params)
                         if response.status_code != requests.codes.ok:
                             self.logger.error(
                                 "Could not get map details from %s:\n%s" %
