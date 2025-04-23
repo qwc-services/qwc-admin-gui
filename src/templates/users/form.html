@@ -50,6 +50,7 @@
     <legend>{{ i18n('interface.users.authentication') }}</legend>
     {{ wtf.render_field(form.password, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.password2, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.force_password_change, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {% if form.totp_enabled %}
       {{ wtf.render_field(form.totp_secret, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {% endif %}

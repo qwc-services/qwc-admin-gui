@@ -115,6 +115,7 @@ class UsersController(Controller):
         user.email = form.email.data
         if form.password.data:
             user.set_password(form.password.data)
+        user.force_password_change = form.force_password_change.data
         user.failed_sign_in_count = form.failed_sign_in_count.data or 0
 
         totp_enabled = self.handler().config().get(
