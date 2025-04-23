@@ -1,6 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import FormField, IntegerField, SelectField, SelectMultipleField, \
-    StringField, SubmitField, TextAreaField, ValidationError, PasswordField
+    StringField, SubmitField, TextAreaField, ValidationError, PasswordField, \
+    BooleanField
 from wtforms.validators import DataRequired, Optional, Email, EqualTo, \
     Length, NumberRange
 from wtforms.widgets import NumberInput
@@ -21,6 +22,7 @@ class UserForm(FlaskForm):
     password = PasswordField(i18n('interface.users.form_password'))
     password2 = PasswordField(
         i18n('interface.users.form_password_repeat'), validators=[EqualTo('password')])
+    force_password_change = BooleanField(i18n('interface.users.force_password_change'))
     totp_enabled = False
     totp_secret = StringField(
         i18n('interface.users.form_totp'), validators=[Optional(), Length(max=128)]
