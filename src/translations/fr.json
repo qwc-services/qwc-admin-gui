@@ -153,6 +153,8 @@
     "users": {
       "authentication": "Authenticafition",
       "confirm_message_delete": "Voulez-vous supprimer cet utilisateur?",
+      "confirm_sendmail": "Le mot de passe sera réinitialisé et un e-mail d'invitation sera envoyé à {}, procéder?",
+      "force_password_change": "Forcer le changement de mot de passe lors de la prochaine connexion",
       "form_email": "Email",
       "form_email_error": "Utilisez une adresse email différente SVP.",
       "form_failed_login": "Nombre de tentatives de connexion infructueuses",
@@ -163,7 +165,13 @@
       "form_password_repeat": "Répéter le mot de passe",
       "form_totp": "TOTP secret",
       "groups_roles": "Groupes et rôles",
+      "mail_subject": "Votre accès à {}",
       "new_user": "Nouvel utilisateur",
+      "no_mail_config": "Aucun e-mail d'expéditeur n'est configuré, il n'est pas possible d'envoyer un e-mail d'invitation.",
+      "no_user_email": "Aucun e-mail n'est enregistré pour l'utilisateur, il ne peut pas envoyer d'e-mail.",
+      "send_mail_failure": "L'envoi de l'e-mail d'invitation a échoué",
+      "send_mail_success": "L'e-mail d'invitation a été envoyé avec succès",
+      "sendmail": "Envoyer une invitation",
       "title": "Utilisateurs",
       "user_info": "Information utilisateur"
     }

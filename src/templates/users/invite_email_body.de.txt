@@ -1,0 +1,12 @@
+Hallo {{ user.name }}
+
+Es wurde für Sie ein Konto für {{ app_name }} erstellt.
+
+Sie können auf die Anwendung unter {{ app_url }} zugreifen.
+
+Ihre Anmeldedaten sind:
+
+* Benutzername: {{ user.name }}
+* Passwort: {{ password }}
+
+Bei der ersten Anmeldung werden Sie aufgefordert, Ihr Passwort zu ändern.

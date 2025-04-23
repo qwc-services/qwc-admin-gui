@@ -118,7 +118,7 @@ def auth_path_prefix():
 
 
 # create controllers (including their routes)
-UsersController(app, handler)
+UsersController(app, handler, mail)
 GroupsController(app, handler)
 RolesController(app, handler)
 ResourcesController(app, handler)
