@@ -153,6 +153,8 @@
     "users": {
       "authentication": "Authentication",
       "confirm_message_delete": "Remove user?",
+      "confirm_sendmail": "The password will be reset and an invitation mail sent to {}, proceed?",
+      "force_password_change": "Force password change on next login",
       "form_email": "Email",
       "form_email_error": "Please use a different email address.",
       "form_failed_login": "Failed login attempts",
@@ -163,7 +165,13 @@
       "form_password_repeat": "Repeat Password",
       "form_totp": "TOTP secret",
       "groups_roles": "Groups and roles",
+      "mail_subject": "Your access to {}",
       "new_user": "New user",
+      "no_mail_config": "No sender email is configured, cannot send invitation e-mail.",
+      "no_user_email": "No email stored for the user, cannot send e-mail.",
+      "send_mail_failure": "Failed to send the invitation e-mail.",
+      "send_mail_success": "Invitation e-mail sent successfully.",
+      "sendmail": "Send invitation",
       "title": "Users",
       "user_info": "User info"
     }

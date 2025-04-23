@@ -176,6 +176,8 @@
                 </a>
               {% endif %}
             {% endif %}
+            {% block resource_actions scoped %}
+            {% endblock %}
             <form action="{{ url_for('destroy_%s' % endpoint_suffix, id=resource[pkey]) }}" method="post" style="display: inline;">
               <input type="hidden" name="_method" value="DELETE" />
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>

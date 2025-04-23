@@ -1,22 +1,34 @@
 import os
+import secrets
 
-from flask import json
+from flask import json, flash, redirect, render_template, url_for
+from flask_mail import Message
 
 from .controller import Controller
 from forms import UserForm
 
+from utils import i18n
 
 class UsersController(Controller):
     """Controller for user model"""
 
-    def __init__(self, app, handler):
+    def __init__(self, app, handler, mail):
         """Constructor
 
         :param Flask app: Flask application
         :param handler: Tenant config handler
+        :param flask_mail.Mail mail: Application mailer
         """
         super(UsersController, self).__init__(
             "User", 'users', 'user', 'users', app, handler
+        )
+
+        self.mail = mail
+
+        # send mail
+        app.add_url_rule(
+            '/%s/<int:id>/sendmail' % self.base_route, 'sendmail_%s' % self.endpoint_suffix, self.sendmail,
+            methods=['GET']
         )
 
     def resources_for_index_query(self, search_text, session):
@@ -156,3 +168,74 @@ class UsersController(Controller):
         self.update_collection(
             user.roles_collection, form.roles, self.Role, 'id', session
         )
+
+    def sendmail(self, id):
+        """Send mail with access link.
+
+        :param int id: User ID
+        """
+        if not self.app.config.get("MAIL_USERNAME", None):
+            flash(
+                i18n('interface.users.no_mail_config'),
+                'error'
+            )
+            return redirect(url_for(self.base_route))
+
+        self.setup_models()
+        # find user
+        with self.session() as session, session.begin():
+            user = self.find_resource(id, session)
+
+            if not user or not user.email:
+                flash(
+                    i18n('interface.users.no_user_email'),
+                    'error'
+                )
+                return redirect(url_for(self.base_route))
+
+            password = secrets.token_urlsafe(8).replace('-','0')
+            user.set_password(password)
+            user.force_password_change = True
+
+            app_name = self.handler().config().get("application_name", "QWC")
+            app_url = self.handler().config().get("application_url",
+                os.path.dirname(url_for('home', _external=True).rstrip("/")) + "/"
+            )
+
+            try:
+                body = render_template(
+                    '%s/invite_email_body.%s.txt' % (self.templates_dir, i18n.get('locale')),
+                    user=user, password=password, app_name=app_name
+                )
+            except:
+                body = render_template(
+                    '%s/invite_email_body.en.txt' % (self.templates_dir),
+                    user=user, password=password, app_name=app_name, app_url=app_url
+                )
+
+            try:
+                msg = Message(
+                    i18n('interface.users.mail_subject', [app_name]),
+                    recipients=[user.email]
+                )
+                # set message body from template
+                msg.body = body
+
+                # send message
+                self.logger.debug(msg)
+                self.mail.send(msg)
+                flash(
+                    i18n('interface.users.send_mail_success'),
+                    'success'
+                )
+            except Exception as e:
+                self.logger.error(
+                    "Could not send mail to user '%s':\n%s" %
+                    (user.email, e)
+                )
+                flash(
+                    i18n('interface.users.send_mail_failure'),
+                    'error'
+                )
+
+            return redirect(url_for(self.base_route))

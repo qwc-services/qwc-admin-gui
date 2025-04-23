@@ -1,0 +1,12 @@
+Bonjour {{ user.name }}
+
+Un compte a été créé pour vous pour {{ app_name }}.
+
+Vous pouvez accéder à l'application à l'adresse {{ app_url }}.
+
+Vos informations d'identification sont les suivantes :
+
+* Nom d'utilisateur : {{ user.name }}
+* Mot de passe : {{ password }}
+
+Vous serez invité à modifier votre mot de passe lors de votre première connexion.

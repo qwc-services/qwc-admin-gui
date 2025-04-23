@@ -153,6 +153,8 @@
     "users": {
       "authentication": "Authentifizierung",
       "confirm_message_delete": "Benutzer entfenrnen?",
+      "confirm_sendmail": "Das Passwort wird zurückgesetzt und eine Einladungs-E-Mail an {} gesendet, weiter?",
+      "force_password_change": "Passwortänderung bei nächster Anmeldung erzwingen",
       "form_email": "Email",
       "form_email_error": "Bitte eine andere Email Adresse verwenden.",
       "form_failed_login": "Fehlgeschlagenen Loginversuche",
@@ -163,7 +165,13 @@
       "form_password_repeat": "Passwort wiederholen",
       "form_totp": "TOTP Geheimniss",
       "groups_roles": "Gruppen und Rollen",
+      "mail_subject": "Ihr Zugang zu {}",
       "new_user": "Neuer Benutzer",
+      "no_mail_config": "Keine Absender-E-Mail ist konfiguriert, kann keine Einladungs-E-Mail senden.",
+      "no_user_email": "Keine E-Mail für den Benutzer gespeichert, kann keine E-Mail senden.",
+      "send_mail_failure": "Die Einladungs-E-Mail konnte nicht gesendet werden.",
+      "send_mail_success": "Einladungs-E-Mail erfolgreich gesendet.",
+      "sendmail": "Einladung versenden",
       "title": "Benutzer",
       "user_info": "Benutzerinfo"
     }

@@ -1,0 +1,12 @@
+Hello {{ user.name }}
+
+An account has been created for you for {{ app_name }}.
+
+You can access the application at {{ app_url }}.
+
+Your credentials are:
+
+* Username: {{ user.name }}
+* Password: {{ password }}
+
+You will be prompted to change your password on first login.
