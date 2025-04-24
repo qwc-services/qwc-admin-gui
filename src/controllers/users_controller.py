@@ -206,7 +206,7 @@ class UsersController(Controller):
             try:
                 body = render_template(
                     '%s/invite_email_body.%s.txt' % (self.templates_dir, locale),
-                    user=user, password=password, app_name=app_name
+                    user=user, password=password, app_name=app_name, app_url=app_url
                 )
             except:
                 body = render_template(
