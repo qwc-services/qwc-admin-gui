@@ -202,9 +202,10 @@ class UsersController(Controller):
                 os.path.dirname(url_for('home', _external=True).rstrip("/")) + "/"
             )
 
+            locale = os.environ.get('DEFAULT_LOCALE', 'en')
             try:
                 body = render_template(
-                    '%s/invite_email_body.%s.txt' % (self.templates_dir, i18n.get('locale')),
+                    '%s/invite_email_body.%s.txt' % (self.templates_dir, locale),
                     user=user, password=password, app_name=app_name
                 )
             except:
