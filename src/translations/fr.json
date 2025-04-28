@@ -185,9 +185,6 @@
       "title": "Editeur des configurations",
       "update_message_success": "a été mis à jour"
     },
-    "json_editor": {
-      "title": "title"
-    },
     "themes": {
       "backgroundlayers": {
         "action_created": "créé",
@@ -285,6 +282,8 @@
         "form_crs_description": "Projection de la carte.",
         "form_default": "Par défaut",
         "form_default_description": "Utiliser ce thème comme thème ouvert par défaut.",
+        "form_disabled": "Désactiver ce thème",
+        "form_disabled_description": "Ne pas prendre en compte ce thème dans la configuration.",
         "form_format_description": "Le format d'image est obligatoire pour le service WMS. Par défaut, 'image/png'.",
         "form_mapTips": "Activer l'infobulle par défaut",
         "form_mapTips_description": "Activer l'infobulle par défaut sur ce thème",
@@ -321,6 +320,7 @@
         "create_theme_title": "Créer un thème",
         "delete_theme": "Supprimer un thème",
         "delete_theme_message_error": "Impossible de supprimer la ressource pour la carte",
+        "disabled": "Désactivé",
         "edit_theme": "Modifier le thème",
         "edit_theme_title": "Modifier le thème",
         "group_confirm_message_delete": "Voulez-vous vraiment supprimer ce groupe de thèmes?",

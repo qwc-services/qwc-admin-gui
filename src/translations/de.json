@@ -185,9 +185,6 @@
       "title": "Konfigurationseditor",
       "update_message_success": "wurde aktualisiert"
     },
-    "json_editor": {
-      "title": "title"
-    },
     "themes": {
       "backgroundlayers": {
         "action_created": "erstellt",
@@ -285,6 +282,8 @@
         "form_crs_description": "Die Kartenprojektion.",
         "form_default": "Standard",
         "form_default_description": "Ob dieses Thema als Initialthema verwendet werden soll.",
+        "form_disabled": "Deaktivieren",
+        "form_disabled_description": "Überspringen Sie dieses Thema aus der Konfiguration",
         "form_format_description": "Über WMS angefragtes Bildformat. Standard ist 'image/png'.",
         "form_mapTips": "Kartentips standardmässig aktivieren",
         "form_mapTips_description": "Kartentips standardmässig aktivieren",
@@ -321,6 +320,7 @@
         "create_theme_title": "Thema erstellen",
         "delete_theme": "Thema löschen",
         "delete_theme_message_error": "Konnte die Ressource für das Thema nicht löschen",
+        "disabled": "Deaktiviert",
         "edit_theme": "Thema editieren",
         "edit_theme_title": "Thema editieren",
         "group_confirm_message_delete": "Themengruppe wirklich löschen?",
