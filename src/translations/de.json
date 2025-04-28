@@ -283,7 +283,7 @@
         "form_default": "Standard",
         "form_default_description": "Ob dieses Thema als Initialthema verwendet werden soll.",
         "form_disabled": "Deaktivieren",
-        "form_disabled_description": "Überspringen Sie dieses Thema aus der Konfiguration",
+        "form_disabled_description": "Dieses Thema beim Konfigurieren überspringen",
         "form_format_description": "Über WMS angefragtes Bildformat. Standard ist 'image/png'.",
         "form_mapTips": "Kartentips standardmässig aktivieren",
         "form_mapTips_description": "Kartentips standardmässig aktivieren",
