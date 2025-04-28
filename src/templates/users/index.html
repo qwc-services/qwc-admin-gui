@@ -16,8 +16,8 @@
 
 {% block resource_actions %}
 <a href="#" class="btn btn-primary" onclick="
-if (confirm('{{ i18n('interface.users.confirm_sendmail', [resource.email]) }}')) {
-location.href = '{{ url_for('sendmail_%s' % endpoint_suffix, id=resource[pkey]) }}';
+if (confirm('{{ i18n('interface.users.confirm_sendmail', [resource.email]).replace("'", "\\'") }}')) {
+location.href = '{{ url_for('sendmail_%s' % endpoint_suffix, id=resource[pkey]).replace("'", "\\'") }}';
 }
 " role="button">
   {{ utils.render_icon('envelope') }} {{ i18n('interface.users.sendmail') }}
