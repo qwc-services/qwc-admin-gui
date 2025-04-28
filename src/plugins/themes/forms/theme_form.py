@@ -119,6 +119,11 @@ class ThemeForm(FlaskForm):
         description=i18n('plugins.themes.theme.form_collapseLayerGroupsBelowLevel_description'),
         validators=[Optional()]
     )
+    disabled = BooleanField(
+        i18n('plugins.themes.theme.form_disabled'),
+        description=i18n('plugins.themes.theme.form_disabled_description'),
+        validators=[Optional()]
+    )
     default = BooleanField(
         i18n('plugins.themes.theme.form_default'),
         description=i18n('plugins.themes.theme.form_default_description'),

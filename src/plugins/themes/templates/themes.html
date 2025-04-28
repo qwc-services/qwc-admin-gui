@@ -52,15 +52,26 @@
               <th>ID</th>
               <th>{{ i18n('plugins.themes.themes.theme') }}</th>
               <th>{{ i18n('interface.common.url') }}</th>
+              <th>{{ i18n('plugins.themes.themes.disabled') }}</th>
               <th></th>
               <th></th>
             </thead>
             <tbody>
             {% for item in list %}
               <tr>
-                <td style="vertical-align: middle">{{ loop.index }}</td>
-                <td style="vertical-align: middle">{{ item.name }}</td>
-                <td style="vertical-align: middle">{{ item.url }}</td>
+                <td {% if item.disabled %}class="text-muted"{% endif %} style="vertical-align: middle">{{ loop.index }}</td>
+                <td {% if item.disabled %}class="text-muted"{% endif %} style="vertical-align: middle">{{ item.name }}</td>
+                <td {% if item.disabled %}class="text-muted"{% endif %} style="vertical-align: middle">{{ item.url }}</td>
+                <td style="vertical-align: middle">
+                  <input class="form-check-input"
+                    id="disable-theme-{{ item.name }}"
+                    name="disable-theme-{{ item.name }}"
+                    type="checkbox" disabled value="disabled"
+                    {% if item.disabled %}
+                    checked
+                    {% endif %}
+                    />
+                </td>
                 <td>
                   <a href="#" onclick="copyToClipboard('{{ item.url }}')" class="btn btn-default copy" role="button" title="{{ i18n('plugins.themes.themes.copy_url') }}">
                     {{ utils.render_icon('copy') }}
@@ -140,15 +151,26 @@
                   <th>ID</th>
                   <th>{{ i18n('plugins.themes.themes.theme') }}</th>
                   <th>{{ i18n('interface.common.url') }}</th>
+                  <th>{{ i18n('plugins.themes.themes.disabled') }}</th>
                   <th></th>
                   <th></th>
                 </thead>
                 <tbody>
                 {% for item in group["items"] %}
                   <tr>
-                    <td style="vertical-align: middle">{{ loop.index }}</td>
-                    <td style="vertical-align: middle">{{ item.name }}</td>
-                    <td style="vertical-align: middle">{{ item.url }}</td>
+                    <td {% if item.disabled %}class="text-muted"{% endif %} style="vertical-align: middle">{{ loop.index }}</td>
+                    <td {% if item.disabled %}class="text-muted"{% endif %} style="vertical-align: middle">{{ item.name }}</td>
+                    <td {% if item.disabled %}class="text-muted"{% endif %} style="vertical-align: middle">{{ item.url }}</td>
+                    <td style="vertical-align: middle">
+                      <input class="form-check-input"
+                        id="disable-theme-{{ item.name }}"
+                        name="disable-theme-{{ item.name }}"
+                        type="checkbox" disabled value="disabled"
+                        {% if item.disabled %}
+                        checked
+                        {% endif %}
+                        />
+                    </td>
                     <td>
                       <a href="#" onclick="copyToClipboard('{{ item.url }}')" class="btn btn-default copy" role="button" title="{{ i18n('plugins.themes.themes.copy_url') }}">
                         {{ utils.render_icon('copy') }}

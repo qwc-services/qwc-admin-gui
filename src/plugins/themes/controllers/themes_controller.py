@@ -139,7 +139,8 @@ class ThemesController:
         for item in self.themesconfig["themes"].get("items", []):
             themes["items"].append({
                 "name": item["title"] if "title" in item else item["url"],
-                "url": item["url"]
+                "url": item["url"],
+                "disabled": item.get("disabled", False)
             })
 
         # TODO: nested groups
@@ -151,7 +152,8 @@ class ThemesController:
             for item in group["items"]:
                 groupEntry["items"].append({
                     "name": item["title"] if "title" in item else item["url"],
-                    "url": item["url"]
+                    "url": item["url"],
+                    "disabled": item.get("disabled", False)
                 })
             themes["groups"].append(groupEntry)
 
@@ -440,6 +442,8 @@ class ThemesController:
                 form.url.data = None
             if "title" in theme:
                 form.title.data = theme["title"]
+            if "disabled" in theme:
+                form.disabled.data = theme["disabled"]
             if "default" in theme:
                 form.default.data = theme["default"]
             if "tiled" in theme:
@@ -545,6 +549,10 @@ class ThemesController:
             item["title"] = form.title.data
         else:
             if "title" in item: del item["title"]
+
+        item["disabled"] = False
+        if form.disabled.data:
+            item["disabled"] = True
 
         item["default"] = False
         if form.default.data:

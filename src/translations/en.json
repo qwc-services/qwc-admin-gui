@@ -185,9 +185,6 @@
       "title": "Config Editor",
       "update_message_success": "has been updated"
     },
-    "json_editor": {
-      "title": "title"
-    },
     "themes": {
       "backgroundlayers": {
         "action_created": "created",
@@ -285,6 +282,8 @@
         "form_crs_description": "The map projection.",
         "form_default": "Default",
         "form_default_description": "Whether to use this theme as initial theme.",
+        "form_disabled": "Disable this theme",
+        "form_disabled_description": "Skip this theme from configuration.",
         "form_format_description": "Image format requested from the WMS Service. Default is 'image/png'.",
         "form_mapTips": "Enable tooltip by default",
         "form_mapTips_description": "Enable the theme tooltip by default",
@@ -321,6 +320,7 @@
         "create_theme_title": "Create theme",
         "delete_theme": "Delete theme",
         "delete_theme_message_error": "Could not delete resource for map",
+        "disabled": "Disabled",
         "edit_theme": "Edit theme",
         "edit_theme_title": "Edit theme",
         "group_confirm_message_delete": "Really delete theme group?",
