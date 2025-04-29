@@ -236,6 +236,7 @@ def generate_configs():
 
     params = {
         "tenant": current_handler.tenant,
+        "stream_response": True
     }
     params.update(request.args)
     req = requests.post(
