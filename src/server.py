@@ -238,12 +238,19 @@ def generate_configs():
         "tenant": current_handler.tenant,
     }
     params.update(request.args)
-    response = requests.post(
+    req = requests.post(
         urllib.parse.urljoin(config_generator_url, "generate_configs"),
-        params=params
+        params=params,
+        stream=True
     )
-
-    return (response.text, response.status_code)
+    def req_lines():
+        for line in req.iter_lines(decode_unicode=True):
+            yield line + "\n"
+    return Response(
+        stream_with_context(req_lines()),
+        status=req.status_code,
+        content_type=req.headers.get('Content-Type')
+    )
 
 @app.route('/qgis_server_logs', methods=['POST'])
 def qgis_server_logs():

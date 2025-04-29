@@ -4,22 +4,27 @@
 {{super()}}
 <script type="text/javascript">
   $(function() {
-    var clearAlert = function(alertSelector) {
-      $('#alerts').find(alertSelector).find('> div').remove();
-    };
 
-    var showAlert = function(alertSelector, html) {
-      $('#alerts').find(alertSelector).append(html);
+    var setupLogElement = function(tabSelector, title, type="light") {
+      // Clear previous
+      $('#logs').find(tabSelector).find('> div').remove();
+
+      var container = $('<div>').addClass('alert alert-' + type).attr('role', 'alert');
+      var title = $('<strong>').text(title);
+      var contents = $('<pre>');
+      container.append(title).append(contents);
+      $('#logs').find(tabSelector).append(container);
+      return contents;
     }
 
-    var setupAPIRequestButton = function(buttonSelector, url, options, alertSelector, titleSuccess, titleError) {
+    var setupAPIRequestButton = function(buttonSelector, url, options, tabSelector, titleSuccess, titleError) {
       var button = $(buttonSelector);
       button.click(function() {
-        clearAlert(alertSelector);
         button.attr("disabled", true);
         $(document.body).css("cursor", 'wait');
+        $(tabSelector + "-tab").click();
 
-        let reqUrl = url;
+        var reqUrl = url;
         options.forEach(option => {
           if ($('#' + option).prop('checked')) {
             reqUrl += (reqUrl.includes('?') ? '&' : '?') + option + '=1';
@@ -28,26 +33,40 @@
           }
         });
 
+        var logElement = setupLogElement(tabSelector, titleSuccess);
+
         // call Admin GUI service
-        $.post(
-          reqUrl,
+        var last_chunk_len = null;
+        $.ajax({
+          xhr: function()
           {
+            var xhr = new window.XMLHttpRequest();
+            xhr.addEventListener("progress", function(e){
+              var response_chunk;
+              var response = e.currentTarget.response;
+              if (last_chunk_len === false)
+              {
+                  response_chunk = response;
+                  last_chunk_len = response.length;
+              } else {
+                  response_chunk = response.substring(last_chunk_len);
+                  last_chunk_len = response.length;
+              }
+              logElement.append(response_chunk);
+            }, false);
+            return xhr;
+          },
+          type: 'POST',
+          url: reqUrl,
+          data: {
             csrf_token: '{{ csrf_token() }}'
           }
-        ).done(function(data, status) {
+        }).done(function(data, status) {
           button.prop("disabled", false);
           $(document.body).css("cursor", '');
 
           // show response
-          var html = '';
-          html += '<div class="alert alert-light" role="alert">';
-          html +=   '<strong>' + titleSuccess + '</strong>';
-          html +=   '<pre>';
-          html +=     data;
-          html +=   '</pre>';
-          html += '</div>';
-          showAlert(alertSelector, html);
-          $(alertSelector + "-tab").click();
+          logElement.html(data);
         }).fail(function(jqXHR, status) {
           button.prop("disabled", false);
           $(document.body).css("cursor", '');
@@ -67,13 +86,7 @@
             msg = '<pre>' + jqXHR.responseText + '</pre>';
           }
 
-          var html = '';
-          html += '<div class="alert alert-danger" role="alert">';
-          html +=   '<strong>' + titleError + '</strong><br/>';
-          html +=   '<div style="font-family: monospace">' + msg + '</div>';
-          html += '</div>';
-          showAlert(alertSelector, html);
-          $(alertSelector + "-tab").click();
+          setupLogElement(tabSelector, titleError, 'danger').html(msg);
         });
       });
     }
@@ -166,7 +179,7 @@
   </button>
   {% endif %}
 
-  <div id="alerts" class="row mt-4">
+  <div id="logs" class="row mt-4">
     <nav>
       <div class="nav nav-tabs" id="nav-tab" role="tablist">
         {% if have_config_generator %}
