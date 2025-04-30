@@ -21,7 +21,9 @@
       var button = $(buttonSelector);
       button.click(function() {
         button.attr("disabled", true);
-        $(document.body).css("cursor", 'wait');
+        button.find('div.spinner').css('display', 'inline-block');
+        $('#logs').find(tabSelector).css("cursor", 'wait');
+        $(tabSelector + "-tab").find('div.spinner').css('display', 'inline-block');
         $(tabSelector + "-tab").click();
 
         var reqUrl = url;
@@ -63,13 +65,17 @@
           }
         }).done(function(data, status) {
           button.prop("disabled", false);
-          $(document.body).css("cursor", '');
+          button.find('div.spinner').css('display', 'none');
+          $('#logs').find(tabSelector).css("cursor", '');
+          $(tabSelector + "-tab").find('div.spinner').css('display', 'none');
 
           // show response
           logElement.html(data);
         }).fail(function(jqXHR, status) {
           button.prop("disabled", false);
-          $(document.body).css("cursor", '');
+          button.find('div.spinner').css('display', 'none');
+          $('#logs').find(tabSelector).css("cursor", '');
+          $(tabSelector + "-tab").find('div.spinner').css('display', 'none');
 
           // show errors
           var msg = jqXHR.statusText;
@@ -97,8 +103,8 @@
         "{{ url_for('generate_configs') }}",
         ['use_cached_project_metadata', 'force_readonly_datasets'],
         '#nav-confgen',
-        "Service configurations generated:",
-        "Error while refreshing config cache:"
+        "Generating configuration... ",
+        "Error while generating configuration"
       );
     {% endif %}
 
@@ -119,8 +125,8 @@
         "{{ url_for('update_solr_index') }}",
         [],
         '#nav-solr',
-        "Solr search index update:",
-        "Error while updating Solr search index:"
+        "Updating Solr search index",
+        "Error while updating Solr search index"
       );
     {% endif %}
   });
@@ -141,6 +147,32 @@
       color: white;
       background: black;
     }
+
+    .spinner {
+      box-sizing: border-box;
+      display: inline-block;
+      width: 1em;
+      height: 1em
+    }
+    .spinner:after {
+      box-sizing: border-box;
+      content: " ";
+      display: block;
+      width: 1em;
+      height: 1em;
+      border-radius: 50%;
+      border: 2px solid currentColor;
+      border-color: currentColor transparent currentColor transparent;
+      animation: spinner 1.2s linear infinite;
+    }
+    @keyframes spinner {
+      0% {
+        transform: rotate(0deg);
+      }
+      100% {
+        transform: rotate(360deg);
+      }
+    }
   </style>
 {% endblock %}
 
@@ -153,7 +185,7 @@
   {% if have_config_generator %}
   <br><br>
   <button id="generate_configs" class="btn btn-success">
-    {{ utils.render_icon('arrow-clockwise') }} {{ i18n('interface.main.generate_configs') }}
+    <div class="spinner" style="display: none"></div> {{ i18n('interface.main.generate_configs') }}
   </button>
   <br>
   <label style="padding-top: 0.5em"><input id="use_cached_project_metadata" type="checkbox" /> {{ i18n('interface.main.use_cached_project_metadata') }}</label>
@@ -166,7 +198,7 @@
   {% if have_qgis_server %}
   <br><br>
   <button id="qgis_server_logs" class="btn btn-success">
-    {{ utils.render_icon('arrow-clockwise') }} {{ i18n('interface.main.read_qgis_server_logs') }}
+    <div class="spinner" style="display: none"></div> {{ i18n('interface.main.read_qgis_server_logs') }}
   </button>
   <br>
   <label style="padding-top: 0.5em"><input id="qgis_server_log_lines" type="number" min="0" max="10000" value="100" /> {{ i18n('interface.main.qgis_server_log_lines') }}</label>
@@ -175,7 +207,7 @@
   {% if solr_index_update_enabled %}
   <br><br>
   <button id="update_solr_index" class="btn btn-success">
-    {{ utils.render_icon('arrow-clockwise') }} Update Solr search index
+    <div class="spinner" style="display: none"></div> Update Solr search index
   </button>
   {% endif %}
 
@@ -183,13 +215,19 @@
     <nav>
       <div class="nav nav-tabs" id="nav-tab" role="tablist">
         {% if have_config_generator %}
-        <button class="nav-link active" id="nav-confgen-tab" data-bs-toggle="tab" data-bs-target="#nav-confgen" type="button" role="tab" aria-controls="nav-confgen" aria-selected="true">ConfigGenerator logs</button>
+        <button class="nav-link active" id="nav-confgen-tab" data-bs-toggle="tab" data-bs-target="#nav-confgen" type="button" role="tab" aria-controls="nav-confgen" aria-selected="true">
+          <div class="spinner" style="display: none"></div> ConfigGenerator logs
+        </button>
         {% endif %}
         {% if have_qgis_server %}
-        <button class="nav-link" id="nav-qgisserver-tab" data-bs-toggle="tab" data-bs-target="#nav-qgisserver" type="button" role="tab" aria-controls="nav-qgisserver" aria-selected="false">QGIS Server logs</button>
+        <button class="nav-link" id="nav-qgisserver-tab" data-bs-toggle="tab" data-bs-target="#nav-qgisserver" type="button" role="tab" aria-controls="nav-qgisserver" aria-selected="false">
+          <div class="spinner" style="display: none"></div> QGIS Server logs
+        </button>
         {% endif %}
         {% if solr_index_update_enabled %}
-        <button class="nav-link" id="nav-solr-tab" data-bs-toggle="tab" data-bs-target="#nav-solr" type="button" role="tab" aria-controls="nav-solr" aria-selected="false">Solr index logs</button>
+        <button class="nav-link" id="nav-solr-tab" data-bs-toggle="tab" data-bs-target="#nav-solr" type="button" role="tab" aria-controls="nav-solr" aria-selected="false">
+          <div class="spinner" style="display: none"></div> Solr index logs
+        </button>
         {% endif %}
       </div>
     </nav>
