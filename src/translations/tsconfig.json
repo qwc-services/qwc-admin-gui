@@ -144,6 +144,8 @@
     "interface.users.confirm_message_delete",
     "interface.users.confirm_sendmail",
     "interface.users.force_password_change",
+    "interface.users.save_and_send",
+    "interface.users.set_random_password_send_invite",
     "interface.users.form_email",
     "interface.users.form_email_error",
     "interface.users.form_failed_login",

@@ -19,6 +19,7 @@ class UserForm(FlaskForm):
     # NOTE: actual subform added in add_custom_fields()
     user_info = FormField(FlaskForm, i18n('interface.users.user_info'), _meta={'csrf': False})
 
+    set_random_password_send_invite = BooleanField(i18n('interface.users.set_random_password_send_invite'))
     password = PasswordField(i18n('interface.users.form_password'))
     password2 = PasswordField(
         i18n('interface.users.form_password_repeat'), validators=[EqualTo('password')])

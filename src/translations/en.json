@@ -169,9 +169,11 @@
       "new_user": "New user",
       "no_mail_config": "No sender email is configured, cannot send invitation e-mail.",
       "no_user_email": "No email stored for the user, cannot send e-mail.",
+      "save_and_send": "Save and send invitation",
       "send_mail_failure": "Failed to send the invitation e-mail.",
       "send_mail_success": "Invitation e-mail sent successfully.",
       "sendmail": "Send invitation",
+      "set_random_password_send_invite": "Set random password and send invitation mail",
       "title": "Users",
       "user_info": "User info"
     }

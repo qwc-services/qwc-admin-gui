@@ -27,7 +27,7 @@ class UsersController(Controller):
 
         # send mail
         app.add_url_rule(
-            '/%s/<int:id>/sendmail' % self.base_route, 'sendmail_%s' % self.endpoint_suffix, self.sendmail,
+            '/%s/<int:id>/sendmail' % self.base_route, 'sendmail_%s' % self.endpoint_suffix, self.reset_password_send_invite,
             methods=['GET']
         )
 
@@ -121,13 +121,22 @@ class UsersController(Controller):
             # update existing user
             user = resource
 
+        set_random_password_send_invite = form.set_random_password_send_invite.data
+
         # update user
         user.name = form.name.data
         user.description = form.description.data
         user.email = form.email.data
-        if form.password.data:
-            user.set_password(form.password.data)
-        user.force_password_change = form.force_password_change.data
+
+        if not set_random_password_send_invite:
+            if form.password.data:
+                user.set_password(form.password.data)
+            user.force_password_change = form.force_password_change.data
+        else:
+            password = secrets.token_urlsafe(8).replace('-','0')
+            user.set_password(password)
+            user.force_password_change = True
+
         user.failed_sign_in_count = form.failed_sign_in_count.data or 0
 
         totp_enabled = self.handler().config().get(
@@ -169,8 +178,11 @@ class UsersController(Controller):
             user.roles_collection, form.roles, self.Role, 'id', session
         )
 
-    def sendmail(self, id):
-        """Send mail with access link.
+        if set_random_password_send_invite:
+            self.send_invite(user, password)
+
+    def reset_password_send_invite(self, id):
+        """Resets the password and sends mail with access link.
 
         :param int id: User ID
         """
@@ -197,46 +209,53 @@ class UsersController(Controller):
             user.set_password(password)
             user.force_password_change = True
 
-            app_name = self.handler().config().get("application_name", "QWC")
-            app_url = self.handler().config().get("application_url",
-                os.path.dirname(url_for('home', _external=True).rstrip("/")) + "/"
-            )
-
-            locale = os.environ.get('DEFAULT_LOCALE', 'en')
-            try:
-                body = render_template(
-                    '%s/invite_email_body.%s.txt' % (self.templates_dir, locale),
-                    user=user, password=password, app_name=app_name, app_url=app_url
-                )
-            except:
-                body = render_template(
-                    '%s/invite_email_body.en.txt' % (self.templates_dir),
-                    user=user, password=password, app_name=app_name, app_url=app_url
-                )
-
-            try:
-                msg = Message(
-                    i18n('interface.users.mail_subject', [app_name]),
-                    recipients=[user.email]
-                )
-                # set message body from template
-                msg.body = body
-
-                # send message
-                self.logger.debug(msg)
-                self.mail.send(msg)
-                flash(
-                    i18n('interface.users.send_mail_success'),
-                    'success'
-                )
-            except Exception as e:
-                self.logger.error(
-                    "Could not send mail to user '%s':\n%s" %
-                    (user.email, e)
-                )
-                flash(
-                    i18n('interface.users.send_mail_failure'),
-                    'error'
-                )
+            self.send_invite(user, password)
 
             return redirect(url_for(self.base_route))
+
+    def send_invite(self, user, password):
+        """Sends mail with access link.
+
+        :param obj user: The user resource
+        """
+        app_name = self.handler().config().get("application_name", "QWC")
+        app_url = self.handler().config().get("application_url",
+            os.path.dirname(url_for('home', _external=True).rstrip("/")) + "/"
+        )
+
+        locale = os.environ.get('DEFAULT_LOCALE', 'en')
+        try:
+            body = render_template(
+                '%s/invite_email_body.%s.txt' % (self.templates_dir, locale),
+                user=user, password=password, app_name=app_name, app_url=app_url
+            )
+        except:
+            body = render_template(
+                '%s/invite_email_body.en.txt' % (self.templates_dir),
+                user=user, password=password, app_name=app_name, app_url=app_url
+            )
+
+        try:
+            msg = Message(
+                i18n('interface.users.mail_subject', [app_name]),
+                recipients=[user.email]
+            )
+            # set message body from template
+            msg.body = body
+
+            # send message
+            self.logger.debug(msg)
+            self.mail.send(msg)
+            flash(
+                i18n('interface.users.send_mail_success'),
+                'success'
+            )
+        except Exception as e:
+            self.logger.error(
+                "Could not send mail to user '%s':\n%s" %
+                (user.email, e)
+            )
+            flash(
+                i18n('interface.users.send_mail_failure'),
+                'error'
+            )

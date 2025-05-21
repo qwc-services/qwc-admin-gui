@@ -169,9 +169,11 @@
       "new_user": "Neuer Benutzer",
       "no_mail_config": "Keine Absender-E-Mail ist konfiguriert, kann keine Einladungs-E-Mail senden.",
       "no_user_email": "Keine E-Mail für den Benutzer gespeichert, kann keine E-Mail senden.",
+      "save_and_send": "Speicher und Einladung senden",
       "send_mail_failure": "Die Einladungs-E-Mail konnte nicht gesendet werden.",
       "send_mail_success": "Einladungs-E-Mail erfolgreich gesendet.",
-      "sendmail": "Einladung versenden",
+      "sendmail": "Einladung senden",
+      "set_random_password_send_invite": "Zufallspasswort setzten und Einladung senden",
       "title": "Benutzer",
       "user_info": "Benutzerinfo"
     }

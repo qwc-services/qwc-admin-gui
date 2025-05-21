@@ -169,9 +169,11 @@
         "new_user": "Nuevo usuario",
         "no_mail_config": "No hay correo remitente configurado, no se puede enviar correo de invitación.",
         "no_user_email": "No hay correo almacenado para el usuario, no se puede enviar correo.",
+        "save_and_send": "Guardar y enviar invitación",
         "send_mail_failure": "Error al enviar el correo de invitación.",
         "send_mail_success": "Correo de invitación enviado exitosamente.",
         "sendmail": "Enviar invitación",
+        "set_random_password_send_invite": "Establecer contraseña aleatoria y enviar correo de invitación",
         "title": "Usuarios",
         "user_info": "Información del usuario"
       }

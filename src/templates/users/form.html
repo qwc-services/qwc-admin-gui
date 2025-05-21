@@ -5,6 +5,33 @@
 {{super()}}
 <script src="{{ url_for('static', filename='js/jquery.multi-select.js') }}"></script>
 <script type="text/javascript">
+  function confirm_send_invitation(ev) {
+    if (!$('#set_random_password_send_invite').prop('checked')) {
+      return true;
+    }
+    let email = $('#email').val();
+    if (!email) {
+      alert('{{ i18n('interface.users.no_user_email').replace("'", "\\'") }}');
+      ev.preventDefault();
+      return false;
+    }
+    let confirm_text = '{{ i18n('interface.users.confirm_sendmail', ['$email$']).replace("'", "\\'") }}';
+    if (!confirm(confirm_text.replace('$email$', email))) {
+      ev.preventDefault();
+      return false;
+    }
+  }
+  function configure_invite_form() {
+    let checked = $('#set_random_password_send_invite').prop('checked');
+    $('#password').attr('disabled', checked);
+    $('#password2').attr('disabled', checked);
+    $('#force_password_change').attr('disabled', checked);
+    if (checked) {
+      $('#submit').val('{{ i18n('interface.users.save_and_send').replace("'", "\\'") }}');
+    } else {
+      $('#submit').val('{{ i18n('interface.common.form_submit').replace("'", "\\'") }}');
+    }
+  }
   $(function() {
     // initialize multi-select
     $('#groups').multiSelectWithSearch({
@@ -15,6 +42,8 @@
       selectableHeader: '<div class="ms-header">{{ i18n('interface.common.roles') }}</div>',
       selectionHeader: '<div class="ms-header">{{ i18n('interface.common.assigned_roles') }}</div>'
     });
+    $('#set_random_password_send_invite').change(configure_invite_form);
+    configure_invite_form();
   });
 </script>
 {% endblock %}
@@ -28,7 +57,7 @@
 {% block container %}
   <h1>{{ title }}</h1>
 
-  <form class="form form-horizontal" action="{{ action }}" method="post">
+  <form class="form form-horizontal" action="{{ action }}" method="post" onsubmit="confirm_send_invitation(event)">
     {% if method != 'POST' %}
       <input type="hidden" name="_method" value="{{method}}" />
     {% endif %}
@@ -48,6 +77,8 @@
     {% endif %}
 
     <legend>{{ i18n('interface.users.authentication') }}</legend>
+    {{ wtf.render_field(form.set_random_password_send_invite, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+
     {{ wtf.render_field(form.password, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.password2, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.force_password_change, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}

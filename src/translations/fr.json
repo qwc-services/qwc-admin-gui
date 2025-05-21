@@ -169,9 +169,11 @@
       "new_user": "Nouvel utilisateur",
       "no_mail_config": "Aucun e-mail d'expéditeur n'est configuré, il n'est pas possible d'envoyer un e-mail d'invitation.",
       "no_user_email": "Aucun e-mail n'est enregistré pour l'utilisateur, il ne peut pas envoyer d'e-mail.",
+      "save_and_send": "Enregistrer et envoyer invitation",
       "send_mail_failure": "L'envoi de l'e-mail d'invitation a échoué",
       "send_mail_success": "L'e-mail d'invitation a été envoyé avec succès",
-      "sendmail": "Envoyer une invitation",
+      "sendmail": "Envoyer invitation",
+      "set_random_password_send_invite": "Définir un mot de passe aléatoire et envoyer un e-mail d'invitation",
       "title": "Utilisateurs",
       "user_info": "Information utilisateur"
     }
