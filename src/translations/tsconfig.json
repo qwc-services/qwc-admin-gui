@@ -2,7 +2,8 @@
   "languages": [
     "de",
     "en",
-    "fr"
+    "fr",
+    "es"
   ],
   "extra_strings": [
     "interface.common.permission"
@@ -144,8 +145,6 @@
     "interface.users.confirm_message_delete",
     "interface.users.confirm_sendmail",
     "interface.users.force_password_change",
-    "interface.users.save_and_send",
-    "interface.users.set_random_password_send_invite",
     "interface.users.form_email",
     "interface.users.form_email_error",
     "interface.users.form_failed_login",
@@ -160,9 +159,11 @@
     "interface.users.new_user",
     "interface.users.no_mail_config",
     "interface.users.no_user_email",
+    "interface.users.save_and_send",
     "interface.users.send_mail_failure",
     "interface.users.send_mail_success",
     "interface.users.sendmail",
+    "interface.users.set_random_password_send_invite",
     "interface.users.title",
     "interface.users.user_info",
     "plugins.config_editor.edit_message_error",
