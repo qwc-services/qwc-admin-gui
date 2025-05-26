@@ -139,6 +139,14 @@
         "config_generator_service_url",
         "totp_enabled"
       ]
+    },
+    "resource_blacklist": {
+      "description": "List of resource types to blacklist.",
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
     }
   },
   "required": [
