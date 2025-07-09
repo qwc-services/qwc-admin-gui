@@ -54,6 +54,11 @@ class ThemeForm(FlaskForm):
         description=i18n('plugins.themes.theme.form_title_description'),
         validators=[Optional()]
     )
+    description = StringField(
+        i18n('interface.common.description'),
+        description=i18n('plugins.themes.theme.form_description_description'),
+        validators=[Optional()]
+    )
     attribution = StringField(
         i18n('plugins.themes.common.form_attribution'),
         description=(i18n('plugins.themes.theme.form_attribution_description')),

@@ -213,6 +213,7 @@
     {{ form.csrf_token }}
     {{ wtf.render_field(form.url, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.title, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.description, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {# TODO: default, extent #}
     {{ wtf.render_field(form.thumbnail, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.attribution, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}

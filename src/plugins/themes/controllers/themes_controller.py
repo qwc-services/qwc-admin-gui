@@ -442,6 +442,8 @@ class ThemesController:
                 form.url.data = None
             if "title" in theme:
                 form.title.data = theme["title"]
+            if "description" in theme:
+                form.description.data = theme["description"]
             if "disabled" in theme:
                 form.disabled.data = theme["disabled"]
             if "default" in theme:
@@ -549,6 +551,9 @@ class ThemesController:
             item["title"] = form.title.data
         else:
             if "title" in item: del item["title"]
+
+        if form.description.data:
+            item["description"] = form.description.data
 
         item["disabled"] = False
         if form.disabled.data:

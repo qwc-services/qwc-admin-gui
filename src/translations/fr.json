@@ -284,6 +284,7 @@
         "form_crs_description": "Projection de la carte.",
         "form_default": "Par défaut",
         "form_default_description": "Utiliser ce thème comme thème ouvert par défaut.",
+        "form_description_description": "Description supplémentaire du thème qui sera affichée sous le titre du thème.",
         "form_disabled": "Désactiver ce thème",
         "form_disabled_description": "Ne pas prendre en compte ce thème dans la configuration.",
         "form_format_description": "Le format d'image est obligatoire pour le service WMS. Par défaut, 'image/png'.",

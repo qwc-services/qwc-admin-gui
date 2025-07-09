@@ -187,9 +187,6 @@
       "title": "Editor de Configuración",
       "update_message_success": "ha sido actualizado"
     },
-    "json_editor": {
-      "title": "title"
-    },
     "themes": {
       "backgroundlayers": {
         "action_created": "creado",
@@ -287,6 +284,7 @@
         "form_crs_description": "La proyección del mapa.",
         "form_default": "Predeterminado",
         "form_default_description": "Si se debe usar este tema como tema inicial.",
+        "form_description_description": "An additional description to show below the theme title.",
         "form_disabled": "Deshabilitar este tema",
         "form_disabled_description": "Omitir este tema de la configuración.",
         "form_format_description": "Formato de imagen solicitado al Servicio WMS. Por defecto es 'image/png'.",
