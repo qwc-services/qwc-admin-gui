@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import FieldList, FormField, SelectField, BooleanField, \
         SelectMultipleField, IntegerField, StringField, SubmitField, \
         TextAreaField
-from wtforms.validators import DataRequired, Optional, Regexp
+from wtforms.validators import DataRequired, Optional, Regexp, URL
 from utils import i18n
 
 
@@ -64,6 +64,11 @@ class ThemeForm(FlaskForm):
         description=(i18n('plugins.themes.theme.form_attribution_description')),
         validators=[Optional()]
     )
+    attributionUrl = StringField(
+        i18n('plugins.themes.theme.form_attributionUrl'),
+        description=(i18n('plugins.themes.theme.form_attributionUrl_description')),
+        validators=[Optional(), URL()]
+    )
     thumbnail = SelectField(
         i18n('plugins.themes.common.form_thumbnail'),
         description=(i18n('plugins.themes.theme.form_thumbnail_description')),
@@ -92,6 +97,11 @@ class ThemeForm(FlaskForm):
         default=("coordinates")
     )
     qgisSearchProvider = FieldList(FormField(QgisSearchForm))
+    minSearchScaleDenom = IntegerField(
+        i18n('plugins.themes.theme.form_minSearchScaleDenom'),
+        description=i18n('plugins.themes.theme.form_minSearchScaleDenom_description'),
+        validators=[Optional()]
+    )
     scales = StringField(
         i18n('plugins.themes.theme.form_scales'),
         description=i18n('plugins.themes.theme.form_scales_description'),
@@ -118,6 +128,16 @@ class ThemeForm(FlaskForm):
         description=(i18n('plugins.themes.theme.form_printLabelBlacklist_description')),
         validators=[Optional(), Regexp(r'^(\w+)(,\s*\w+)*$',
                     message=i18n('plugins.themes.theme.form_printLabelBlacklist_message'))]
+    )
+    printLabelForSearchResult = StringField(
+        i18n('plugins.themes.theme.form_printLabelForSearchResult'),
+        description=(i18n('plugins.themes.theme.form_printLabelForSearchResult_description')),
+        validators=[Optional()]
+    )
+    printLabelForAttribution = StringField(
+        i18n('plugins.themes.theme.form_printLabelForAttribution'),
+        description=(i18n('plugins.themes.theme.form_printLabelForAttribution_description')),
+        validators=[Optional()]
     )
     collapseLayerGroupsBelowLevel = IntegerField(
         i18n('plugins.themes.theme.form_collapseLayerGroupsBelowLevel'),

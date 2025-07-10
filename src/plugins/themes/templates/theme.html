@@ -217,14 +217,18 @@
     {# TODO: default, extent #}
     {{ wtf.render_field(form.thumbnail, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.attribution, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.attributionUrl, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.format, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.mapCrs, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.additionalMouseCrs, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.searchProviders, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.minSearchScaleDenom, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.scales, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.printScales, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.printResolutions, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.printLabelBlacklist, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.printLabelForSearchResult, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.printLabelForAttribution, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.collapseLayerGroupsBelowLevel, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.disabled, form_type="horizontal", horizontal_columns=('sm', 0, 7)) }}
     {{ wtf.render_field(form.default, form_type="horizontal", horizontal_columns=('sm', 0, 7)) }}

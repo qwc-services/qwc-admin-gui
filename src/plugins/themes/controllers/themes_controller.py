@@ -455,10 +455,9 @@ class ThemesController:
             if "thumbnail" in theme:
                 form.thumbnail.data = theme["thumbnail"]
             if "attribution" in theme:
-                form.attribution.data = theme["attribution"]
-            # TODO: FORM attributionUrl
-            # if "attributionUrl" in theme:
-            #    form.attribution.data = theme["attributionUrl"]
+                form.attribution.data = theme["attribution"]         
+            if "attributionUrl" in theme:
+               form.attributionUrl.data = theme["attributionUrl"]
             if "format" in theme:
                 form.format.data = theme["format"]
             if "mapCrs" in theme:
@@ -467,6 +466,8 @@ class ThemesController:
                 form.additionalMouseCrs.data = theme["additionalMouseCrs"]
             if "searchProviders" in theme:
                 form.searchProviders.data = theme["searchProviders"]
+            if "minSearchScaleDenom" in theme:
+                form.minSearchScaleDenom.data = theme["minSearchScaleDenom"]
             if "scales" in theme:
                 form.scales.data = ", ".join(map(str, theme["scales"]))
             if "printScales" in theme:
@@ -478,6 +479,10 @@ class ThemesController:
             if "printLabelBlacklist" in theme:
                 form.printLabelBlacklist.data = ", ".join(map(str, theme[
                     "printLabelBlacklist"]))
+            if "printLabelForSearchResult" in theme:
+                form.printLabelForSearchResult.data = theme["printLabelForSearchResult"]
+            if "printLabelForAttribution" in theme:
+                form.printLabelForAttribution.data = theme["printLabelForAttribution"]
             if "skipEmptyFeatureAttributes" in theme:
                 form.skipEmptyFeatureAttributes.data = theme["skipEmptyFeatureAttributes"]
             if "collapseLayerGroupsBelowLevel" in theme:
@@ -552,6 +557,7 @@ class ThemesController:
         else:
             if "title" in item: del item["title"]
 
+        item["description"] = ""
         if form.description.data:
             item["description"] = form.description.data
 
@@ -578,8 +584,9 @@ class ThemesController:
         if form.attribution.data:
             item["attribution"] = form.attribution.data
 
-        # TODO: FORM attributionUrl
         item["attributionUrl"] = ""
+        if form.attributionUrl.data:
+            item["attributionUrl"] = form.attributionUrl.data
 
         if form.format.data:
             item["format"] = form.format.data
@@ -617,6 +624,11 @@ class ThemesController:
         if not form.qgisSearchProvider.data and not form.searchProviders.data:
             if "searchProviders" in item: del item["searchProviders"]
 
+        item["minSearchScaleDenom"] = ""
+        if form.minSearchScaleDenom.data:
+            item["minSearchScaleDenom"] = form.minSearchScaleDenom.data
+
+
         if form.scales.data:
             item["scales"] = list(map(int, form.scales.data.replace(
                 " ", "").split(",")))
@@ -641,6 +653,14 @@ class ThemesController:
             ))
         else:
             if "printLabelBlacklist" in item: del item["printLabelBlacklist"]
+
+        item["printLabelForSearchResult"] = ""
+        if form.printLabelForSearchResult.data:
+            item["printLabelForSearchResult"] = form.printLabelForSearchResult.data
+
+        item["printLabelForAttribution"] = ""
+        if form.printLabelForAttribution.data:
+            item["printLabelForAttribution"] = form.printLabelForAttribution.data
 
         item["skipEmptyFeatureAttributes"] = False
         if form.skipEmptyFeatureAttributes.data:
