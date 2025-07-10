@@ -209,7 +209,9 @@ class ResourcesController(Controller):
 
             # query resource types
             resource_types = OrderedDict()
+            blacklist = self.handler().config().get("resource_blacklist", [])
             query = session.query(self.ResourceType) \
+                .filter(self.ResourceType.name.notin_(blacklist)) \
                 .order_by(self.ResourceType.list_order, self.ResourceType.name)
             for resource_type in query.all():
                 resource_types[resource_type.name] = resource_type.description
@@ -341,7 +343,9 @@ class ResourcesController(Controller):
 
         with self.session() as session:
             # query resource types
+            blacklist = self.handler().config().get("resource_blacklist", [])
             query = session.query(self.ResourceType) \
+                .filter(self.ResourceType.name.notin_(blacklist)) \
                 .order_by(self.ResourceType.list_order, self.ResourceType.name)
             resource_types = query.all()
 
