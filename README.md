@@ -181,30 +181,8 @@ password: admin
 Docker usage
 ------------
 
-To run this docker image you will need a configuration database. For testing purposes you can use the demo DB.
+See sample [docker-compose.yml](https://github.com/qwc-services/qwc-docker/blob/master/docker-compose-example.yml) of [qwc-docker](https://github.com/qwc-services/qwc-docker).
 
-The following steps explain how to download the demo DB docker image and how to run the `qwc-admin-gui` service with `docker-compose`.
-
-**Step 1: Clone qwc-docker**
-
-    git clone https://github.com/qwc-services/qwc-docker
-    cd qwc-docker
-
-**Step 2: Create docker-compose.yml file**
-
-    cp docker-compose-example.yml docker-compose.yml
-
-**Step 3: Set flask debug mode to true**
-
-For the QWC Admin GUI to work without login you will have to add the following `env` variable:
-
-    FLASK_DEBUG=1
-
-**Step 4: Start docker containers**
-
-    docker-compose up qwc-admin-gui
-
-For more information please visit: https://github.com/qwc-services/qwc-docker
 
 Development
 -----------
