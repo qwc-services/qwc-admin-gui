@@ -206,12 +206,15 @@ class PermissionsController(Controller):
                 resource_roles[res.resource.type + ":" + res.resource.name] = \
                     resource_roles.get(res.resource.type + ":" + res.resource.name, []) + [res.role.name]
 
-            public_default_allow_resources = ['attribute', 'layer', 'feature_info_layer', 'print_template']
+            # Resource types whose parent is allowed by default
+            parent_default_allow_resources = [
+                'attribute', 'layer', 'feature_info_layer', 'print_template', 'data', 'data_create', 'data_read', 'data_update', 'data_delete', 'tileset3d'
+            ]
 
             role_warnings = []
             for res in all_resources:
                 parent = res.resource.parent
-                default_parent_roles = ['public'] if parent is not None and res.resource.type in public_default_allow_resources else []
+                default_parent_roles = ['public'] if parent is not None and res.resource.type in parent_default_allow_resources else []
                 if parent is not None and \
                         'public' not in resource_roles.get(parent.type + ":" + parent.name, default_parent_roles) and \
                         res.role.name not in resource_roles.get(parent.type + ":" + parent.name, default_parent_roles):
