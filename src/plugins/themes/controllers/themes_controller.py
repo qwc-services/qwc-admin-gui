@@ -462,6 +462,9 @@ class ThemesController:
                 form.format.data = theme["format"]
             if "mapCrs" in theme:
                 form.mapCrs.data = theme["mapCrs"]
+            if "extent" in theme:
+                form.extent.data = ", ".join(map(str, theme[
+                    "extent"]))
             if "additionalMouseCrs" in theme:
                 form.additionalMouseCrs.data = theme["additionalMouseCrs"]
             if "searchProviders" in theme:
@@ -597,6 +600,12 @@ class ThemesController:
             item["mapCrs"] = form.mapCrs.data
         else:
             if item in "mapCrs": del item["mapCrs"]
+
+        if form.extent.data:
+            item["extent"] = list(map(
+                int, form.extent.data.replace(" ", "").split(",")))
+        else:
+            if "extent" in item: del item["extent"]
 
         if form.additionalMouseCrs.data:
             item["additionalMouseCrs"] = form.additionalMouseCrs.data
