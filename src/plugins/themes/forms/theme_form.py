@@ -109,6 +109,13 @@ class ThemeForm(FlaskForm):
         description=i18n('plugins.themes.theme.form_minSearchScaleDenom_description'),
         validators=[Optional()]
     )
+    tileSize = StringField(
+        i18n('plugins.themes.theme.form_tileSize'),
+        description=i18n('plugins.themes.theme.form_tileSize_description'),
+        default=(""),
+        validators=[Optional(), Regexp(r'^\d+,\s*\d+$',
+                    message=i18n('plugins.themes.theme.form_tileSize_message'))]
+    )
     scales = StringField(
         i18n('plugins.themes.theme.form_scales'),
         description=i18n('plugins.themes.theme.form_scales_description'),
@@ -135,6 +142,27 @@ class ThemeForm(FlaskForm):
         description=(i18n('plugins.themes.theme.form_printLabelBlacklist_description')),
         validators=[Optional(), Regexp(r'^(\w+)(,\s*\w+)*$',
                     message=i18n('plugins.themes.theme.form_printLabelBlacklist_message'))]
+    )
+    extraPrintLayers = StringField(
+        i18n('plugins.themes.theme.form_extraPrintLayers'),
+        description=i18n('plugins.themes.theme.form_extraPrintLayers_description'),
+        default=(""),
+        validators=[Optional(), Regexp(r'^(\w+)(,\s*\w+)*$',
+                    message=i18n('plugins.themes.theme.form_extraPrintLayers_message'))]
+    )
+    flags = StringField(
+        i18n('plugins.themes.theme.form_flags'),
+        description=i18n('plugins.themes.theme.form_flags_description'),
+        default=(""),
+        validators=[Optional(), Regexp(r'^(\w+)(,\s*\w+)*$',
+                    message=i18n('plugins.themes.theme.form_flags_message'))]
+    )
+    layerTreeHiddenSublayers = StringField(
+        i18n('plugins.themes.theme.form_layerTreeHiddenSublayers'),
+        description=i18n('plugins.themes.theme.form_layerTreeHiddenSublayers_description'),
+        default=(""),
+        validators=[Optional(), Regexp(r'^(\w+)(,\s*\w+)*$',
+                    message=i18n('plugins.themes.theme.form_layerTreeHiddenSublayers_message'))]
     )
     defaultPrintLayout = StringField(
         i18n('plugins.themes.theme.form_defaultPrintLayout'),

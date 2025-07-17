@@ -471,6 +471,8 @@ class ThemesController:
                 form.searchProviders.data = theme["searchProviders"]
             if "minSearchScaleDenom" in theme:
                 form.minSearchScaleDenom.data = theme["minSearchScaleDenom"]
+            if "tileSize" in theme:
+                form.tileSize.data = ", ".join(map(str, theme["tileSize"]))
             if "scales" in theme:
                 form.scales.data = ", ".join(map(str, theme["scales"]))
             if "printScales" in theme:
@@ -482,6 +484,12 @@ class ThemesController:
             if "printLabelBlacklist" in theme:
                 form.printLabelBlacklist.data = ", ".join(map(str, theme[
                     "printLabelBlacklist"]))
+            if "extraPrintLayers" in theme:
+                form.extraPrintLayers.data = ", ".join(map(str, theme["extraPrintLayers"]))
+            if "flags" in theme:
+                form.flags.data = ", ".join(map(str, theme["flags"]))
+            if "layerTreeHiddenSublayers" in theme:
+                form.layerTreeHiddenSublayers.data = ", ".join(map(str, theme["layerTreeHiddenSublayers"]))
             if "defaultPrintLayout" in theme:
                 form.defaultPrintLayout.data = theme["defaultPrintLayout"]
             if "printLabelForSearchResult" in theme:
@@ -639,6 +647,11 @@ class ThemesController:
         if form.minSearchScaleDenom.data:
             item["minSearchScaleDenom"] = form.minSearchScaleDenom.data
 
+        if form.tileSize.data:
+            item["tileSize"] = list(map(
+                int, form.tileSize.data.replace(" ", "").split(",")))
+        else:
+            if "tileSize" in item: del item["tileSize"]
 
         if form.scales.data:
             item["scales"] = list(map(int, form.scales.data.replace(
@@ -664,6 +677,24 @@ class ThemesController:
             ))
         else:
             if "printLabelBlacklist" in item: del item["printLabelBlacklist"]
+
+        if form.extraPrintLayers.data:
+            item["extraPrintLayers"] = list(map(
+                str, form.extraPrintLayers.data.replace(" ", "").split(",")))
+        else:
+            if "extraPrintLayers" in item: del item["extraPrintLayers"]
+
+        if form.flags.data:
+            item["flags"] = list(map(
+                str, form.flags.data.replace(" ", "").split(",")))
+        else:
+            if "flags" in item: del item["flags"]
+
+        if form.layerTreeHiddenSublayers.data:
+            item["layerTreeHiddenSublayers"] = list(map(
+                str, form.layerTreeHiddenSublayers.data.replace(" ", "").split(",")))
+        else:
+            if "layerTreeHiddenSublayers" in item: del item["layerTreeHiddenSublayers"]
 
         item["defaultPrintLayout"] = ""
         if form.defaultPrintLayout.data:
