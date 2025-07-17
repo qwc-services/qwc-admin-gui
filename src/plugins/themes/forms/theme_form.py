@@ -89,7 +89,7 @@ class ThemeForm(FlaskForm):
         i18n('plugins.themes.theme.form_extent'),
         description=i18n('plugins.themes.theme.form_extent_description'),
         default=(""),
-        validators=[Optional(), Regexp(r'^(\d+)(,\s*\d+(\.\d*)?){3}$',
+        validators=[Optional(), Regexp(r'^(\d+(\.\d*)?)(,\s*\d+(\.\d*)?){3}$',
                     message=i18n('plugins.themes.theme.form_extent_message'))]
     )
     additionalMouseCrs = SelectMultipleField(

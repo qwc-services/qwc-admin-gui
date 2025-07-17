@@ -613,7 +613,7 @@ class ThemesController:
 
         if form.extent.data:
             item["extent"] = list(map(
-                int, form.extent.data.replace(" ", "").split(",")))
+                float, form.extent.data.replace(" ", "").split(",")))
         else:
             if "extent" in item: del item["extent"]
 
