@@ -258,6 +258,8 @@
     "plugins.themes.theme.form_collapseLayerGroupsBelowLevel_description",
     "plugins.themes.theme.form_crs_description",
     "plugins.themes.theme.form_default",
+    "plugins.themes.theme.form_defaultPrintLayout",
+    "plugins.themes.theme.form_defaultPrintLayout_description",
     "plugins.themes.theme.form_default_description",
     "plugins.themes.theme.form_description_description",
     "plugins.themes.theme.form_disabled",

@@ -285,6 +285,8 @@
         "form_collapseLayerGroupsBelowLevel_description": "Opcional, nivel del árbol de capas por debajo del cual colapsar inicialmente los grupos. Por defecto el árbol está completamente expandido.",
         "form_crs_description": "La proyección del mapa.",
         "form_default": "Predeterminado",
+        "form_defaultPrintLayout": "Default Print Layout",
+        "form_defaultPrintLayout_description": "Optional, name of print layout to select by default.",
         "form_default_description": "Si se debe usar este tema como tema inicial.",
         "form_description_description": "An additional description to show below the theme title.",
         "form_disabled": "Deshabilitar este tema",

@@ -285,6 +285,8 @@
         "form_collapseLayerGroupsBelowLevel_description": "Optionnel, niveau de l'arborescence sous lequel les groupes doivent être replié initialement. Par défaut toute l'arborescence est dépliée.",
         "form_crs_description": "Projection de la carte.",
         "form_default": "Par défaut",
+        "form_defaultPrintLayout": "Composeur d'impression par défaut",
+        "form_defaultPrintLayout_description": "Optionnel, nom du composeur d'impression selectionné par défaut.",
         "form_default_description": "Utiliser ce thème comme thème ouvert par défaut.",
         "form_description_description": "Description supplémentaire du thème qui sera affichée sous le titre du thème.",
         "form_disabled": "Désactiver ce thème",

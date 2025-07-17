@@ -136,6 +136,11 @@ class ThemeForm(FlaskForm):
         validators=[Optional(), Regexp(r'^(\w+)(,\s*\w+)*$',
                     message=i18n('plugins.themes.theme.form_printLabelBlacklist_message'))]
     )
+    defaultPrintLayout = StringField(
+        i18n('plugins.themes.theme.form_defaultPrintLayout'),
+        description=(i18n('plugins.themes.theme.form_defaultPrintLayout_description')),
+        validators=[Optional()]
+    )
     printLabelForSearchResult = StringField(
         i18n('plugins.themes.theme.form_printLabelForSearchResult'),
         description=(i18n('plugins.themes.theme.form_printLabelForSearchResult_description')),

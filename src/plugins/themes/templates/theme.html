@@ -214,7 +214,6 @@
     {{ wtf.render_field(form.url, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.title, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.description, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {# TODO: default, extent #}
     {{ wtf.render_field(form.thumbnail, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.attribution, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.attributionUrl, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
@@ -227,6 +226,7 @@
     {{ wtf.render_field(form.scales, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.printScales, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.printResolutions, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {{ wtf.render_field(form.defaultPrintLayout, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.printLabelBlacklist, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.printLabelForSearchResult, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.printLabelForAttribution, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}

@@ -482,6 +482,8 @@ class ThemesController:
             if "printLabelBlacklist" in theme:
                 form.printLabelBlacklist.data = ", ".join(map(str, theme[
                     "printLabelBlacklist"]))
+            if "defaultPrintLayout" in theme:
+                form.defaultPrintLayout.data = theme["defaultPrintLayout"]
             if "printLabelForSearchResult" in theme:
                 form.printLabelForSearchResult.data = theme["printLabelForSearchResult"]
             if "printLabelForAttribution" in theme:
@@ -662,6 +664,10 @@ class ThemesController:
             ))
         else:
             if "printLabelBlacklist" in item: del item["printLabelBlacklist"]
+
+        item["defaultPrintLayout"] = ""
+        if form.defaultPrintLayout.data:
+            item["defaultPrintLayout"] = form.defaultPrintLayout.data
 
         item["printLabelForSearchResult"] = ""
         if form.printLabelForSearchResult.data:

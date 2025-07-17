@@ -285,6 +285,8 @@
         "form_collapseLayerGroupsBelowLevel_description": "Optional, layer tree level below which to initially collapse groups. By default the tree is completely expanded.",
         "form_crs_description": "The map projection.",
         "form_default": "Default",
+        "form_defaultPrintLayout": "Default Print Layout",
+        "form_defaultPrintLayout_description": "Optional, name of print layout to select by default.",
         "form_default_description": "Whether to use this theme as initial theme.",
         "form_description_description": "An additional description to show below the theme title.",
         "form_disabled": "Disable this theme",
