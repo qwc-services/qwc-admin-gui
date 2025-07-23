@@ -164,6 +164,28 @@ class ThemeForm(FlaskForm):
         validators=[Optional(), Regexp(r'^(\w+)(,\s*\w+)*$',
                     message=i18n('plugins.themes.theme.form_layerTreeHiddenSublayers_message'))]
     )
+    extraPrintParameters = StringField(
+        i18n('plugins.themes.theme.form_extraPrintParameters'),
+        description=i18n('plugins.themes.theme.form_extraPrintParameters_description'),
+        default=(""),
+        validators=[Optional(), Regexp(r'^(\w+=\w+)(,\s*\w+=\w+)*$',
+                    message=i18n('plugins.themes.theme.form_extraPrintParameters_message'))]
+    )
+    extraLegendParameters = StringField(
+        i18n('plugins.themes.theme.form_extraLegendParameters'),
+        description=i18n('plugins.themes.theme.form_extraLegendParameters_description'),
+        default=(""),
+        validators=[Optional(), Regexp(r'^(\w+=\w+)(,\s*\w+=\w+)*$',
+                    message=i18n('plugins.themes.theme.form_extraLegendParameters_message'))]
+    )
+    extraDxfParameters = StringField(
+        i18n('plugins.themes.theme.form_extraDxfParameters'),
+        description=i18n('plugins.themes.theme.form_extraDxfParameters_description'),
+        default=(""),
+        validators=[Optional(), Regexp(r'^(\w+=\w+)(,\s*\w+=\w+)*$',
+                    message=i18n('plugins.themes.theme.form_extraDxfParameters_message'))]
+    )
+    
     defaultPrintLayout = StringField(
         i18n('plugins.themes.theme.form_defaultPrintLayout'),
         description=(i18n('plugins.themes.theme.form_defaultPrintLayout_description')),

@@ -490,6 +490,12 @@ class ThemesController:
                 form.flags.data = ", ".join(map(str, theme["flags"]))
             if "layerTreeHiddenSublayers" in theme:
                 form.layerTreeHiddenSublayers.data = ", ".join(map(str, theme["layerTreeHiddenSublayers"]))
+            if "extraPrintParameters" in theme:
+                form.extraPrintParameters.data = ", ".join(theme["extraPrintParameters"].split('&'))
+            if "extraLegendParameters" in theme:
+                form.extraLegendParameters.data = ", ".join(theme["extraLegendParameters"].split('&'))
+            if "extraDxfParameters" in theme:
+                form.extraDxfParameters.data = ", ".join(theme["extraDxfParameters"].split('&'))
             if "defaultPrintLayout" in theme:
                 form.defaultPrintLayout.data = theme["defaultPrintLayout"]
             if "printLabelForSearchResult" in theme:
@@ -695,6 +701,21 @@ class ThemesController:
                 str, form.layerTreeHiddenSublayers.data.replace(" ", "").split(",")))
         else:
             if "layerTreeHiddenSublayers" in item: del item["layerTreeHiddenSublayers"]
+
+        item["extraPrintParameters"] = ""
+        if form.extraPrintParameters.data:
+            item["extraPrintParameters"] = "&".join(list(map(
+                str, form.extraPrintParameters.data.replace(" ", "").split(","))))
+
+        item["extraLegendParameters"] = ""
+        if form.extraLegendParameters.data:
+            item["extraLegendParameters"] = "&".join(list(map(
+                str, form.extraLegendParameters.data.replace(" ", "").split(","))))
+
+        item["extraDxfParameters"] = ""
+        if form.extraDxfParameters.data:
+            item["extraDxfParameters"] = "&".join(list(map(
+                str, form.extraDxfParameters.data.replace(" ", "").split(","))))
 
         item["defaultPrintLayout"] = ""
         if form.defaultPrintLayout.data:
