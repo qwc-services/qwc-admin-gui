@@ -345,6 +345,11 @@
         "form_tiled_description": "Mosaico de las capas",
         "form_title_description": "Título personalizado del tema.",
         "form_url": "Proyecto",
+        "options_advancedparams": "Paramètres avancés optionnels",
+        "options_global": "Options générales",
+        "options_interface": "Options pour l'interface",
+        "options_print": "Options pour l'impression",
+        "options_search": "Options pour la recherche",
         "print_layer": "Capa de impresión",
         "print_layer_message": "(Opcional): Nombre de una capa del Proyecto QGIS que debe usarse al imprimir."
       },

@@ -345,6 +345,11 @@
         "form_tiled_description": "Gekachelte Ebenenanfragen",
         "form_title_description": "Thementitel.",
         "form_url": "Projekt",
+        "options_advancedparams": "Advanced optionnal parameters",
+        "options_global": "Global options",
+        "options_interface": "Interface options",
+        "options_print": "Print options",
+        "options_search": "Search options",
         "print_layer": "Druckebene",
         "print_layer_message": "Optional: Name der QGIS Projektebene, die beim Druck verwendet werden soll."
       },
