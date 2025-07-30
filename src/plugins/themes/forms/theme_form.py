@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import FieldList, FormField, SelectField, BooleanField, \
         SelectMultipleField, IntegerField, StringField, SubmitField, \
         TextAreaField
-from wtforms.validators import DataRequired, Optional, Regexp
+from wtforms.validators import DataRequired, Optional, Regexp, URL
 from utils import i18n
 
 
@@ -54,10 +54,20 @@ class ThemeForm(FlaskForm):
         description=i18n('plugins.themes.theme.form_title_description'),
         validators=[Optional()]
     )
+    description = StringField(
+        i18n('interface.common.description'),
+        description=i18n('plugins.themes.theme.form_description_description'),
+        validators=[Optional()]
+    )
     attribution = StringField(
         i18n('plugins.themes.common.form_attribution'),
         description=(i18n('plugins.themes.theme.form_attribution_description')),
         validators=[Optional()]
+    )
+    attributionUrl = StringField(
+        i18n('plugins.themes.theme.form_attributionUrl'),
+        description=(i18n('plugins.themes.theme.form_attributionUrl_description')),
+        validators=[Optional(), URL()]
     )
     thumbnail = SelectField(
         i18n('plugins.themes.common.form_thumbnail'),
@@ -75,6 +85,13 @@ class ThemeForm(FlaskForm):
         default=("EPSG:3857"),
         validators=[Optional()]
     )
+    extent = StringField(
+        i18n('plugins.themes.theme.form_extent'),
+        description=i18n('plugins.themes.theme.form_extent_description'),
+        default=(""),
+        validators=[Optional(), Regexp(r'^(\d+(\.\d*)?)(,\s*\d+(\.\d*)?){3}$',
+                    message=i18n('plugins.themes.theme.form_extent_message'))]
+    )
     additionalMouseCrs = SelectMultipleField(
         i18n('plugins.themes.theme.form_additionalMouseCrs'),
         description=(i18n('plugins.themes.theme.form_additionalMouseCrs_description')),
@@ -87,6 +104,18 @@ class ThemeForm(FlaskForm):
         default=("coordinates")
     )
     qgisSearchProvider = FieldList(FormField(QgisSearchForm))
+    minSearchScaleDenom = IntegerField(
+        i18n('plugins.themes.theme.form_minSearchScaleDenom'),
+        description=i18n('plugins.themes.theme.form_minSearchScaleDenom_description'),
+        validators=[Optional()]
+    )
+    tileSize = StringField(
+        i18n('plugins.themes.theme.form_tileSize'),
+        description=i18n('plugins.themes.theme.form_tileSize_description'),
+        default=(""),
+        validators=[Optional(), Regexp(r'^\d+,\s*\d+$',
+                    message=i18n('plugins.themes.theme.form_tileSize_message'))]
+    )
     scales = StringField(
         i18n('plugins.themes.theme.form_scales'),
         description=i18n('plugins.themes.theme.form_scales_description'),
@@ -113,6 +142,64 @@ class ThemeForm(FlaskForm):
         description=(i18n('plugins.themes.theme.form_printLabelBlacklist_description')),
         validators=[Optional(), Regexp(r'^(\w+)(,\s*\w+)*$',
                     message=i18n('plugins.themes.theme.form_printLabelBlacklist_message'))]
+    )
+    extraPrintLayers = StringField(
+        i18n('plugins.themes.theme.form_extraPrintLayers'),
+        description=i18n('plugins.themes.theme.form_extraPrintLayers_description'),
+        default=(""),
+        validators=[Optional(), Regexp(r'^(\w+)(,\s*\w+)*$',
+                    message=i18n('plugins.themes.theme.form_extraPrintLayers_message'))]
+    )
+    flags = StringField(
+        i18n('plugins.themes.theme.form_flags'),
+        description=i18n('plugins.themes.theme.form_flags_description'),
+        default=(""),
+        validators=[Optional(), Regexp(r'^(\w+)(,\s*\w+)*$',
+                    message=i18n('plugins.themes.theme.form_flags_message'))]
+    )
+    layerTreeHiddenSublayers = StringField(
+        i18n('plugins.themes.theme.form_layerTreeHiddenSublayers'),
+        description=i18n('plugins.themes.theme.form_layerTreeHiddenSublayers_description'),
+        default=(""),
+        validators=[Optional(), Regexp(r'^(\w+)(,\s*\w+)*$',
+                    message=i18n('plugins.themes.theme.form_layerTreeHiddenSublayers_message'))]
+    )
+    extraPrintParameters = StringField(
+        i18n('plugins.themes.theme.form_extraPrintParameters'),
+        description=i18n('plugins.themes.theme.form_extraPrintParameters_description'),
+        default=(""),
+        validators=[Optional(), Regexp(r'^(\w+=\w+)(,\s*\w+=\w+)*$',
+                    message=i18n('plugins.themes.theme.form_extraPrintParameters_message'))]
+    )
+    extraLegendParameters = StringField(
+        i18n('plugins.themes.theme.form_extraLegendParameters'),
+        description=i18n('plugins.themes.theme.form_extraLegendParameters_description'),
+        default=(""),
+        validators=[Optional(), Regexp(r'^(\w+=\w+)(,\s*\w+=\w+)*$',
+                    message=i18n('plugins.themes.theme.form_extraLegendParameters_message'))]
+    )
+    extraDxfParameters = StringField(
+        i18n('plugins.themes.theme.form_extraDxfParameters'),
+        description=i18n('plugins.themes.theme.form_extraDxfParameters_description'),
+        default=(""),
+        validators=[Optional(), Regexp(r'^(\w+=\w+)(,\s*\w+=\w+)*$',
+                    message=i18n('plugins.themes.theme.form_extraDxfParameters_message'))]
+    )
+    
+    defaultPrintLayout = StringField(
+        i18n('plugins.themes.theme.form_defaultPrintLayout'),
+        description=(i18n('plugins.themes.theme.form_defaultPrintLayout_description')),
+        validators=[Optional()]
+    )
+    printLabelForSearchResult = StringField(
+        i18n('plugins.themes.theme.form_printLabelForSearchResult'),
+        description=(i18n('plugins.themes.theme.form_printLabelForSearchResult_description')),
+        validators=[Optional()]
+    )
+    printLabelForAttribution = StringField(
+        i18n('plugins.themes.theme.form_printLabelForAttribution'),
+        description=(i18n('plugins.themes.theme.form_printLabelForAttribution_description')),
+        validators=[Optional()]
     )
     collapseLayerGroupsBelowLevel = IntegerField(
         i18n('plugins.themes.theme.form_collapseLayerGroupsBelowLevel'),

@@ -442,6 +442,8 @@ class ThemesController:
                 form.url.data = None
             if "title" in theme:
                 form.title.data = theme["title"]
+            if "description" in theme:
+                form.description.data = theme["description"]
             if "disabled" in theme:
                 form.disabled.data = theme["disabled"]
             if "default" in theme:
@@ -453,18 +455,24 @@ class ThemesController:
             if "thumbnail" in theme:
                 form.thumbnail.data = theme["thumbnail"]
             if "attribution" in theme:
-                form.attribution.data = theme["attribution"]
-            # TODO: FORM attributionUrl
-            # if "attributionUrl" in theme:
-            #    form.attribution.data = theme["attributionUrl"]
+                form.attribution.data = theme["attribution"]         
+            if "attributionUrl" in theme:
+               form.attributionUrl.data = theme["attributionUrl"]
             if "format" in theme:
                 form.format.data = theme["format"]
             if "mapCrs" in theme:
                 form.mapCrs.data = theme["mapCrs"]
+            if "extent" in theme:
+                form.extent.data = ", ".join(map(str, theme[
+                    "extent"]))
             if "additionalMouseCrs" in theme:
                 form.additionalMouseCrs.data = theme["additionalMouseCrs"]
             if "searchProviders" in theme:
                 form.searchProviders.data = theme["searchProviders"]
+            if "minSearchScaleDenom" in theme:
+                form.minSearchScaleDenom.data = theme["minSearchScaleDenom"]
+            if "tileSize" in theme:
+                form.tileSize.data = ", ".join(map(str, theme["tileSize"]))
             if "scales" in theme:
                 form.scales.data = ", ".join(map(str, theme["scales"]))
             if "printScales" in theme:
@@ -476,6 +484,24 @@ class ThemesController:
             if "printLabelBlacklist" in theme:
                 form.printLabelBlacklist.data = ", ".join(map(str, theme[
                     "printLabelBlacklist"]))
+            if "extraPrintLayers" in theme:
+                form.extraPrintLayers.data = ", ".join(map(str, theme["extraPrintLayers"]))
+            if "flags" in theme:
+                form.flags.data = ", ".join(map(str, theme["flags"]))
+            if "layerTreeHiddenSublayers" in theme:
+                form.layerTreeHiddenSublayers.data = ", ".join(map(str, theme["layerTreeHiddenSublayers"]))
+            if "extraPrintParameters" in theme:
+                form.extraPrintParameters.data = ", ".join(theme["extraPrintParameters"].split('&'))
+            if "extraLegendParameters" in theme:
+                form.extraLegendParameters.data = ", ".join(theme["extraLegendParameters"].split('&'))
+            if "extraDxfParameters" in theme:
+                form.extraDxfParameters.data = ", ".join(theme["extraDxfParameters"].split('&'))
+            if "defaultPrintLayout" in theme:
+                form.defaultPrintLayout.data = theme["defaultPrintLayout"]
+            if "printLabelForSearchResult" in theme:
+                form.printLabelForSearchResult.data = theme["printLabelForSearchResult"]
+            if "printLabelForAttribution" in theme:
+                form.printLabelForAttribution.data = theme["printLabelForAttribution"]
             if "skipEmptyFeatureAttributes" in theme:
                 form.skipEmptyFeatureAttributes.data = theme["skipEmptyFeatureAttributes"]
             if "collapseLayerGroupsBelowLevel" in theme:
@@ -550,6 +576,10 @@ class ThemesController:
         else:
             if "title" in item: del item["title"]
 
+        item["description"] = ""
+        if form.description.data:
+            item["description"] = form.description.data
+
         item["disabled"] = False
         if form.disabled.data:
             item["disabled"] = True
@@ -573,8 +603,9 @@ class ThemesController:
         if form.attribution.data:
             item["attribution"] = form.attribution.data
 
-        # TODO: FORM attributionUrl
         item["attributionUrl"] = ""
+        if form.attributionUrl.data:
+            item["attributionUrl"] = form.attributionUrl.data
 
         if form.format.data:
             item["format"] = form.format.data
@@ -585,6 +616,12 @@ class ThemesController:
             item["mapCrs"] = form.mapCrs.data
         else:
             if item in "mapCrs": del item["mapCrs"]
+
+        if form.extent.data:
+            item["extent"] = list(map(
+                float, form.extent.data.replace(" ", "").split(",")))
+        else:
+            if "extent" in item: del item["extent"]
 
         if form.additionalMouseCrs.data:
             item["additionalMouseCrs"] = form.additionalMouseCrs.data
@@ -612,6 +649,16 @@ class ThemesController:
         if not form.qgisSearchProvider.data and not form.searchProviders.data:
             if "searchProviders" in item: del item["searchProviders"]
 
+        item["minSearchScaleDenom"] = ""
+        if form.minSearchScaleDenom.data:
+            item["minSearchScaleDenom"] = form.minSearchScaleDenom.data
+
+        if form.tileSize.data:
+            item["tileSize"] = list(map(
+                int, form.tileSize.data.replace(" ", "").split(",")))
+        else:
+            if "tileSize" in item: del item["tileSize"]
+
         if form.scales.data:
             item["scales"] = list(map(int, form.scales.data.replace(
                 " ", "").split(",")))
@@ -636,6 +683,51 @@ class ThemesController:
             ))
         else:
             if "printLabelBlacklist" in item: del item["printLabelBlacklist"]
+
+        if form.extraPrintLayers.data:
+            item["extraPrintLayers"] = list(map(
+                str, form.extraPrintLayers.data.replace(" ", "").split(",")))
+        else:
+            if "extraPrintLayers" in item: del item["extraPrintLayers"]
+
+        if form.flags.data:
+            item["flags"] = list(map(
+                str, form.flags.data.replace(" ", "").split(",")))
+        else:
+            if "flags" in item: del item["flags"]
+
+        if form.layerTreeHiddenSublayers.data:
+            item["layerTreeHiddenSublayers"] = list(map(
+                str, form.layerTreeHiddenSublayers.data.replace(" ", "").split(",")))
+        else:
+            if "layerTreeHiddenSublayers" in item: del item["layerTreeHiddenSublayers"]
+
+        item["extraPrintParameters"] = ""
+        if form.extraPrintParameters.data:
+            item["extraPrintParameters"] = "&".join(list(map(
+                str, form.extraPrintParameters.data.replace(" ", "").split(","))))
+
+        item["extraLegendParameters"] = ""
+        if form.extraLegendParameters.data:
+            item["extraLegendParameters"] = "&".join(list(map(
+                str, form.extraLegendParameters.data.replace(" ", "").split(","))))
+
+        item["extraDxfParameters"] = ""
+        if form.extraDxfParameters.data:
+            item["extraDxfParameters"] = "&".join(list(map(
+                str, form.extraDxfParameters.data.replace(" ", "").split(","))))
+
+        item["defaultPrintLayout"] = ""
+        if form.defaultPrintLayout.data:
+            item["defaultPrintLayout"] = form.defaultPrintLayout.data
+
+        item["printLabelForSearchResult"] = ""
+        if form.printLabelForSearchResult.data:
+            item["printLabelForSearchResult"] = form.printLabelForSearchResult.data
+
+        item["printLabelForAttribution"] = ""
+        if form.printLabelForAttribution.data:
+            item["printLabelForAttribution"] = form.printLabelForAttribution.data
 
         item["skipEmptyFeatureAttributes"] = False
         if form.skipEmptyFeatureAttributes.data:

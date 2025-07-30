@@ -162,6 +162,17 @@
     createEditor(this, editorOptions);
   });
 
+  $('.advanced-col').on('click','button.accordion', function(){
+    $(this).toggleClass("active");
+    var panel = $(this).next();
+    if (panel.css('max-height') !== '0px') {
+      panel.css('max-height', '0px');
+    }
+    else {
+      panel.css('max-height', panel.prop('scrollHeight') + 'px');
+    }
+  })
+
 </script>
 {% endblock %}
 {% block styles %}
@@ -171,6 +182,7 @@
     color: #444;
     cursor: pointer;
     padding: 18px;
+    margin-bottom: 9px;
     width: 100%;
     border: none;
     text-align: left;
@@ -213,23 +225,72 @@
     {{ form.csrf_token }}
     {{ wtf.render_field(form.url, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.title, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {# TODO: default, extent #}
     {{ wtf.render_field(form.thumbnail, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.render_field(form.attribution, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.render_field(form.format, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.mapCrs, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.additionalMouseCrs, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.searchProviders, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.render_field(form.scales, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.render_field(form.printScales, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.render_field(form.printResolutions, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.render_field(form.printLabelBlacklist, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.render_field(form.collapseLayerGroupsBelowLevel, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.render_field(form.disabled, form_type="horizontal", horizontal_columns=('sm', 0, 7)) }}
+    
     {{ wtf.render_field(form.default, form_type="horizontal", horizontal_columns=('sm', 0, 7)) }}
-    {{ wtf.render_field(form.tiled, form_type="horizontal", horizontal_columns=('sm', 0, 7)) }}
     {{ wtf.render_field(form.mapTips, form_type="horizontal", horizontal_columns=('sm', 0, 7)) }}
     {{ wtf.render_field(form.skipEmptyFeatureAttributes, form_type="horizontal", horizontal_columns=('sm', 0, 7)) }}
+
+    <div class="col-md-7 advanced-col">
+      <h3>{{ i18n('plugins.themes.theme.options_advancedparams') }}</h3>
+      <div class="advancedBlock" >
+        <button type="button" class="accordion" style="display:flex;justify-content:space-between;flex-direction:row;align-items: center;">
+          {{ i18n('plugins.themes.theme.options_global') }}
+            <span class="glyphicon glyphicon-minus"></span>
+        </button>
+        <div class="panel">
+        {{ wtf.render_field(form.description, form_type="horizontal") }}
+        {{ wtf.render_field(form.attribution, form_type="horizontal") }}
+        {{ wtf.render_field(form.attributionUrl, form_type="horizontal") }}
+        {{ wtf.render_field(form.extent, form_type="horizontal") }}
+        {{ wtf.render_field(form.scales, form_type="horizontal") }}
+        {{ wtf.render_field(form.format, form_type="horizontal") }}
+        {{ wtf.render_field(form.tileSize, form_type="horizontal") }}
+        {{ wtf.render_field(form.tiled, form_type="horizontal", horizontal_columns=('sm', 0, 7)) }}
+        {{ wtf.render_field(form.disabled, form_type="horizontal", horizontal_columns=('sm', 0, 7)) }}
+
+        </div>
+        
+        <button type="button" class="accordion" style="display:flex;justify-content:space-between;flex-direction:row;align-items: center;">
+          {{ i18n('plugins.themes.theme.options_print') }}
+          <span class="glyphicon glyphicon-minus"></span>
+        </button>
+        <div class="panel">
+        {{ wtf.render_field(form.printScales, form_type="horizontal") }}
+        {{ wtf.render_field(form.printResolutions, form_type="horizontal") }}
+        {{ wtf.render_field(form.defaultPrintLayout, form_type="horizontal") }}
+        {{ wtf.render_field(form.printLabelBlacklist, form_type="horizontal") }}
+        {{ wtf.render_field(form.extraPrintLayers, form_type="horizontal") }}
+        {{ wtf.render_field(form.printLabelForAttribution, form_type="horizontal") }}
+        {{ wtf.render_field(form.extraPrintParameters, form_type="horizontal",  placeholder = "ex : TRANSPARENT=true, BGCOLOR=green") }}
+        {{ wtf.render_field(form.extraDxfParameters, form_type="horizontal", placeholder = "ex : MODE=NOSYMBOLOGY, USE_TITLE_AS_LAYERNAME=true") }}
+        </div>
+        
+        <button type="button" class="accordion" style="display:flex;justify-content:space-between;flex-direction:row;align-items: center;">
+          {{ i18n('plugins.themes.theme.options_search') }}
+          <span class="glyphicon glyphicon-minus"></span>
+        </button>
+        <div class="panel">
+          {{ wtf.render_field(form.minSearchScaleDenom, form_type="horizontal") }}
+          {{ wtf.render_field(form.printLabelForSearchResult, form_type="horizontal") }}
+        </div>  
+
+        <button type="button" class="accordion" style="display:flex;justify-content:space-between;flex-direction:row;align-items: center;">
+          {{ i18n('plugins.themes.theme.options_interface') }}
+          <span class="glyphicon glyphicon-minus"></span>
+        </button>
+        <div class="panel">
+          {{ wtf.render_field(form.collapseLayerGroupsBelowLevel, form_type="horizontal") }}
+          {{ wtf.render_field(form.layerTreeHiddenSublayers, form_type="horizontal") }}
+          {{ wtf.render_field(form.extraLegendParameters, form_type="horizontal", placeholder = "ex : LAYERFONTSIZE=10, LAYERFONTBOLD=false") }}
+          {{ wtf.render_field(form.flags, form_type="horizontal") }}
+
+        </div>  
+      </div>
+    </div>
 
     <div class="col-md-7 search-col">
       <h3>QGIS searches</h3>
