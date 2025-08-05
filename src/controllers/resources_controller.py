@@ -407,7 +407,10 @@ class ResourcesController(Controller):
             # query resource types
             query = session.query(self.ResourceType) \
                 .order_by(self.ResourceType.list_order, self.ResourceType.name) \
-                .filter(self.ResourceType.name.in_(('layer', 'data', 'data_create', 'data_read', 'data_update', 'data_delete')))
+                .filter(self.ResourceType.name.in_((
+                    'layer',
+                    'data', 'data_create', 'data_update', 'data_delete'
+                )))
             resource_types_to_import_from_map = query.all()
 
             # query permission roles

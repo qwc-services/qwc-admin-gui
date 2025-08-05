@@ -208,7 +208,8 @@ class PermissionsController(Controller):
 
             # Resource types whose parent is allowed by default
             parent_default_allow_resources = [
-                'attribute', 'layer', 'feature_info_layer', 'print_template', 'data', 'data_create', 'data_read', 'data_update', 'data_delete', 'tileset3d'
+                'attribute', 'layer', 'feature_info_layer', 'print_template', 'tileset3d',
+                'data', 'data_create', 'data_update', 'data_delete'
             ]
 
             role_warnings = []
