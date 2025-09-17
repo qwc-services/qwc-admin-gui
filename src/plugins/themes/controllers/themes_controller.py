@@ -506,6 +506,22 @@ class ThemesController:
                 form.skipEmptyFeatureAttributes.data = theme["skipEmptyFeatureAttributes"]
             if "collapseLayerGroupsBelowLevel" in theme:
                 form.collapseLayerGroupsBelowLevel.data = theme["collapseLayerGroupsBelowLevel"]
+            if "watermarkText" in theme:
+                form.watermarkText.data = theme["watermarkText"]
+            if "watermarkTexpadding" in theme:
+                form.watermarkTexpadding.data = theme["watermarkTexpadding"]
+            if "watermarkFontsize" in theme:
+                form.watermarkFontsize.data = theme["watermarkFontsize"]
+            if "watermarkFontfamily" in theme:
+                form.watermarkFontfamily.data = theme["watermarkFontfamily"]
+            if "watermarkFontcolor" in theme:
+                form.watermarkFontcolor.data = theme["watermarkFontcolor"]
+            if "watermarkBackgroundcolor" in theme:
+                form.watermarkBackgroundcolor.data = theme["watermarkBackgroundcolor"]
+            if "watermarkFramecolor" in theme:
+                form.watermarkFramecolor.data = theme["watermarkFramecolor"]
+            if "watermarkFramewidth" in theme:
+                form.watermarkFramewidth.data = theme["watermarkFramewidth"]
 
             if "backgroundLayers" in theme:
                 for i, layer in enumerate(theme["backgroundLayers"]):
@@ -622,6 +638,46 @@ class ThemesController:
                 float, form.extent.data.replace(" ", "").split(",")))
         else:
             if "extent" in item: del item["extent"]
+
+        if form.watermarkText.data:
+            item["watermarkText"] = form.watermarkText.data
+        else:
+            if item in "watermarkText": del item["watermarkText"]
+
+        if form.watermarkTexpadding.data:
+            item["watermarkTexpadding"] = form.watermarkTexpadding.data
+        else:
+            if item in "watermarkTexpadding": del item["watermarkTexpadding"]
+        
+        if form.watermarkFontsize.data:
+            item["watermarkFontsize"] = form.watermarkFontsize.data
+        else:
+            if item in "watermarkFontsize": del item["watermarkFontsize"]
+        
+        if form.watermarkFontfamily.data:
+            item["watermarkFontfamily"] = form.watermarkFontfamily.data
+        else:
+            if item in "watermarkFontfamily": del item["watermarkFontfamily"]
+
+        if form.watermarkFontcolor.data:
+            item["watermarkFontcolor"] = form.watermarkFontcolor.data
+        else:
+            if item in "watermarkFontcolor": del item["watermarkFontcolor"]
+
+        if form.watermarkBackgroundcolor.data:
+            item["watermarkBackgroundcolor"] = form.watermarkBackgroundcolor.data
+        else:
+            if item in "watermarkBackgroundcolor": del item["watermarkBackgroundcolor"]
+
+        if form.watermarkFramecolor.data:
+            item["watermarkFramecolor"] = form.watermarkFramecolor.data
+        else:
+            if item in "watermarkFramecolor": del item["watermarkFramecolor"]
+
+        if form.watermarkFramewidth.data:
+            item["watermarkFramewidth"] = form.watermarkFramewidth.data
+        else:
+            if item in "watermarkFramewidth": del item["watermarkFramewidth"]
 
         if form.additionalMouseCrs.data:
             item["additionalMouseCrs"] = form.additionalMouseCrs.data

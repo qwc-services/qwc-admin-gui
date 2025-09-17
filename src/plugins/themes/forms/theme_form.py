@@ -104,6 +104,9 @@ class ThemeForm(FlaskForm):
         default=("coordinates")
     )
     qgisSearchProvider = FieldList(FormField(QgisSearchForm))
+
+  
+
     minSearchScaleDenom = IntegerField(
         i18n('plugins.themes.theme.form_minSearchScaleDenom'),
         description=i18n('plugins.themes.theme.form_minSearchScaleDenom_description'),
@@ -233,5 +236,44 @@ class ThemeForm(FlaskForm):
     )
 
     backgroundLayers = FieldList(FormField(BackgroundLayerForm))
+
+    # Watermark
+    watermarkText = StringField(
+        i18n('plugins.themes.theme.form_watermarkText'),
+        description=(i18n('plugins.themes.theme.form_watermarkText_description')),
+        validators=[Optional()]
+    )
+    watermarkTexpadding = IntegerField(
+        i18n('plugins.themes.theme.form_watermarkTexpadding'),
+        description=(i18n('plugins.themes.theme.form_watermarkTexpadding_description')),
+        validators=[Optional()]
+    )
+    watermarkFontsize = IntegerField(
+        i18n('plugins.themes.theme.form_watermarkFontsize'),
+        validators=[Optional()]
+    )
+    watermarkFontfamily = StringField(
+        i18n('plugins.themes.theme.form_watermarkFontfamily'),
+        validators=[Optional()]
+    )
+    watermarkFontcolor = StringField(
+        i18n('plugins.themes.theme.form_watermarkFontcolor'),
+        validators=[Optional(), Regexp(r'^#[0-9A-Fa-f]{6}$',
+                    message=i18n('plugins.themes.theme.form_watermark_color_message'))]
+    )
+    watermarkBackgroundcolor = StringField(
+        i18n('plugins.themes.theme.form_watermarkBackgroundcolor'),
+        validators=[Optional(), Regexp(r'^#[0-9A-Fa-f]{6}$',
+                    message=i18n('plugins.themes.theme.form_watermark_color_message'))]
+    )
+    watermarkFramecolor = StringField(
+        i18n('plugins.themes.theme.form_watermarkFramecolor'),
+        validators=[Optional(), Regexp(r'^#[0-9A-Fa-f]{6}$',
+                    message=i18n('plugins.themes.theme.form_watermark_color_message'))]
+    )
+    watermarkFramewidth = IntegerField(
+        i18n('plugins.themes.theme.form_watermarkFramewidth'),
+        validators=[Optional()]
+    )
 
     submit = SubmitField(i18n('plugins.themes.common.form_submit'))
