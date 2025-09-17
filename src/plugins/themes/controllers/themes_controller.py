@@ -522,6 +522,14 @@ class ThemesController:
                 form.watermarkFramecolor.data = theme["watermarkFramecolor"]
             if "watermarkFramewidth" in theme:
                 form.watermarkFramewidth.data = theme["watermarkFramewidth"]
+            if "themeInfoLinks" in theme:
+                if "entries" in theme["themeInfoLinks"]:
+                    form.themeInfoLinksEntries.data = ", ".join(map(str, theme[
+                        "themeInfoLinks"]["entries"]))
+                if "title" in theme:
+                    form.themeInfoLinksTitle.data = theme["themeInfoLinks"]["title"]
+                if "titleMsgId" in theme:
+                    form.themeInfoLinksTitleMsgId.data = theme["themeInfoLinks"]["titleMsgId"]
 
             if "backgroundLayers" in theme:
                 for i, layer in enumerate(theme["backgroundLayers"]):
@@ -631,7 +639,7 @@ class ThemesController:
         if form.mapCrs.data:
             item["mapCrs"] = form.mapCrs.data
         else:
-            if item in "mapCrs": del item["mapCrs"]
+            if "mapCrs" in item: del item["mapCrs"]
 
         if form.extent.data:
             item["extent"] = list(map(
@@ -642,42 +650,42 @@ class ThemesController:
         if form.watermarkText.data:
             item["watermarkText"] = form.watermarkText.data
         else:
-            if item in "watermarkText": del item["watermarkText"]
+            if "watermarkText" in item: del item["watermarkText"]
 
         if form.watermarkTexpadding.data:
             item["watermarkTexpadding"] = form.watermarkTexpadding.data
         else:
-            if item in "watermarkTexpadding": del item["watermarkTexpadding"]
+            if "watermarkTexpadding" in item: del item["watermarkTexpadding"]
         
         if form.watermarkFontsize.data:
             item["watermarkFontsize"] = form.watermarkFontsize.data
         else:
-            if item in "watermarkFontsize": del item["watermarkFontsize"]
+            if "watermarkFontsize" in item: del item["watermarkFontsize"]
         
         if form.watermarkFontfamily.data:
             item["watermarkFontfamily"] = form.watermarkFontfamily.data
         else:
-            if item in "watermarkFontfamily": del item["watermarkFontfamily"]
+            if "watermarkFontfamily" in item: del item["watermarkFontfamily"]
 
         if form.watermarkFontcolor.data:
             item["watermarkFontcolor"] = form.watermarkFontcolor.data
         else:
-            if item in "watermarkFontcolor": del item["watermarkFontcolor"]
+            if "watermarkFontcolor" in item: del item["watermarkFontcolor"]
 
         if form.watermarkBackgroundcolor.data:
             item["watermarkBackgroundcolor"] = form.watermarkBackgroundcolor.data
         else:
-            if item in "watermarkBackgroundcolor": del item["watermarkBackgroundcolor"]
+            if "watermarkBackgroundcolor" in item: del item["watermarkBackgroundcolor"]
 
         if form.watermarkFramecolor.data:
             item["watermarkFramecolor"] = form.watermarkFramecolor.data
         else:
-            if item in "watermarkFramecolor": del item["watermarkFramecolor"]
+            if "watermarkFramecolor" in item: del item["watermarkFramecolor"]
 
         if form.watermarkFramewidth.data:
             item["watermarkFramewidth"] = form.watermarkFramewidth.data
         else:
-            if item in "watermarkFramewidth": del item["watermarkFramewidth"]
+            if "watermarkFramewidth" in item: del item["watermarkFramewidth"]
 
         if form.additionalMouseCrs.data:
             item["additionalMouseCrs"] = form.additionalMouseCrs.data
@@ -793,6 +801,22 @@ class ThemesController:
             item["collapseLayerGroupsBelowLevel"] = form.collapseLayerGroupsBelowLevel.data
         else:
             if "collapseLayerGroupsBelowLevel" in item: del item["collapseLayerGroupsBelowLevel"]
+
+        item["themeInfoLinks"] = {}
+        if form.themeInfoLinksEntries.data:
+            item["themeInfoLinks"]["entries"] = list(map(
+                str, form.themeInfoLinksEntries.data.replace(" ", "").split(",")))
+        else:
+            if "entries" in item["themeInfoLinks"]: del item["themeInfoLinks"]["entries"]
+        if form.themeInfoLinksTitle.data:
+            item["themeInfoLinks"]["title"] = form.themeInfoLinksTitle.data
+        else:
+            if "title" in item["themeInfoLinks"]: del item["themeInfoLinks"]["title"]
+        if form.themeInfoLinksTitleMsgId.data:
+            item["themeInfoLinks"]["titleMsgId"] = form.themeInfoLinksTitleMsgId.data
+        else:
+            if "titleMsgId" in item["themeInfoLinks"]: del item["themeInfoLinks"]["titleMsgId"]
+
 
         item["backgroundLayers"] = []
         if form.backgroundLayers.data:

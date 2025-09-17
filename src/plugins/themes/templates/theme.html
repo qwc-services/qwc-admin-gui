@@ -373,6 +373,25 @@
               {{ wtf.render_field(form.layerTreeHiddenSublayers, form_type="horizontal") }}
               {{ wtf.render_field(form.extraLegendParameters, form_type="horizontal", placeholder = "ex : LAYERFONTSIZE=10, LAYERFONTBOLD=false") }}
               {{ wtf.render_field(form.flags, form_type="horizontal") }}
+              
+              <div class="accordion-item accordion-subitem">
+                <h2 class="accordion-header" id="headingTitleInfoLinks">
+                  <button class="accordion-button accordion-subbutton collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTitleInfoLinks" aria-expanded="false" aria-controls="collapseTitleInfoLinks">
+                    {{ i18n('plugins.themes.theme.form_themeInfoLinks') }}
+                  </button>
+                </h2>
+                <div id="collapseTitleInfoLinks" class="accordion-collapse collapse" aria-labelledby="headingTitleInfoLinks" data-bs-parent="#collapseInterface">
+                  <div class="accordion-body">
+                    <div class="sub-panel-description">
+                      {{ i18n('plugins.themes.theme.form_themeInfoLinks_description') }}
+                    </div>
+                    {{ wtf.render_field(form.themeInfoLinksEntries, form_type="horizontal") }}
+                    {{ wtf.render_field(form.themeInfoLinksTitle, form_type="horizontal") }}
+                    {{ wtf.render_field(form.themeInfoLinksTitleMsgId, form_type="horizontal") }}
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>

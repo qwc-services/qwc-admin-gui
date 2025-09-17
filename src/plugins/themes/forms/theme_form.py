@@ -276,4 +276,23 @@ class ThemeForm(FlaskForm):
         validators=[Optional()]
     )
 
+    # ThemeInfoLinks 
+    themeInfoLinksEntries = StringField(
+        i18n('plugins.themes.theme.form_themeInfoLinksEntries'),
+        description=i18n('plugins.themes.theme.form_themeInfoLinksEntries_description'),
+        default=(""),
+        validators=[Optional(), Regexp(r'^(\w+)(,\s*\w+)*$',
+                    message=i18n('plugins.themes.theme.form_themeInfoLinksEntries_message'))]
+    )
+    themeInfoLinksTitle = StringField(
+        i18n('plugins.themes.theme.form_themeInfoLinksTitle'),
+        description=(i18n('plugins.themes.theme.form_themeInfoLinksTitle_description')),
+        validators=[Optional()]
+    )
+    themeInfoLinksTitleMsgId = StringField(
+        i18n('plugins.themes.theme.form_themeInfoLinksTitleMsgId'),
+        description=(i18n('plugins.themes.theme.form_themeInfoLinksTitleMsgId_description')),
+        validators=[Optional()]
+    )
+
     submit = SubmitField(i18n('plugins.themes.common.form_submit'))
