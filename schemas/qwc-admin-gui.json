@@ -32,6 +32,10 @@
           "description": "Config generator URL",
           "type": "string"
         },
+        "auth_service_url": {
+          "description": "URL to auth service, used for login redirects. Default: `/auth/`",
+          "type": "string"
+        },
         "totp_enabled": {
           "description": "Show TOTP fields for two factor authentication",
           "type": "boolean"
