@@ -25,7 +25,6 @@ from controllers import UsersController, GroupsController, RolesController, \
     RegistrationRequestsController
 from utils import i18n
 
-AUTH_PATH = os.environ.get('AUTH_PATH', '/auth')
 SKIP_LOGIN = os.environ.get('SKIP_LOGIN', False)
 
 # Flask application
@@ -113,8 +112,11 @@ def handler():
 
 
 def auth_path_prefix():
-    # e.g. /admin/org1/auth
-    return app.session_interface.tenant_path_prefix().rstrip("/") + "/" + AUTH_PATH.lstrip("/")
+    tenant = tenant_handler.tenant()
+    config_handler = RuntimeConfig("adminGui", app.logger)
+    config = config_handler.tenant_config(tenant)
+    auth_path = config.get('auth_service_url', '/auth/')
+    return app.session_interface.tenant_path_prefix().rstrip("/") + "/" + auth_path.lstrip("/")
 
 
 # create controllers (including their routes)
