@@ -76,6 +76,28 @@
       $('#bl-table > tbody:last-child').append(html);
     });
 
+    $('table').on('click', 'button.add-item-snapping', function() {
+      // add row to table snapping
+      rowIndex++;
+      var html = '<tr data-toggle="fieldset-entry"><td style="width: 45%;">';
+      html += '<input class="form-control" id="snappingSnapLayers-' + rowIndex + '-layerName" name="snappingSnapLayers-' + rowIndex + '-layerName" type="text" value="">';
+      html += '</td>';
+      html += '<td style="width: 20%;">';
+      html += '  <input class="form-control" id="snappingSnapLayers-' + rowIndex + '-min" name="snappingSnapLayers-' + rowIndex + '-min" type="text" value="">';
+      html += '</td>';
+      html += '<td style="width: 20%;">';
+      html += '  <input class="form-control" id="snappingSnapLayers-' + rowIndex + '-max" name="snappingSnapLayers-' + rowIndex + '-max" type="text" value="">';
+      html += '</td>';
+      html += '<td style="width: 10%;"><div class="btn-group" role="group">';
+      html += `  <button class="btn btn-sm btn-outline-secondary move-up" role="button" type="button">{{ utils.render_icon('chevron-up') }}</button>`;
+      html += `  <button class="btn btn-sm btn-outline-secondary move-down" role="button" type="button">{{ utils.render_icon('chevron-down') }}</button>`;
+      html += '</div></td>';
+      html += '<td style="width: 5%;">';
+      html += `  <button class="btn btn-sm btn-danger remove-item" role="button" type="button">{{ utils.render_icon('trash') }}</button>`;
+      html += '</td></tr>';
+      $('#sl-table > tbody:last-child').append(html);
+    });
+
     $(document).on("click", "button.move-up, button.move-down", function() {
       // move row in table
       var row = $(this).closest('tr');
@@ -388,6 +410,70 @@
                     {{ wtf.render_field(form.themeInfoLinksEntries, form_type="horizontal") }}
                     {{ wtf.render_field(form.themeInfoLinksTitle, form_type="horizontal") }}
                     {{ wtf.render_field(form.themeInfoLinksTitleMsgId, form_type="horizontal") }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item accordion-subitem">
+                <h2 class="accordion-header" id="headingSnapping">
+                  <button class="accordion-button accordion-subbutton collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSnapping" aria-expanded="false" aria-controls="collapseSnapping">
+                    {{ i18n('plugins.themes.theme.form_themeSnapping') }}
+                  </button>
+                </h2>
+                <div id="collapseSnapping" class="accordion-collapse collapse" aria-labelledby="headingSnapping" data-bs-parent="#collapseInterface">
+                  <div class="accordion-body">
+                    <div class="sub-panel-description">
+                      {{ i18n('plugins.themes.theme.form_themeSnapping_description') }}
+                    </div>
+
+
+                    <div data-toggle="fieldset" class="form-group">
+                      <div class="col">
+                        <table id="sl-table" class="table align-middle">
+                          <thead>
+                            <tr class="align-middle">
+                              <th style="text-align: center;">{{ i18n('plugins.themes.theme.snappingLayerName') }}</th>
+                              <th style="text-align: center;">{{ i18n('plugins.themes.theme.snappingLayerMin') }}</th>
+                              <th style="text-align: center;">{{ i18n('plugins.themes.theme.snappingLayerMax') }}</th>                      
+                              <th></th>
+                              <th>
+                                <button class="btn btn-sm btn-success add-item-snapping" role="button" type="button" title="{{ i18n('plugins.themes.backgroundlayers.create_title') }}">
+                                  {{ utils.render_icon('plus-lg') }}
+                                </button>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          {% for snapLayer in form.snappingSnapLayers %}
+                            <tr data-toggle="fieldset-entry">
+                              <td style="width: 30%;">{{ snapLayer.layerName(class_='form-control') }}</td>
+                              <td style="width: 30%;">{{ snapLayer.min(class_='form-control') }}</td>
+                              <td style="width: 30%;">{{ snapLayer.max(class_='form-control') }}</td>                              
+                              <td style="width: 10%;">
+                                <div class="btn-group" role="group">
+                                  <button class="btn btn-sm btn-outline-secondary move-up" role="button" type="button">
+                                    {{ utils.render_icon('chevron-up') }}
+                                  </button>
+                                  <button class="btn btn-sm btn-outline-secondary move-down" role="button" type="button">
+                                    {{ utils.render_icon('che vron-down') }}
+                                  </button>
+                                </div>
+                              </td>
+                              <td style="width: 5%;">
+                                <button class="btn btn-sm btn-danger remove-item" role="button" type="button">
+                                  {{ utils.render_icon('trash') }}
+                                </button>
+                              </td>
+                            </tr>
+                          {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+
+                    {{ wtf.render_field(form.snappingFeatureCount, form_type="horizontal") }}
+                    {{ wtf.render_field(form.snappingWfsMaxScale, form_type="horizontal") }}
                   </div>
                 </div>
               </div>

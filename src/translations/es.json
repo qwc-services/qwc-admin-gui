@@ -337,6 +337,10 @@
         "form_searchProviders_description": "Lista de proveedores de búsqueda disponibles.",
         "form_skipEmptyFeatureAttributes": "Omitir atributos de entidad vacíos",
         "form_skipEmptyFeatureAttributes_description": "Si se deben omitir los atributos vacíos de la información de entidad.",
+        "form_snappingFeatureCount": "Feature count",
+        "form_snappingFeatureCount_description": "The maximum number of snapping geometries to retreive for the current map extent (default: 500).",
+        "form_snappingWfsMaxScale": "WfsMaxScale",
+        "form_snappingWfsMaxScale_description": "The maximum scale denominator (exclusive) up to which loaded WFS layers should be used for snapping.",
         "form_themeInfoLinks": "Theme info links",
         "form_themeInfoLinksEntries": "Theme info links entries",
         "form_themeInfoLinksEntries_description": "List of theme info link names",
@@ -346,6 +350,8 @@
         "form_themeInfoLinksTitleMsgId_description": "Alternative to title, a message ID, translated through the translation files.",
         "form_themeInfoLinksTitle_description": "An arbitrary string shown as title of the menu.",
         "form_themeInfoLinks_description": "Custom links to additional resources, shown as a menu in the theme selector in the theme switcher.",
+        "form_themeSnapping": "Snapping",
+        "form_themeSnapping_description": "Snapping configuration",
         "form_thumbnail_description": "Nombre de archivo de la miniatura del tema. Por defecto, autogenerado vía WMS GetMap.",
         "form_tileSize": "Tile size",
         "form_tileSize_description": "WMS tile width and height.",
@@ -373,7 +379,10 @@
         "options_print": "Print options",
         "options_search": "Search options",
         "print_layer": "Capa de impresión",
-        "print_layer_message": "(Opcional): Nombre de una capa del Proyecto QGIS que debe usarse al imprimir."
+        "print_layer_message": "(Opcional): Nombre de una capa del Proyecto QGIS que debe usarse al imprimir.",
+        "snappingLayerMax": "snappingLayerMax",
+        "snappingLayerMin": "snappingLayerMin",
+        "snappingLayerName": "snappingLayerName"
       },
       "themes": {
         "confirm_message_delete_theme": "¿Realmente eliminar tema?",

@@ -25,7 +25,6 @@ class BackgroundLayerForm(FlaskForm):
     layerName = SelectField(coerce=str, validators=[DataRequired()])
     printLayer = StringField(validators=[Optional()])
     visibility = BooleanField(validators=[Optional()])
-
 class QgisSearchForm(FlaskForm):
     """Subform for Qgis searches"""
 
@@ -41,7 +40,12 @@ class QgisSearchForm(FlaskForm):
     group = StringField(validators=[Optional()])
     expression = JSONField(validators=[Optional()])
     fields = JSONField(validators=[Optional()])
+class SnapLayerForm(FlaskForm):
+    "Subform for snaplayers"
 
+    layerName = StringField(validators=[DataRequired()])
+    min = IntegerField(validators=[Optional()])
+    max = IntegerField(validators=[Optional()])
 class ThemeForm(FlaskForm):
     """Main form for Theme GUI"""
 
@@ -294,5 +298,18 @@ class ThemeForm(FlaskForm):
         description=(i18n('plugins.themes.theme.form_themeInfoLinksTitleMsgId_description')),
         validators=[Optional()]
     )
+
+    # Snapping
+    snappingFeatureCount = IntegerField(
+        i18n('plugins.themes.theme.form_snappingFeatureCount'),
+        description=(i18n('plugins.themes.theme.form_snappingFeatureCount_description')),
+        validators=[Optional()]
+    )
+    snappingWfsMaxScale = IntegerField(
+        i18n('plugins.themes.theme.form_snappingWfsMaxScale'),
+        description=(i18n('plugins.themes.theme.form_snappingWfsMaxScale_description')),
+        validators=[Optional()]
+    )
+    snappingSnapLayers = FieldList(FormField(SnapLayerForm))
 
     submit = SubmitField(i18n('plugins.themes.common.form_submit'))

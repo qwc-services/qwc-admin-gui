@@ -337,6 +337,10 @@
         "form_searchProviders_description": "Liste des fournisseurs de recherche disponibles.",
         "form_skipEmptyFeatureAttributes": "Ne pas afficher les attributs vides",
         "form_skipEmptyFeatureAttributes_description": "S'il faut omettre les attributs vides dans les informations de l'objet.",
+        "form_snappingFeatureCount": "Feature count",
+        "form_snappingFeatureCount_description": "Nombre maximal de géométries accrochées à récupérer pour l'emprise courante (valeur par défaut: 500).",
+        "form_snappingWfsMaxScale": "WfsMaxScale",
+        "form_snappingWfsMaxScale_description": "Echelle maximale (borne exclusive) au dessus de laquelle les couches WFS chargées doivent être utilisées pour l'accrochage.",
         "form_themeInfoLinks": "Liens d'information du thème",
         "form_themeInfoLinksEntries": "Entrées des liens du thème",
         "form_themeInfoLinksEntries_description": "Liste des noms des liens à ajouter dans le menu de ce thème.",
@@ -346,6 +350,8 @@
         "form_themeInfoLinksTitleMsgId_description": "Alternative au titre, l'identifiant du titre, correspondant à une traduction dans les fichiers de traduction.",
         "form_themeInfoLinksTitle_description": "Titre arbitraire à afficher comme titre du menu des liens dans ce thème.",
         "form_themeInfoLinks_description": "Liens personnalisés vers des ressources supplémentaires, affiché comme un menu dans le selectionneur de thèmes.",
+        "form_themeSnapping": "Accrochage (Snapping)",
+        "form_themeSnapping_description": "Configuration de l'accrochage des couches",
         "form_thumbnail_description": "Nom du fichier de la miniature du thème. Par défaut, la miniature est autogénérée grâce à un GetMap WMS.",
         "form_tileSize": "Taille des tuiles",
         "form_tileSize_description": "Hauteur et largeur des tuiles WMS.",
@@ -373,7 +379,10 @@
         "options_print": "Options pour l'impression",
         "options_search": "Options pour la recherche",
         "print_layer": "Couches d'impression",
-        "print_layer_message": "(Optionnel): Nom de la couche du projet QGIS qui doit être utilisée lors de l'impression."
+        "print_layer_message": "(Optionnel): Nom de la couche du projet QGIS qui doit être utilisée lors de l'impression.",
+        "snappingLayerMax": "snappingLayerMax",
+        "snappingLayerMin": "snappingLayerMin",
+        "snappingLayerName": "snappingLayerName"
       },
       "themes": {
         "confirm_message_delete_theme": "Voulez-vous vraiment supprimer ce thème?",

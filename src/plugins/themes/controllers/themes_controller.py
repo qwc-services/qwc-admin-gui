@@ -531,6 +531,29 @@ class ThemesController:
                     form.themeInfoLinksTitle.data = theme["themeInfoLinks"]["title"]
                 if "titleMsgId" in theme:
                     form.themeInfoLinksTitleMsgId.data = theme["themeInfoLinks"]["titleMsgId"]
+            if "snapping" in theme:
+                if "featureCount" in theme["snapping"]:
+                    form.snappingFeatureCount.data = theme["snapping"]["featureCount"]
+                if "wfsMaxScale" in theme["snapping"]:
+                    form.snappingWfsMaxScale.data = theme["snapping"]["wfsMaxScale"]
+                if "snaplayers" in theme["snapping"]:
+                     for layer in theme["snapping"]["snaplayers"]:
+                        data = {
+                            "layerName": "",
+                            "min": "",
+                            "max": ""
+                        }
+
+                        if "name" in layer:
+                            data["layerName"] = layer["name"]
+
+                        if "min" in layer:
+                            data["min"] = layer["min"]
+                        
+                        if "max" in layer:
+                            data["max"] = layer["max"]
+
+                        form.snappingSnapLayers.append_entry(data)
 
             if "backgroundLayers" in theme:
                 for i, layer in enumerate(theme["backgroundLayers"]):
@@ -819,6 +842,25 @@ class ThemesController:
             item["themeInfoLinks"]["titleMsgId"] = form.themeInfoLinksTitleMsgId.data
         else:
             if "titleMsgId" in item["themeInfoLinks"]: del item["themeInfoLinks"]["titleMsgId"]
+
+        item["snapping"] = {}
+        if form.snappingFeatureCount.data:
+            item["snapping"]["featureCount"] = form.snappingFeatureCount.data
+        else: 
+            if "featureCount" in item["snapping"]: del item["snapping"]["featureCount"]
+        if form.snappingWfsMaxScale.data:
+            item["snapping"]["wfsMaxScale"] = form.snappingWfsMaxScale.data
+        else: 
+            if "wfsMaxScale" in item["snapping"]: del item["snapping"]["wfsMaxScale"]
+        item["snapping"]["snaplayers"] = []
+        if form.snappingSnapLayers.data:
+            for layer in form.snappingSnapLayers.data:
+                item["snapping"]["snaplayers"].append({
+                    "name": layer["layerName"],
+                    "min": layer["min"],
+                    "max": layer["max"]
+                })
+
 
 
         item["backgroundLayers"] = []
