@@ -46,6 +46,11 @@ class SnapLayerForm(FlaskForm):
     layerName = StringField(validators=[DataRequired()])
     min = IntegerField(validators=[Optional()])
     max = IntegerField(validators=[Optional()])
+class FeatureReportForm(FlaskForm):
+    "Subform to associate layer to featureReport"
+
+    layerId = StringField(validators=[DataRequired()])
+    templateCfg = StringField(validators=[DataRequired()])
 class ThemeForm(FlaskForm):
     """Main form for Theme GUI"""
 
@@ -311,5 +316,8 @@ class ThemeForm(FlaskForm):
         validators=[Optional()]
     )
     snappingSnapLayers = FieldList(FormField(SnapLayerForm))
+
+    # FeatureReport
+    featureReports = FieldList(FormField(FeatureReportForm))
 
     submit = SubmitField(i18n('plugins.themes.common.form_submit'))

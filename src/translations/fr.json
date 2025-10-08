@@ -276,6 +276,8 @@
       "theme": {
         "background_layer": "Fonds de plan",
         "background_layer_message": "(Optionnel): Visibilité initiale de ce fond de plan au moment du chargement du thème.",
+        "featureReportLayerId": "Layer ID",
+        "featureReportTemplateCfg": "Template config ID",
         "form_additionalMouseCrs": "CRS add.",
         "form_additionalMouseCrs_description": "CRS additionnels pour l'affichage des coordonnées de la souris.",
         "form_attributionUrl": "URL d'attribution",
@@ -341,6 +343,8 @@
         "form_snappingFeatureCount_description": "Nombre maximal de géométries accrochées à récupérer pour l'emprise courante (valeur par défaut: 500).",
         "form_snappingWfsMaxScale": "WfsMaxScale",
         "form_snappingWfsMaxScale_description": "Echelle maximale (borne exclusive) au dessus de laquelle les couches WFS chargées doivent être utilisées pour l'accrochage.",
+        "form_themeFeatureReport": "Feature report",
+        "form_themeFeatureReport_description": "Configuration des rapports, associer l'ID de la couche WMS à un ID du template pour le documentService.",
         "form_themeInfoLinks": "Liens d'information du thème",
         "form_themeInfoLinksEntries": "Entrées des liens du thème",
         "form_themeInfoLinksEntries_description": "Liste des noms des liens à ajouter dans le menu de ce thème.",

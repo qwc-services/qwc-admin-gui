@@ -276,6 +276,8 @@
       "theme": {
         "background_layer": "Capa de fondo",
         "background_layer_message": "(Opcional): La visibilidad inicial de esta capa de fondo al cargar el tema.",
+        "featureReportLayerId": "Layer ID",
+        "featureReportTemplateCfg": "Template config ID",
         "form_additionalMouseCrs": "CRS adicional",
         "form_additionalMouseCrs_description": "CRS adicional para la visualización de coordenadas del ratón.",
         "form_attributionUrl": "Attribution URL",
@@ -341,6 +343,8 @@
         "form_snappingFeatureCount_description": "The maximum number of snapping geometries to retreive for the current map extent (default: 500).",
         "form_snappingWfsMaxScale": "WfsMaxScale",
         "form_snappingWfsMaxScale_description": "The maximum scale denominator (exclusive) up to which loaded WFS layers should be used for snapping.",
+        "form_themeFeatureReport": "Feature report",
+        "form_themeFeatureReport_description": "Configure feature report templates, choose WMS sublayer ID and associated template ID to pass to the documentService.",
         "form_themeInfoLinks": "Theme info links",
         "form_themeInfoLinksEntries": "Theme info links entries",
         "form_themeInfoLinksEntries_description": "List of theme info link names",

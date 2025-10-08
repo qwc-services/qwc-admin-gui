@@ -98,6 +98,25 @@
       $('#sl-table > tbody:last-child').append(html);
     });
 
+    $('table').on('click', 'button.add-item-featurereport', function() {
+      // add row to table feature Report
+      rowIndex++;
+      var html = '<tr data-toggle="fieldset-entry"><td style="width: 42%;">';
+      html += '<input class="form-control" id="featureReports-' + rowIndex + '-layerId" name="featureReports-' + rowIndex + '-layerId" type="text" value="">';
+      html += '</td>';
+      html += '<td style="width: 42%;">';
+      html += '  <input class="form-control" id="featureReports-' + rowIndex + '-templateCfg" name="featureReports-' + rowIndex + '-templateCfg" type="text" value="">';
+      html += '</td>';
+      html += '<td style="width: 11%;"><div class="btn-group" role="group">';
+      html += `  <button class="btn btn-sm btn-outline-secondary move-up" role="button" type="button">{{ utils.render_icon('chevron-up') }}</button>`;
+      html += `  <button class="btn btn-sm btn-outline-secondary move-down" role="button" type="button">{{ utils.render_icon('chevron-down') }}</button>`;
+      html += '</div></td>';
+      html += '<td style="width: 5%;">';
+      html += `  <button class="btn btn-sm btn-danger remove-item" role="button" type="button">{{ utils.render_icon('trash') }}</button>`;
+      html += '</td></tr>';
+      $('#rl-table > tbody:last-child').append(html);
+    });
+
     $(document).on("click", "button.move-up, button.move-down", function() {
       // move row in table
       var row = $(this).closest('tr');
@@ -446,9 +465,9 @@
                           <tbody>
                           {% for snapLayer in form.snappingSnapLayers %}
                             <tr data-toggle="fieldset-entry">
-                              <td style="width: 30%;">{{ snapLayer.layerName(class_='form-control') }}</td>
-                              <td style="width: 30%;">{{ snapLayer.min(class_='form-control') }}</td>
-                              <td style="width: 30%;">{{ snapLayer.max(class_='form-control') }}</td>                              
+                              <td style="width: 45%;">{{ snapLayer.layerName(class_='form-control') }}</td>
+                              <td style="width: 20%;">{{ snapLayer.min(class_='form-control') }}</td>
+                              <td style="width: 20%;">{{ snapLayer.max(class_='form-control') }}</td>                              
                               <td style="width: 10%;">
                                 <div class="btn-group" role="group">
                                   <button class="btn btn-sm btn-outline-secondary move-up" role="button" type="button">
@@ -474,6 +493,64 @@
 
                     {{ wtf.render_field(form.snappingFeatureCount, form_type="horizontal") }}
                     {{ wtf.render_field(form.snappingWfsMaxScale, form_type="horizontal") }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item accordion-subitem">
+                <h2 class="accordion-header" id="headingFeatureReport">
+                  <button class="accordion-button accordion-subbutton collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFeatureReport" aria-expanded="false" aria-controls="collapseFeatureReport">
+                    {{ i18n('plugins.themes.theme.form_themeFeatureReport') }}
+                  </button>
+                </h2>
+                <div id="collapseFeatureReport" class="accordion-collapse collapse" aria-labelledby="headingFeatureReport" data-bs-parent="#collapseInterface">
+                  <div class="accordion-body">
+                    <div class="sub-panel-description">
+                      {{ i18n('plugins.themes.theme.form_themeFeatureReport_description') }}
+                    </div>
+
+
+                    <div data-toggle="fieldset" class="form-group">
+                      <div class="col">
+                        <table id="rl-table" class="table align-middle">
+                          <thead>
+                            <tr class="align-middle">
+                              <th style="text-align: center;">{{ i18n('plugins.themes.theme.featureReportLayerId') }}</th>
+                              <th style="text-align: center;">{{ i18n('plugins.themes.theme.featureReportTemplateCfg') }}</th>
+                              <th></th>
+                              <th>
+                                <button class="btn btn-sm btn-success add-item-featurereport" role="button" type="button" title="{{ i18n('plugins.themes.backgroundlayers.create_title') }}">
+                                  {{ utils.render_icon('plus-lg') }}
+                                </button>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          {% for featureReport in form.featureReports %}
+                            <tr data-toggle="fieldset-entry">
+                              <td style="width: 42%;">{{ featureReport.layerId(class_='form-control') }}</td>
+                              <td style="width: 42%;">{{ featureReport.templateCfg(class_='form-control') }}</td>
+                              <td style="width: 11%;">
+                                <div class="btn-group" role="group">
+                                  <button class="btn btn-sm btn-outline-secondary move-up" role="button" type="button">
+                                    {{ utils.render_icon('chevron-up') }}
+                                  </button>
+                                  <button class="btn btn-sm btn-outline-secondary move-down" role="button" type="button">
+                                    {{ utils.render_icon('che vron-down') }}
+                                  </button>
+                                </div>
+                              </td>
+                              <td style="width: 5%;">
+                                <button class="btn btn-sm btn-danger remove-item" role="button" type="button">
+                                  {{ utils.render_icon('trash') }}
+                                </button>
+                              </td>
+                            </tr>
+                          {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>

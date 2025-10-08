@@ -555,6 +555,14 @@ class ThemesController:
 
                         form.snappingSnapLayers.append_entry(data)
 
+            if "featureReport" in theme:
+                for k,v in theme["featureReport"].items():
+                    data = {}
+                    data["layerId"] = k
+                    data["templateCfg"] = v
+                    
+                    form.featureReports.append_entry(data)
+
             if "backgroundLayers" in theme:
                 for i, layer in enumerate(theme["backgroundLayers"]):
                     data = {
@@ -861,7 +869,10 @@ class ThemesController:
                     "max": layer["max"]
                 })
 
-
+        item["featureReport"] = {}
+        if form.featureReports.data:
+            for featureReport in form.featureReports.data:
+                item["featureReport"][featureReport["layerId"]] = featureReport["templateCfg"]
 
         item["backgroundLayers"] = []
         if form.backgroundLayers.data:
