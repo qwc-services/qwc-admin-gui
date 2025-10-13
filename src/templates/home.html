@@ -30,7 +30,7 @@
         options.forEach(option => {
           if ($('#' + option).prop('checked')) {
             reqUrl += (reqUrl.includes('?') ? '&' : '?') + option + '=1';
-          } else if ($('#' + option).prop('value')) {
+          } else if ($('#' + option).prop('value') && $('#' + option).prop('type') !== 'checkbox') {
             reqUrl += (reqUrl.includes('?') ? '&' : '?') + option + '=' + $('#' + option).prop('value');
           }
         });
