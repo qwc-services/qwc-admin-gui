@@ -37,7 +37,7 @@
   }
 
   $(function() {
-    $('.search-col').on('click','button.accordion', function(){
+    $('.search-col').on('click','button.accordion-qgis', function(){
       $(this).toggleClass("active");
       var panel = $(this).next();
       if (panel.css('max-height') !== '0px') {
@@ -76,6 +76,47 @@
       $('#bl-table > tbody:last-child').append(html);
     });
 
+    $('table').on('click', 'button.add-item-snapping', function() {
+      // add row to table snapping
+      rowIndex++;
+      var html = '<tr data-toggle="fieldset-entry"><td style="width: 45%;">';
+      html += '<input class="form-control" id="snappingSnapLayers-' + rowIndex + '-layerName" name="snappingSnapLayers-' + rowIndex + '-layerName" type="text" value="">';
+      html += '</td>';
+      html += '<td style="width: 20%;">';
+      html += '  <input class="form-control" id="snappingSnapLayers-' + rowIndex + '-min" name="snappingSnapLayers-' + rowIndex + '-min" type="text" value="">';
+      html += '</td>';
+      html += '<td style="width: 20%;">';
+      html += '  <input class="form-control" id="snappingSnapLayers-' + rowIndex + '-max" name="snappingSnapLayers-' + rowIndex + '-max" type="text" value="">';
+      html += '</td>';
+      html += '<td style="width: 10%;"><div class="btn-group" role="group">';
+      html += `  <button class="btn btn-sm btn-outline-secondary move-up" role="button" type="button">{{ utils.render_icon('chevron-up') }}</button>`;
+      html += `  <button class="btn btn-sm btn-outline-secondary move-down" role="button" type="button">{{ utils.render_icon('chevron-down') }}</button>`;
+      html += '</div></td>';
+      html += '<td style="width: 5%;">';
+      html += `  <button class="btn btn-sm btn-danger remove-item" role="button" type="button">{{ utils.render_icon('trash') }}</button>`;
+      html += '</td></tr>';
+      $('#sl-table > tbody:last-child').append(html);
+    });
+
+    $('table').on('click', 'button.add-item-featurereport', function() {
+      // add row to table feature Report
+      rowIndex++;
+      var html = '<tr data-toggle="fieldset-entry"><td style="width: 42%;">';
+      html += '<input class="form-control" id="featureReports-' + rowIndex + '-layerId" name="featureReports-' + rowIndex + '-layerId" type="text" value="">';
+      html += '</td>';
+      html += '<td style="width: 42%;">';
+      html += '  <input class="form-control" id="featureReports-' + rowIndex + '-templateCfg" name="featureReports-' + rowIndex + '-templateCfg" type="text" value="">';
+      html += '</td>';
+      html += '<td style="width: 11%;"><div class="btn-group" role="group">';
+      html += `  <button class="btn btn-sm btn-outline-secondary move-up" role="button" type="button">{{ utils.render_icon('chevron-up') }}</button>`;
+      html += `  <button class="btn btn-sm btn-outline-secondary move-down" role="button" type="button">{{ utils.render_icon('chevron-down') }}</button>`;
+      html += '</div></td>';
+      html += '<td style="width: 5%;">';
+      html += `  <button class="btn btn-sm btn-danger remove-item" role="button" type="button">{{ utils.render_icon('trash') }}</button>`;
+      html += '</td></tr>';
+      $('#rl-table > tbody:last-child').append(html);
+    });
+
     $(document).on("click", "button.move-up, button.move-down", function() {
       // move row in table
       var row = $(this).closest('tr');
@@ -107,7 +148,7 @@
       newSearchIndex++;
       html =`
       <div class="searchBlock">
-      <button type="button" class="accordion" style="display:flex;justify-content:space-between;flex-direction:row;align-items: center;">
+      <button type="button" class="accordion-qgis" style="display:flex;justify-content:space-between;flex-direction:row;align-items: center;">
         New Search ${newSearchIndex}
         <span class="glyphicon glyphicon-minus"></span>
       </button>
@@ -162,35 +203,29 @@
     createEditor(this, editorOptions);
   });
 
-  $('.advanced-col').on('click','button.accordion', function(){
-    $(this).toggleClass("active");
-    var panel = $(this).next();
-    if (panel.css('max-height') !== '0px') {
-      panel.css('max-height', '0px');
-    }
-    else {
-      panel.css('max-height', panel.prop('scrollHeight') + 'px');
-    }
-  })
+  
 
 </script>
 {% endblock %}
 {% block styles %}
 <style>
-  .accordion {
+  .accordion-qgis, .accordion-button {
     background-color: #eee;
     color: #444;
     cursor: pointer;
     padding: 18px;
-    margin-bottom: 9px;
     width: 100%;
     border: none;
     text-align: left;
     outline: none;
     font-weight: bold;
   }
-  .active, .accordion:hover {
+  .accordion-qgis {
+    margin-bottom: 9px;
+  }
+  .active, .accordion-qgis:hover, .accordion-button:hover {
     background-color: #ccc;
+    border-radius : 0 !important;
   }
   .panel {
     padding: 0 18px;
@@ -214,6 +249,55 @@
   .ace_editor {
     border: 1px solid #ccc;
   }
+
+  .accordion-body {
+    background-color: #fff;
+    margin: 0 18px 18px 18px;
+    padding: 18px;
+    border: none;
+    text-align: left;
+    outline: none;
+  }
+
+  .accordion-item {
+    background-color: #eee;
+    margin-bottom: 9px;
+    border: none;
+    border-radius : 0 !important;
+    overflow: hidden;
+  }
+
+  .accordion-subitem {
+    background-color: #fff !important;
+    outline: #eee solid;
+  }
+
+  .accordion-subbutton {
+    background-color: #fff !important;
+    outline: #eee solid;
+    font-weight: bold;
+  }
+
+  .accordion-subbutton:not(.collapsed) {
+    background-color: #eee !important;
+    font-weight: bold !important;
+  }
+
+  .accordion-button:focus, .accordion-button:not(.collapsed) {
+    background-color: #eee;
+    border: none !important;
+    border-radius : 0 !important;
+    color: #444;
+    box-shadow: none;
+  }
+
+  .sub-panel-description {
+    color: var(--bs-secondary-color);
+    padding-bottom: 20px;  
+    font-size: .875em;
+  }
+
+
 </style>
 {% endblock %}
 
@@ -236,59 +320,245 @@
 
     <div class="col-md-7 advanced-col">
       <h3>{{ i18n('plugins.themes.theme.options_advancedparams') }}</h3>
-      <div class="advancedBlock" >
-        <button type="button" class="accordion" style="display:flex;justify-content:space-between;flex-direction:row;align-items: center;">
-          {{ i18n('plugins.themes.theme.options_global') }}
-            <span class="glyphicon glyphicon-minus"></span>
-        </button>
-        <div class="panel">
-        {{ wtf.render_field(form.description, form_type="horizontal") }}
-        {{ wtf.render_field(form.attribution, form_type="horizontal") }}
-        {{ wtf.render_field(form.attributionUrl, form_type="horizontal") }}
-        {{ wtf.render_field(form.extent, form_type="horizontal") }}
-        {{ wtf.render_field(form.scales, form_type="horizontal") }}
-        {{ wtf.render_field(form.format, form_type="horizontal") }}
-        {{ wtf.render_field(form.tileSize, form_type="horizontal") }}
-        {{ wtf.render_field(form.tiled, form_type="horizontal", horizontal_columns=('sm', 0, 7)) }}
-        {{ wtf.render_field(form.disabled, form_type="horizontal", horizontal_columns=('sm', 0, 7)) }}
+      <div class="advancedBlock accordion" id="accordionAdvancedBlock" >
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingGlobal">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseGlobal" aria-expanded="false" aria-controls="collapseGlobal" >
+              {{ i18n('plugins.themes.theme.options_global') }}
+            </button>
+          </h2>
+          <div id="collapseGlobal" class="accordion-collapse collapse" aria-labelledby="headingGlobal" data-bs-parent="#accordionAdvancedBlock">
+            <div class="accordion-body">
+              {{ wtf.render_field(form.description, form_type="horizontal") }}
+              {{ wtf.render_field(form.attribution, form_type="horizontal") }}
+              {{ wtf.render_field(form.attributionUrl, form_type="horizontal") }}
+              {{ wtf.render_field(form.extent, form_type="horizontal") }}
+              {{ wtf.render_field(form.scales, form_type="horizontal") }}
+              {{ wtf.render_field(form.format, form_type="horizontal") }}
+              {{ wtf.render_field(form.tileSize, form_type="horizontal") }}
+              {{ wtf.render_field(form.tiled, form_type="horizontal", horizontal_columns=('sm', 0, 7)) }}
+              {{ wtf.render_field(form.disabled, form_type="horizontal", horizontal_columns=('sm', 0, 7)) }}
 
+            </div>
+          </div>
         </div>
         
-        <button type="button" class="accordion" style="display:flex;justify-content:space-between;flex-direction:row;align-items: center;">
-          {{ i18n('plugins.themes.theme.options_print') }}
-          <span class="glyphicon glyphicon-minus"></span>
-        </button>
-        <div class="panel">
-        {{ wtf.render_field(form.printScales, form_type="horizontal") }}
-        {{ wtf.render_field(form.printResolutions, form_type="horizontal") }}
-        {{ wtf.render_field(form.defaultPrintLayout, form_type="horizontal") }}
-        {{ wtf.render_field(form.printLabelBlacklist, form_type="horizontal") }}
-        {{ wtf.render_field(form.extraPrintLayers, form_type="horizontal") }}
-        {{ wtf.render_field(form.printLabelForAttribution, form_type="horizontal") }}
-        {{ wtf.render_field(form.extraPrintParameters, form_type="horizontal",  placeholder = "ex : TRANSPARENT=true, BGCOLOR=green") }}
-        {{ wtf.render_field(form.extraDxfParameters, form_type="horizontal", placeholder = "ex : MODE=NOSYMBOLOGY, USE_TITLE_AS_LAYERNAME=true") }}
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingPrint">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapsePrint" aria-expanded="false" aria-controls="collapsePrint" >
+              {{ i18n('plugins.themes.theme.options_print') }}
+            </button>
+          </h2>
+          <div id="collapsePrint" class="accordion-collapse collapse" aria-labelledby="headingPrint" data-bs-parent="#accordionAdvancedBlock">
+            <div class="accordion-body">
+              {{ wtf.render_field(form.printScales, form_type="horizontal") }}
+              {{ wtf.render_field(form.printResolutions, form_type="horizontal") }}
+              {{ wtf.render_field(form.defaultPrintLayout, form_type="horizontal") }}
+              {{ wtf.render_field(form.printLabelBlacklist, form_type="horizontal") }}
+              {{ wtf.render_field(form.extraPrintLayers, form_type="horizontal") }}
+              {{ wtf.render_field(form.printLabelForAttribution, form_type="horizontal") }}
+              {{ wtf.render_field(form.extraPrintParameters, form_type="horizontal",  placeholder = "ex : TRANSPARENT=true, BGCOLOR=green") }}
+              {{ wtf.render_field(form.extraDxfParameters, form_type="horizontal", placeholder = "ex : MODE=NOSYMBOLOGY, USE_TITLE_AS_LAYERNAME=true") }}
+
+              <div class="accordion-item accordion-subitem">
+                <h2 class="accordion-header" id="headingWatermark">
+                  <button class="accordion-button accordion-subbutton collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseWatermark" aria-expanded="false" aria-controls="collapseWatermark">
+                    {{ i18n('plugins.themes.theme.form_watermark') }}
+                  </button>
+                </h2>
+                <div id="collapseWatermark" class="accordion-collapse collapse" aria-labelledby="headingWatermark" data-bs-parent="#collapsePrint">
+                  <div class="accordion-body">
+                    <div class="sub-panel-description">
+                      {{ i18n('plugins.themes.theme.form_watermark_description') }}
+                    </div>
+                    {{ wtf.render_field(form.watermarkText, form_type="horizontal") }}
+                    {{ wtf.render_field(form.watermarkTexpadding, form_type="horizontal") }}
+                    {{ wtf.render_field(form.watermarkFontsize, form_type="horizontal") }}
+                    {{ wtf.render_field(form.watermarkFontfamily, form_type="horizontal") }}
+                    {{ wtf.render_field(form.watermarkFontcolor, form_type="horizontal") }}
+                    {{ wtf.render_field(form.watermarkBackgroundcolor, form_type="horizontal") }}
+                    {{ wtf.render_field(form.watermarkFramecolor, form_type="horizontal") }}
+                    {{ wtf.render_field(form.watermarkFramewidth, form_type="horizontal") }}
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
         </div>
         
-        <button type="button" class="accordion" style="display:flex;justify-content:space-between;flex-direction:row;align-items: center;">
-          {{ i18n('plugins.themes.theme.options_search') }}
-          <span class="glyphicon glyphicon-minus"></span>
-        </button>
-        <div class="panel">
-          {{ wtf.render_field(form.minSearchScaleDenom, form_type="horizontal") }}
-          {{ wtf.render_field(form.printLabelForSearchResult, form_type="horizontal") }}
-        </div>  
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingSearch">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSearch" aria-expanded="false" aria-controls="collapseSearch" >
+              {{ i18n('plugins.themes.theme.options_search') }}
+            </button>
+          </h2>
+          <div id="collapseSearch" class="accordion-collapse collapse" aria-labelledby="headingSearch" data-bs-parent="#accordionAdvancedBlock">
+            <div class="accordion-body">
+              {{ wtf.render_field(form.minSearchScaleDenom, form_type="horizontal") }}
+              {{ wtf.render_field(form.printLabelForSearchResult, form_type="horizontal") }}    
+            </div>
+          </div>
+        </div>
 
-        <button type="button" class="accordion" style="display:flex;justify-content:space-between;flex-direction:row;align-items: center;">
-          {{ i18n('plugins.themes.theme.options_interface') }}
-          <span class="glyphicon glyphicon-minus"></span>
-        </button>
-        <div class="panel">
-          {{ wtf.render_field(form.collapseLayerGroupsBelowLevel, form_type="horizontal") }}
-          {{ wtf.render_field(form.layerTreeHiddenSublayers, form_type="horizontal") }}
-          {{ wtf.render_field(form.extraLegendParameters, form_type="horizontal", placeholder = "ex : LAYERFONTSIZE=10, LAYERFONTBOLD=false") }}
-          {{ wtf.render_field(form.flags, form_type="horizontal") }}
+        
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingInterface">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInterface" aria-expanded="false" aria-controls="collapseInterface" >
+              {{ i18n('plugins.themes.theme.options_interface') }}
+            </button>
+          </h2>
+          <div id="collapseInterface" class="accordion-collapse collapse" aria-labelledby="headingInterface" data-bs-parent="#accordionAdvancedBlock">
+            <div class="accordion-body">
+              {{ wtf.render_field(form.collapseLayerGroupsBelowLevel, form_type="horizontal") }}
+              {{ wtf.render_field(form.layerTreeHiddenSublayers, form_type="horizontal") }}
+              {{ wtf.render_field(form.extraLegendParameters, form_type="horizontal", placeholder = "ex : LAYERFONTSIZE=10, LAYERFONTBOLD=false") }}
+              {{ wtf.render_field(form.flags, form_type="horizontal") }}
+              
+              <div class="accordion-item accordion-subitem">
+                <h2 class="accordion-header" id="headingTitleInfoLinks">
+                  <button class="accordion-button accordion-subbutton collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTitleInfoLinks" aria-expanded="false" aria-controls="collapseTitleInfoLinks">
+                    {{ i18n('plugins.themes.theme.form_themeInfoLinks') }}
+                  </button>
+                </h2>
+                <div id="collapseTitleInfoLinks" class="accordion-collapse collapse" aria-labelledby="headingTitleInfoLinks" data-bs-parent="#collapseInterface">
+                  <div class="accordion-body">
+                    <div class="sub-panel-description">
+                      {{ i18n('plugins.themes.theme.form_themeInfoLinks_description') }}
+                    </div>
+                    {{ wtf.render_field(form.themeInfoLinksEntries, form_type="horizontal") }}
+                    {{ wtf.render_field(form.themeInfoLinksTitle, form_type="horizontal") }}
+                    {{ wtf.render_field(form.themeInfoLinksTitleMsgId, form_type="horizontal") }}
+                  </div>
+                </div>
+              </div>
 
-        </div>  
+              <div class="accordion-item accordion-subitem">
+                <h2 class="accordion-header" id="headingSnapping">
+                  <button class="accordion-button accordion-subbutton collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseSnapping" aria-expanded="false" aria-controls="collapseSnapping">
+                    {{ i18n('plugins.themes.theme.form_themeSnapping') }}
+                  </button>
+                </h2>
+                <div id="collapseSnapping" class="accordion-collapse collapse" aria-labelledby="headingSnapping" data-bs-parent="#collapseInterface">
+                  <div class="accordion-body">
+                    <div class="sub-panel-description">
+                      {{ i18n('plugins.themes.theme.form_themeSnapping_description') }}
+                    </div>
+
+
+                    <div data-toggle="fieldset" class="form-group">
+                      <div class="col">
+                        <table id="sl-table" class="table align-middle">
+                          <thead>
+                            <tr class="align-middle">
+                              <th style="text-align: center;">{{ i18n('plugins.themes.theme.snappingLayerName') }}</th>
+                              <th style="text-align: center;">{{ i18n('plugins.themes.theme.snappingLayerMin') }}</th>
+                              <th style="text-align: center;">{{ i18n('plugins.themes.theme.snappingLayerMax') }}</th>                      
+                              <th></th>
+                              <th>
+                                <button class="btn btn-sm btn-success add-item-snapping" role="button" type="button" title="{{ i18n('plugins.themes.backgroundlayers.create_title') }}">
+                                  {{ utils.render_icon('plus-lg') }}
+                                </button>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          {% for snapLayer in form.snappingSnapLayers %}
+                            <tr data-toggle="fieldset-entry">
+                              <td style="width: 45%;">{{ snapLayer.layerName(class_='form-control') }}</td>
+                              <td style="width: 20%;">{{ snapLayer.min(class_='form-control') }}</td>
+                              <td style="width: 20%;">{{ snapLayer.max(class_='form-control') }}</td>                              
+                              <td style="width: 10%;">
+                                <div class="btn-group" role="group">
+                                  <button class="btn btn-sm btn-outline-secondary move-up" role="button" type="button">
+                                    {{ utils.render_icon('chevron-up') }}
+                                  </button>
+                                  <button class="btn btn-sm btn-outline-secondary move-down" role="button" type="button">
+                                    {{ utils.render_icon('che vron-down') }}
+                                  </button>
+                                </div>
+                              </td>
+                              <td style="width: 5%;">
+                                <button class="btn btn-sm btn-danger remove-item" role="button" type="button">
+                                  {{ utils.render_icon('trash') }}
+                                </button>
+                              </td>
+                            </tr>
+                          {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+
+
+                    {{ wtf.render_field(form.snappingFeatureCount, form_type="horizontal") }}
+                    {{ wtf.render_field(form.snappingWfsMaxScale, form_type="horizontal") }}
+                  </div>
+                </div>
+              </div>
+
+              <div class="accordion-item accordion-subitem">
+                <h2 class="accordion-header" id="headingFeatureReport">
+                  <button class="accordion-button accordion-subbutton collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFeatureReport" aria-expanded="false" aria-controls="collapseFeatureReport">
+                    {{ i18n('plugins.themes.theme.form_themeFeatureReport') }}
+                  </button>
+                </h2>
+                <div id="collapseFeatureReport" class="accordion-collapse collapse" aria-labelledby="headingFeatureReport" data-bs-parent="#collapseInterface">
+                  <div class="accordion-body">
+                    <div class="sub-panel-description">
+                      {{ i18n('plugins.themes.theme.form_themeFeatureReport_description') }}
+                    </div>
+
+
+                    <div data-toggle="fieldset" class="form-group">
+                      <div class="col">
+                        <table id="rl-table" class="table align-middle">
+                          <thead>
+                            <tr class="align-middle">
+                              <th style="text-align: center;">{{ i18n('plugins.themes.theme.featureReportLayerId') }}</th>
+                              <th style="text-align: center;">{{ i18n('plugins.themes.theme.featureReportTemplateCfg') }}</th>
+                              <th></th>
+                              <th>
+                                <button class="btn btn-sm btn-success add-item-featurereport" role="button" type="button" title="{{ i18n('plugins.themes.backgroundlayers.create_title') }}">
+                                  {{ utils.render_icon('plus-lg') }}
+                                </button>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                          {% for featureReport in form.featureReports %}
+                            <tr data-toggle="fieldset-entry">
+                              <td style="width: 42%;">{{ featureReport.layerId(class_='form-control') }}</td>
+                              <td style="width: 42%;">{{ featureReport.templateCfg(class_='form-control') }}</td>
+                              <td style="width: 11%;">
+                                <div class="btn-group" role="group">
+                                  <button class="btn btn-sm btn-outline-secondary move-up" role="button" type="button">
+                                    {{ utils.render_icon('chevron-up') }}
+                                  </button>
+                                  <button class="btn btn-sm btn-outline-secondary move-down" role="button" type="button">
+                                    {{ utils.render_icon('che vron-down') }}
+                                  </button>
+                                </div>
+                              </td>
+                              <td style="width: 5%;">
+                                <button class="btn btn-sm btn-danger remove-item" role="button" type="button">
+                                  {{ utils.render_icon('trash') }}
+                                </button>
+                              </td>
+                            </tr>
+                          {% endfor %}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -300,7 +570,7 @@
       <hr>
       {% for provider in form.qgisSearchProvider %}
       <div class="searchBlock">
-        <button type="button" class="accordion" style="display:flex;justify-content:space-between;flex-direction:row;align-items: center;">
+        <button type="button" class="accordion-qgis" style="display:flex;justify-content:space-between;flex-direction:row;align-items: center;">
             {{provider.title.data}}
             <span class="glyphicon glyphicon-minus"></span>
         </button>

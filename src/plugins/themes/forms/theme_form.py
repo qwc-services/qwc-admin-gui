@@ -25,7 +25,6 @@ class BackgroundLayerForm(FlaskForm):
     layerName = SelectField(coerce=str, validators=[DataRequired()])
     printLayer = StringField(validators=[Optional()])
     visibility = BooleanField(validators=[Optional()])
-
 class QgisSearchForm(FlaskForm):
     """Subform for Qgis searches"""
 
@@ -41,7 +40,17 @@ class QgisSearchForm(FlaskForm):
     group = StringField(validators=[Optional()])
     expression = JSONField(validators=[Optional()])
     fields = JSONField(validators=[Optional()])
+class SnapLayerForm(FlaskForm):
+    "Subform for snaplayers"
 
+    layerName = StringField(validators=[DataRequired()])
+    min = IntegerField(validators=[Optional()])
+    max = IntegerField(validators=[Optional()])
+class FeatureReportForm(FlaskForm):
+    "Subform to associate layer to featureReport"
+
+    layerId = StringField(validators=[DataRequired()])
+    templateCfg = StringField(validators=[DataRequired()])
 class ThemeForm(FlaskForm):
     """Main form for Theme GUI"""
 
@@ -104,6 +113,9 @@ class ThemeForm(FlaskForm):
         default=("coordinates")
     )
     qgisSearchProvider = FieldList(FormField(QgisSearchForm))
+
+  
+
     minSearchScaleDenom = IntegerField(
         i18n('plugins.themes.theme.form_minSearchScaleDenom'),
         description=i18n('plugins.themes.theme.form_minSearchScaleDenom_description'),
@@ -233,5 +245,79 @@ class ThemeForm(FlaskForm):
     )
 
     backgroundLayers = FieldList(FormField(BackgroundLayerForm))
+
+    # Watermark
+    watermarkText = StringField(
+        i18n('plugins.themes.theme.form_watermarkText'),
+        description=(i18n('plugins.themes.theme.form_watermarkText_description')),
+        validators=[Optional()]
+    )
+    watermarkTexpadding = IntegerField(
+        i18n('plugins.themes.theme.form_watermarkTexpadding'),
+        description=(i18n('plugins.themes.theme.form_watermarkTexpadding_description')),
+        validators=[Optional()]
+    )
+    watermarkFontsize = IntegerField(
+        i18n('plugins.themes.theme.form_watermarkFontsize'),
+        validators=[Optional()]
+    )
+    watermarkFontfamily = StringField(
+        i18n('plugins.themes.theme.form_watermarkFontfamily'),
+        validators=[Optional()]
+    )
+    watermarkFontcolor = StringField(
+        i18n('plugins.themes.theme.form_watermarkFontcolor'),
+        validators=[Optional(), Regexp(r'^#[0-9A-Fa-f]{6}$',
+                    message=i18n('plugins.themes.theme.form_watermark_color_message'))]
+    )
+    watermarkBackgroundcolor = StringField(
+        i18n('plugins.themes.theme.form_watermarkBackgroundcolor'),
+        validators=[Optional(), Regexp(r'^#[0-9A-Fa-f]{6}$',
+                    message=i18n('plugins.themes.theme.form_watermark_color_message'))]
+    )
+    watermarkFramecolor = StringField(
+        i18n('plugins.themes.theme.form_watermarkFramecolor'),
+        validators=[Optional(), Regexp(r'^#[0-9A-Fa-f]{6}$',
+                    message=i18n('plugins.themes.theme.form_watermark_color_message'))]
+    )
+    watermarkFramewidth = IntegerField(
+        i18n('plugins.themes.theme.form_watermarkFramewidth'),
+        validators=[Optional()]
+    )
+
+    # ThemeInfoLinks 
+    themeInfoLinksEntries = StringField(
+        i18n('plugins.themes.theme.form_themeInfoLinksEntries'),
+        description=i18n('plugins.themes.theme.form_themeInfoLinksEntries_description'),
+        default=(""),
+        validators=[Optional(), Regexp(r'^(\w+)(,\s*\w+)*$',
+                    message=i18n('plugins.themes.theme.form_themeInfoLinksEntries_message'))]
+    )
+    themeInfoLinksTitle = StringField(
+        i18n('plugins.themes.theme.form_themeInfoLinksTitle'),
+        description=(i18n('plugins.themes.theme.form_themeInfoLinksTitle_description')),
+        validators=[Optional()]
+    )
+    themeInfoLinksTitleMsgId = StringField(
+        i18n('plugins.themes.theme.form_themeInfoLinksTitleMsgId'),
+        description=(i18n('plugins.themes.theme.form_themeInfoLinksTitleMsgId_description')),
+        validators=[Optional()]
+    )
+
+    # Snapping
+    snappingFeatureCount = IntegerField(
+        i18n('plugins.themes.theme.form_snappingFeatureCount'),
+        description=(i18n('plugins.themes.theme.form_snappingFeatureCount_description')),
+        validators=[Optional()]
+    )
+    snappingWfsMaxScale = IntegerField(
+        i18n('plugins.themes.theme.form_snappingWfsMaxScale'),
+        description=(i18n('plugins.themes.theme.form_snappingWfsMaxScale_description')),
+        validators=[Optional()]
+    )
+    snappingSnapLayers = FieldList(FormField(SnapLayerForm))
+
+    # FeatureReport
+    featureReports = FieldList(FormField(FeatureReportForm))
 
     submit = SubmitField(i18n('plugins.themes.common.form_submit'))

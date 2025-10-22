@@ -506,6 +506,62 @@ class ThemesController:
                 form.skipEmptyFeatureAttributes.data = theme["skipEmptyFeatureAttributes"]
             if "collapseLayerGroupsBelowLevel" in theme:
                 form.collapseLayerGroupsBelowLevel.data = theme["collapseLayerGroupsBelowLevel"]
+            if "watermark" in theme:
+                if "text" in theme["watermark"]:
+                    form.watermarkText.data = theme["watermark"]["text"]
+                if "texpadding" in theme:
+                    form.watermarkTexpadding.data = theme["watermark"]["texpadding"]
+                if "fontsize" in theme:
+                    form.watermarkFontsize.data = theme["watermark"]["fontsize"]
+                if "fontfamily" in theme:
+                    form.watermarkFontfamily.data = theme["watermark"]["fontfamily"]
+                if "fontcolor" in theme:
+                    form.watermarkFontcolor.data = theme["watermark"]["fontcolor"]
+                if "backgroundcolor" in theme:
+                    form.watermarkBackgroundcolor.data = theme["watermark"]["backgroundcolor"]
+                if "framecolor" in theme:
+                    form.watermarkFramecolor.data = theme["watermark"]["framecolor"]
+                if "framewidth" in theme:
+                    form.watermarkFramewidth.data = theme["watermark"]["framewidth"]
+            if "themeInfoLinks" in theme:
+                if "entries" in theme["themeInfoLinks"]:
+                    form.themeInfoLinksEntries.data = ", ".join(map(str, theme[
+                        "themeInfoLinks"]["entries"]))
+                if "title" in theme:
+                    form.themeInfoLinksTitle.data = theme["themeInfoLinks"]["title"]
+                if "titleMsgId" in theme:
+                    form.themeInfoLinksTitleMsgId.data = theme["themeInfoLinks"]["titleMsgId"]
+            if "snapping" in theme:
+                if "featureCount" in theme["snapping"]:
+                    form.snappingFeatureCount.data = theme["snapping"]["featureCount"]
+                if "wfsMaxScale" in theme["snapping"]:
+                    form.snappingWfsMaxScale.data = theme["snapping"]["wfsMaxScale"]
+                if "snaplayers" in theme["snapping"]:
+                     for layer in theme["snapping"]["snaplayers"]:
+                        data = {
+                            "layerName": "",
+                            "min": "",
+                            "max": ""
+                        }
+
+                        if "name" in layer:
+                            data["layerName"] = layer["name"]
+
+                        if "min" in layer:
+                            data["min"] = layer["min"]
+                        
+                        if "max" in layer:
+                            data["max"] = layer["max"]
+
+                        form.snappingSnapLayers.append_entry(data)
+
+            if "featureReport" in theme:
+                for k,v in theme["featureReport"].items():
+                    data = {}
+                    data["layerId"] = k
+                    data["templateCfg"] = v
+                    
+                    form.featureReports.append_entry(data)
 
             if "backgroundLayers" in theme:
                 for i, layer in enumerate(theme["backgroundLayers"]):
@@ -615,7 +671,7 @@ class ThemesController:
         if form.mapCrs.data:
             item["mapCrs"] = form.mapCrs.data
         else:
-            if item in "mapCrs": del item["mapCrs"]
+            if "mapCrs" in item: del item["mapCrs"]
 
         if form.extent.data:
             item["extent"] = list(map(
@@ -737,6 +793,86 @@ class ThemesController:
             item["collapseLayerGroupsBelowLevel"] = form.collapseLayerGroupsBelowLevel.data
         else:
             if "collapseLayerGroupsBelowLevel" in item: del item["collapseLayerGroupsBelowLevel"]
+
+        item["watermark"]={}
+        if form.watermarkText.data:
+            item["watermark"]["text"] = form.watermarkText.data
+        else:
+            if "text" in item["watermark"]: del item["watermark"]["text"]
+
+        if form.watermarkTexpadding.data:
+            item["watermark"]["texpadding"] = form.watermarkTexpadding.data
+        else:
+            if "texpadding" in item["watermark"]: del item["watermark"]["texpadding"]
+        
+        if form.watermarkFontsize.data:
+            item["watermark"]["fontsize"] = form.watermarkFontsize.data
+        else:
+            if "fontsize" in item["watermark"]: del item["watermark"]["fontsize"]
+        
+        if form.watermarkFontfamily.data:
+            item["watermark"]["fontfamily"] = form.watermarkFontfamily.data
+        else:
+            if "fontfamily" in item["watermark"]: del item["watermark"]["fontfamily"]
+
+        if form.watermarkFontcolor.data:
+            item["watermark"]["fontcolor"] = form.watermarkFontcolor.data
+        else:
+            if "fontcolor" in item["watermark"]: del item["watermark"]["fontcolor"]
+
+        if form.watermarkBackgroundcolor.data:
+            item["watermark"]["backgroundcolor"] = form.watermarkBackgroundcolor.data
+        else:
+            if "backgroundcolor" in item["watermark"]: del item["watermark"]["backgroundcolor"]
+
+        if form.watermarkFramecolor.data:
+            item["watermark"]["framecolor"] = form.watermarkFramecolor.data
+        else:
+            if "framecolor" in item["watermark"]: del item["watermark"]["framecolor"]
+
+        if form.watermarkFramewidth.data:
+            item["watermark"]["framewidth"] = form.watermarkFramewidth.data
+        else:
+            if "framewidth" in item["watermark"]: del item["watermark"]["framewidth"]
+
+
+        item["themeInfoLinks"] = {}
+        if form.themeInfoLinksEntries.data:
+            item["themeInfoLinks"]["entries"] = list(map(
+                str, form.themeInfoLinksEntries.data.replace(" ", "").split(",")))
+        else:
+            if "entries" in item["themeInfoLinks"]: del item["themeInfoLinks"]["entries"]
+        if form.themeInfoLinksTitle.data:
+            item["themeInfoLinks"]["title"] = form.themeInfoLinksTitle.data
+        else:
+            if "title" in item["themeInfoLinks"]: del item["themeInfoLinks"]["title"]
+        if form.themeInfoLinksTitleMsgId.data:
+            item["themeInfoLinks"]["titleMsgId"] = form.themeInfoLinksTitleMsgId.data
+        else:
+            if "titleMsgId" in item["themeInfoLinks"]: del item["themeInfoLinks"]["titleMsgId"]
+
+        item["snapping"] = {}
+        if form.snappingFeatureCount.data:
+            item["snapping"]["featureCount"] = form.snappingFeatureCount.data
+        else: 
+            if "featureCount" in item["snapping"]: del item["snapping"]["featureCount"]
+        if form.snappingWfsMaxScale.data:
+            item["snapping"]["wfsMaxScale"] = form.snappingWfsMaxScale.data
+        else: 
+            if "wfsMaxScale" in item["snapping"]: del item["snapping"]["wfsMaxScale"]
+        item["snapping"]["snaplayers"] = []
+        if form.snappingSnapLayers.data:
+            for layer in form.snappingSnapLayers.data:
+                item["snapping"]["snaplayers"].append({
+                    "name": layer["layerName"],
+                    "min": layer["min"],
+                    "max": layer["max"]
+                })
+
+        item["featureReport"] = {}
+        if form.featureReports.data:
+            for featureReport in form.featureReports.data:
+                item["featureReport"][featureReport["layerId"]] = featureReport["templateCfg"]
 
         item["backgroundLayers"] = []
         if form.backgroundLayers.data:
