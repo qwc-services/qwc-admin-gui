@@ -50,6 +50,7 @@
       "force_readonly_datasets": "Hacer todos los conjuntos de datos de solo lectura",
       "force_readonly_datasets_help": "Suprime cualquier permiso de escritura al generar permisos de conjuntos de datos. Útil para establecer rápidamente todos los conjuntos de datos como solo lectura.",
       "generate_configs": "Generar configuración de servicio",
+      "generate_configs_cancel": "Cancelar configuración del servicio",
       "home_title": "Inicio",
       "login": "Iniciar sesión como Administrador",
       "logout": "Cerrar sesión",

@@ -50,6 +50,7 @@
       "force_readonly_datasets": "Alle Edit-Datensätze schreibgeschützt machen",
       "force_readonly_datasets_help": "Unterdrückt alle Schreibberechtigungen bei der Erstellung von Datensatzberechtigungen. Nützlich, um schnell alle Datensätze auf schreibgeschützt zu setzen.",
       "generate_configs": "Dienstkonfiguration generieren",
+      "generate_configs_cancel": "Dienstkonfiguration abbrechen",
       "home_title": "Home",
       "login": "Als Admin einloggen",
       "logout": "Logout",

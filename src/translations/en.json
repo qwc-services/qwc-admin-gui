@@ -50,6 +50,7 @@
       "force_readonly_datasets": "Make all edit datasets read-only",
       "force_readonly_datasets_help": "Suppresses any write permissions when generating dataset permissons. Useful to quickly set all datasets to read-only.",
       "generate_configs": "Generate service configuration",
+      "generate_configs_cancel": "Abort service configuration",
       "home_title": "Home",
       "login": "Login as Admin",
       "logout": "Logout",

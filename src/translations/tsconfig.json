@@ -53,6 +53,7 @@
     "interface.main.force_readonly_datasets",
     "interface.main.force_readonly_datasets_help",
     "interface.main.generate_configs",
+    "interface.main.generate_configs_cancel",
     "interface.main.home_title",
     "interface.main.login",
     "interface.main.logout",

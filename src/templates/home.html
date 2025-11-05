@@ -3,133 +3,151 @@
 {% block scripts %}
 {{super()}}
 <script type="text/javascript">
-  $(function() {
 
-    var setupLogElement = function(tabSelector, title, type="light") {
-      // Clear previous
-      $('#logs').find(tabSelector).find('> div').remove();
+function setupLogElement(tabSelector, title, type="light") {
+  // Clear previous
+  $('#logs').find(tabSelector).find('> div').remove();
 
-      var container = $('<div>').addClass('alert alert-' + type).attr('role', 'alert');
-      var title = $('<strong>').text(title);
-      var contents = $('<pre>');
-      container.append(title).append(contents);
-      $('#logs').find(tabSelector).append(container);
-      return contents;
-    }
+  const container = $('<div>').addClass('alert alert-' + type).attr('role', 'alert');
+  const header = $('<strong>').text(title);
+  const contents = $('<pre>');
+  container.append(header).append(contents);
+  $('#logs').find(tabSelector).append(container);
+  return contents;
+}
 
-    var setupAPIRequestButton = function(buttonSelector, url, options, tabSelector, titleSuccess, titleError) {
-      var button = $(buttonSelector);
-      button.click(function() {
-        button.attr("disabled", true);
-        button.find('div.spinner').css('display', 'inline-block');
-        $('#logs').find(tabSelector).css("cursor", 'wait');
-        $(tabSelector + "-tab").find('div.spinner').css('display', 'inline-block');
-        $(tabSelector + "-tab").click();
+function fieldOption(option) {
+  if ($('#' + option).prop('checked')) {
+    return option + '=1';
+  } else if ($('#' + option).prop('value') && $('#' + option).prop('type') !== 'checkbox') {
+    return option + '=' + $('#' + option).prop('value');
+  } else {
+    return "";
+  }
+}
 
-        var reqUrl = url;
-        options.forEach(option => {
-          if ($('#' + option).prop('checked')) {
-            reqUrl += (reqUrl.includes('?') ? '&' : '?') + option + '=1';
-          } else if ($('#' + option).prop('value') && $('#' + option).prop('type') !== 'checkbox') {
-            reqUrl += (reqUrl.includes('?') ? '&' : '?') + option + '=' + $('#' + option).prop('value');
-          }
-        });
+function runConfigGenerator() {
+  const start_button = $('#generate_configs');
+  const cancel_button = $('#generate_configs_cancel');
 
-        var logElement = setupLogElement(tabSelector, titleSuccess);
+  const reset_buttons = function() {
+    start_button.css('display', 'initial');
+    cancel_button.css('display', 'none');
+    start_button.attr("disabled", false);
+    cancel_button.attr("disabled", false);
+    $("#nav-confgen-tab").find('div.spinner').css('display', 'none');
+    $("#nav-confgen").css('cursor', '');
+  }
 
-        // call Admin GUI service
-        var last_chunk_len = null;
-        $.ajax({
-          xhr: function()
-          {
-            var xhr = new window.XMLHttpRequest();
-            xhr.addEventListener("progress", function(e){
-              var response_chunk;
-              var response = e.currentTarget.response;
-              if (last_chunk_len === false)
-              {
-                  response_chunk = response;
-                  last_chunk_len = response.length;
-              } else {
-                  response_chunk = response.substring(last_chunk_len);
-                  last_chunk_len = response.length;
-              }
-              logElement.append(response_chunk);
-            }, false);
-            return xhr;
-          },
-          type: 'POST',
-          url: reqUrl,
-          data: {
-            csrf_token: '{{ csrf_token() }}'
-          }
-        }).done(function(data, status) {
-          button.prop("disabled", false);
-          button.find('div.spinner').css('display', 'none');
-          $('#logs').find(tabSelector).css("cursor", '');
-          $(tabSelector + "-tab").find('div.spinner').css('display', 'none');
+  const logElement = setupLogElement('#nav-confgen', "Generating configuration...");
+  start_button.attr("disabled", true);
+  $("#nav-confgen-tab").find('div.spinner').css('display', 'inline-block');
+  $("#nav-confgen-tab").click();
+  $("#nav-confgen").css('cursor', 'wait');
 
-          // show response
-          logElement.html(data);
-        }).fail(function(jqXHR, status) {
-          button.prop("disabled", false);
-          button.find('div.spinner').css('display', 'none');
-          $('#logs').find(tabSelector).css("cursor", '');
-          $(tabSelector + "-tab").find('div.spinner').css('display', 'none');
+  const query = ['use_cached_project_metadata', 'force_readonly_datasets'].map(fieldOption).filter(Boolean).join("&");
+  $.ajax('{{ url_for("generate_configs_start") }}?' + query).done(function(start_data) {
+    start_button.css('display', 'none');
+    cancel_button.css('display', 'initial');
+    cancel_button.unbind().click(function(cancel_data) {
+      cancel_button.attr("disabled", true);
+      $.ajax('{{ url_for("generate_configs_cancel") }}?task_id=' + start_data.task_id);
+    });
 
-          // show errors
-          var msg = jqXHR.statusText;
-          if (jqXHR.status === 504) {
-            msg = `{{ i18n('interface.main.timeout_error') }}`.replace(/\n/g, "<br/>");
-          }
-          else if (jqXHR.responseJSON) {
-            msg = jqXHR.responseJSON.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;");
-          }
-          else if (jqXHR.responseText && jqXHR.responseText.indexOf("<p>The CSRF token is invalid.</p>") != -1) {
-            msg = "The CSRF token is invalid. Please reload this page and retry.";
-          }
-          else if (jqXHR.responseText) {
-            msg = '<pre>' + jqXHR.responseText + '</pre>';
-          }
-
-          setupLogElement(tabSelector, titleError, 'danger').html(msg);
-        });
+    let log_start = 0;
+    const pollInterval = setInterval(function() {
+      $.ajax('{{ url_for("generate_configs_status") }}?start=' + log_start + '&task_id=' + start_data.task_id).done(function(status_data) {
+        logElement.append(status_data.logs);
+        log_start += status_data.log_linecount;
+        if (!status_data.running) {
+          clearInterval(pollInterval);
+          reset_buttons();
+        }
+      }).fail(function() {
+        clearInterval(pollInterval);
+        setupLogElement('#nav-confgen', "Error while generating configuration", 'danger');
+        reset_buttons();
       });
-    }
-
-    {% if have_config_generator %}
-      setupAPIRequestButton(
-        '#generate_configs',
-        "{{ url_for('generate_configs') }}",
-        ['use_cached_project_metadata', 'force_readonly_datasets'],
-        '#nav-confgen',
-        "Generating configuration... ",
-        "Error while generating configuration"
-      );
-    {% endif %}
-
-    {% if have_qgis_server %}
-      setupAPIRequestButton(
-        '#qgis_server_logs',
-        "{{ url_for('qgis_server_logs') }}",
-        ['qgis_server_log_lines'],
-        '#nav-qgisserver',
-        "",
-        ""
-      );
-    {% endif %}
-
-    {% if solr_index_update_enabled %}
-      setupAPIRequestButton(
-        '#update_solr_index',
-        "{{ url_for('update_solr_index') }}",
-        [],
-        '#nav-solr',
-        "Updating Solr search index",
-        "Error while updating Solr search index"
-      );
-    {% endif %}
+    }, 1000);
+  }).fail(function() {
+    setupLogElement('#nav-confgen', "Error while generating configuration", 'danger');
+    reset_buttons();
   });
+}
+
+function setupAPIRequestButton(btnSelector, url, options, tabSelector, titleSuccess, titleError) {
+  const button = $(btnSelector);
+
+  function reset_buttons() {
+    button.prop("disabled", false);
+    button.find('div.spinner').css('display', 'none');
+    $('#logs').find(tabSelector).css("cursor", '');
+    $(tabSelector).css('cursor', '');
+    $(tabSelector + "-tab").find('div.spinner').css('display', 'none');
+  }
+
+  button.click(function() {
+    button.attr("disabled", true);
+    button.find('div.spinner').css('display', 'inline-block');
+    $('#logs').find(tabSelector).css("cursor", 'wait');
+    $(tabSelector).css('cursor', 'wait');
+    $(tabSelector + "-tab").find('div.spinner').css('display', 'inline-block');
+    $(tabSelector + "-tab").click();
+
+    $.ajax({
+      type: 'POST',
+      url: url + "?" + options.map(fieldOption).filter(Boolean).join("&"),
+      data: {
+        csrf_token: '{{ csrf_token() }}'
+      }
+    }).done(function(data, status) {
+      reset_buttons();
+
+      // show response
+      setupLogElement(tabSelector, titleSuccess).html(data);
+    }).fail(function(jqXHR, status) {
+      reset_buttons();
+
+      // show errors
+      let msg = jqXHR.statusText;
+      if (jqXHR.status === 504) {
+        msg = `{{ i18n('interface.main.timeout_error') }}`.replace(/\n/g, "<br/>");
+      }
+      else if (jqXHR.responseJSON) {
+        msg = jqXHR.responseJSON.replace(/\n/g, "<br/>").replace(/ /g, "&nbsp;");
+      }
+      else if (jqXHR.responseText && jqXHR.responseText.indexOf("<p>The CSRF token is invalid.</p>") != -1) {
+        msg = "The CSRF token is invalid. Please reload this page and retry.";
+      }
+      else if (jqXHR.responseText) {
+        msg = '<pre>' + jqXHR.responseText + '</pre>';
+      }
+      setupLogElement(tabSelector, titleError, 'danger').html(msg);
+    });
+  });
+}
+
+{% if have_qgis_server %}
+  setupAPIRequestButton(
+    '#qgis_server_logs',
+    "{{ url_for('qgis_server_logs') }}",
+    ['qgis_server_log_lines'],
+    '#nav-qgisserver',
+    "",
+    ""
+  );
+{% endif %}
+
+{% if solr_index_update_enabled %}
+  setupAPIRequestButton(
+    '#update_solr_index',
+    "{{ url_for('update_solr_index') }}",
+    [],
+    '#nav-solr',
+    "Updating Solr search index",
+    "Error while updating Solr search index"
+  );
+{% endif %}
 </script>
 {% endblock %}
 {%- block styles %}
@@ -184,8 +202,11 @@
 
   {% if have_config_generator %}
   <br><br>
-  <button id="generate_configs" class="btn btn-success">
-    <div class="spinner" style="display: none"></div> {{ i18n('interface.main.generate_configs') }}
+  <button id="generate_configs" class="btn btn-success" onclick="runConfigGenerator()">
+    {{ i18n('interface.main.generate_configs') }}
+  </button>
+  <button id="generate_configs_cancel" class="btn btn-danger" style="display: none">
+    {{ i18n('interface.main.generate_configs_cancel') }}
   </button>
   <br>
   <div style="border: 1px solid red; background: #FFDDDD; border-radius: 3px; padding: 0.25em 0.5em; margin: 0.5em 0;"><b>Warning: </b> Starting with qwc-config-generator:v2025.07.22, attribute resources shall be named by name, not alias.</div>

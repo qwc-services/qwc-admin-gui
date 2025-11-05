@@ -50,6 +50,7 @@
       "force_readonly_datasets": "Rendre tous les ensembles de données en lecture seule",
       "force_readonly_datasets_help": "Supprime toutes les autorisations d'écriture lors de la génération des autorisations des ensembles de données. Utile pour mettre rapidement tous les jeux de données en lecture seule.",
       "generate_configs": "Générer la configuration des services",
+      "generate_configs_cancel": "Interrompre la configuration des services",
       "home_title": "Accueil",
       "login": "Se connecter comme administrateur",
       "logout": "Déconnexion",

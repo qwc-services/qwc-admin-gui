@@ -227,33 +227,34 @@ def plugin_static(plugin, filename):
         os.path.join("plugins", plugin, "static"), filename)
 
 
-@app.route('/generate_configs', methods=['POST'])
-def generate_configs():
-    """ Generate service configurations """
-
+def proxy_config_generator(endpoint):
     current_handler = handler()
-    config_generator_url = current_handler.config().get(
-        "config_generator_service_url",
-        "http://qwc-config-service:9090").rstrip('/') + '/'
+    req_url = current_handler.config().get(
+        "config_generator_service_url", "http://qwc-config-service:9090"
+    ).rstrip('/') + endpoint
 
     params = {
         "tenant": current_handler.tenant,
-        "stream_response": True
     }
-    params.update(request.args)
-    req = requests.post(
-        urllib.parse.urljoin(config_generator_url, "generate_configs"),
-        params=params,
-        stream=True
-    )
-    def req_lines():
-        for line in req.iter_lines(decode_unicode=True):
-            yield line + "\n"
+    response = requests.get(req_url, params=params|request.args)
     return Response(
-        stream_with_context(req_lines()),
-        status=req.status_code,
-        content_type=req.headers.get('Content-Type')
+        response.content,
+        status=response.status_code,
+        content_type=response.headers.get('Content-Type')
     )
+
+@app.route('/generate_configs')
+def generate_configs_start():
+    return proxy_config_generator("/generate_configs")
+
+@app.route('/generate_configs_cancel')
+def generate_configs_cancel():
+    return proxy_config_generator("/generate_configs_cancel")
+
+@app.route('/generate_configs_status')
+def generate_configs_status():
+    return proxy_config_generator("/generate_configs_status")
+
 
 @app.route('/qgis_server_logs', methods=['POST'])
 def qgis_server_logs():

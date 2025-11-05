@@ -50,6 +50,7 @@
         "force_readonly_datasets": "Fes tots els conjunts d'edició només de lectura",
         "force_readonly_datasets_help": "Suprimeix qualsevol permís d'escriptura en generar permisos de conjunt de dades. Útil per posar ràpidament tots els conjunts de dades en només lectura.",
         "generate_configs": "Genera la configuració del servei",
+        "generate_configs_cancel": "Interromp la configuració del servei",
         "home_title": "Inici",
         "login": "Inicia sessió com a administrador",
         "logout": "Tanca sessió",
