@@ -6,9 +6,9 @@ blinker==1.9.0 \
     # via
     #   flask
     #   flask-mail2
-bootstrap-flask==2.3.3 \
-    --hash=sha256:4c3d1f1b8ee19081dfc80e03aba5cb19cd92a8d54ba0ba98cee69acffded91d0 \
-    --hash=sha256:8c40d846e12af0e66d673bcb883d8344fd5ea95244f54e5b119e680e000ccf49
+bootstrap-flask==2.5.0 \
+    --hash=sha256:b6e5ea1ce40616fb289c9e85d4beedd43fea2048b4032f4abc83a582db494978 \
+    --hash=sha256:dd76203fe4d46062bf1e7fd2a25aaccdc54affde9acc282f6aa4da4f4bbf2a5a
     # via qwc-admin-gui
 certifi==2026.1.4 \
     --hash=sha256:9943707519e4add1115f44c2bc244f782c0249876bf51b6599fee1ffbedd685c \
@@ -106,21 +106,21 @@ colorama==0.4.6 ; sys_platform == 'win32' \
     --hash=sha256:08695f5cb7ed6e0531a20572697297273c47b8cae5a63ffc6d6ed5c201be6e44 \
     --hash=sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6
     # via click
-deepmerge==1.1.1 \
-    --hash=sha256:53a489dc9449636e480a784359ae2aab3191748c920649551c8e378622f0eca4 \
-    --hash=sha256:7219dad9763f15be9dcd4bcb53e00f48e4eed6f5ed8f15824223eb934bb35977
+deepmerge==2.0 \
+    --hash=sha256:5c3d86081fbebd04dd5de03626a0607b809a98fb6ccba5770b62466fe940ff20 \
+    --hash=sha256:6de9ce507115cff0bed95ff0ce9ecc31088ef50cbdf09bc90a09349a318b3d00
     # via qwc-admin-gui
 dnspython==2.8.0 \
     --hash=sha256:01d9bbc4a2d76bf0db7c1f729812ded6d912bd318d3b1cf81d30c0f845dbf3af \
     --hash=sha256:181d3c6996452cb1189c4046c61599b84a5a86e099562ffde77d26984ff26d0f
     # via email-validator
-email-validator==2.1.2 \
-    --hash=sha256:14c0f3d343c4beda37400421b39fa411bbe33a75df20825df73ad53e06a9f04c \
-    --hash=sha256:d89f6324e13b1e39889eab7f9ca2f91dc9aebb6fa50a6d8bd4329ab50f251115
+email-validator==2.3.0 \
+    --hash=sha256:80f13f623413e6b197ae73bb10bf4eb0908faf509ad8362c5edeb0be7fd450b4 \
+    --hash=sha256:9fc05c37f2f6cf439ff414f8fc46d917929974a82244c20eb10231ba60c54426
     # via qwc-admin-gui
-flask==3.0.3 \
-    --hash=sha256:34e815dfaa43340d1d15a5c3a02b8476004037eb4840b34910c6e21679d288f3 \
-    --hash=sha256:ceb27b0af3823ea2737928a4d99d125a06175b8512c445cbd9a9ce200ef76842
+flask==3.1.2 \
+    --hash=sha256:bf656c15c80190ed628ad08cdfd3aaa35beb087855e2f494910aa3774cc4fd87 \
+    --hash=sha256:ca1d8112ec8a6158cc29ea4858963350011b5c846a414cdb7a954aa9e967d03c
     # via
     #   bootstrap-flask
     #   flask-jwt-extended
@@ -128,9 +128,9 @@ flask==3.0.3 \
     #   flask-mail2
     #   flask-wtf
     #   qwc-admin-gui
-flask-jwt-extended==4.6.0 \
-    --hash=sha256:63a28fc9731bcc6c4b8815b6f954b5904caa534fc2ae9b93b1d3ef12930dca95 \
-    --hash=sha256:9215d05a9413d3855764bcd67035e75819d23af2fafb6b55197eb5a3313fdfb2
+flask-jwt-extended==4.7.1 \
+    --hash=sha256:52f35bf0985354d7fb7b876e2eb0e0b141aaff865a22ff6cc33d9a18aa987978 \
+    --hash=sha256:8085d6757505b6f3291a2638c84d207e8f0ad0de662d1f46aa2f77e658a0c976
     # via qwc-admin-gui
 flask-login==0.6.3 \
     --hash=sha256:5e23d14a607ef12806c699590b89d0f0e0d67baeec599d75947bf9c147330333 \
@@ -290,6 +290,7 @@ markupsafe==3.0.3 \
     --hash=sha256:f9e130248f4462aaa8e2552d547f36ddadbeaa573879158d721bbd33dfe4743a \
     --hash=sha256:fed51ac40f757d41b7c48425901843666a6677e3e8eb0abcff09e4ba6e664f50
     # via
+    #   flask
     #   jinja2
     #   werkzeug
     #   wtforms
@@ -309,9 +310,9 @@ python-i18n==0.3.9 \
     --hash=sha256:bda5b8d889ebd51973e22e53746417bd32783c9bd6780fd27cadbb733915651d \
     --hash=sha256:df97f3d2364bf3a7ebfbd6cbefe8e45483468e52a9e30b909c6078f5f471e4e8
     # via qwc-admin-gui
-qwc-services-core==1.4.6 \
-    --hash=sha256:4dbdda48a9ff68cfab6dadb1b15f04b8e61d04448299f67aa9eab5a0587d6dac \
-    --hash=sha256:60a61ada0e4f240982f5f44e10d864a44894b1a093db712a798c2a562fe84959
+qwc-services-core==1.5.0 \
+    --hash=sha256:0c6ec5f911944b73e6b73dddff8b71bd51d650b180b3e3102c693ad4832c601c \
+    --hash=sha256:7c5d84b7b2c5ee5764cb2705f28ccba6b42f18123b7097527e26b2e060ebc906
     # via qwc-admin-gui
 requests==2.32.5 \
     --hash=sha256:2462f94637a34fd532264295e186976db0f5d453d1cdd31473c85a6a161affb6 \

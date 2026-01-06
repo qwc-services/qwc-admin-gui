@@ -5,20 +5,20 @@ description = "QWC Admin GUI"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "Flask~=3.0.0",
-    "Bootstrap-Flask~=2.3.3",
-    "Flask-JWT-Extended~=4.6.0",
+    "Flask~=3.1.0",
+    "Bootstrap-Flask~=2.5.0",
+    "Flask-JWT-Extended~=4.7.0",
     "Flask-Mail2~=1.0.2",
     "Flask-WTF~=1.2.1",
-    "flask_login~=0.6.3",
+    "Flask-Login~=0.6.3",
     "psycopg2~=2.9.9",
     "requests~=2.32.0",
     "SQLAlchemy~=2.0.29",
     "Werkzeug~=3.1.4",
-    "email_validator~=2.1.0.post1",
-    "qwc-services-core~=1.4.0",
+    "email_validator~=2.3.0",
+    "qwc-services-core~=1.5.0",
     "python-i18n~=0.3.9",
-    "deepmerge~=1.1.0"
+    "deepmerge~=2.0"
 ]
 
 [dependency-groups]
