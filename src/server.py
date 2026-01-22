@@ -25,7 +25,7 @@ from controllers import UsersController, GroupsController, RolesController, \
     RegistrationRequestsController
 from utils import i18n
 
-SKIP_LOGIN = os.environ.get('SKIP_LOGIN', False)
+SKIP_LOGIN = os.environ.get('SKIP_LOGIN', 'False').lower() == 'true'
 
 # Flask application
 app = Flask(__name__, template_folder='.')
