@@ -491,6 +491,6 @@ def healthz():
 # local webserver
 if __name__ == '__main__':
     print("Starting QWC Admin GUI...")
-    app.logger.setLevel(logging.DEBUG)
-    SKIP_LOGIN = True
-    app.run(host='localhost', port=5031, debug=True)
+    from flask_cors import CORS
+    CORS(app)
+    app.run(host='localhost', port=os.environ.get("FLASK_RUN_PORT", 5000), debug=True)

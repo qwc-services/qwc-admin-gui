@@ -23,5 +23,6 @@ dependencies = [
 
 [dependency-groups]
 dev = [
+    "flask-cors>=5.0.0",
     "python-dotenv>=1.0.1",
 ]

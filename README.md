@@ -4,14 +4,13 @@
 QWC Admin GUI
 =============
 
-GUI for administration of QWC Services.
+Web backend for administration of QWC Services.
 
-* manage users, groups and roles
-* define QWC resources and assign [permissions](https://github.com/qwc-services/qwc-services-core#resources-and-permissions)
-* define registrable groups and manage [group registration requests](https://github.com/qwc-services/qwc-services-core#group_registration)
+* Manage users, groups and roles
+* Define resources and assign permissions
+* Define registrable groups and manage group registration requests
 
-**Note:** requires a QWC ConfigDB
-
+See also [Managing Users, Resources and Permissions](https://qwc-services.github.io/master/configuration/ResourcesPermissions/).
 
 Configuration
 -------------
@@ -19,7 +18,7 @@ Configuration
 The static config files are stored as JSON files in `$CONFIG_PATH` with subdirectories for each tenant,
 e.g. `$CONFIG_PATH/default/*.json`. The default tenant name is `default`.
 
-### Admin Gui Service config
+### JSON config
 
 * [JSON schema](schemas/qwc-admin-gui.json)
 * File location: `$CONFIG_PATH/<tenant>/adminGuiConfig.json`
@@ -40,23 +39,36 @@ Example:
 }
 ```
 
-To connect with the demo database, the following `~/.pg_service.conf` entry is expected:
+See the [schema definition](schemas/qwc-admin-gui.json) for the full set of supported config variables.
 
-```
-[qwc_configdb]
-host=localhost
-port=5439
-dbname=qwc_demo
-user=qwc_admin
-password=qwc_admin
-sslmode=disable
-```
+### Environment variables
 
-Set the `GROUP_REGISTRATION_ENABLED` environment variable to `False` to disable registrable groups and group registration requests, if not using the [Registration GUI](https://github.com/qwc-services/qwc-registration-gui) (default: `True`).
+Config options in the config file can be overridden by equivalent uppercase environment variables.
 
-To automatically logout from the admin gui after a period of inactivity, set the `IDLE_TIMEOUT` environment variable to the desired period, in seconds (default: `0`, i.e. disabled).
+In addition, the following environment variables are supported:
 
-Set `totp_enabled` to `true` to show the TOTP fields in the user form, if two factor authentication is enabled in the [DB-Auth service](https://github.com/qwc-services/qwc-db-auth) (default: `false`).
+| Name                         | Default       | Description                                                                               |
+|------------------------------|---------------|-------------------------------------------------------------------------------------------|
+| `GROUP_REGISTRATION_ENABLED` | `True`        | Whether to allow registrable groups and group registration requests via [Registration GUI](https://github.com/qwc-services/qwc-registration-gui). |
+| `IDLE_TIMEOUT`               | `0`           | Idle timeout after which to automatically log out (`0` disables automatic logout).        |
+| `SKIP_LOGIN`                 | `False`       | Whether to skip redirect to the `auth_service_url` is user is not authenticated (for development). |
+| `DEFAULT_LOCALE`             | `en`          | Admin GUI language (see [src/translations](src/translations) for available languages).    |
+| `MAIL_SERVER`                | `localhost`   | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
+| `MAIL_PORT`                  | `25`          | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
+| `MAIL_USE_TLS`               | `False`       | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
+| `MAIL_USE_SSL`               | `False`       | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
+| `MAIL_DEBUG`                 | `app.debug`   | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
+| `MAIL_USERNAME`              | `None`        | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
+| `MAIL_PASSWORD`              | `None`        | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
+| `MAIL_DEFAULT_SENDER`        | `None`        | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
+| `MAIL_MAX_EMAILS`            | `None`        | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
+| `MAIL_SUPPRESS_SEND`         | `app.testing` | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
+| `MAIL_ASCII_ATTACHMENTS`     | `False`       | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
+
+
+### Two-factor authentication
+
+If two factor authentication is enabled in the [DB-Auth service](https://github.com/qwc-services/qwc-db-auth), set `totp_enabled` to `true` to show the TOTP fields in the user form.
 
 ### Additional user fields
 
@@ -80,47 +92,17 @@ These fields are then added to the user form.
 Example:
 
 ```sql
--- add custom columns
 ALTER TABLE qwc_config.user_infos ADD COLUMN surname character varying NOT NULL;
 ALTER TABLE qwc_config.user_infos ADD COLUMN first_name character varying NOT NULL;
 ```
 
-```bash
-# set user info fields config
+```json
 "user_info_fields": [{"title": "Surname", "name": "surname", "type": "text", "required": true}, {"title": "First name", "name": "first_name", "type": "text", "required": true}]
 ```
 
-### Mailer
-
-[Flask-Mail](https://pythonhosted.org/Flask-Mail/) is used for sending mails like user notifications. These are the available options:
-* `MAIL_SERVER`: default ‘localhost’
-* `MAIL_PORT`: default 25
-* `MAIL_USE_TLS`: default False
-* `MAIL_USE_SSL`: default False
-* `MAIL_DEBUG`: default app.debug
-* `MAIL_USERNAME`: default None
-* `MAIL_PASSWORD`: default None
-* `MAIL_DEFAULT_SENDER`: default None
-* `MAIL_MAX_EMAILS`: default None
-* `MAIL_SUPPRESS_SEND`: default app.testing
-* `MAIL_ASCII_ATTACHMENTS`: default False
-
-In addition the standard Flask `TESTING` configuration option is used by Flask-Mail in unit tests.
-
-### Proxy to internal services
-
-The route `/proxy?url=http://example.com/path?a=1` serves as a proxy for calling whitelisted internal services. This can be used e.g. to call other internal services from custom pages in the Admin GUI, without having to expose those services externally.
-
-Set `proxy_url_whitelist` to a list of RegExes for whitelisted URLs (default: `[]`), e.g.
-```json
-    ["<RegEx pattern for full URL from proxy request>", "^http://example.com/path\\?.*$"]
-```
-
-Set `proxy_timeout` to the timeout in seconds for proxy requests (default: `60`s).
-
 ### Translations
 
-Translation strings are stored in a JSON file for each locale in `translations/<locale>.json` (e.g. `en.json`). Add any new languages as new JSON files.
+Translation strings are stored in a JSON file for each locale in `translations/<locale>.json` (e.g. `en.json`). Add any new languages as new JSON files. You can use the [updateTranslations.py](updateTranslations.py) helper script to update the translation files with all message ids from the source files.
 
 Set the `DEFAULT_LOCALE` environment variable to choose the locale for the user notification mails (default: `en`).
 
@@ -165,44 +147,36 @@ services:
 
 The admin gui is extendable through plugins, which reside in the `plugins` folder. To enable them, list them in `plugins` in the admin gui configuration. See the JSON schema for details, and for configuration parameters which may be required by plugins shipped by default with `qwc-admin-gui`.
 
-Usage
------
+### Proxy to internal services
 
-Base URL:
+The route `/proxy?url=<url>` serves as a proxy for calling whitelisted internal services. This can be used e.g. to call other internal services from custom pages in the Admin GUI, without having to expose those services externally.
 
-    http://localhost:5031/
+Set `proxy_url_whitelist` to a list of RegExes for whitelisted URLs (default: `[]`), e.g.
+```json
+    ["<RegEx pattern for full URL from proxy request>", "^http://example.com/path\\?.*$"]
+```
 
-### Default login
+Set `proxy_timeout` to the timeout in seconds for proxy requests (default: `60`s).
 
-username: admin
-password: admin
+Run locally
+-----------
 
+Install dependencies and run:
 
+    export CONFIG_PATH=<CONFIG_PATH>
+    uv run src/server.py
+
+To use configs from a `qwc-docker` setup, set `CONFIG_PATH=<...>/qwc-docker/volumes/config`.
+
+Set `FLASK_DEBUG=1` for additional debug output.
+
+Set `SKIP_LOGIN=1` if running without an authentication service (i.e. for development).
+
+Set `FLASK_RUN_PORT=<port>` to change the default port (default: `5000`).
+    
 Docker usage
 ------------
 
+The Docker image is published on [Dockerhub](https://hub.docker.com/r/sourcepole/qwc-admin-gui).
+
 See sample [docker-compose.yml](https://github.com/qwc-services/qwc-docker/blob/master/docker-compose-example.yml) of [qwc-docker](https://github.com/qwc-services/qwc-docker).
-
-
-Development
------------
-
-Install requirements:
-
-    uv sync
-
-Set the `CONFIG_PATH` environment variable to the path containing the service config and permission files when starting this service (default: `config`).
-
-    export CONFIG_PATH=../qwc-docker/volumes/config
-
-Configure environment:
-
-    echo FLASK_ENV=development >.flaskenv
-
-Update translation files:
-
-     uv run ./updateTranslations.py
-
-Start local service:
-
-     uv run src/server.py
