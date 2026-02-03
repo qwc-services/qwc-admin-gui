@@ -100,6 +100,10 @@ ALTER TABLE qwc_config.user_infos ADD COLUMN first_name character varying NOT NU
 "user_info_fields": [{"title": "Surname", "name": "surname", "type": "text", "required": true}, {"title": "First name", "name": "first_name", "type": "text", "required": true}]
 ```
 
+### Invitations
+
+You can send invitation mails to users from the `Users` page. You will need to configure the mailer using the `MAIL_*` environment variables documented above. You can customize the invitation mail by setting the `application_name` and `application_url` JSON config variables, or provide a fully custom template by replacing the [`invite_email_body.<lang>.txt`](src/templates/users) files. If you are running `qwc-admin-gui` in Docker, you can mount your custom templates to `/srv/qwc_service/templates/users/`.
+
 ### Translations
 
 Translation strings are stored in a JSON file for each locale in `translations/<locale>.json` (e.g. `en.json`). Add any new languages as new JSON files. You can use the [updateTranslations.py](updateTranslations.py) helper script to update the translation files with all message ids from the source files.
