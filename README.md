@@ -53,17 +53,17 @@ In addition, the following environment variables are supported:
 | `IDLE_TIMEOUT`               | `0`           | Idle timeout after which to automatically log out (`0` disables automatic logout).        |
 | `SKIP_LOGIN`                 | `False`       | Whether to skip redirect to the `auth_service_url` is user is not authenticated (for development). |
 | `DEFAULT_LOCALE`             | `en`          | Admin GUI language (see [src/translations](src/translations) for available languages).    |
-| `MAIL_SERVER`                | `localhost`   | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
-| `MAIL_PORT`                  | `25`          | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
-| `MAIL_USE_TLS`               | `False`       | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
-| `MAIL_USE_SSL`               | `False`       | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
-| `MAIL_DEBUG`                 | `app.debug`   | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
-| `MAIL_USERNAME`              | `None`        | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
-| `MAIL_PASSWORD`              | `None`        | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
-| `MAIL_DEFAULT_SENDER`        | `None`        | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
-| `MAIL_MAX_EMAILS`            | `None`        | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
-| `MAIL_SUPPRESS_SEND`         | `app.testing` | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
-| `MAIL_ASCII_ATTACHMENTS`     | `False`       | Mailer setup, see (Flask-Mail)[https://flask-mail.readthedocs.io/en/latest/#configuring]. |
+| `MAIL_SERVER`                | `localhost`   | Mailer setup, see [Flask-Mail](https://flask-mail.readthedocs.io/en/latest/#configuring). |
+| `MAIL_PORT`                  | `25`          | Mailer setup, see [Flask-Mail](https://flask-mail.readthedocs.io/en/latest/#configuring). |
+| `MAIL_USE_TLS`               | `False`       | Mailer setup, see [Flask-Mail](https://flask-mail.readthedocs.io/en/latest/#configuring). |
+| `MAIL_USE_SSL`               | `False`       | Mailer setup, see [Flask-Mail](https://flask-mail.readthedocs.io/en/latest/#configuring). |
+| `MAIL_DEBUG`                 | `app.debug`   | Mailer setup, see [Flask-Mail](https://flask-mail.readthedocs.io/en/latest/#configuring). |
+| `MAIL_USERNAME`              | `None`        | Mailer setup, see [Flask-Mail](https://flask-mail.readthedocs.io/en/latest/#configuring). |
+| `MAIL_PASSWORD`              | `None`        | Mailer setup, see [Flask-Mail](https://flask-mail.readthedocs.io/en/latest/#configuring). |
+| `MAIL_DEFAULT_SENDER`        | `None`        | Mailer setup, see [Flask-Mail](https://flask-mail.readthedocs.io/en/latest/#configuring). |
+| `MAIL_MAX_EMAILS`            | `None`        | Mailer setup, see [Flask-Mail](https://flask-mail.readthedocs.io/en/latest/#configuring). |
+| `MAIL_SUPPRESS_SEND`         | `app.testing` | Mailer setup, see [Flask-Mail](https://flask-mail.readthedocs.io/en/latest/#configuring). |
+| `MAIL_ASCII_ATTACHMENTS`     | `False`       | Mailer setup, see [Flask-Mail](https://flask-mail.readthedocs.io/en/latest/#configuring). |
 
 
 ### Two-factor authentication
