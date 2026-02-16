@@ -55,20 +55,21 @@ function runConfigGenerator() {
     });
 
     let log_start = 0;
-    const pollInterval = setInterval(function() {
+    function pollLogs() {
       $.ajax('{{ url_for("generate_configs_status") }}?start=' + log_start + '&task_id=' + start_data.task_id).done(function(status_data) {
         logElement.append(status_data.logs);
         log_start += status_data.log_linecount;
         if (!status_data.running) {
-          clearInterval(pollInterval);
           reset_buttons();
+        } else {
+          setTimeout(pollLogs, 1000);
         }
       }).fail(function() {
-        clearInterval(pollInterval);
         setupLogElement('#nav-confgen', "Error while generating configuration", 'danger');
         reset_buttons();
       });
-    }, 1000);
+    }
+    pollLogs();
   }).fail(function() {
     setupLogElement('#nav-confgen', "Error while generating configuration", 'danger');
     reset_buttons();
