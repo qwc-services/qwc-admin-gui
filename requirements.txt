@@ -329,9 +329,9 @@ qwc-services-core==1.5.2 \
     --hash=sha256:1486702ddebc7847e6801dd0d923d55490a7fdbfdc2661b9e74f9ff80c48e756 \
     --hash=sha256:c1b8ac16663a6be3d85267b26665cb681da0b4ef317a17c79a0f8a5523e08f63
     # via qwc-admin-gui
-requests==2.32.5 \
-    --hash=sha256:2462f94637a34fd532264295e186976db0f5d453d1cdd31473c85a6a161affb6 \
-    --hash=sha256:dbba0bac56e100853db0ea71b82b4dfd5fe2bf6d3754a8893c3af500cec7d7cf
+requests==2.33.0 \
+    --hash=sha256:3324635456fa185245e24865e810cecec7b4caf933d7eb133dcde67d48cee69b \
+    --hash=sha256:c7ebc5e8b0f21837386ad0e1c8fe8b829fa5f544d8df3b2253bff14ef29d7652
     # via qwc-admin-gui
 sqlalchemy==2.0.48 \
     --hash=sha256:07edba08061bc277bfdc772dd2a1a43978f5a45994dd3ede26391b405c15221e \
