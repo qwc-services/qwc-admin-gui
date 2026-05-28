@@ -364,6 +364,9 @@ class ResourcesController(Controller):
         form.type.choices = [
             (t.name, t.description) for t in resource_types
         ]
+        form.parent_filters = dict([
+            (resource_type.name, resource_type.parents) for resource_type in resource_types
+        ])
 
         resource_type = request.args.get('type')
         if resource_type is not None:

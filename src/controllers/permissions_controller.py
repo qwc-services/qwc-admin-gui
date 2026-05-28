@@ -187,8 +187,14 @@ class PermissionsController(Controller):
             query = session.query(self.ResourceType) \
                 .filter(self.ResourceType.name.notin_(blacklist)) \
                 .order_by(self.ResourceType.list_order, self.ResourceType.name)
+
+            # Resource types whose parent is allowed by default
+            parent_default_allow_resources = []
+
             for resource_type in query.all():
                 resource_types[resource_type.name] = resource_type.description
+                if resource_type.parent_is_default_allow:
+                    parent_default_allow_resources.append(resource_type.name)
 
             # Create dict with all defined parents from resource objects
             all_resources = self.resources_for_index_query(
@@ -205,12 +211,6 @@ class PermissionsController(Controller):
             for res in all_resources:
                 resource_roles[res.resource.type + ":" + res.resource.name] = \
                     resource_roles.get(res.resource.type + ":" + res.resource.name, []) + [res.role.name]
-
-            # Resource types whose parent is allowed by default
-            parent_default_allow_resources = [
-                'attribute', 'layer', 'feature_info_layer', 'print_template', 'object3d',
-                'data', 'data_create', 'data_update', 'data_delete'
-            ]
 
             role_warnings = []
             for res in all_resources:

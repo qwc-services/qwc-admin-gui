@@ -12,37 +12,7 @@
       var resource_type = $('#type').find('option:selected').val();
 
       // allowed parent types per resource type
-      var parent_filters = {
-        map: [],
-        layer: ['map'],
-        attribute: [
-          'layer',
-          'data',
-          'wfs_layer',
-          'feature_info_layer'],
-        print_template: ['map'],
-        data: ['map'],
-        data_create: ['map'],
-        data_update: ['map'],
-        data_delete: ['map'],
-        wfs_service: [],
-        wfs_layer: ['wfs_service'],
-        wfs_layer_create: ['wfs_service'],
-        wfs_layer_update: ['wfs_service'],
-        wfs_layer_delete: ['wfs_service'],
-        object3d: ['map'],
-        oblique_image_dataset: [],
-        viewer_asset: [],
-        viewer_task: [],
-        theme_info_link: [],
-        plugin: [],
-        plugin_data: ['plugin'],
-        solr_facet: [],
-        feature_info_service: [],
-        feature_info_layer: ['feature_info_service'],
-        document_templates: [],
-        mapinfo_query: []
-      };
+      var parent_filters = {{ form.parent_filters | tojson }};
 
       var filter = parent_filters[resource_type];
       if (filter) {
