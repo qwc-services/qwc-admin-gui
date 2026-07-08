@@ -15,6 +15,10 @@
       selectableHeader: '<div class="ms-header">{{ i18n('interface.common.users') }}</div>',
       selectionHeader: '<div class="ms-header">{{ i18n('interface.common.assigned_users') }}</div>'
     });
+    $('#admin_sections').multiSelectWithSearch({
+      selectableHeader: '<div class="ms-header">{{ i18n('interface.roles.admin_sections') }}</div>',
+      selectionHeader: '<div class="ms-header">{{ i18n('interface.roles.admin_sections') }}</div>'
+    });
   });
 </script>
 {% endblock %}
@@ -36,8 +40,18 @@
 
     {{ wtf.render_field(form.name, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
     {{ wtf.render_field(form.description, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.render_field(form.groups, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
-    {{ wtf.render_field(form.users, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {% if form.is_admin_role and not form.can_edit_admin_sections %}
+      {{ wtf.render_field(form.groups, form_type="horizontal", horizontal_columns=('sm', 2, 5), disabled=True) }}
+      {{ wtf.render_field(form.users, form_type="horizontal", horizontal_columns=('sm', 2, 5), disabled=True) }}
+    {% else %}
+      {{ wtf.render_field(form.groups, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+      {{ wtf.render_field(form.users, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {% endif %}
+    {% if form.is_admin_role or not form.can_edit_admin_sections %}
+      {{ wtf.render_field(form.admin_sections, form_type="horizontal", horizontal_columns=('sm', 2, 5), disabled=True) }}
+    {% else %}
+      {{ wtf.render_field(form.admin_sections, form_type="horizontal", horizontal_columns=('sm', 2, 5)) }}
+    {% endif %}
 
     {{ wtf.render_field(form.submit, class="col-sm-offset-2 btn btn-primary") }}
     <button class="col-sm-offset-2 btn btn-danger" onclick="history.back()" type="button">Cancel</button>

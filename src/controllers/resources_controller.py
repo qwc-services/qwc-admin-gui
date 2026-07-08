@@ -10,6 +10,7 @@ from sqlalchemy.exc import IntegrityError, InternalError
 from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
+from admin_sections import ENDPOINT_SECTIONS, RESERVED_RESOURCE_TYPES
 from .controller import Controller
 from forms import ImportResourceForm, ResourceForm
 from utils import i18n
@@ -72,6 +73,14 @@ class ResourcesController(Controller):
             self.import_resources_from_parent_map, methods=['GET', 'POST']
         )
 
+        for endpoint in (
+            'destroy_cascaded_%s' % suffix, 'destroy_multiple_%s' % suffix,
+            'hierarchy_%s' % suffix, 'import_maps_%s' % suffix,
+            'import_children_%s' % suffix, 'import_%s' % suffix,
+            'import_%s_from_parent_map' % suffix,
+        ):
+            ENDPOINT_SECTIONS[endpoint] = self.section
+
     def resources_for_index_query(self, search_text, resource_type, session):
         """Return query for resources list filtered by resource type.
 
@@ -81,6 +90,7 @@ class ResourcesController(Controller):
         """
         query = session.query(self.Resource) \
             .join(self.Resource.resource_types) \
+            .filter(self.Resource.type.notin_(RESERVED_RESOURCE_TYPES)) \
             .order_by(self.ResourceType.list_order, self.Resource.type,
                       self.Resource.name, self.Resource.id)
 
@@ -209,7 +219,8 @@ class ResourcesController(Controller):
 
             # query resource types
             resource_types = OrderedDict()
-            blacklist = self.handler().config().get("resource_blacklist", [])
+            blacklist = list(self.handler().config().get("resource_blacklist", [])) \
+                + list(RESERVED_RESOURCE_TYPES)
             query = session.query(self.ResourceType) \
                 .filter(self.ResourceType.name.notin_(blacklist)) \
                 .order_by(self.ResourceType.list_order, self.ResourceType.name)
@@ -237,7 +248,10 @@ class ResourcesController(Controller):
         :param int id: Resource ID
         :param Session session: DB session
         """
-        return session.query(self.Resource).filter_by(id=id).first()
+        return session.query(self.Resource) \
+            .filter_by(id=id) \
+            .filter(self.Resource.type.notin_(RESERVED_RESOURCE_TYPES)) \
+            .first()
 
     def destroy_cascaded(self, id):
         """Delete existing resource and its children.
@@ -343,7 +357,8 @@ class ResourcesController(Controller):
 
         with self.session() as session:
             # query resource types
-            blacklist = self.handler().config().get("resource_blacklist", [])
+            blacklist = list(self.handler().config().get("resource_blacklist", [])) \
+                + list(RESERVED_RESOURCE_TYPES)
             query = session.query(self.ResourceType) \
                 .filter(self.ResourceType.name.notin_(blacklist)) \
                 .order_by(self.ResourceType.list_order, self.ResourceType.name)
@@ -352,6 +367,7 @@ class ResourcesController(Controller):
             # query resources
             query = session.query(self.Resource) \
                 .join(self.Resource.resource_types) \
+                .filter(self.Resource.type.notin_(RESERVED_RESOURCE_TYPES)) \
                 .order_by(self.ResourceType.list_order, self.Resource.type,
                         self.Resource.name)
             # eager load relations
@@ -413,7 +429,8 @@ class ResourcesController(Controller):
                 .filter(self.ResourceType.name.in_((
                     'layer',
                     'data', 'data_create', 'data_update', 'data_delete'
-                )))
+                ))) \
+                .filter(self.ResourceType.name.notin_(RESERVED_RESOURCE_TYPES))
             resource_types_to_import_from_map = query.all()
 
             # query permission roles
@@ -481,6 +498,7 @@ class ResourcesController(Controller):
                 # query resource types
                 resource_types = OrderedDict()
                 query = session.query(self.ResourceType) \
+                    .filter(self.ResourceType.name.notin_(RESERVED_RESOURCE_TYPES)) \
                     .order_by(self.ResourceType.list_order, self.ResourceType.name)
                 for resource_type in query.all():
                     resource_types[resource_type.name] = resource_type.description

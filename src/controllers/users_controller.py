@@ -102,6 +102,7 @@ class UsersController(Controller):
                 resource, edit_form, form.roles, self.Role, 'sorted_roles', 'id',
                 'name', session
             )
+            self.exclude_admin_role_choices(form.roles)
 
         return form
 
@@ -174,6 +175,7 @@ class UsersController(Controller):
             user.groups_collection, form.groups, self.Group, 'id', session
         )
         # update roles
+        self.preserve_admin_role_membership(user.roles_collection, form.roles)
         self.update_collection(
             user.roles_collection, form.roles, self.Role, 'id', session
         )
