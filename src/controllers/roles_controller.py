@@ -1,8 +1,11 @@
-from .controller import Controller
-from forms import RoleForm
-from flask import flash
+from flask import flash, g
 from markupsafe import Markup
 from wtforms import ValidationError
+
+from admin_sections import ADMIN_SECTION_RESOURCE_TYPE, SECTION_LABELS, \
+    ensure_admin_panel_resources
+from .controller import Controller
+from forms import RoleForm
 
 
 class RolesController(Controller):
@@ -68,6 +71,11 @@ class RolesController(Controller):
         """
         form = RoleForm(self.config_models, obj=resource)
 
+        form.is_admin_role = (
+            resource is not None and resource.name == self.ADMIN_ROLE_NAME
+        )
+        form.can_edit_admin_sections = g.get('full_admin_access', False)
+
         with self.session() as session:
             self.update_form_collection(
                 resource, edit_form, form.groups, self.Group, 'sorted_groups',
@@ -77,6 +85,26 @@ class RolesController(Controller):
                 resource, edit_form, form.users, self.User, 'sorted_users', 'id',
                 'name', session
             )
+
+            form.admin_sections.choices = sorted(
+                SECTION_LABELS.items(), key=lambda item: item[1]
+            )
+            if edit_form:
+                if form.is_admin_role:
+                    form.admin_sections.data = list(SECTION_LABELS.keys())
+                else:
+                    query = session.query(self.Resource.name) \
+                        .join(
+                            self.Permission,
+                            self.Permission.resource_id == self.Resource.id
+                        ) \
+                        .filter(self.Permission.role_id == resource.id) \
+                        .filter(
+                            self.Resource.type == ADMIN_SECTION_RESOURCE_TYPE
+                        )
+                    form.admin_sections.data = [
+                        name for (name, ) in query.all()
+                    ]
 
         return form
 
@@ -103,14 +131,68 @@ class RolesController(Controller):
             flash(Markup("The <code>admin</code> role cannot be renamed."), 'error')
         role.description = form.description.data
 
-        # update groups
-        self.update_collection(
-            role.groups_collection, form.groups, self.Group, 'id', session
-        )
-        # update users
-        self.update_collection(
-            role.users_collection, form.users, self.User, 'id', session
-        )
+        # only a full admin may change the admin role's own group/user
+        if role.name != self.ADMIN_ROLE_NAME or g.get('full_admin_access', False):
+            self.update_collection(
+                role.groups_collection, form.groups, self.Group, 'id',
+                session
+            )
+            self.update_collection(
+                role.users_collection, form.users, self.User, 'id', session
+            )
+
+        # skip for the admin role (avoids wiping its permission rows via a
+        # disabled, non-submitting checkbox) and for non-full-admins
+        if role.name != self.ADMIN_ROLE_NAME and g.get('full_admin_access', False):
+            self.update_admin_section_permissions(
+                role, form.admin_sections, session
+            )
+
+    def update_admin_section_permissions(self, role, admin_sections_field,
+                                          session):
+        """Diff selected admin panel sections against a role's existing
+        admin_panel_section Permission rows, creating/deleting rows to
+        match.
+
+        :param object role: Role object
+        :param SelectMultipleField admin_sections_field: form.admin_sections
+        :param Session session: DB session
+        """
+        ensure_admin_panel_resources(self.config_models, session)
+        # flush so role.id is populated for a not-yet-persisted new role
+        # before it's used in the filter/assignments below
+        session.flush()
+
+        selected_sections = set(admin_sections_field.data or [])
+
+        existing_permissions = session.query(self.Permission) \
+            .join(
+                self.Resource, self.Permission.resource_id == self.Resource.id
+            ) \
+            .filter(self.Permission.role_id == role.id) \
+            .filter(self.Resource.type == ADMIN_SECTION_RESOURCE_TYPE) \
+            .all()
+        existing_sections = {p.resource.name: p for p in existing_permissions}
+
+        # remove sections that were unchecked
+        for section, permission in existing_sections.items():
+            if section not in selected_sections:
+                session.delete(permission)
+
+        # add sections that were newly checked
+        resources_by_section = {
+            resource.name: resource for resource in
+            session.query(self.Resource)
+            .filter_by(type=ADMIN_SECTION_RESOURCE_TYPE).all()
+        }
+        for section in selected_sections - existing_sections.keys():
+            resource = resources_by_section.get(section)
+            if resource is not None:
+                permission = self.Permission()
+                permission.role_id = role.id
+                permission.resource_id = resource.id
+                permission.write = False
+                session.add(permission)
 
     def destroy_resource(self, resource, session):
         """Delete existing resource in DB.

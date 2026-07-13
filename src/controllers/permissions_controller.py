@@ -3,8 +3,10 @@ import math
 
 from flask import flash, render_template, request, session as flask_session
 from markupsafe import Markup
+from sqlalchemy import or_
 from sqlalchemy.orm import joinedload
 
+from admin_sections import RESERVED_RESOURCE_TYPES
 from .controller import Controller
 from forms import PermissionForm
 from utils import i18n
@@ -36,6 +38,7 @@ class PermissionsController(Controller):
         """
         query = session.query(self.Permission). \
             join(self.Permission.role).join(self.Permission.resource). \
+            filter(self.Resource.type.notin_(RESERVED_RESOURCE_TYPES)). \
             order_by(self.Role.name, self.Resource.type, self.Resource.name)
 
         if search_text:
@@ -183,7 +186,8 @@ class PermissionsController(Controller):
 
             # query resource types
             resource_types = OrderedDict()
-            blacklist = self.handler().config().get("resource_blacklist", [])
+            blacklist = list(self.handler().config().get("resource_blacklist", [])) \
+                + list(RESERVED_RESOURCE_TYPES)
             query = session.query(self.ResourceType) \
                 .filter(self.ResourceType.name.notin_(blacklist)) \
                 .order_by(self.ResourceType.list_order, self.ResourceType.name)
@@ -245,7 +249,15 @@ class PermissionsController(Controller):
         :param int id: Permission ID
         :param Session session: DB session
         """
-        return session.query(self.Permission).filter_by(id=id).first()
+        # outer join since Permission.resource_id may be NULL
+        return session.query(self.Permission) \
+            .outerjoin(self.Permission.resource) \
+            .filter(self.Permission.id == id) \
+            .filter(or_(
+                self.Resource.type == None,
+                self.Resource.type.notin_(RESERVED_RESOURCE_TYPES)
+            )) \
+            .first()
 
     def create_form(self, resource=None, edit_form=False):
         """Return form with fields loaded from DB.
@@ -263,12 +275,14 @@ class PermissionsController(Controller):
 
             # query resource types
             query = session.query(self.ResourceType) \
+                .filter(self.ResourceType.name.notin_(RESERVED_RESOURCE_TYPES)) \
                 .order_by(self.ResourceType.list_order, self.ResourceType.name)
             resource_types = query.all()
 
             # query resources
             query = session.query(self.Resource) \
                 .join(self.Resource.resource_type) \
+                .filter(self.Resource.type.notin_(RESERVED_RESOURCE_TYPES)) \
                 .order_by(self.ResourceType.list_order, self.Resource.type,
                         self.Resource.name)
             # eager load relations

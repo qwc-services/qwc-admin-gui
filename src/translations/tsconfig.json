@@ -7,7 +7,8 @@
     "es"
   ],
   "extra_strings": [
-    "interface.common.permission"
+    "interface.common.permission",
+    "interface.common.registration_request"
   ],
   "strings": [
     "interface.common.add",
@@ -140,6 +141,7 @@
     "interface.resources.resource_permissions",
     "interface.resources.title",
     "interface.resources.type_filter",
+    "interface.roles.admin_sections",
     "interface.roles.confirm_message_delete",
     "interface.roles.new_role",
     "interface.roles.title",
