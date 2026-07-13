@@ -738,14 +738,16 @@ class ThemesController:
         else:
             if "collapseLayerGroupsBelowLevel" in item: del item["collapseLayerGroupsBelowLevel"]
 
-        item["backgroundLayers"] = []
         if form.backgroundLayers.data:
+            item["backgroundLayers"] = []
             for layer in form.backgroundLayers.data:
                 item["backgroundLayers"].append({
                     "name": layer["layerName"],
                     "printLayer": layer["printLayer"],
                     "visibility": layer["visibility"]
                 })
+        else:
+            if "backgroundLayers" in item: del item["backgroundLayers"]
 
         new_name = form.url.data.split("/")[-1]
         with self.config_models.session() as session, session.begin():
