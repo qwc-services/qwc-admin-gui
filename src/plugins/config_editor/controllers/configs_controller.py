@@ -19,58 +19,33 @@ class ConfigsController():
         :param Flask app: Flask application
         :param TenantConfigHandler handler: Tenant config handler
         """
-        app.add_url_rule(
-            "/config_editor", "config_editor", self.index, methods=["GET"]
-        )
-        app.add_url_rule(
-            "/config_editor/tenantConfig", "config_editor_edit_tenant_config",
-            self.edit_tenant_config, methods=["GET"]
-        )
-        app.add_url_rule(
-            "/config_editor/tenantConfig", "config_editor_update_tenant_config",
-            self.update_tenant_config, methods=["POST"]
-        )
-        app.add_url_rule(
-            "/config_editor/config", "config_editor_edit_qwc2_config",
-            self.edit_qwc2_config, methods=["GET"]
-        )
-        app.add_url_rule(
-            "/config_editor/config", "config_editor_update_qwc2_config",
-            self.update_qwc2_config, methods=["POST"]
-        )
-
         self.templates_dir = "plugins/config_editor/templates"
         self.logger = app.logger
         self.handler = handler
 
+        app.add_url_rule(
+            "/config_editor", "config_editor", self.index, methods=["GET"]
+        )
+
+        current_handler = self.handler()
+        self.input_config_files = current_handler.config().get('input_config_files', ['config.json', 'tenantConfig.json'])
+
+        for config_file in self.input_config_files:
+            name = config_file.removesuffix(".json")
+
+            app.add_url_rule(
+                f"/config_editor/{name}", f"config_editor_edit_{name}",
+                lambda config_file=config_file, name=name: self.edit_json_config(config_file, url_for(f'config_editor_update_{name}')), methods=["GET"]
+            )
+            app.add_url_rule(
+                f"/config_editor/{name}", f"config_editor_update_{name}",
+                lambda config_file=config_file, name=name: self.update_json_config(config_file, url_for(f'config_editor_update_{name}')), methods=["POST"]
+            )
+
     def index(self):
         """Show entry page."""
         return render_template(
-            "%s/index.html" % self.templates_dir, title=i18n('plugins.config_editor.title'), i18n=i18n
-        )
-
-    def edit_tenant_config(self):
-        """Show editor for tenantConfig.json."""
-        return self.edit_json_config(
-            'tenantConfig.json', url_for('config_editor_update_tenant_config')
-        )
-
-    def update_tenant_config(self):
-        """Update tenantConfig.json."""
-        return self.update_json_config(
-            'tenantConfig.json', url_for('config_editor_update_tenant_config')
-        )
-
-    def edit_qwc2_config(self):
-        """Show editor for config.json."""
-        return self.edit_json_config(
-            'config.json', url_for('config_editor_update_qwc2_config')
-        )
-
-    def update_qwc2_config(self):
-        """Update config.json."""
-        return self.update_json_config(
-            'config.json', url_for('config_editor_update_qwc2_config')
+            "%s/index.html" % self.templates_dir, title=i18n('plugins.config_editor.title'), i18n=i18n, config_files=self.input_config_files
         )
 
     def edit_json_config(self, file_name, action_url):

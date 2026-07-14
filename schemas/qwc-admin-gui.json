@@ -105,6 +105,13 @@
           "description": "The path to the input configs. Required for 'themes' and 'config_editor' plugin.",
           "type": "string"
         },
+        "input_config_files": {
+          "description": "The names of the input_config_files inside `input_config_path` which sould be editable. Defaults to `['config.json', 'tenantConfig.json']`.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "qwc2_path": {
           "description": "The path to QWC2 files. Required for 'themes' and 'alkis' plugins.",
           "type": "string"

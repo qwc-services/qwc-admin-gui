@@ -7,11 +7,9 @@
 
   <br><br>
 
-  <a href="{{ url_for('config_editor_edit_tenant_config') }}" class="btn btn-primary" role="button">
-    {{ utils.render_icon('pencil') }} tenantConfig.json
-  </a>
-
-  <a href="{{ url_for('config_editor_edit_qwc2_config') }}" class="btn btn-primary" role="button">
-    {{ utils.render_icon('pencil') }} config.json
-  </a>
+  {% for config_file in config_files %}
+    <a href="{{ url_for('config_editor_edit_' ~ (config_file | replace('.json', ''))) }}" class="btn btn-primary" role="button">
+      {{ utils.render_icon('pencil') }} {{ config_file }}
+    </a>
+  {% endfor %}
 {% endblock %}
