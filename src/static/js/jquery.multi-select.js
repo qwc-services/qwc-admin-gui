@@ -42,6 +42,8 @@ if (!String.prototype.includes) {
     this.$container = $('<div/>', { 'class': "ms-container" });
     this.$selectableContainer = $('<div/>', { 'class': 'ms-selectable' });
     this.$selectionContainer = $('<div/>', { 'class': 'ms-selection' });
+    this.$selectableUlViewport = $('<div/>', { 'class': 'ms-list-viewport' });
+    this.$selectionUlViewport = $('<div/>', { 'class': 'ms-list-viewport' });
     this.$selectableUl = $('<ul/>', { 'class': "ms-list", 'tabindex' : '-1' });
     this.$selectionUl = $('<ul/>', { 'class': "ms-list", 'tabindex' : '-1' });
     this.scrollTo = 0;
@@ -69,7 +71,8 @@ if (!String.prototype.includes) {
         if (that.options.selectableHeader){
           that.$selectableContainer.append(that.options.selectableHeader);
         }
-        that.$selectableContainer.append(that.$selectableUl);
+        that.$selectableContainer.append(that.$selectableUlViewport);
+        that.$selectableUlViewport.append(that.$selectableUl);
         if (that.options.selectableFooter){
           that.$selectableContainer.append(that.options.selectableFooter);
         }
@@ -77,7 +80,8 @@ if (!String.prototype.includes) {
         if (that.options.selectionHeader){
           that.$selectionContainer.append(that.options.selectionHeader);
         }
-        that.$selectionContainer.append(that.$selectionUl);
+        that.$selectionContainer.append(that.$selectionUlViewport);
+        that.$selectionUlViewport.append(that.$selectionUl);
         if (that.options.selectionFooter){
           that.$selectionContainer.append(that.options.selectionFooter);
         }
@@ -225,10 +229,10 @@ if (!String.prototype.includes) {
       var that = this;
 
       $list.on('focus', function(){
-        $(this).addClass('ms-focus');
+        $(this).parent().addClass('ms-focus');
       })
       .on('blur', function(){
-        $(this).removeClass('ms-focus');
+        $(this).parent().removeClass('ms-focus');
       })
       .on('keydown', function(e){
         switch (e.which) {
