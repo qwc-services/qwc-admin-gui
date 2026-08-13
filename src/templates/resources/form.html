@@ -6,6 +6,32 @@
 <script src="{{ url_for('static', filename='js/chosen.jquery.min.js') }}"></script>
 <script type="text/javascript">
   $(function() {
+    var updateNameChoices = function() {
+        var name_choices = {{ form.name_choices | tojson }};
+        // get selected resource type
+        var resource_type = $('#type').find('option:selected').val();
+
+        var choices = name_choices[resource_type] || [];
+
+        var name_choices = $('#name-options');
+        name_choices.empty();
+        name_choices.toggle(choices.length > 0);
+        choices.forEach(function (choice) {
+            $('<option>')
+                .attr('value', choice).text(choice)
+                .appendTo(name_choices);
+        });
+        if (choices.length > 0) {
+          $('#name').val(choices[0]);
+        } else {
+          $('#name').val('');
+        }
+
+    }
+    var setName = function() {
+      $('#name').val($('#name-options').val());
+    }
+
     // filter parent resources according to selected resource type
     var filterParents = function() {
       // get selected resource type
@@ -63,9 +89,16 @@
 
       $("#parent_id").trigger("chosen:updated");
     };
-    $('#type').change(filterParents);
-
     // initialize
+    $('#name').parent().css('position', 'relative');
+    $('#name').parent().append($('<select>', {'id': 'name-options', 'class': 'form-select'}));
+
+
+    $('#type').change(updateNameChoices);
+    $('#type').change(filterParents);
+    $('#name-options').change(setName);
+
+    updateNameChoices();
     filterParents();
 
     // initialize Chosen jQuery plugin
@@ -80,6 +113,14 @@
   <style type="text/css">
     .chosen-container .chosen-results li.group-result.chosen-hidden {
       display: none;
+    }
+    #name-options {
+      position: absolute;
+      left: calc(var(--bs-gutter-x) * .5);
+      right: calc(var(--bs-gutter-x) * .5);
+      width: auto;
+      top: 0;
+      bottom: 0;
     }
   </style>
 {% endblock %}

@@ -372,6 +372,13 @@ class ResourcesController(Controller):
         if resource_type is not None:
             form.type.data = resource_type
 
+        # build choices for name field, grouped by resource type
+        # NOTE: hasattr for backward compatibility, remove at some point in the 2027 dev cycle
+        form.name_choices = {}
+        for r in resource_types:
+            if hasattr(r, "choices"):
+                form.name_choices[r.name] = r.choices
+
         # set choices for parent select field
         form.parent_id.choices = [(0, "")] + [
             (r.id, "%s: %s" % (r.type, r.name)) for r in resources
