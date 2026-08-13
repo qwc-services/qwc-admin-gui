@@ -1,13 +1,14 @@
 import datetime
 import math
 
-from flask import abort, flash, redirect, render_template, request, url_for
+from flask import abort, flash, g, redirect, render_template, request, url_for
 from markupsafe import Markup
 from sqlalchemy.exc import IntegrityError, InternalError
 from wtforms import ValidationError
 
 from qwc_services_core.config_models import ConfigModels
 
+from admin_sections import ADMIN_ROLE_NAME, ENDPOINT_SECTIONS, SECTION_LABELS
 from utils import i18n
 
 
@@ -23,7 +24,7 @@ class Controller:
     DEFAULT_PER_PAGE = 10
 
     def __init__(self, resource_name, base_route, endpoint_suffix,
-                 templates_dir, app, handler):
+                 templates_dir, app, handler, section=None):
         """Constructor
 
         :param str resource_name: Visible name of resource (e.g. 'User')
@@ -32,6 +33,8 @@ class Controller:
         :param str templates_dir: Subdir for resource templates (e.g. 'users')
         :param Flask app: Flask application
         :param handler: Tenant config handler
+        :param str section: Admin panel section key for this controller's
+                             routes (default: base_route)
         """
         self.resource_name = i18n('interface.common.%s'% endpoint_suffix) or resource_name
         self.base_route = base_route
@@ -40,6 +43,8 @@ class Controller:
         self.app = app
         self.logger = app.logger
         self.handler = handler
+        self.section = section or base_route
+        SECTION_LABELS[self.section] = self.resource_name
 
         self.add_routes(app)
 
@@ -55,36 +60,43 @@ class Controller:
         app.add_url_rule(
             '/%s' % base_route, base_route, self.index, methods=['GET']
         )
+        ENDPOINT_SECTIONS[base_route] = self.section
         # new
         app.add_url_rule(
             '/%s/new' % base_route, 'new_%s' % suffix, self.new,
             methods=['GET']
         )
+        ENDPOINT_SECTIONS['new_%s' % suffix] = self.section
         # create
         app.add_url_rule(
             '/%s' % base_route, 'create_%s' % suffix, self.create,
             methods=['POST']
         )
+        ENDPOINT_SECTIONS['create_%s' % suffix] = self.section
         # edit
         app.add_url_rule(
             '/%s/<int:id>/edit' % base_route, 'edit_%s' % suffix, self.edit,
             methods=['GET']
         )
+        ENDPOINT_SECTIONS['edit_%s' % suffix] = self.section
         # update
         app.add_url_rule(
             '/%s/<int:id>' % base_route, 'update_%s' % suffix, self.update,
             methods=['PUT']
         )
+        ENDPOINT_SECTIONS['update_%s' % suffix] = self.section
         # delete
         app.add_url_rule(
             '/%s/<int:id>' % base_route, 'destroy_%s' % suffix, self.destroy,
             methods=['DELETE']
         )
+        ENDPOINT_SECTIONS['destroy_%s' % suffix] = self.section
         # update or delete
         app.add_url_rule(
             '/%s/<int:id>' % base_route, 'modify_%s' % suffix, self.modify,
             methods=['POST']
         )
+        ENDPOINT_SECTIONS['modify_%s' % suffix] = self.section
 
     def setup_models(self):
         config_handler = self.handler()
@@ -490,6 +502,37 @@ class Controller:
             if relation.id not in relation_ids:
                 # remove relation from resource
                 collection.remove(relation)
+
+    def exclude_admin_role_choices(self, roles_field):
+        """Remove the admin role from a roles SelectMultipleField's
+        choices, unless the current identity is a full admin.
+
+        :param SelectMultipleField roles_field: e.g. form.roles, with
+                                                 .choices already populated
+                                                 as [(id, name), ...]
+        """
+        if not g.get('full_admin_access', False):
+            roles_field.choices = [
+                (id, name) for (id, name) in roles_field.choices
+                if name != ADMIN_ROLE_NAME
+            ]
+
+    def preserve_admin_role_membership(self, collection, roles_field):
+        """Stop a non-full-admin's roles diff from silently stripping the
+        admin role from a user/group that already has it. Call before 
+        update_collection() for the same roles_field/collection.
+
+        :param object collection: e.g. user.roles_collection /
+                                  group.roles_collection
+        :param SelectMultipleField roles_field: form.roles
+        """
+        if not g.get('full_admin_access', False):
+            for relation in collection:
+                if (
+                    relation.name == ADMIN_ROLE_NAME
+                    and relation.id not in roles_field.data
+                ):
+                    roles_field.data.append(relation.id)
 
     def search_text_arg(self):
         """Return request arg for search string."""

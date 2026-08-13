@@ -17,6 +17,10 @@ class RoleForm(FlaskForm):
         i18n('interface.common.assigned_users'),
         coerce=int, validators=[Optional()]
     )
+    admin_sections = SelectMultipleField(
+        i18n('interface.roles.admin_sections'),
+        coerce=str, validators=[Optional()]
+    )
 
     submit = SubmitField(i18n('interface.common.form_submit'))
 

@@ -36,7 +36,8 @@
       "url": "URL",
       "user": "User",
       "users": "Users",
-      "permission": "Permission"
+      "permission": "Permission",
+      "registration_request": "Registration Request"
     },
     "groups": {
       "confirm_message_delete": "Remove group?",
@@ -147,6 +148,7 @@
       "type_filter": "Type Filter"
     },
     "roles": {
+      "admin_sections": "Admin panel sections",
       "confirm_message_delete": "Remove role?",
       "new_role": "New Role",
       "title": "Roles"

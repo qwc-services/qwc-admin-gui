@@ -8,7 +8,7 @@ import time
 import urllib.parse
 import importlib
 
-from flask import abort, Flask, json, redirect, render_template, request, \
+from flask import abort, Flask, g, json, redirect, render_template, request, \
     Response, stream_with_context, jsonify, send_from_directory
 from flask_bootstrap import Bootstrap5
 from flask_wtf.csrf import CSRFProtect
@@ -20,6 +20,7 @@ from qwc_services_core.tenant_handler import TenantHandler, \
 from qwc_services_core.runtime_config import RuntimeConfig
 from qwc_services_core.database import DatabaseEngine
 from access_control import AccessControl
+from admin_sections import ENDPOINT_SECTIONS, SECTION_LABELS, tag_new_routes
 from controllers import UsersController, GroupsController, RolesController, \
     ResourcesController, PermissionsController, RegistrableGroupsController, \
     RegistrationRequestsController
@@ -149,7 +150,11 @@ def load_plugins():
             app.logger.info("Loading plugin '%s'" % plugin)
             try:
                 mod = importlib.import_module("plugins." + plugin)
-                mod.load_plugin(app, handler)
+                SECTION_LABELS['plugin:' + plugin] = mod.name
+                tag_new_routes(
+                    app, 'plugin:' + plugin,
+                    lambda mod=mod: mod.load_plugin(app, handler)
+                )
                 app.config['PLUGINS'].append({"id": plugin, "name": mod.name})
             except Exception as e:
                 app.logger.warning("Could not load plugin %s: %s" % (plugin, str(e)))
@@ -159,15 +164,30 @@ def load_plugins():
 @app.before_request
 @optional_auth
 def assert_admin_role():
-    if request.path.startswith(('/bootstrap/static/', '/ready', '/healthz')):
+    if request.path.startswith((
+        '/bootstrap/static/', '/static/', '/pluginstatic/', '/ready',
+        '/healthz'
+    )):
         return
 
     identity = get_identity()
     app.logger.debug("Access with identity %s" % identity)
-    if not access_control.is_admin(identity):
+    is_admin = access_control.is_admin(identity)
+    g.full_admin_access = is_admin or SKIP_LOGIN
+    g.accessible_sections = access_control.get_accessible_sections(
+        identity, g.full_admin_access
+    )
+
+    if not is_admin:
         if SKIP_LOGIN:
             app.logger.info("Login skipped for user %s" % identity)
             pass  # Allow access without login
+        elif request.endpoint == 'logout':
+            pass
+        elif request.endpoint == 'home' and g.accessible_sections:
+            pass
+        elif ENDPOINT_SECTIONS.get(request.endpoint) in g.accessible_sections:
+            pass
         else:
             app.logger.info("Access denied for user %s" % identity)
             prefix = auth_path_prefix()
@@ -185,6 +205,11 @@ def assert_admin_role():
                 )
             else:
                 return redirect(prefix + '/login?url=%s' % request.url)
+
+
+@app.context_processor
+def inject_accessible_sections():
+    return {'accessible_sections': g.get('accessible_sections', set())}
 
 
 @app.route('/logout')

@@ -67,32 +67,49 @@
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('home') }}">{{ i18n('interface.main.home_title') }}</a>
           </li>
+          {% if 'users' in accessible_sections %}
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('users') }}">{{ i18n('interface.users.title') }}</a>
           </li>
+          {% endif %}
+          {% if 'groups' in accessible_sections %}
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('groups') }}">{{ i18n('interface.groups.title') }}</a>
           </li>
+          {% endif %}
+          {% if 'roles' in accessible_sections %}
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('roles') }}">{{ i18n('interface.roles.title') }}</a>
           </li>
+          {% endif %}
+          {% if 'resources' in accessible_sections %}
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('resources') }}">{{ i18n('interface.resources.title') }}</a>
           </li>
+          {% endif %}
+          {% if 'permissions' in accessible_sections %}
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('permissions') }}">{{ i18n('interface.permissions.title') }}</a>
           </li>
+          {% endif %}
           {% for plugin in config['PLUGINS'] %}
+            {% if ('plugin:' ~ plugin.id) in accessible_sections %}
               <li class="nav-item">
                 <a class="nav-link" href="{{ url_for(plugin.id) }}">{{ plugin.name }}</a>
               </li>
+            {% endif %}
           {% endfor %}
-          {% if config['QWC_GROUP_REGISTRATION_ENABLED'] %}
+          {% if config['QWC_GROUP_REGISTRATION_ENABLED'] and
+              ('registrable_groups' in accessible_sections or 'registration_requests' in accessible_sections) %}
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="reg_dropdown" data-bs-toggle="dropdown" aria-expanded="false">{{ i18n('interface.main.registration_title') }}</a>
               <ul class="dropdown-menu" aria-labelledby="reg_dropdown">
+                {% if 'registrable_groups' in accessible_sections %}
                 <li class="nav-item"><a class="nav-link" href="{{ url_for('registrable_groups') }}">{{ i18n('interface.registrable_groups.title') }}</a></li>
+                {% endif %}
+                {% if 'registration_requests' in accessible_sections %}
                 <li class="nav-item"><a class="nav-link" href="{{ url_for('registration_requests') }}">{{ i18n('interface.registration_requests.registration_requests') }}</a></li>
+                {% endif %}
               </ul>
             </li>
           {% endif %}
