@@ -6,7 +6,7 @@ from utils import i18n
 
 class ResourceForm(FlaskForm):
     """Main form for Resource GUI"""
-    type = SelectField(i18n('interface.common.title'), coerce=str)
+    type = SelectField(i18n('interface.common.type'), coerce=str)
     name = StringField(i18n('interface.common.name'), validators=[DataRequired()])
     parent_id = SelectField(
         i18n('interface.resources.parent_resource'), coerce=int, validators=[Optional()]
