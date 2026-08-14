@@ -183,10 +183,16 @@ class PermissionsController(Controller):
 
             # query resource types
             resource_types = OrderedDict()
-            blacklist = self.handler().config().get("resource_blacklist", [])
-            query = session.query(self.ResourceType) \
-                .filter(self.ResourceType.name.notin_(blacklist)) \
-                .order_by(self.ResourceType.list_order, self.ResourceType.name)
+            resource_whitelist = self.handler().config().get("resource_whitelist", [])
+            resource_blacklist = self.handler().config().get("resource_blacklist", [])
+            if resource_whitelist:
+                query = session.query(self.ResourceType) \
+                    .filter(self.ResourceType.name.in_(resource_whitelist)) \
+                    .order_by(self.ResourceType.list_order, self.ResourceType.name)
+            else:
+                query = session.query(self.ResourceType) \
+                    .filter(self.ResourceType.name.notin_(resource_blacklist)) \
+                    .order_by(self.ResourceType.list_order, self.ResourceType.name)
 
             # Resource types whose parent is allowed by default
             parent_default_allow_resources = []

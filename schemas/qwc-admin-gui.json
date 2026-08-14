@@ -157,6 +157,13 @@
       "items": {
         "type": "string"
       }
+    },
+    "resource_whitelist": {
+      "description": "List of resource types to whitelist.",
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
     }
   },
   "required": [
