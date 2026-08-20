@@ -149,7 +149,7 @@ services:
 
 ### Plugins
 
-The admin gui is extendable through plugins, which reside in the `plugins` folder. To enable them, list them in `plugins` in the admin gui configuration. See the JSON schema for details, and for configuration parameters which may be required by plugins shipped by default with `qwc-admin-gui`.
+The admin gui is extendable through plugins, which reside in the `plugins` folder. To enable them, list them in `plugins` in the admin gui configuration. This list is per tenant: in a multi-tenant setup, each tenant only sees and can open the plugins it lists. See the JSON schema for details, and for configuration parameters which may be required by plugins shipped by default with `qwc-admin-gui`.
 
 ### Proxy to internal services
 

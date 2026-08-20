@@ -95,7 +95,7 @@
           "type": "string"
         },
         "plugins": {
-          "description": "List of plugins to load",
+          "description": "List of plugins to load for this tenant",
           "type": "array",
           "items": {
             "type": "string"

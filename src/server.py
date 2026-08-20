@@ -4,12 +4,14 @@ import os
 import re
 import requests
 from shutil import copyfile
+import threading
 import time
 import urllib.parse
 import importlib
 
-from flask import abort, Flask, json, redirect, render_template, request, \
+from flask import abort, Flask, g, json, redirect, render_template, request, \
     Response, stream_with_context, jsonify, send_from_directory
+from flask.globals import request_ctx
 from flask_bootstrap import Bootstrap5
 from flask_wtf.csrf import CSRFProtect
 from flask_mail import Mail
@@ -132,28 +134,110 @@ if app.config.get('QWC_GROUP_REGISTRATION_ENABLED'):
 access_control = AccessControl(handler, app.logger)
 
 
-plugins_loaded = False
-@app.before_request
-def load_plugins():
-    global plugins_loaded
-    if not plugins_loaded:
+# Plugin modules stay in-process after first load (Flask routes are global).
+# The navbar and request gate use the current tenant's `plugins` list.
+_plugin_lock = threading.Lock()
+_loaded_plugins = {}  # plugin id -> {"id", "name"} or None on failure
+_plugin_endpoints = {}  # plugin id -> flask endpoint names registered by that plugin
+_PROBE_PATHS = ('/bootstrap/static/', '/ready', '/healthz')
+
+
+def tenant_plugin_ids():
+    return list(handler().config().get("plugins", []))
+
+
+def _register_plugin(plugin):
+    """Import a plugin and record the endpoints it registers.
+
+    Caller must hold `_plugin_lock` and have cleared `_got_first_request`.
+    """
+    app.logger.info("Loading plugin '%s'" % plugin)
+    try:
+        before = set(app.view_functions)
+        mod = importlib.import_module("plugins." + plugin)
+        mod.load_plugin(app, handler)
+        _loaded_plugins[plugin] = {"id": plugin, "name": mod.name}
+        _plugin_endpoints[plugin] = set(app.view_functions) - before
+    except Exception as e:
+        app.logger.warning("Could not load plugin %s: %s" % (plugin, str(e)))
+        _loaded_plugins[plugin] = None
+        _plugin_endpoints[plugin] = set()
+
+
+def _ensure_tenant_plugins():
+    """Load plugins listed for the current tenant that are not loaded yet.
+
+    Returns True if any new plugin was registered (URL map changed).
+    """
+    missing = [
+        plugin for plugin in tenant_plugin_ids()
+        if plugin not in _loaded_plugins
+    ]
+    if not missing:
+        return False
+
+    with _plugin_lock:
+        missing = [
+            plugin for plugin in tenant_plugin_ids()
+            if plugin not in _loaded_plugins
+        ]
+        if not missing:
+            return False
+
         # HACK to work around
         #     The setup method 'add_url_rule' can no longer be called on the application.
         #     It has already handled its first request, any changes will not be applied consistently.
         # From the flask code, before_request is called immediately after _got_first_request=True, so
         # there should be no harm clearing the flag again temporarily
         app._got_first_request = False
-        plugins_loaded = True
-        app.config['PLUGINS'] = []
-        for plugin in handler().config().get("plugins", []):
-            app.logger.info("Loading plugin '%s'" % plugin)
-            try:
-                mod = importlib.import_module("plugins." + plugin)
-                mod.load_plugin(app, handler)
-                app.config['PLUGINS'].append({"id": plugin, "name": mod.name})
-            except Exception as e:
-                app.logger.warning("Could not load plugin %s: %s" % (plugin, str(e)))
-        app._got_first_request = True
+        try:
+            for plugin in missing:
+                _register_plugin(plugin)
+        finally:
+            app._got_first_request = True
+        return True
+
+
+def _rematch_request():
+    """Re-run URL matching after new plugin routes were registered."""
+    request.routing_exception = None
+    request_ctx.match_request()
+
+
+@app.context_processor
+def inject_admin_plugins():
+    return {"admin_plugins": getattr(g, "admin_plugins", [])}
+
+
+@app.before_request
+def load_plugins():
+    if request.path.startswith(_PROBE_PATHS):
+        g.admin_plugins = []
+        return
+
+    newly_registered = _ensure_tenant_plugins()
+    if newly_registered:
+        _rematch_request()
+
+    plugin_ids = tenant_plugin_ids()
+    g.admin_plugins = [
+        _loaded_plugins[plugin] for plugin in plugin_ids
+        if _loaded_plugins.get(plugin)
+    ]
+
+    if request.endpoint == 'plugin_static':
+        plugin = (request.view_args or {}).get('plugin')
+        if plugin and plugin not in plugin_ids:
+            abort(404)
+        return
+
+    endpoint = request.endpoint
+    if not endpoint:
+        return
+    for plugin, endpoints in _plugin_endpoints.items():
+        if endpoint in endpoints and plugin not in plugin_ids:
+            abort(404)
+            return
 
 
 @app.before_request

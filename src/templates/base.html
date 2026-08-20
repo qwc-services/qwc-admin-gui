@@ -82,7 +82,7 @@
           <li class="nav-item">
             <a class="nav-link" href="{{ url_for('permissions') }}">{{ i18n('interface.permissions.title') }}</a>
           </li>
-          {% for plugin in config['PLUGINS'] %}
+          {% for plugin in admin_plugins %}
               <li class="nav-item">
                 <a class="nav-link" href="{{ url_for(plugin.id) }}">{{ plugin.name }}</a>
               </li>
