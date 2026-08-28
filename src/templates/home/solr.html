@@ -1,0 +1,27 @@
+{% macro controls() %}
+<br><br>
+<button id="update_solr_index" class="btn btn-success">
+  <div class="spinner" style="display: none"></div> Update Solr search index
+</button>
+{% endmacro %}
+
+{% macro tab_button(active) %}
+<button class="nav-link{{ ' active' if active }}" id="nav-solr-tab" data-bs-toggle="tab" data-bs-target="#nav-solr" type="button" role="tab" aria-controls="nav-solr" aria-selected="{{ 'true' if active else 'false' }}">
+  <div class="spinner" style="display: none"></div> Solr index logs
+</button>
+{% endmacro %}
+
+{% macro tab_pane(active) %}
+<div class="tab-pane fade{{ ' show active' if active }}" id="nav-solr" role="tabpanel" aria-labelledby="nav-solr-tab"></div>
+{% endmacro %}
+
+{% macro setup() %}
+  setupAPIRequestButton(
+    '#update_solr_index',
+    "{{ url_for('update_solr_index') }}",
+    [],
+    '#nav-solr',
+    "Updating Solr search index",
+    "Error while updating Solr search index"
+  );
+{% endmacro %}
