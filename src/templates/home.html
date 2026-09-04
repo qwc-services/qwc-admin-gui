@@ -194,17 +194,16 @@ function setupAPIRequestButton(btnSelector, url, options, tabSelector, titleSucc
   <div id="logs" class="row mt-4">
     <nav>
       <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        {# active tab is always config_generator, matching prior behavior #}
         {% for module in modules %}
           {% import 'templates/home/' ~ module.id ~ '.html' as m with context %}
-          {{ m.tab_button(module.id == 'config_generator') }}
+          {{ m.tab_button(module.id == modules[0].id) }}
         {% endfor %}
       </div>
     </nav>
     <div class="tab-content" id="nav-tabContent">
       {% for module in modules %}
         {% import 'templates/home/' ~ module.id ~ '.html' as m with context %}
-        {{ m.tab_pane(module.id == 'config_generator') }}
+        {{ m.tab_pane(module.id == modules[0].id) }}
       {% endfor %}
     </div>
   </div>
