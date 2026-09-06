@@ -1,0 +1,29 @@
+{% macro controls() %}
+<br><br>
+<button id="qgis_server_logs" class="btn btn-success">
+  <div class="spinner" style="display: none"></div> {{ i18n('interface.main.read_qgis_server_logs') }}
+</button>
+<br>
+<label style="padding-top: 0.5em"><input id="qgis_server_log_lines" type="number" min="0" max="10000" value="100" /> {{ i18n('interface.main.qgis_server_log_lines') }}</label>
+{% endmacro %}
+
+{% macro tab_button(active) %}
+<button class="nav-link{{ ' active' if active }}" id="nav-qgisserver-tab" data-bs-toggle="tab" data-bs-target="#nav-qgisserver" type="button" role="tab" aria-controls="nav-qgisserver" aria-selected="{{ 'true' if active else 'false' }}">
+  <div class="spinner" style="display: none"></div> QGIS Server logs
+</button>
+{% endmacro %}
+
+{% macro tab_pane(active) %}
+<div class="tab-pane fade{{ ' show active' if active }}" id="nav-qgisserver" role="tabpanel" aria-labelledby="nav-qgisserver-tab"></div>
+{% endmacro %}
+
+{% macro setup() %}
+  setupAPIRequestButton(
+    '#qgis_server_logs',
+    "{{ url_for('qgis_server_logs') }}",
+    ['qgis_server_log_lines'],
+    '#nav-qgisserver',
+    "",
+    ""
+  );
+{% endmacro %}

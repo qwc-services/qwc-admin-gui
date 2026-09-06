@@ -193,13 +193,8 @@ def logout():
     return redirect(prefix + '/logout?url=%s' % request.url.replace(
         "/logout", ""))
 
-# routes
-@app.route('/')
-def home():
-    config = handler().config()
-    admin_gui_title = config.get('admin_gui_title', i18n('interface.main.title'))
-    admin_gui_subtitle = config.get('admin_gui_subtitle', i18n('interface.main.subtitle'))
-    favicon = config.get('favicon')
+def home_modules(config):
+    """ Return the enabled home page modules, in display order """
     have_config_generator = True if config.get(
         "config_generator_service_url",
         "http://qwc-config-service:9090"
@@ -209,14 +204,28 @@ def home():
         "http://qwc-qgis-server/ows"
     ) else False
     solr_index_update_enabled = True if config.get('solr_service_url', '') else False
+
+    modules = [
+        {'id': 'config_generator', 'enabled': have_config_generator},
+        {'id': 'qgis_server', 'enabled': have_qgis_server},
+        {'id': 'solr', 'enabled': solr_index_update_enabled},
+    ]
+    return [module for module in modules if module['enabled']]
+
+
+# routes
+@app.route('/')
+def home():
+    config = handler().config()
+    admin_gui_title = config.get('admin_gui_title', i18n('interface.main.title'))
+    admin_gui_subtitle = config.get('admin_gui_subtitle', i18n('interface.main.subtitle'))
+    favicon = config.get('favicon')
     return render_template(
         'templates/home.html',
         admin_gui_title=admin_gui_title,
         admin_gui_subtitle=admin_gui_subtitle,
         favicon=favicon,
-        have_config_generator=have_config_generator,
-        have_qgis_server=have_qgis_server,
-        solr_index_update_enabled=solr_index_update_enabled, i18n=i18n
+        modules=home_modules(config), i18n=i18n
     )
 
 

@@ -1,0 +1,28 @@
+{% macro controls() %}
+<br><br>
+<button id="generate_configs" class="btn btn-success" onclick="runConfigGenerator()">
+  {{ i18n('interface.main.generate_configs') }}
+</button>
+<button id="generate_configs_cancel" class="btn btn-danger" style="display: none">
+  {{ i18n('interface.main.generate_configs_cancel') }}
+</button>
+<br>
+<label style="padding-top: 0.5em"><input id="use_cached_project_metadata" type="checkbox" /> {{ i18n('interface.main.use_cached_project_metadata') }}</label>
+<span class="question" title="{{ i18n('interface.main.use_cached_project_metadata_help') }}">?</span>
+<br>
+<label style="padding-top: 0.5em; font-weight: bold; color: red;"><input id="force_readonly_datasets" type="checkbox" /> {{ i18n('interface.main.force_readonly_datasets') }}</label>
+<span class="question" title="{{ i18n('interface.main.force_readonly_datasets_help') }}">?</span>
+{% endmacro %}
+
+{% macro tab_button(active) %}
+<button class="nav-link{{ ' active' if active }}" id="nav-confgen-tab" data-bs-toggle="tab" data-bs-target="#nav-confgen" type="button" role="tab" aria-controls="nav-confgen" aria-selected="{{ 'true' if active else 'false' }}">
+  <div class="spinner" style="display: none"></div> ConfigGenerator logs
+</button>
+{% endmacro %}
+
+{% macro tab_pane(active) %}
+<div class="tab-pane fade{{ ' show active' if active }}" id="nav-confgen" role="tabpanel" aria-labelledby="nav-confgen-tab"></div>
+{% endmacro %}
+
+{# uses its own onclick handler instead #}
+{% macro setup() %}{% endmacro %}
