@@ -3,6 +3,7 @@ from flask_mail import Message
 from sqlalchemy import or_
 from sqlalchemy.orm import joinedload
 
+from admin_access import MANAGE_REGISTRATIONS
 from .controller import Controller
 from forms import RegistrationRequestForm
 
@@ -11,6 +12,8 @@ from utils import i18n
 
 class RegistrationRequestsController(Controller):
     """Controller for registration request model"""
+
+    capability = MANAGE_REGISTRATIONS
 
     def __init__(self, app, handler, mail):
         """Constructor

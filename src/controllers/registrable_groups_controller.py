@@ -1,12 +1,15 @@
 from sqlalchemy import or_
 from sqlalchemy.orm import joinedload
 
+from admin_access import MANAGE_REGISTRATIONS
 from .controller import Controller
 from forms import RegistrableGroupForm
 
 
 class RegistrableGroupsController(Controller):
     """Controller for registrable group model"""
+
+    capability = MANAGE_REGISTRATIONS
 
     def __init__(self, app, handler):
         """Constructor

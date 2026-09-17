@@ -10,6 +10,7 @@ from sqlalchemy.exc import IntegrityError, InternalError
 from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
+from admin_access import MANAGE_RESOURCES
 from .controller import Controller
 from forms import ImportResourceForm, ResourceForm
 from utils import i18n
@@ -17,6 +18,8 @@ from utils import i18n
 
 class ResourcesController(Controller):
     """Controller for resource model"""
+
+    capability = MANAGE_RESOURCES
 
     def __init__(self, app, handler):
         """Constructor
@@ -126,6 +129,7 @@ class ResourcesController(Controller):
         return order_by
 
     def index(self):
+        self.authorize_page()
         """Show resources list."""
         self.setup_models()
 
@@ -250,6 +254,7 @@ class ResourcesController(Controller):
 
         :param int id: Resource ID
         """
+        self.authorize_page()
         # workaround for missing DELETE methods in HTML forms
         #   using hidden form parameter '_method'
         method = request.form.get('_method', request.method).upper()
@@ -305,6 +310,7 @@ class ResourcesController(Controller):
     def destroy_multiple(self):
         """Delete selected resources.
         """
+        self.authorize_page()
         # workaround for missing DELETE methods in HTML forms
         #   using hidden form parameter '_method'
         method = request.form.get('_method', request.method).upper()
@@ -479,6 +485,7 @@ class ResourcesController(Controller):
 
         :param int id: Resource ID
         """
+        self.authorize_page()
         self.setup_models()
 
         # find resource
@@ -555,6 +562,7 @@ class ResourcesController(Controller):
 
     def import_maps(self):
         """Import map resources."""
+        self.authorize_page()
         # get config generator URL
         config_generator_service_url = self.handler().config().get(
             "config_generator_service_url",
@@ -718,6 +726,7 @@ class ResourcesController(Controller):
 
         :param int id: Resource ID
         """
+        self.authorize_page()
         self.setup_models()
 
         # find resource
@@ -828,6 +837,7 @@ class ResourcesController(Controller):
 
         :param int id: Resource ID
         """
+        self.authorize_page()
         self.setup_models()
         template = '%s/import_form.html' % self.templates_dir
         form = self.create_import_form()
@@ -843,6 +853,7 @@ class ResourcesController(Controller):
 
         :param int id: Resource ID
         """
+        self.authorize_page()
         self.setup_models()
         form = self.create_import_form()
         if form.validate_on_submit():

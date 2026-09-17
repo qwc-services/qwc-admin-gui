@@ -1,13 +1,15 @@
 import datetime
 import math
 
-from flask import abort, flash, redirect, render_template, request, url_for
+from flask import abort, flash, g, redirect, render_template, request, url_for
 from markupsafe import Markup
 from sqlalchemy.exc import IntegrityError, InternalError
 from wtforms import ValidationError
 
 from qwc_services_core.config_models import ConfigModels
 
+from admin_access import ASSIGN_ROLE_MEMBERSHIP, group_role_names, \
+    permits, permits_any, user_role_names
 from utils import i18n
 
 
@@ -16,6 +18,9 @@ class Controller:
 
     Add routes for specific controller and provide generic RESTful actions.
     """
+
+    # admin capability required for this controller, set in subclass
+    capability = None
 
     # available options for number of resources shown per page
     PER_PAGE_OPTIONS = [10, 25, 50, 100]
@@ -112,6 +117,136 @@ class Controller:
         """Return primary key column name for resource table (default: 'id')"""
         return 'id'
 
+    # authorization
+
+    def grants(self):
+        """Return admin capability grants of the current identity."""
+        return getattr(g, 'admin_grants', {})
+
+    def authorize_page(self):
+        """Abort unless the identity holds this controller's capability.
+
+        Page-level only - mutations are checked per subject in authorize().
+        """
+        if self.capability is None:
+            return
+        if not permits_any(self.grants(), self.capability):
+            abort(403)
+
+    def authorize(self, resource=None, form=None):
+        """Abort unless the identity may mutate this subject.
+
+        :param object resource: Resource being changed (None for create)
+        :param FlaskForm form: Optional submitted form
+        """
+        if self.capability is None:
+            return
+
+        grants = self.grants()
+        if not permits(grants, self.capability,
+                       self.subject_roles(resource, form)):
+            # a missing capability was already caught by authorize_page(), so
+            # this is an out of scope subject - which must not be
+            # distinguishable from one that does not exist
+            abort(403 if resource is None else 404)
+
+        membership_roles = self.membership_roles(resource, form)
+        if membership_roles and not permits(
+            grants, ASSIGN_ROLE_MEMBERSHIP, membership_roles
+        ):
+            abort(403)
+
+    def subject_roles(self, resource=None, form=None):
+        """Return names of the roles held by the subject being changed, or
+        None if the subject cannot be scoped by role.
+
+        Override in subclasses of scopable resources (users, groups, roles).
+
+        :param object resource: Resource being changed (None for create)
+        :param FlaskForm form: Optional submitted form
+        """
+        return None
+
+    def membership_roles(self, resource=None, form=None):
+        """Return names of the roles whose user or group membership this
+        change adds to or removes from.
+
+        Override in subclasses where a form changes role membership.
+
+        :param object resource: Resource being changed (None for create)
+        :param FlaskForm form: Optional submitted form
+        """
+        return set()
+
+    def scope(self):
+        """Return the role names this controller's capability is limited to,
+        or None if it is held unscoped.
+        """
+        grants = self.grants()
+        if self.capability not in grants:
+            # not granted at all - authorize_page() rejects such requests, so
+            # anything still reaching a query is fully out of scope
+            return set()
+
+        return grants[self.capability]
+
+    def scope_filter(self, query):
+        """Restrict a query to the subjects within scope.
+
+        Override in subclasses of scopable resources (users, groups, roles).
+
+        :param Query query: Query for this controller's model
+        """
+        return query
+
+    def roles_of_users(self, user_ids, session):
+        """Return names of all roles held by the users with the given IDs.
+
+        :param set(int) user_ids: User IDs
+        :param Session session: DB session
+        """
+        if not user_ids:
+            return set()
+
+        roles = set()
+        for user in session.query(self.User).filter(
+            self.User.id.in_(user_ids)
+        ):
+            roles |= user_role_names(user)
+
+        return roles
+
+    def roles_of_groups(self, group_ids, session):
+        """Return names of all roles held by the groups with the given IDs.
+
+        :param set(int) group_ids: Group IDs
+        :param Session session: DB session
+        """
+        if not group_ids:
+            return set()
+
+        roles = set()
+        for group in session.query(self.Group).filter(
+            self.Group.id.in_(group_ids)
+        ):
+            roles |= group_role_names(group)
+
+        return roles
+
+    def role_names_for_ids(self, role_ids, session):
+        """Return names of the roles with the given IDs.
+
+        :param list(int) role_ids: Role IDs
+        :param Session session: DB session
+        """
+        if not role_ids:
+            return set()
+        return {
+            name for (name, ) in session.query(self.Role.name).filter(
+                self.Role.id.in_(role_ids)
+            )
+        }
+
     # index
 
     def resources_for_index_query(self, search_text, session):
@@ -134,13 +269,16 @@ class Controller:
 
     def index(self):
         """Show resources list."""
+        self.authorize_page()
         self.setup_models()
 
         with self.session() as session:
 
             # get resources query
             search_text = self.search_text_arg()
-            query = self.resources_for_index_query(search_text, session)
+            query = self.scope_filter(
+                self.resources_for_index_query(search_text, session)
+            )
 
             # order by sort args
             sort, sort_asc = self.sort_args()
@@ -190,6 +328,7 @@ class Controller:
 
     def new(self):
         """Show new resource form."""
+        self.authorize_page()
         self.setup_models()
         template = '%s/form.html' % self.templates_dir
         form = self.create_form()
@@ -204,8 +343,10 @@ class Controller:
 
     def create(self):
         """Create new resource."""
+        self.authorize_page()
         self.setup_models()
         form = self.create_form()
+        self.authorize(None, form)
         if form.validate_on_submit():
             try:
                 # create and commit resource
@@ -252,12 +393,14 @@ class Controller:
 
         :param int id: Resource ID
         """
+        self.authorize_page()
         self.setup_models()
         # find resource
         with self.session() as session:
             resource = self.find_resource(id, session)
 
             if resource is not None:
+                self.authorize(resource)
                 template = '%s/form.html' % self.templates_dir
                 form = self.create_form(resource, True)
                 title = "%s %s" % (i18n('interface.common.edit'), self.resource_name)
@@ -278,13 +421,16 @@ class Controller:
 
         :param int id: Resource ID
         """
+        self.authorize_page()
         self.setup_models()
         # find resource
         with self.session() as session, session.begin():
             resource = self.find_resource(id, session)
 
             if resource is not None:
+                self.authorize(resource)
                 form = self.create_form(resource)
+                self.authorize(resource, form)
                 if form.validate_on_submit():
                     try:
                         # update and commit resource
@@ -332,12 +478,14 @@ class Controller:
 
         :param int id: Resource ID
         """
+        self.authorize_page()
         self.setup_models()
         # find resource
         with self.session() as session, session.begin():
             resource = self.find_resource(id, session)
 
             if resource is not None:
+                self.authorize(resource)
                 try:
                     # update and commit resource
                     self.destroy_resource(resource, session)

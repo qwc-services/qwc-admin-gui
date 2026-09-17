@@ -8,7 +8,7 @@ import time
 import urllib.parse
 import importlib
 
-from flask import abort, Flask, json, redirect, render_template, request, \
+from flask import abort, Flask, g, json, redirect, render_template, request, \
     Response, stream_with_context, jsonify, send_from_directory
 from flask_bootstrap import Bootstrap5
 from flask_wtf.csrf import CSRFProtect
@@ -20,6 +20,8 @@ from qwc_services_core.tenant_handler import TenantHandler, \
 from qwc_services_core.runtime_config import RuntimeConfig
 from qwc_services_core.database import DatabaseEngine
 from access_control import AccessControl
+from admin_access import AdminAccessControl, CAPABILITIES, SYSTEM_TOOLS, \
+    grants, permits, permits_any, require
 from controllers import UsersController, GroupsController, RolesController, \
     ResourcesController, PermissionsController, RegistrableGroupsController, \
     RegistrationRequestsController
@@ -130,6 +132,11 @@ if app.config.get('QWC_GROUP_REGISTRATION_ENABLED'):
     RegistrationRequestsController(app, handler, mail)
 
 access_control = AccessControl(handler, app.logger)
+admin_access = AdminAccessControl(access_control)
+
+# nav visibility
+app.jinja_env.globals['can'] = lambda capability: permits_any(
+    grants(), capability)
 
 
 plugins_loaded = False
@@ -164,10 +171,12 @@ def assert_admin_role():
 
     identity = get_identity()
     app.logger.debug("Access with identity %s" % identity)
-    if not access_control.is_admin(identity):
+    g.admin_grants = admin_access.grants(identity)
+    if not g.admin_grants:
         if SKIP_LOGIN:
             app.logger.info("Login skipped for user %s" % identity)
-            pass  # Allow access without login
+            # allow access without login, with full admin capabilities
+            g.admin_grants = {capability: None for capability in CAPABILITIES}
         else:
             app.logger.info("Access denied for user %s" % identity)
             prefix = auth_path_prefix()
@@ -220,12 +229,14 @@ def home():
     admin_gui_title = config.get('admin_gui_title', i18n('interface.main.title'))
     admin_gui_subtitle = config.get('admin_gui_subtitle', i18n('interface.main.subtitle'))
     favicon = config.get('favicon')
+    # system tools are only shown to identities holding the capability
+    modules = home_modules(config) if permits(grants(), SYSTEM_TOOLS) else []
     return render_template(
         'templates/home.html',
         admin_gui_title=admin_gui_title,
         admin_gui_subtitle=admin_gui_subtitle,
         favicon=favicon,
-        modules=home_modules(config), i18n=i18n
+        modules=modules, i18n=i18n
     )
 
 
@@ -253,19 +264,23 @@ def proxy_config_generator(endpoint):
     )
 
 @app.route('/generate_configs')
+@require(SYSTEM_TOOLS)
 def generate_configs_start():
     return proxy_config_generator("/generate_configs")
 
 @app.route('/generate_configs_cancel')
+@require(SYSTEM_TOOLS)
 def generate_configs_cancel():
     return proxy_config_generator("/generate_configs_cancel")
 
 @app.route('/generate_configs_status')
+@require(SYSTEM_TOOLS)
 def generate_configs_status():
     return proxy_config_generator("/generate_configs_status")
 
 
 @app.route('/qgis_server_logs', methods=['POST'])
+@require(SYSTEM_TOOLS)
 def qgis_server_logs():
     """ Return qgis server logs """
 
@@ -299,6 +314,7 @@ def qgis_server_logs():
     return (text, response.status_code)
 
 @app.route('/update_solr_index', methods=['POST'])
+@require(SYSTEM_TOOLS)
 def update_solr_index():
     """Update Solr index for a tenant."""
     config = handler().config()

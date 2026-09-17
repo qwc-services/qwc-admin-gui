@@ -5,6 +5,7 @@ from flask import flash, render_template, request, session as flask_session
 from markupsafe import Markup
 from sqlalchemy.orm import joinedload
 
+from admin_access import MANAGE_PERMISSIONS
 from .controller import Controller
 from forms import PermissionForm
 from utils import i18n
@@ -12,6 +13,8 @@ from utils import i18n
 
 class PermissionsController(Controller):
     """Controller for permission model"""
+
+    capability = MANAGE_PERMISSIONS
 
     def __init__(self, app, handler):
         """Constructor
@@ -97,6 +100,7 @@ class PermissionsController(Controller):
         return order_by
 
     def index(self):
+        self.authorize_page()
         """Show permissions list."""
         self.setup_models()
 
