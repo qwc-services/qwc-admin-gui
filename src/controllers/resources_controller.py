@@ -10,6 +10,7 @@ from sqlalchemy.exc import IntegrityError, InternalError
 from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
+from admin_access import MANAGE_RESOURCES
 from .controller import Controller
 from forms import ImportResourceForm, ResourceForm
 from utils import i18n
@@ -17,6 +18,7 @@ from utils import i18n
 
 class ResourcesController(Controller):
     """Controller for resource model"""
+
 
     def __init__(self, app, handler):
         """Constructor
@@ -26,47 +28,47 @@ class ResourcesController(Controller):
         """
         super(ResourcesController, self).__init__(
             "Resource", 'resources', 'resource', 'resources', app,
-            handler
+            handler, MANAGE_RESOURCES
         )
 
         # add custom routes
         base_route = self.base_route
         suffix = self.endpoint_suffix
         # delete cascaded
-        app.add_url_rule(
+        self.add_url_rule(
             '/%s/<int:id>/cascaded' % base_route,
             'destroy_cascaded_%s' % suffix,
             self.destroy_cascaded, methods=['DELETE', 'POST']
         )
         # delete selected
-        app.add_url_rule(
+        self.add_url_rule(
             '/%s/delete_multiple' % base_route,
             'destroy_multiple_%s' % suffix,
             self.destroy_multiple, methods=['DELETE', 'POST']
         )
         # resource hierarchy
-        app.add_url_rule(
+        self.add_url_rule(
             '/%s/<int:id>/hierarchy' % base_route, 'hierarchy_%s' % suffix,
             self.hierarchy, methods=['GET']
         )
         # import maps
-        app.add_url_rule(
+        self.add_url_rule(
             '/%s/import_maps' % base_route, 'import_maps_%s' % suffix,
             self.import_maps, methods=['POST']
         )
         # import resource children
-        app.add_url_rule(
+        self.add_url_rule(
             '/%s/<int:id>/import_children' % base_route,
             'import_children_%s' % suffix,
             self.import_children, methods=['POST']
         )
         # import resources from parent map
-        app.add_url_rule(
+        self.add_url_rule(
             '/%s/<int:id>/import' % base_route,
             'import_%s' % suffix,
             self.import_resources, methods=['GET', 'POST']
         )
-        app.add_url_rule(
+        self.add_url_rule(
             '/%s/<int:id>/import_from_parent_map' % base_route,
             'import_%s_from_parent_map' % suffix,
             self.import_resources_from_parent_map, methods=['GET', 'POST']
@@ -260,7 +262,7 @@ class ResourcesController(Controller):
 
         # find resource
         with self.session() as session, session.begin():
-            resource = self.find_resource(id, session)
+            resource = self.find_authorized_resource(id, session)
 
             if resource is not None:
                 parent_id = resource.parent_id
@@ -318,7 +320,7 @@ class ResourcesController(Controller):
         with self.session() as session, session.begin():
             for id in selected_id_resources:
                 # find resource
-                resource = self.find_resource(id, session)
+                resource = self.find_authorized_resource(id, session)
 
                 if resource is not None:
                     try:
@@ -483,7 +485,7 @@ class ResourcesController(Controller):
 
         # find resource
         with self.session() as session:
-            resource = self.find_resource(id, session)
+            resource = self.find_authorized_resource(id, session)
 
             if resource is not None:
                 # get root resource
@@ -722,7 +724,7 @@ class ResourcesController(Controller):
 
         # find resource
         with self.session() as session:
-            resource = self.find_resource(id, session)
+            resource = self.find_authorized_resource(id, session)
 
         if resource is not None:
             # get config generator URL
@@ -849,7 +851,9 @@ class ResourcesController(Controller):
             try:
                 # find resource
                 with self.session() as session:
-                    parent_resource = self.find_resource(id, session)
+                    parent_resource = self.find_authorized_resource(
+                        id, session
+                    )
                 if parent_resource is not None:
                     # get config generator URL
                     config_generator_service_url = self.handler().config().get(

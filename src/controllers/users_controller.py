@@ -4,6 +4,8 @@ import secrets
 from flask import json, flash, redirect, render_template, url_for
 from flask_mail import Message
 
+from admin_access import MANAGE_USERS, group_in_scope, user_in_scope, \
+    user_role_names
 from .controller import Controller
 from forms import UserForm
 
@@ -11,6 +13,7 @@ from utils import i18n
 
 class UsersController(Controller):
     """Controller for user model"""
+
 
     def __init__(self, app, handler, mail):
         """Constructor
@@ -20,13 +23,13 @@ class UsersController(Controller):
         :param flask_mail.Mail mail: Application mailer
         """
         super(UsersController, self).__init__(
-            "User", 'users', 'user', 'users', app, handler
+            "User", 'users', 'user', 'users', app, handler, MANAGE_USERS
         )
 
         self.mail = mail
 
         # send mail
-        app.add_url_rule(
+        self.add_url_rule(
             '/%s/<int:id>/sendmail' % self.base_route, 'sendmail_%s' % self.endpoint_suffix, self.reset_password_send_invite,
             methods=['GET']
         )
@@ -70,6 +73,57 @@ class UsersController(Controller):
         """
         return session.query(self.User).filter_by(id=id).first()
 
+    # authorization
+
+    def scope_filter(self, query):
+        """Restrict a users query to users whose every role is within scope.
+
+        :param Query query: Query for users
+        """
+        scope = self.scope()
+        if scope is None:
+            return query
+
+        return query.filter(
+            user_in_scope(self.User, self.Group, self.Role, scope)
+        )
+
+    def subject_roles(self, resource=None, form=None):
+        """Return the roles the user holds, plus any the form would add.
+
+        :param object resource: Optional user object (None for create)
+        :param FlaskForm form: Optional form for user
+        """
+        roles = set()
+        if resource is not None:
+            roles |= user_role_names(resource)
+        if form is not None:
+            with self.session() as session:
+                roles |= self.role_names_for_ids(form.roles.data, session)
+                # groups confer their roles on their members
+                roles |= self.roles_of_groups(
+                    set(form.groups.data or []), session
+                )
+
+        return roles
+
+    def membership_roles(self, resource=None, form=None):
+        """Return the roles this user is added to or removed from.
+
+        :param object resource: Optional user object (None for create)
+        :param FlaskForm form: Optional form for user
+        """
+        if form is None:
+            return set()
+
+        current = set()
+        if resource is not None:
+            current = {role.name for role in resource.roles_collection}
+        with self.session() as session:
+            submitted = self.role_names_for_ids(form.roles.data, session)
+
+        return current ^ submitted
+
     def create_form(self, resource=None, edit_form=False):
         """Return form with fields loaded from DB.
 
@@ -102,8 +156,36 @@ class UsersController(Controller):
                 resource, edit_form, form.roles, self.Role, 'sorted_roles', 'id',
                 'name', session
             )
+            self.restrict_choices(form, session)
 
         return form
+
+    def restrict_choices(self, form, session):
+        """Drop roles and groups outside the scope of the identity's grant
+        from the form choices.
+
+        A user within scope only holds roles within scope - directly and
+        through their groups - so this never drops one of their own relations.
+
+        :param FlaskForm form: Form for user
+        :param Session session: DB session
+        """
+        scope = self.scope()
+        if scope is None:
+            return
+
+        form.roles.choices = [
+            choice for choice in form.roles.choices if choice[1] in scope
+        ]
+        groups_in_scope = {
+            group.id for group in session.query(self.Group).filter(
+                group_in_scope(self.Group, self.Role, scope)
+            )
+        }
+        form.groups.choices = [
+            choice for choice in form.groups.choices
+            if choice[0] in groups_in_scope
+        ]
 
     def create_or_update_resources(self, resource, form, session):
         """Create or update user records in DB.
@@ -196,7 +278,7 @@ class UsersController(Controller):
         self.setup_models()
         # find user
         with self.session() as session, session.begin():
-            user = self.find_resource(id, session)
+            user = self.authorized_resource(id, session)
 
             if not user or not user.email:
                 flash(
