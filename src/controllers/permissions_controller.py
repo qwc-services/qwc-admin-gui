@@ -14,7 +14,6 @@ from utils import i18n
 class PermissionsController(Controller):
     """Controller for permission model"""
 
-    capability = MANAGE_PERMISSIONS
 
     def __init__(self, app, handler):
         """Constructor
@@ -24,7 +23,7 @@ class PermissionsController(Controller):
         """
         super(PermissionsController, self).__init__(
             "Permission", 'permissions', 'permission', 'permissions', app,
-            handler
+            handler, MANAGE_PERMISSIONS
         )
 
     def resources_for_index_query(self, search_text, role, resource_type,
@@ -100,7 +99,6 @@ class PermissionsController(Controller):
         return order_by
 
     def index(self):
-        self.authorize_page()
         """Show permissions list."""
         self.setup_models()
 

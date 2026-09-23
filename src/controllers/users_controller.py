@@ -14,7 +14,6 @@ from utils import i18n
 class UsersController(Controller):
     """Controller for user model"""
 
-    capability = MANAGE_USERS
 
     def __init__(self, app, handler, mail):
         """Constructor
@@ -24,13 +23,14 @@ class UsersController(Controller):
         :param flask_mail.Mail mail: Application mailer
         """
         super(UsersController, self).__init__(
-            "User", 'users', 'user', 'users', app, handler
+            "User", 'users', 'user', 'users', app, handler, MANAGE_USERS
         )
 
         self.mail = mail
 
         # send mail
-        app.add_url_rule(
+        self.add_url_rule(
+            app,
             '/%s/<int:id>/sendmail' % self.base_route, 'sendmail_%s' % self.endpoint_suffix, self.reset_password_send_invite,
             methods=['GET']
         )
@@ -69,14 +69,10 @@ class UsersController(Controller):
     def find_resource(self, id, session):
         """Find user by ID.
 
-        Users outside the scope of the identity's grant are not found.
-
         :param int id: User ID
         :param Session session: DB session
         """
-        return self.scope_filter(
-            session.query(self.User).filter_by(id=id)
-        ).first()
+        return session.query(self.User).filter_by(id=id).first()
 
     # authorization
 
@@ -273,7 +269,6 @@ class UsersController(Controller):
 
         :param int id: User ID
         """
-        self.authorize_page()
         if not self.app.config.get("MAIL_USERNAME", None):
             flash(
                 i18n('interface.users.no_mail_config'),
@@ -284,9 +279,7 @@ class UsersController(Controller):
         self.setup_models()
         # find user
         with self.session() as session, session.begin():
-            user = self.find_resource(id, session)
-            if user is not None:
-                self.authorize(user)
+            user = self.authorized_resource(id, session)
 
             if not user or not user.email:
                 flash(

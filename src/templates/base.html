@@ -92,11 +92,13 @@
             <a class="nav-link" href="{{ url_for('permissions') }}">{{ i18n('interface.permissions.title') }}</a>
           </li>
           {% endif %}
+          {% if is_admin() %}
           {% for plugin in config['PLUGINS'] %}
               <li class="nav-item">
                 <a class="nav-link" href="{{ url_for(plugin.id) }}">{{ plugin.name }}</a>
               </li>
           {% endfor %}
+          {% endif %}
           {% if config['QWC_GROUP_REGISTRATION_ENABLED'] and can('manage_registrations') %}
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="reg_dropdown" data-bs-toggle="dropdown" aria-expanded="false">{{ i18n('interface.main.registration_title') }}</a>

@@ -6,7 +6,6 @@ from forms import GroupForm
 class GroupsController(Controller):
     """Controller for group model"""
 
-    capability = MANAGE_GROUPS
 
     def __init__(self, app, handler):
         """Constructor
@@ -15,7 +14,8 @@ class GroupsController(Controller):
         :param handler: Tenant config handler
         """
         super(GroupsController, self).__init__(
-            "Group", 'groups', 'group', 'groups', app, handler
+            "Group", 'groups', 'group', 'groups', app, handler,
+            MANAGE_GROUPS
         )
 
     def resources_for_index_query(self, search_text, session):
@@ -52,14 +52,10 @@ class GroupsController(Controller):
     def find_resource(self, id, session):
         """Find group by ID.
 
-        Groups outside the scope of the identity's grant are not found.
-
         :param int id: Group ID
         :param Session session: DB session
         """
-        return self.scope_filter(
-            session.query(self.Group).filter_by(id=id)
-        ).first()
+        return session.query(self.Group).filter_by(id=id).first()
 
     # authorization
 

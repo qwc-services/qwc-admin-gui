@@ -8,9 +8,7 @@ Capabilities are ordinary ConfigDB resources/permissions
                             resource name = the role the grant is limited to
 """
 
-import functools
-
-from flask import abort, g
+from flask import g
 from sqlalchemy import and_
 
 
@@ -42,6 +40,13 @@ SCOPED_CAPABILITIES = {
 ADMIN_ONLY_CAPABILITIES = {MANAGE_PERMISSIONS}
 
 ADMIN_ROLE_NAME = 'admin'
+
+# declares a route open to every identity holding any admin capability
+ANY_CAPABILITY = 'any'
+
+# endpoint -> capability required to reach it, filled in by
+# Controller.add_url_rule() and @require
+ROUTE_CAPABILITIES = {}
 
 
 def permits(grants, capability, subject_roles=None):
@@ -128,21 +133,46 @@ def grants():
     return getattr(g, 'admin_grants', {})
 
 
+def is_admin(grants):
+    """Return whether grants are those of the admin role.
+
+    Only the admin role holds the capabilities that are never delegated.
+
+    :param dict grants: capability -> None (unscoped) or set of role names
+    """
+    return ADMIN_ONLY_CAPABILITIES <= grants.keys()
+
+
 def require(capability):
-    """Route decorator: abort with 403 unless `capability` is granted.
+    """Route decorator: declare the capability required to reach a route.
 
-    For routes without a role-scopable subject (e.g. the system tools).
+    Place it below ``@app.route``, which must not be given an explicit
+    endpoint - the endpoint is taken from the function name, just as Flask
+    does. A mismatch leaves the route admin-only rather than open.
 
-    :param str capability: One of CAPABILITIES
+    :param str capability: One of CAPABILITIES, or ANY_CAPABILITY
     """
     def decorator(view):
-        @functools.wraps(view)
-        def wrapper(*args, **kwargs):
-            if not permits(grants(), capability):
-                abort(403)
-            return view(*args, **kwargs)
-        return wrapper
+        ROUTE_CAPABILITIES[view.__name__] = capability
+        return view
     return decorator
+
+
+def route_permitted(endpoint, grants):
+    """Return whether grants allow reaching a route.
+
+    :param str endpoint: Flask endpoint of the route
+    :param dict grants: capability -> None (unscoped) or set of role names
+    """
+    capability = ROUTE_CAPABILITIES.get(endpoint)
+    if capability is None:
+        # nothing declared - admin only
+        return is_admin(grants)
+    if capability == ANY_CAPABILITY:
+        return bool(grants)
+
+    # scoped or not - which subjects the scope reaches is up to the controller
+    return permits_any(grants, capability)
 
 
 class AdminAccessControl:

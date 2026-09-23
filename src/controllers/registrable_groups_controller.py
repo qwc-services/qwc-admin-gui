@@ -9,7 +9,6 @@ from forms import RegistrableGroupForm
 class RegistrableGroupsController(Controller):
     """Controller for registrable group model"""
 
-    capability = MANAGE_REGISTRATIONS
 
     def __init__(self, app, handler):
         """Constructor
@@ -19,7 +18,7 @@ class RegistrableGroupsController(Controller):
         """
         super(RegistrableGroupsController, self).__init__(
             "Registrable Group", 'registrable_groups', 'registrable_group',
-            'registrable_groups', app, handler
+            'registrable_groups', app, handler, MANAGE_REGISTRATIONS
         )
 
     def resources_for_index_query(self, search_text, session):

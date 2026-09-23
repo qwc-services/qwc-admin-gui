@@ -8,8 +8,8 @@ from wtforms import ValidationError
 
 from qwc_services_core.config_models import ConfigModels
 
-from admin_access import ASSIGN_ROLE_MEMBERSHIP, group_role_names, \
-    permits, permits_any, user_role_names
+from admin_access import ASSIGN_ROLE_MEMBERSHIP, CAPABILITIES, \
+    ROUTE_CAPABILITIES, group_role_names, permits, user_role_names
 from utils import i18n
 
 
@@ -19,16 +19,13 @@ class Controller:
     Add routes for specific controller and provide generic RESTful actions.
     """
 
-    # admin capability required for this controller, set in subclass
-    capability = None
-
     # available options for number of resources shown per page
     PER_PAGE_OPTIONS = [10, 25, 50, 100]
     # default number of resources shown per page
     DEFAULT_PER_PAGE = 10
 
     def __init__(self, resource_name, base_route, endpoint_suffix,
-                 templates_dir, app, handler):
+                 templates_dir, app, handler, capability):
         """Constructor
 
         :param str resource_name: Visible name of resource (e.g. 'User')
@@ -37,7 +34,17 @@ class Controller:
         :param str templates_dir: Subdir for resource templates (e.g. 'users')
         :param Flask app: Flask application
         :param handler: Tenant config handler
+        :param str capability: Admin capability required for this controller
+                               (one of admin_access.CAPABILITIES)
         """
+        if capability not in CAPABILITIES:
+            raise ValueError(
+                "%s: '%s' is not an admin capability, every controller "
+                "must declare the one it requires"
+                % (type(self).__name__, capability)
+            )
+
+        self.capability = capability
         self.resource_name = i18n('interface.common.%s'% endpoint_suffix) or resource_name
         self.base_route = base_route
         self.endpoint_suffix = endpoint_suffix
@@ -57,39 +64,54 @@ class Controller:
         suffix = self.endpoint_suffix
 
         # index
-        app.add_url_rule(
-            '/%s' % base_route, base_route, self.index, methods=['GET']
+        self.add_url_rule(
+            app, '/%s' % base_route, base_route, self.index, methods=['GET']
         )
         # new
-        app.add_url_rule(
-            '/%s/new' % base_route, 'new_%s' % suffix, self.new,
+        self.add_url_rule(
+            app, '/%s/new' % base_route, 'new_%s' % suffix, self.new,
             methods=['GET']
         )
         # create
-        app.add_url_rule(
-            '/%s' % base_route, 'create_%s' % suffix, self.create,
+        self.add_url_rule(
+            app, '/%s' % base_route, 'create_%s' % suffix, self.create,
             methods=['POST']
         )
         # edit
-        app.add_url_rule(
-            '/%s/<int:id>/edit' % base_route, 'edit_%s' % suffix, self.edit,
-            methods=['GET']
+        self.add_url_rule(
+            app, '/%s/<int:id>/edit' % base_route, 'edit_%s' % suffix,
+            self.edit, methods=['GET']
         )
         # update
-        app.add_url_rule(
-            '/%s/<int:id>' % base_route, 'update_%s' % suffix, self.update,
-            methods=['PUT']
+        self.add_url_rule(
+            app, '/%s/<int:id>' % base_route, 'update_%s' % suffix,
+            self.update, methods=['PUT']
         )
         # delete
-        app.add_url_rule(
-            '/%s/<int:id>' % base_route, 'destroy_%s' % suffix, self.destroy,
-            methods=['DELETE']
+        self.add_url_rule(
+            app, '/%s/<int:id>' % base_route, 'destroy_%s' % suffix,
+            self.destroy, methods=['DELETE']
         )
         # update or delete
-        app.add_url_rule(
-            '/%s/<int:id>' % base_route, 'modify_%s' % suffix, self.modify,
-            methods=['POST']
+        self.add_url_rule(
+            app, '/%s/<int:id>' % base_route, 'modify_%s' % suffix,
+            self.modify, methods=['POST']
         )
+
+    def add_url_rule(self, app, rule, endpoint, view_func, **options):
+        """Add a route for this controller, requiring its capability.
+
+        Use this instead of ``app.add_url_rule`` for every route a controller
+        adds, including custom ones. A route added directly on the app still
+        works, but only for the admin role.
+
+        :param Flask app: Flask application
+        :param str rule: URL rule
+        :param str endpoint: Endpoint name
+        :param view_func: View function
+        """
+        ROUTE_CAPABILITIES[endpoint] = self.capability
+        app.add_url_rule(rule, endpoint, view_func, **options)
 
     def setup_models(self):
         config_handler = self.handler()
@@ -118,41 +140,65 @@ class Controller:
         return 'id'
 
     # authorization
+    #
+    # Three checks cover every request:
+    # A controller declares its capability in the constructor and for
+    # resources that can be scoped to a role, overrides scope_filter()
+    # and subject_roles().
+    #
+    #   route check (server.assert_admin_role)
+    #       Is the capability granted at all? Runs before every request,
+    #       against the capability add_url_rule() recorded for the route and
+    #       aborts with 403. Routes nobody declared a capability for are
+    #       only for admins.
+    #
+    #   find_authorized_resource()
+    #       Is this subject within the granted scope? Replaces find_resource()
+    #       wherever a single resource is looked up by ID, and returns None for
+    #       an out of scope subject so that it reads as "not found".
+    #
+    #   authorize_change()
+    #       Would the submitted form move the subject out of scope or change
+    #       role membership? Runs in create() and update() before anything is
+    #       written and aborts with 403.
 
     def grants(self):
         """Return admin capability grants of the current identity."""
         return getattr(g, 'admin_grants', {})
 
-    def authorize_page(self):
-        """Abort unless the identity holds this controller's capability.
+    def find_authorized_resource(self, id, session):
+        """Find a resource by ID  unless it is outside the granted scope.
 
-        Page-level only - mutations are checked per subject in authorize().
+        Out of scope subjects are reported as missing rather than forbidden,
+        so that they are not discoverable by ID.
+
+        :param int id: Resource ID
+        :param Session session: DB session
         """
-        if self.capability is None:
-            return
-        if not permits_any(self.grants(), self.capability):
-            abort(403)
+        resource = self.find_resource(id, session)
+        if resource is None:
+            return None
 
-    def authorize(self, resource=None, form=None):
-        """Abort unless the identity may mutate this subject.
+        if not permits(self.grants(), self.capability,
+                       self.subject_roles(resource)):
+            return None
+
+        return resource
+
+    def authorize_change(self, resource, form):
+        """Abort unless the identity may save this form.
 
         :param object resource: Resource being changed (None for create)
-        :param FlaskForm form: Optional submitted form
+        :param FlaskForm form: Submitted form
         """
-        if self.capability is None:
-            return
-
-        grants = self.grants()
-        if not permits(grants, self.capability,
+        identity_grants = self.grants()
+        if not permits(identity_grants, self.capability,
                        self.subject_roles(resource, form)):
-            # a missing capability was already caught by authorize_page(), so
-            # this is an out of scope subject - which must not be
-            # distinguishable from one that does not exist
-            abort(403 if resource is None else 404)
+            abort(403)
 
         membership_roles = self.membership_roles(resource, form)
         if membership_roles and not permits(
-            grants, ASSIGN_ROLE_MEMBERSHIP, membership_roles
+            identity_grants, ASSIGN_ROLE_MEMBERSHIP, membership_roles
         ):
             abort(403)
 
@@ -161,6 +207,8 @@ class Controller:
         None if the subject cannot be scoped by role.
 
         Override in subclasses of scopable resources (users, groups, roles).
+        Include the roles the form would add, not just the ones the subject
+        holds already.
 
         :param object resource: Resource being changed (None for create)
         :param FlaskForm form: Optional submitted form
@@ -184,16 +232,17 @@ class Controller:
         """
         grants = self.grants()
         if self.capability not in grants:
-            # not granted at all - authorize_page() rejects such requests, so
+            # not granted at all - the route check rejects such requests, so
             # anything still reaching a query is fully out of scope
             return set()
 
         return grants[self.capability]
 
     def scope_filter(self, query):
-        """Restrict a query to the subjects within scope.
+        """Restrict a resources list query to the subjects within scope.
 
         Override in subclasses of scopable resources (users, groups, roles).
+        Single resources are filtered by find_authorized_resource() instead.
 
         :param Query query: Query for this controller's model
         """
@@ -241,6 +290,7 @@ class Controller:
         """
         if not role_ids:
             return set()
+
         return {
             name for (name, ) in session.query(self.Role.name).filter(
                 self.Role.id.in_(role_ids)
@@ -269,7 +319,6 @@ class Controller:
 
     def index(self):
         """Show resources list."""
-        self.authorize_page()
         self.setup_models()
 
         with self.session() as session:
@@ -328,7 +377,6 @@ class Controller:
 
     def new(self):
         """Show new resource form."""
-        self.authorize_page()
         self.setup_models()
         template = '%s/form.html' % self.templates_dir
         form = self.create_form()
@@ -343,10 +391,9 @@ class Controller:
 
     def create(self):
         """Create new resource."""
-        self.authorize_page()
         self.setup_models()
         form = self.create_form()
-        self.authorize(None, form)
+        self.authorize_change(None, form)
         if form.validate_on_submit():
             try:
                 # create and commit resource
@@ -393,14 +440,12 @@ class Controller:
 
         :param int id: Resource ID
         """
-        self.authorize_page()
         self.setup_models()
         # find resource
         with self.session() as session:
-            resource = self.find_resource(id, session)
+            resource = self.find_authorized_resource(id, session)
 
             if resource is not None:
-                self.authorize(resource)
                 template = '%s/form.html' % self.templates_dir
                 form = self.create_form(resource, True)
                 title = "%s %s" % (i18n('interface.common.edit'), self.resource_name)
@@ -421,16 +466,14 @@ class Controller:
 
         :param int id: Resource ID
         """
-        self.authorize_page()
         self.setup_models()
         # find resource
         with self.session() as session, session.begin():
-            resource = self.find_resource(id, session)
+            resource = self.find_authorized_resource(id, session)
 
             if resource is not None:
-                self.authorize(resource)
                 form = self.create_form(resource)
-                self.authorize(resource, form)
+                self.authorize_change(resource, form)
                 if form.validate_on_submit():
                     try:
                         # update and commit resource
@@ -478,14 +521,12 @@ class Controller:
 
         :param int id: Resource ID
         """
-        self.authorize_page()
         self.setup_models()
         # find resource
         with self.session() as session, session.begin():
-            resource = self.find_resource(id, session)
+            resource = self.find_authorized_resource(id, session)
 
             if resource is not None:
-                self.authorize(resource)
                 try:
                     # update and commit resource
                     self.destroy_resource(resource, session)

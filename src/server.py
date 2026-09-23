@@ -20,8 +20,9 @@ from qwc_services_core.tenant_handler import TenantHandler, \
 from qwc_services_core.runtime_config import RuntimeConfig
 from qwc_services_core.database import DatabaseEngine
 from access_control import AccessControl
-from admin_access import AdminAccessControl, CAPABILITIES, SYSTEM_TOOLS, \
-    grants, permits, permits_any, require
+from admin_access import AdminAccessControl, ANY_CAPABILITY, CAPABILITIES, \
+    ROUTE_CAPABILITIES, SYSTEM_TOOLS, grants, is_admin, permits, permits_any, \
+    require, route_permitted
 from controllers import UsersController, GroupsController, RolesController, \
     ResourcesController, PermissionsController, RegistrableGroupsController, \
     RegistrationRequestsController
@@ -137,6 +138,10 @@ admin_access = AdminAccessControl(access_control)
 # nav visibility
 app.jinja_env.globals['can'] = lambda capability: permits_any(
     grants(), capability)
+app.jinja_env.globals['is_admin'] = lambda: is_admin(grants())
+
+# stylesheets and scripts of every page
+ROUTE_CAPABILITIES['static'] = ANY_CAPABILITY
 
 
 plugins_loaded = False
@@ -195,8 +200,17 @@ def assert_admin_role():
             else:
                 return redirect(prefix + '/login?url=%s' % request.url)
 
+    # unknown URLs are left to Flask's 404
+    if request.endpoint is not None and \
+            not route_permitted(request.endpoint, g.admin_grants):
+        app.logger.info(
+            "Access to %s denied for user %s" % (request.endpoint, identity)
+        )
+        abort(403)
+
 
 @app.route('/logout')
+@require(ANY_CAPABILITY)
 def logout():
     prefix = auth_path_prefix()
     return redirect(prefix + '/logout?url=%s' % request.url.replace(
@@ -224,6 +238,7 @@ def home_modules(config):
 
 # routes
 @app.route('/')
+@require(ANY_CAPABILITY)
 def home():
     config = handler().config()
     admin_gui_title = config.get('admin_gui_title', i18n('interface.main.title'))

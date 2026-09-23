@@ -9,7 +9,6 @@ from wtforms import ValidationError
 class RolesController(Controller):
     """Controller for role model"""
 
-    capability = MANAGE_ROLES
 
     # name of admin iam.role
     ADMIN_ROLE_NAME = 'admin'
@@ -21,7 +20,7 @@ class RolesController(Controller):
         :param handler: Tenant config handler
         """
         super(RolesController, self).__init__(
-            "Role", 'roles', 'role', 'roles', app, handler
+            "Role", 'roles', 'role', 'roles', app, handler, MANAGE_ROLES
         )
 
     def resources_for_index_query(self, search_text, session):
@@ -58,14 +57,10 @@ class RolesController(Controller):
     def find_resource(self, id, session):
         """Find role by ID.
 
-        Roles outside the scope of the identity's grant are not found.
-
         :param int id: Role ID
         :param Session session: DB session
         """
-        return self.scope_filter(
-            session.query(self.Role).filter_by(id=id)
-        ).first()
+        return session.query(self.Role).filter_by(id=id).first()
 
     # authorization
 

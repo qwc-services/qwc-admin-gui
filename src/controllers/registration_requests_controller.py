@@ -13,7 +13,6 @@ from utils import i18n
 class RegistrationRequestsController(Controller):
     """Controller for registration request model"""
 
-    capability = MANAGE_REGISTRATIONS
 
     def __init__(self, app, handler, mail):
         """Constructor
@@ -24,7 +23,8 @@ class RegistrationRequestsController(Controller):
         """
         super(RegistrationRequestsController, self).__init__(
             "Registration request", 'registration_requests',
-            'registration_request', 'registration_requests', app, handler
+            'registration_request', 'registration_requests', app, handler,
+            MANAGE_REGISTRATIONS
         )
 
         self.mail = mail
