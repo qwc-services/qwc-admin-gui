@@ -53,65 +53,61 @@ class Controller:
         self.logger = app.logger
         self.handler = handler
 
-        self.add_routes(app)
+        self.add_routes()
 
-    def add_routes(self, app):
-        """Add routes for this controller.
-
-        :param Flask app: Flask application
-        """
+    def add_routes(self):
+        """Add routes for this controller."""
         base_route = self.base_route
         suffix = self.endpoint_suffix
 
         # index
         self.add_url_rule(
-            app, '/%s' % base_route, base_route, self.index, methods=['GET']
+            '/%s' % base_route, base_route, self.index, methods=['GET']
         )
         # new
         self.add_url_rule(
-            app, '/%s/new' % base_route, 'new_%s' % suffix, self.new,
+            '/%s/new' % base_route, 'new_%s' % suffix, self.new,
             methods=['GET']
         )
         # create
         self.add_url_rule(
-            app, '/%s' % base_route, 'create_%s' % suffix, self.create,
+            '/%s' % base_route, 'create_%s' % suffix, self.create,
             methods=['POST']
         )
         # edit
         self.add_url_rule(
-            app, '/%s/<int:id>/edit' % base_route, 'edit_%s' % suffix,
+            '/%s/<int:id>/edit' % base_route, 'edit_%s' % suffix,
             self.edit, methods=['GET']
         )
         # update
         self.add_url_rule(
-            app, '/%s/<int:id>' % base_route, 'update_%s' % suffix,
+            '/%s/<int:id>' % base_route, 'update_%s' % suffix,
             self.update, methods=['PUT']
         )
         # delete
         self.add_url_rule(
-            app, '/%s/<int:id>' % base_route, 'destroy_%s' % suffix,
+            '/%s/<int:id>' % base_route, 'destroy_%s' % suffix,
             self.destroy, methods=['DELETE']
         )
         # update or delete
         self.add_url_rule(
-            app, '/%s/<int:id>' % base_route, 'modify_%s' % suffix,
+            '/%s/<int:id>' % base_route, 'modify_%s' % suffix,
             self.modify, methods=['POST']
         )
 
-    def add_url_rule(self, app, rule, endpoint, view_func, **options):
+    def add_url_rule(self, rule, endpoint, view_func, **options):
         """Add a route for this controller, requiring its capability.
 
         Use this instead of ``app.add_url_rule`` for every route a controller
         adds, including custom ones. A route added directly on the app still
         works, but only for the admin role.
 
-        :param Flask app: Flask application
         :param str rule: URL rule
         :param str endpoint: Endpoint name
         :param view_func: View function
         """
         ROUTE_CAPABILITIES[endpoint] = self.capability
-        app.add_url_rule(rule, endpoint, view_func, **options)
+        self.app.add_url_rule(rule, endpoint, view_func, **options)
 
     def setup_models(self):
         config_handler = self.handler()

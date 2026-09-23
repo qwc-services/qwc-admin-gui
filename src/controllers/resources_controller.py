@@ -36,46 +36,39 @@ class ResourcesController(Controller):
         suffix = self.endpoint_suffix
         # delete cascaded
         self.add_url_rule(
-            app,
             '/%s/<int:id>/cascaded' % base_route,
             'destroy_cascaded_%s' % suffix,
             self.destroy_cascaded, methods=['DELETE', 'POST']
         )
         # delete selected
         self.add_url_rule(
-            app,
             '/%s/delete_multiple' % base_route,
             'destroy_multiple_%s' % suffix,
             self.destroy_multiple, methods=['DELETE', 'POST']
         )
         # resource hierarchy
         self.add_url_rule(
-            app,
             '/%s/<int:id>/hierarchy' % base_route, 'hierarchy_%s' % suffix,
             self.hierarchy, methods=['GET']
         )
         # import maps
         self.add_url_rule(
-            app,
             '/%s/import_maps' % base_route, 'import_maps_%s' % suffix,
             self.import_maps, methods=['POST']
         )
         # import resource children
         self.add_url_rule(
-            app,
             '/%s/<int:id>/import_children' % base_route,
             'import_children_%s' % suffix,
             self.import_children, methods=['POST']
         )
         # import resources from parent map
         self.add_url_rule(
-            app,
             '/%s/<int:id>/import' % base_route,
             'import_%s' % suffix,
             self.import_resources, methods=['GET', 'POST']
         )
         self.add_url_rule(
-            app,
             '/%s/<int:id>/import_from_parent_map' % base_route,
             'import_%s_from_parent_map' % suffix,
             self.import_resources_from_parent_map, methods=['GET', 'POST']

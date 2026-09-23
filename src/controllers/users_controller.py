@@ -30,7 +30,6 @@ class UsersController(Controller):
 
         # send mail
         self.add_url_rule(
-            app,
             '/%s/<int:id>/sendmail' % self.base_route, 'sendmail_%s' % self.endpoint_suffix, self.reset_password_send_invite,
             methods=['GET']
         )
