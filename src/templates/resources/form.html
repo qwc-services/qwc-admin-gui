@@ -6,7 +6,7 @@
 <script src="{{ url_for('static', filename='js/chosen.jquery.min.js') }}"></script>
 <script type="text/javascript">
   $(function() {
-    var updateNameChoices = function() {
+    var updateNameChoices = function(clearValue = true) {
         var name_choices = {{ form.name_choices | tojson }};
         // get selected resource type
         var resource_type = $('#type').find('option:selected').val();
@@ -23,7 +23,7 @@
         });
         if (choices.length > 0) {
           $('#name').val(choices[0]);
-        } else {
+        } else if (clearValue) {
           $('#name').val('');
         }
 
@@ -98,7 +98,7 @@
     $('#type').change(filterParents);
     $('#name-options').change(setName);
 
-    updateNameChoices();
+    updateNameChoices(false);
     filterParents();
 
     // initialize Chosen jQuery plugin
