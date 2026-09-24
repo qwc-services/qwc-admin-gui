@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from copy import deepcopy
 from flask import abort, flash, redirect, render_template, request, url_for
 from wtforms import ValidationError
 from sqlalchemy.exc import IntegrityError, InternalError
@@ -372,13 +373,21 @@ class ThemesController:
         return redirect(url_for("themes"))
 
     def save_themesconfig(self):
-        if ThemeUtils.save_themesconfig(self.themesconfig, self.app, self.handler):
+        self.write_themesconfig(self.themesconfig)
+        return redirect(url_for("themes"))
+
+    def write_themesconfig(self, themesconfig):
+        """Save themesconfig and flash the result, return whether it was saved.
+
+        :param dict themesconfig: Themes configuration
+        """
+        if ThemeUtils.save_themesconfig(themesconfig, self.app, self.handler):
             flash(i18n('plugins.themes.themes.save_theme_message_success'), "success")
+            return True
         else:
             flash(i18n('plugins.themes.themes.save_theme_message_error'),
                   "error")
-
-        return redirect(url_for("themes"))
+            return False
 
     def reset_themesconfig(self):
         self.themesconfig = ThemeUtils.load_themesconfig(self.app, self.handler)
@@ -765,16 +774,18 @@ class ThemesController:
             item = ThemeUtils.merge_theme_item(
                 theme, item, form.searchProviders.choices, qgis_search_rows)
 
+        # edit a copy, kept only once saved
+        themesconfig = deepcopy(self.themesconfig)
         new_name = form.url.data.split("/")[-1]
         with self.config_models.session() as session, session.begin():
             # edit theme
             if theme:
                 if gid is None:
-                    name = self.themesconfig["themes"]["items"][tid]["url"]
-                    self.themesconfig["themes"]["items"][tid] = item
+                    name = themesconfig["themes"]["items"][tid]["url"]
+                    themesconfig["themes"]["items"][tid] = item
                 else:
-                    name = self.themesconfig["themes"]["groups"][gid]["items"][tid]["url"]
-                    self.themesconfig["themes"]["groups"][gid]["items"][tid] = item
+                    name = themesconfig["themes"]["groups"][gid]["items"][tid]["url"]
+                    themesconfig["themes"]["groups"][gid]["items"][tid] = item
 
                 name = name.split("/")[-1]
                 resource = session.query(self.resources).filter_by(name=name).first()
@@ -796,12 +807,20 @@ class ThemesController:
                         "warning")
 
                 if gid is None:
-                    self.themesconfig["themes"]["items"].append(item)
+                    themesconfig["themes"]["items"].append(item)
                 else:
-                    self.themesconfig["themes"]["groups"][gid]["items"].append(
+                    themesconfig["themes"]["groups"][gid]["items"].append(
                         item)
 
-        self.save_themesconfig()
+            # save themes configuration before commit, so that the resource
+            # change is rolled back if saving fails (if the commit fails, the
+            # saved file is ahead of the ConfigDB)
+            session.flush()
+            if not self.write_themesconfig(themesconfig):
+                # callers show the form again
+                raise ValidationError()
+
+        self.themesconfig = themesconfig
 
     def get_backgroundlayers(self):
         layers = []
