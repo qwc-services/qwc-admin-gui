@@ -19,11 +19,28 @@ class JSONField(TextAreaField):
             except ValueError:
                 raise ValueError('This field contains invalid JSON')
 
+class PrintLayerField(StringField):
+    """Layer name or JSON list of scale dependent print layers"""
+
+    def _value(self):
+        if isinstance(self.data, list):
+            return json.dumps(self.data)
+        return super()._value()
+
+    def process_formdata(self, valuelist):
+        super().process_formdata(valuelist)
+        value = (self.data or '').strip()
+        if value.startswith('[{'):
+            try:
+                self.data = json.loads(value)
+            except ValueError:
+                raise ValueError('This field contains invalid JSON')
+
 class BackgroundLayerForm(FlaskForm):
     """Subform for backgroundlayers"""
 
     layerName = SelectField(coerce=str, validators=[DataRequired()])
-    printLayer = StringField(validators=[Optional()])
+    printLayer = PrintLayerField(validators=[Optional()])
     visibility = BooleanField(validators=[Optional()])
 
 class QgisSearchForm(FlaskForm):

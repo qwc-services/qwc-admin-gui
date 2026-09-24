@@ -1,7 +1,81 @@
 import unittest
 from collections import OrderedDict
 
+from flask import Flask
+
+from plugins.themes.controllers import ThemesController
+from plugins.themes.forms import ThemeForm
 from plugins.themes.utils import ThemeUtils
+
+
+app = Flask(__name__)
+app.config.update(SECRET_KEY="test", WTF_CSRF_ENABLED=False)
+
+
+class ThemeItemFromFormTestCase(unittest.TestCase):
+    """Test building a theme item from submitted theme form data"""
+
+    def submit(self, data):
+        """Return the theme item built from the submitted form data."""
+        with app.test_request_context(method="POST", data=data):
+            return ThemesController.theme_item_from_form(ThemeForm())
+
+    def test_saves_scale_dependent_print_layer_as_list(self):
+        item = self.submit({
+            "url": "/ows/qwc_demo",
+            "backgroundLayers-0-layerName": "mapnik",
+            "backgroundLayers-0-printLayer":
+                '[{"maxScale": 10000, "name": "osm_detail"},'
+                ' {"maxScale": null, "name": "osm_bg"}]',
+            "backgroundLayers-0-visibility": "y",
+        })
+
+        self.assertEqual(item["backgroundLayers"], [{
+            "name": "mapnik",
+            "printLayer": [
+                {"maxScale": 10000, "name": "osm_detail"},
+                {"maxScale": None, "name": "osm_bg"}
+            ],
+            "visibility": True
+        }])
+
+    def test_rejects_invalid_scale_dependent_print_layer(self):
+        data = {
+            "url": "/ows/qwc_demo",
+            "backgroundLayers-0-layerName": "mapnik",
+            "backgroundLayers-0-printLayer":
+                '[{"maxScale": 10000, "name": "osm_detail"}',
+        }
+        with app.test_request_context(method="POST", data=data):
+            layer_form = ThemeForm().backgroundLayers[0].form
+            self.assertFalse(layer_form.printLayer.validate(layer_form))
+
+    def test_accepts_print_layer_name_in_brackets(self):
+        data = {
+            "url": "/ows/qwc_demo",
+            "backgroundLayers-0-layerName": "mapnik",
+            "backgroundLayers-0-printLayer": "[OSM] background",
+        }
+        with app.test_request_context(method="POST", data=data):
+            form = ThemeForm()
+            layer_form = form.backgroundLayers[0].form
+            self.assertTrue(layer_form.printLayer.validate(layer_form))
+            item = ThemesController.theme_item_from_form(form)
+
+        self.assertEqual(
+            item["backgroundLayers"][0]["printLayer"], "[OSM] background")
+
+    def test_saves_indented_scale_dependent_print_layer_as_list(self):
+        item = self.submit({
+            "url": "/ows/qwc_demo",
+            "backgroundLayers-0-layerName": "mapnik",
+            "backgroundLayers-0-printLayer":
+                '\n [{"maxScale": null, "name": "osm_bg"}]',
+        })
+
+        self.assertEqual(
+            item["backgroundLayers"][0]["printLayer"],
+            [{"maxScale": None, "name": "osm_bg"}])
 
 
 class MergeThemeItemTestCase(unittest.TestCase):
