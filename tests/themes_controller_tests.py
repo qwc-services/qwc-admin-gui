@@ -77,6 +77,18 @@ class ThemeItemFromFormTestCase(unittest.TestCase):
             item["backgroundLayers"][0]["printLayer"],
             [{"maxScale": None, "name": "osm_bg"}])
 
+    def test_accepts_negative_extent(self):
+        data = {
+            "url": "/ows/qwc_demo",
+            "extent": "-1000000, 4000000, 3000000, 8000000.5",
+        }
+        with app.test_request_context(method="POST", data=data):
+            form = ThemeForm()
+            self.assertTrue(form.extent.validate(form), form.extent.errors)
+            item = ThemesController.theme_item_from_form(form)
+
+        self.assertEqual(item["extent"], [-1000000, 4000000, 3000000, 8000000.5])
+
 
 class MergeThemeItemTestCase(unittest.TestCase):
     """Test merging theme form output onto the existing theme item"""
