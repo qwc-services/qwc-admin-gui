@@ -575,6 +575,20 @@ class ThemesController:
 
             return form
 
+    # Theme item keys edited by the theme form, other keys are kept on save
+    THEME_FORM_KEYS = [
+        "url", "title", "description", "disabled", "default", "tiled",
+        "mapTips", "thumbnail", "attribution", "attributionUrl", "format",
+        "mapCrs", "extent", "additionalMouseCrs", "searchProviders",
+        "minSearchScaleDenom", "tileSize", "scales", "printScales",
+        "printResolutions", "printLabelBlacklist", "extraPrintLayers", "flags",
+        "layerTreeHiddenSublayers", "extraPrintParameters",
+        "extraLegendParameters", "extraDxfParameters", "defaultPrintLayout",
+        "printLabelForSearchResult", "printLabelForAttribution",
+        "skipEmptyFeatureAttributes", "collapseLayerGroupsBelowLevel",
+        "backgroundLayers"
+    ]
+
     @staticmethod
     def theme_item_from_form(form):
         """Return theme item built from the theme form.
@@ -763,6 +777,44 @@ class ThemesController:
 
         return item
 
+    @staticmethod
+    def merge_theme_item(existing, form_item, search_provider_choices,
+                         qgis_search_sources):
+        """Return the existing theme item updated with the theme form output.
+
+        :param dict existing: Theme item from themesConfig
+        :param dict form_item: Theme item built from the theme form
+        :param list search_provider_choices: Search providers selectable in
+                                             the theme form
+        :param list qgis_search_sources: Index of the existing qgis search
+                                         each qgis search in form_item was
+                                         loaded from, None for new searches
+        """
+        form_item = OrderedDict(form_item)
+
+        search_providers = ThemeUtils.merge_search_providers(
+            existing.get("searchProviders", []),
+            form_item.get("searchProviders", []), search_provider_choices,
+            qgis_search_sources
+        )
+        if search_providers:
+            form_item["searchProviders"] = search_providers
+
+        if "backgroundLayers" in form_item:
+            form_item["backgroundLayers"] = ThemeUtils.merge_background_layers(
+                existing.get("backgroundLayers", []), form_item["backgroundLayers"]
+            )
+
+        merged = OrderedDict()
+        for key, value in existing.items():
+            if key in form_item:
+                merged[key] = form_item[key]
+            elif key not in ThemesController.THEME_FORM_KEYS:
+                merged[key] = value
+        for key, value in form_item.items():
+            merged.setdefault(key, value)
+        return merged
+
     def create_or_update_theme(self, theme, form, tid=None, gid=None):
         """Create or update theme records in Themesconfig.
 
@@ -775,7 +827,7 @@ class ThemesController:
             qgis_search_sources = [
                 entry.sourceIndex.data for entry in form.qgisSearchProvider
             ]
-            item = ThemeUtils.merge_theme_item(
+            item = self.merge_theme_item(
                 theme, item, form.searchProviders.choices, qgis_search_sources)
 
         # edit a copy, kept only once saved

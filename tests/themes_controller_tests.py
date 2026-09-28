@@ -5,7 +5,6 @@ from flask import Flask
 
 from plugins.themes.controllers import ThemesController
 from plugins.themes.forms import ThemeForm
-from plugins.themes.utils import ThemeUtils
 
 
 app = Flask(__name__)
@@ -125,7 +124,8 @@ class MergeThemeItemTestCase(unittest.TestCase):
             ("title", "Demo renamed"),
         ])
 
-        merged = ThemeUtils.merge_theme_item(existing, form_item, [], [])
+        merged = ThemesController.merge_theme_item(
+            existing, form_item, [], [])
 
         self.assertEqual(merged, OrderedDict([
             ("id", "qwc_demo"),
@@ -146,7 +146,8 @@ class MergeThemeItemTestCase(unittest.TestCase):
             ("url", "/ows/qwc_demo"),
         ])
 
-        merged = ThemeUtils.merge_theme_item(existing, form_item, [], [])
+        merged = ThemesController.merge_theme_item(
+            existing, form_item, [], [])
 
         self.assertEqual(merged, OrderedDict([
             ("url", "/ows/qwc_demo"),
@@ -164,7 +165,7 @@ class MergeThemeItemTestCase(unittest.TestCase):
             ("searchProviders", ["coordinates"]),
         ])
 
-        merged = ThemeUtils.merge_theme_item(
+        merged = ThemesController.merge_theme_item(
             existing, form_item, ["coordinates"], [])
 
         self.assertEqual(
@@ -200,7 +201,8 @@ class MergeThemeItemTestCase(unittest.TestCase):
             }]),
         ])
 
-        merged = ThemeUtils.merge_theme_item(existing, form_item, [], [0])
+        merged = ThemesController.merge_theme_item(
+            existing, form_item, [], [0])
 
         self.assertEqual(merged["searchProviders"], [{
             "provider": "qgis",
@@ -233,7 +235,8 @@ class MergeThemeItemTestCase(unittest.TestCase):
             }]),
         ])
 
-        merged = ThemeUtils.merge_theme_item(existing, form_item, [], [0])
+        merged = ThemesController.merge_theme_item(
+            existing, form_item, [], [0])
 
         self.assertEqual(merged["searchProviders"], [{
             "provider": "qgis",
@@ -261,7 +264,8 @@ class MergeThemeItemTestCase(unittest.TestCase):
             ]),
         ])
 
-        merged = ThemeUtils.merge_theme_item(existing, form_item, [], [1, None])
+        merged = ThemesController.merge_theme_item(
+            existing, form_item, [], [1, None])
 
         self.assertEqual(merged["searchProviders"], [
             {"provider": "qgis", "params": {"title": "Search", "group": "b"}},
@@ -286,7 +290,8 @@ class MergeThemeItemTestCase(unittest.TestCase):
             ]),
         ])
 
-        merged = ThemeUtils.merge_theme_item(existing, form_item, [], [0, None])
+        merged = ThemesController.merge_theme_item(
+            existing, form_item, [], [0, None])
 
         self.assertEqual(merged["searchProviders"], [
             {"provider": "qgis", "params": {"title": "A", "group": "a"}},
@@ -304,7 +309,7 @@ class MergeThemeItemTestCase(unittest.TestCase):
             ("searchProviders", ["coordinates"]),
         ])
 
-        merged = ThemeUtils.merge_theme_item(
+        merged = ThemesController.merge_theme_item(
             existing, form_item, ["coordinates", fulltext], [])
 
         self.assertEqual(merged["searchProviders"], ["coordinates", fulltext])
@@ -323,7 +328,7 @@ class MergeThemeItemTestCase(unittest.TestCase):
             ("searchProviders", ["coordinates", "places", countries]),
         ])
 
-        merged = ThemeUtils.merge_theme_item(
+        merged = ThemesController.merge_theme_item(
             existing, form_item, ["coordinates", "places"], [0])
 
         self.assertEqual(merged["searchProviders"], [
@@ -348,7 +353,8 @@ class MergeThemeItemTestCase(unittest.TestCase):
             ]),
         ])
 
-        merged = ThemeUtils.merge_theme_item(existing, form_item, [], [])
+        merged = ThemesController.merge_theme_item(
+            existing, form_item, [], [])
 
         self.assertEqual(merged["backgroundLayers"], [
             {"name": "bluemarble", "printLayer": "bluemarble_bg",
