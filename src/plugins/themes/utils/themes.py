@@ -346,22 +346,23 @@ class ThemeUtils():
 
     @staticmethod
     def merge_theme_item(existing, form_item, search_provider_choices,
-                         qgis_search_rows):
+                         qgis_search_sources):
         """Return the existing theme item updated with the theme form output.
 
         :param dict existing: Theme item from themesConfig
         :param dict form_item: Theme item built from the theme form
         :param list search_provider_choices: Search providers selectable in
                                              the theme form
-        :param list qgis_search_rows: Form row index of each qgis search in
-                                      form_item
+        :param list qgis_search_sources: Index of the existing qgis search
+                                         each qgis search in form_item was
+                                         loaded from, None for new searches
         """
         form_item = OrderedDict(form_item)
 
         search_providers = ThemeUtils.merge_search_providers(
             existing.get("searchProviders", []),
             form_item.get("searchProviders", []), search_provider_choices,
-            qgis_search_rows
+            qgis_search_sources
         )
         if search_providers:
             form_item["searchProviders"] = search_providers
@@ -383,7 +384,7 @@ class ThemeUtils():
 
     @staticmethod
     def merge_search_providers(existing, form_providers, choices,
-                               qgis_search_rows):
+                               qgis_search_sources):
         """Return the search providers from the theme form, keeping the order
         of the existing search providers, the qgis search params not edited in
         the form and the providers not listed in the form.
@@ -391,17 +392,22 @@ class ThemeUtils():
         :param list existing: Search providers from themesConfig
         :param list form_providers: Search providers from the theme form
         :param list choices: Search providers selectable in the theme form
-        :param list qgis_search_rows: Form row index of each qgis search in
-                                      form_providers
+        :param list qgis_search_sources: Index of the existing qgis search
+                                         each qgis search in form_providers
+                                         was loaded from, None for new
+                                         searches
         """
         def is_qgis_search(provider):
             return isinstance(provider, dict) and provider.get("provider") == "qgis"
 
-        # form row i is loaded from the i-th existing qgis search, rows are
-        # not renumbered when removed and new rows get higher indices
-        unmatched_qgis = dict(zip(
-            qgis_search_rows, [p for p in form_providers if is_qgis_search(p)]
+        form_qgis = list(zip(
+            qgis_search_sources, [p for p in form_providers if is_qgis_search(p)]
         ))
+        unmatched_qgis = {
+            source: provider for source, provider in form_qgis
+            if source is not None
+        }
+        new_qgis = [provider for source, provider in form_qgis if source is None]
         unmatched_selected = [p for p in form_providers if not is_qgis_search(p)]
 
         providers = []
@@ -424,7 +430,10 @@ class ThemeUtils():
                 providers.append(provider)
 
         # append new search providers
-        return providers + unmatched_selected + list(unmatched_qgis.values())
+        return (
+            providers + unmatched_selected + list(unmatched_qgis.values()) +
+            new_qgis
+        )
 
     @staticmethod
     def merge_background_layers(existing, form_layers):

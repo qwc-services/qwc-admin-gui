@@ -539,8 +539,9 @@ class ThemesController:
                     form.backgroundLayers[i].layerName.data = layer["name"]
             qgis_search = [provider for provider in theme.get("searchProviders", []) if "provider" in provider and provider.get("provider") == "qgis"]
             if qgis_search :
-                for provider in qgis_search:
+                for i, provider in enumerate(qgis_search):
                     data = {
+                        "sourceIndex": i,
                         "title": "",
                         "featureCount": "",
                         "resultTitle": "",
@@ -767,12 +768,11 @@ class ThemesController:
         """
         item = self.theme_item_from_form(form)
         if theme:
-            qgis_search_rows = [
-                int(entry.name.rsplit("-", 1)[1])
-                for entry in form.qgisSearchProvider
+            qgis_search_sources = [
+                entry.sourceIndex.data for entry in form.qgisSearchProvider
             ]
             item = ThemeUtils.merge_theme_item(
-                theme, item, form.searchProviders.choices, qgis_search_rows)
+                theme, item, form.searchProviders.choices, qgis_search_sources)
 
         # edit a copy, kept only once saved
         themesconfig = deepcopy(self.themesconfig)

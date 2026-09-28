@@ -89,6 +89,25 @@ class ThemeItemFromFormTestCase(unittest.TestCase):
 
         self.assertEqual(item["extent"], [-1000000, 4000000, 3000000, 8000000.5])
 
+    def test_reads_qgis_search_source_index(self):
+        data = {
+            "url": "/ows/qwc_demo",
+            "qgisSearchProvider-0-sourceIndex": "2",
+            "qgisSearchProvider-0-title": "Countries",
+            "qgisSearchProvider-3-title": "New",
+        }
+        with app.test_request_context(method="POST", data=data):
+            form = ThemeForm()
+            sources = [
+                entry.sourceIndex.data for entry in form.qgisSearchProvider
+            ]
+            self.assertTrue(all(
+                entry.sourceIndex.validate(entry.form)
+                for entry in form.qgisSearchProvider
+            ))
+
+        self.assertEqual(sources, [2, None])
+
 
 class MergeThemeItemTestCase(unittest.TestCase):
     """Test merging theme form output onto the existing theme item"""
@@ -225,7 +244,7 @@ class MergeThemeItemTestCase(unittest.TestCase):
             }
         }])
 
-    def test_pairs_qgis_searches_with_their_form_row(self):
+    def test_pairs_qgis_searches_with_the_search_they_were_loaded_from(self):
         existing = OrderedDict([
             ("url", "/ows/qwc_demo"),
             ("searchProviders", [
@@ -242,10 +261,35 @@ class MergeThemeItemTestCase(unittest.TestCase):
             ]),
         ])
 
-        merged = ThemeUtils.merge_theme_item(existing, form_item, [], [1, 2])
+        merged = ThemeUtils.merge_theme_item(existing, form_item, [], [1, None])
 
         self.assertEqual(merged["searchProviders"], [
             {"provider": "qgis", "params": {"title": "Search", "group": "b"}},
+            {"provider": "qgis", "params": {"title": "New"}},
+        ])
+
+    def test_does_not_pair_new_qgis_searches_with_removed_ones(self):
+        existing = OrderedDict([
+            ("url", "/ows/qwc_demo"),
+            ("searchProviders", [
+                {"provider": "qgis", "params": {"title": "A", "group": "a"}},
+                {"provider": "qgis", "params": {"title": "B", "group": "b"}},
+                {"provider": "qgis", "params": {"title": "C", "group": "c"}},
+            ]),
+        ])
+        # last two rows removed, new row added
+        form_item = OrderedDict([
+            ("url", "/ows/qwc_demo"),
+            ("searchProviders", [
+                {"provider": "qgis", "params": {"title": "A"}},
+                {"provider": "qgis", "params": {"title": "New"}},
+            ]),
+        ])
+
+        merged = ThemeUtils.merge_theme_item(existing, form_item, [], [0, None])
+
+        self.assertEqual(merged["searchProviders"], [
+            {"provider": "qgis", "params": {"title": "A", "group": "a"}},
             {"provider": "qgis", "params": {"title": "New"}},
         ])
 

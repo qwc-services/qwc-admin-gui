@@ -5,6 +5,7 @@ from wtforms import FieldList, FormField, SelectField, BooleanField, \
         SelectMultipleField, IntegerField, StringField, SubmitField, \
         TextAreaField
 from wtforms.validators import DataRequired, Optional, Regexp, URL
+from wtforms.widgets import HiddenInput
 from utils import i18n
 
 
@@ -46,6 +47,8 @@ class BackgroundLayerForm(FlaskForm):
 class QgisSearchForm(FlaskForm):
     """Subform for Qgis searches"""
 
+    # index of the qgis search this row was loaded from, empty for new rows
+    sourceIndex = IntegerField(widget=HiddenInput(), validators=[Optional()])
     title = StringField(
         "Title",
         description="Search provider name.",
