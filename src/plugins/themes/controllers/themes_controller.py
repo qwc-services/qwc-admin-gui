@@ -11,6 +11,10 @@ from plugins.themes.utils import ThemeUtils
 from utils import i18n
 
 
+class ThemesConfigSaveError(Exception):
+    """Saving the themes configuration failed"""
+
+
 class ThemesController:
     """Controller for theme model"""
 
@@ -185,7 +189,7 @@ class ThemesController:
                     i18n('plugins.themes.themes.create_theme_message_success'),form.title.data),
                       "success")
                 return redirect(url_for("themes"))
-            except ValidationError:
+            except (ValidationError, ThemesConfigSaveError):
                 flash("{0} {1}.".format(
                     i18n('plugins.themes.themes.create_theme_message_error'), form.title.data), "warning")
         else:
@@ -244,7 +248,7 @@ class ThemesController:
                         i18n('plugins.themes.themes.update_theme_message_success'), form.title.data), 
                         "success")
                     return redirect(url_for("themes"))
-                except ValidationError:
+                except (ValidationError, ThemesConfigSaveError):
                     flash("{0} {1}.".format(
                         i18n('plugins.themes.themes.update_theme_message_error'), form.title.data), 
                         "warning")
@@ -817,8 +821,8 @@ class ThemesController:
             # saved file is ahead of the ConfigDB)
             session.flush()
             if not self.write_themesconfig(themesconfig):
-                # callers show the form again
-                raise ValidationError()
+                # rolls back the resource change, callers show the form again
+                raise ThemesConfigSaveError()
 
         self.themesconfig = themesconfig
 
