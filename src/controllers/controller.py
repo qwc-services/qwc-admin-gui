@@ -178,12 +178,13 @@ class Controller:
                 }
             }
 
+        group_displayfield = self.handler().config().get('group_displayfield', 'name')
         return render_template(
             '%s/index.html' % self.templates_dir, resources=resources,
             endpoint_suffix=self.endpoint_suffix, pkey=self.resource_pkey(),
             search_text=search_text, pagination=pagination,
             sort=sort, sort_asc=sort_asc,
-            base_route=self.base_route, i18n=i18n
+            base_route=self.base_route, i18n=i18n, group_displayfield=group_displayfield
         )
 
     # new

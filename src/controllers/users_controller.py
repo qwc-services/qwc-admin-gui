@@ -78,9 +78,11 @@ class UsersController(Controller):
         """
 
         # get custom user info fields
-        # get custom user info fields
         user_info_fields = self.handler().config().get(
             "user_info_fields", [])
+        group_displayfield = handler().config().get(
+            'group_displayfield', 'name'
+        )
         # make sure that all python strings
         # are in double quotes and not single quotes
         user_info_fields = json.loads(
@@ -96,7 +98,7 @@ class UsersController(Controller):
         with self.session() as session:
             self.update_form_collection(
                 resource, edit_form, form.groups, self.Group, 'sorted_groups',
-                'id', 'name', session
+                'id', group_displayfield, session
             )
             self.update_form_collection(
                 resource, edit_form, form.roles, self.Role, 'sorted_roles', 'id',

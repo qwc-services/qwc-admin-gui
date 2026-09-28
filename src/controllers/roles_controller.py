@@ -67,11 +67,12 @@ class RolesController(Controller):
         :param bool edit_form: Set if edit form
         """
         form = RoleForm(self.config_models, obj=resource)
+        group_displayfield = self.handler().config().get('group_displayfield', 'name')
 
         with self.session() as session:
             self.update_form_collection(
                 resource, edit_form, form.groups, self.Group, 'sorted_groups',
-                'id', 'name', session
+                'id', group_displayfield, session
             )
             self.update_form_collection(
                 resource, edit_form, form.users, self.User, 'sorted_users', 'id',

@@ -143,6 +143,10 @@
         "application_url": {
           "description": "The application URL to display in the invite emails. Default: computed from the Admin GUI URL'",
           "type": "string"
+        },
+        "group_displayfield": {
+          "description": "The group displayfield used in the group index list and user/roles edit forms. Default: 'name'.",
+          "type": "string"
         }
       },
       "required": [

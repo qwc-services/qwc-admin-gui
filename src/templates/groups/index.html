@@ -11,7 +11,7 @@
 
 {% block resource_fields %}
   <td>{{ resource.id }}</td>
-  <td>{{ resource.name }}</td>
+  <td>{{ resource[group_displayfield] }}</td>
 {% endblock %}
 
 {% block delete_resource_confirmation %}{{ i18n('interface.groups.confirm_message_delete') }}{% endblock %}
