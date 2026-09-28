@@ -561,11 +561,10 @@ class ThemesController:
 
             return form
 
-    def create_or_update_theme(self, theme, form, tid=None, gid=None):
-        """Create or update theme records in Themesconfig.
+    @staticmethod
+    def theme_item_from_form(form):
+        """Return theme item built from the theme form.
 
-        :param object theme: Optional theme object
-                                (None for create)
         :param FlaskForm form: Form for theme
         """
         item = OrderedDict()
@@ -638,7 +637,6 @@ class ThemesController:
                     "params": {
                     "title": search["title"],
                     "featureCount": search["featureCount"],
-                    "resultTitle": search["resultTitle"],
                     "description": search["searchDescription"],
                     "default": search["defaultSearch"],
                     "group": search["group"],
@@ -748,6 +746,24 @@ class ThemesController:
                 })
         else:
             if "backgroundLayers" in item: del item["backgroundLayers"]
+
+        return item
+
+    def create_or_update_theme(self, theme, form, tid=None, gid=None):
+        """Create or update theme records in Themesconfig.
+
+        :param object theme: Optional theme object
+                                (None for create)
+        :param FlaskForm form: Form for theme
+        """
+        item = self.theme_item_from_form(form)
+        if theme:
+            qgis_search_rows = [
+                int(entry.name.rsplit("-", 1)[1])
+                for entry in form.qgisSearchProvider
+            ]
+            item = ThemeUtils.merge_theme_item(
+                theme, item, form.searchProviders.choices, qgis_search_rows)
 
         new_name = form.url.data.split("/")[-1]
         with self.config_models.session() as session, session.begin():
