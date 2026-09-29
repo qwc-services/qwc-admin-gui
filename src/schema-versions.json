@@ -1,0 +1,22 @@
+{
+  "schemas": [
+    {
+      "schema_url": "https://github.com/qgis/qwc2/raw/master/schemas/themesConfig.json"
+    },
+    {
+      "schema_url": "https://github.com/qgis/qwc2/raw/master/schemas/theme.json"
+    },
+    {
+      "schema_url": "https://github.com/qgis/qwc2/raw/master/schemas/themeBackgroundLayer.json"
+    },
+    {
+      "schema_url": "https://github.com/qgis/qwc2/raw/master/schemas/searchProvider.json"
+    },
+    {
+      "schema_url": "https://github.com/qgis/qwc2/raw/master/schemas/predefinedFilter.json"
+    },
+    {
+      "schema_url": "https://github.com/qgis/qwc2/raw/master/schemas/map3d.json"
+    }
+  ]
+}

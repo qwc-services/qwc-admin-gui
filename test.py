@@ -1,6 +1,7 @@
 import unittest
 
 from tests.themes_controller_tests import *
+from tests.theme_schema_tests import *
 from tests.utils_tests import *
 
 
