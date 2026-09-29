@@ -1,10 +1,11 @@
 #!/usr/bin/python3
 
+import copy
 import json
 import re
 from pathlib import Path
 
-DEFAULT_LANG = 'en' # Default language used to complete file when translation is missing (to avoid blank string in interface)
+DEFAULT_LANG = 'en' # Default language, the admin gui shows it for the strings missing in a language
 
 def read_json(absolute_path):
     try:
@@ -24,13 +25,15 @@ def merge(base, addon):
                 base[key] = addon[key]
     return base
 
-def merge_with_ref(lang, ref):
-    for key,value in lang.items():
+def remove_untranslated(lang):
+    # the admin gui shows the strings missing in a language in the default language
+    for key, value in list(lang.items()):
         if key == value:  # not translated string
-            lang[key] = ref[key]
-        else:
-            if isinstance(value, dict):
-                merge_with_ref(lang[key], ref[key])
+            del lang[key]
+        elif isinstance(value, dict):
+            remove_untranslated(value)
+            if not value:
+                del lang[key]
     return lang
 
 def create_skel(strings):
@@ -44,16 +47,15 @@ def create_skel(strings):
         cur[path[-1]] = path[-1]
     return skel
 
-def create_lang(skel, lang, ref=None):
+def create_lang(skel, lang):
     # Adding language at the beginning of the file.
-    lang_skel = merge(skel, {'locale': lang})
+    lang_skel = merge(copy.deepcopy(skel), {'locale': lang})
 
     # Merge with skeleton to get missing strings
     lang_data = merge(lang_skel, read_json(current_dir / f'translations/{lang}.json'))
 
-    if ref : 
-        # If ref language is defined, merge with ref to get not translated string in ref language
-        lang_data = merge_with_ref(lang_data, ref)
+    if lang != DEFAULT_LANG:
+        lang_data = remove_untranslated(lang_data)
 
     return lang_data
 
@@ -91,9 +93,8 @@ update_ts_config(current_dir, tsconfig)
 config = read_json(tsconfig)
 strings = config.get('strings', []) + config.get('extra_strings', [])
 skel = create_skel(strings)
-ref = create_lang(skel, DEFAULT_LANG)
 for lang in config.get('languages', []):
-    lang_data = create_lang(skel, lang, ref)
+    lang_data = create_lang(skel, lang)
 
     # Write output
     try:
