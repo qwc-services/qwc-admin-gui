@@ -107,7 +107,7 @@ You can send invitation mails to users from the `Users` page. You will need to c
 
 ### Translations
 
-Translation strings are stored in a JSON file for each locale in `translations/<locale>.json` (e.g. `en.json`). Add any new languages as new JSON files. You can use the [updateTranslations.py](updateTranslations.py) helper script to update the translation files with all message ids from the source files.
+Translation strings are stored in a JSON file for each locale in `translations/<locale>.json` (e.g. `en.json`). Add any new languages as new JSON files. You can use the [updateTranslations.py](updateTranslations.py) helper script to update the translation files with all message ids from the source files. It also adds the titles and descriptions of the theme form schemas, read from `JSON_SCHEMAS_PATH` or downloaded, so run it in the project environment: `uv run updateTranslations.py`.
 
 Set the `DEFAULT_LOCALE` environment variable to choose the locale for the user notification mails (default: `en`).
 
