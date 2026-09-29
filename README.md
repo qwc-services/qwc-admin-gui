@@ -53,6 +53,7 @@ In addition, the following environment variables are supported:
 | `IDLE_TIMEOUT`               | `0`           | Idle timeout after which to automatically log out (`0` disables automatic logout).        |
 | `SKIP_LOGIN`                 | `False`       | Whether to skip redirect to the `auth_service_url` is user is not authenticated (for development). |
 | `DEFAULT_LOCALE`             | `en`          | Admin GUI language (see [src/translations](src/translations) for available languages), strings missing in its translations are shown in English. |
+| `JSON_SCHEMAS_PATH`          | `/tmp/`       | Directory with the qwc2 themes configuration schemas used by the theme form, downloaded from the URLs in [src/schema-versions.json](src/schema-versions.json) if missing. |
 | `MAIL_SERVER`                | `localhost`   | Mailer setup, see [Flask-Mail](https://flask-mail.readthedocs.io/en/latest/#configuring). |
 | `MAIL_PORT`                  | `25`          | Mailer setup, see [Flask-Mail](https://flask-mail.readthedocs.io/en/latest/#configuring). |
 | `MAIL_USE_TLS`               | `False`       | Mailer setup, see [Flask-Mail](https://flask-mail.readthedocs.io/en/latest/#configuring). |
