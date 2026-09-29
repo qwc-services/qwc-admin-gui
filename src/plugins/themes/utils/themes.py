@@ -331,76 +331,98 @@ class ThemeUtils():
                 ["EPSG:25832", "EPSG:25832"])
 
     @staticmethod
-    def merge_search_providers(existing, form_providers, choices,
-                               qgis_search_sources):
-        """Return the search providers from the theme form, keeping the order
-        of the existing search providers, the qgis search params not edited in
-        the form and the providers not listed in the form.
+    def restore_key_order(original, value):
+        """Return a value with the keys of its objects in the order of the
+        original value, new keys last, e.g. after a form reordered them.
 
-        :param list existing: Search providers from themesConfig
-        :param list form_providers: Search providers from the theme form
-        :param list choices: Search providers selectable in the theme form
-        :param list qgis_search_sources: Index of the existing qgis search
-                                         each qgis search in form_providers
-                                         was loaded from, None for new
-                                         searches
+        :param obj original: Original value
+        :param obj value: Value with the same structure, possibly reordered
         """
-        def is_qgis_search(provider):
-            return isinstance(provider, dict) and provider.get("provider") == "qgis"
-
-        form_qgis = list(zip(
-            qgis_search_sources, [p for p in form_providers if is_qgis_search(p)]
-        ))
-        unmatched_qgis = {
-            source: provider for source, provider in form_qgis
-            if source is not None
-        }
-        new_qgis = [provider for source, provider in form_qgis if source is None]
-        unmatched_selected = [p for p in form_providers if not is_qgis_search(p)]
-
-        providers = []
-        qgis_index = 0
-        for provider in existing:
-            if is_qgis_search(provider):
-                match = unmatched_qgis.pop(qgis_index, None)
-                qgis_index += 1
-                if match is not None:
-                    providers.append({
-                        **provider, **match,
-                        "params": {**provider.get("params", {}), **match["params"]}
-                    })
-            elif isinstance(provider, str) and provider in choices:
-                if provider in unmatched_selected:
-                    unmatched_selected.remove(provider)
-                    providers.append(provider)
-            else:
-                # not listed in the form
-                providers.append(provider)
-
-        # append new search providers
-        return (
-            providers + unmatched_selected + list(unmatched_qgis.values()) +
-            new_qgis
-        )
+        if isinstance(value, dict):
+            original = original if isinstance(original, dict) else {}
+            keys = [key for key in original if key in value] + \
+                [key for key in value if key not in original]
+            return OrderedDict(
+                (key, ThemeUtils.restore_key_order(original.get(key), value[key]))
+                for key in keys
+            )
+        if isinstance(value, list):
+            return [
+                ThemeUtils.restore_key_order(original_item, item)
+                for original_item, item in zip(
+                    ThemeUtils.original_items(original, value), value
+                )
+            ]
+        return value
 
     @staticmethod
-    def merge_background_layers(existing, form_layers):
-        """Return the background layers from the theme form, keeping the
-        layer entry keys not edited in the form.
+    def prune_empty(original, value):
+        """Return a value without the object entries left empty ("", [] or
+        {}), e.g. by a form when all the items of a list are removed, unless
+        the original value holds the same empty entry.
 
-        :param list existing: Background layers from themesConfig
-        :param list form_layers: Background layers from the theme form
+        :param obj original: Original value
+        :param obj value: Value, e.g. submitted by a form
         """
-        # layers are matched by name
-        existing = list(existing)
-        layers = []
-        for layer in form_layers:
-            match = next((
-                candidate for candidate in existing
-                if candidate.get("name") == layer["name"]
-            ), None)
-            if match is not None:
-                existing.remove(match)
-                layer = {**match, **layer}
-            layers.append(layer)
-        return layers
+        def is_empty(item):
+            return isinstance(item, (str, list, dict)) and len(item) == 0
+
+        if isinstance(value, dict):
+            original = original if isinstance(original, dict) else {}
+            result = OrderedDict()
+            for key, item in value.items():
+                item = ThemeUtils.prune_empty(original.get(key), item)
+                if not is_empty(item) or original.get(key, None) == item:
+                    result[key] = item
+            return result
+        if isinstance(value, list):
+            return [
+                ThemeUtils.prune_empty(original_item, item)
+                for original_item, item in zip(
+                    ThemeUtils.original_items(original, value), value
+                )
+            ]
+        return value
+
+    @staticmethod
+    def original_items(original, items):
+        """Return, for each item of a list, the item of the original list it
+        most likely comes from, e.g. after a form moved it, or None: an equal
+        original item, else the one with the most equal entries, else the one
+        at the same position.
+
+        :param obj original: Original list
+        :param list items: Items of the edited list
+        """
+        def similarity(original_item, item):
+            if isinstance(original_item, dict) and isinstance(item, dict):
+                return sum(
+                    1 for key, value in item.items()
+                    if key in original_item and original_item[key] == value
+                )
+            return 0
+
+        original = original if isinstance(original, list) else []
+        available = list(range(len(original)))
+        matches = [None] * len(items)
+
+        def match(idx, original_idx):
+            matches[idx] = original_idx
+            available.remove(original_idx)
+
+        for idx, item in enumerate(items):
+            equal = [o for o in available if original[o] == item]
+            if equal:
+                match(idx, equal[0])
+        for idx, item in enumerate(items):
+            if matches[idx] is None:
+                score, best = max(
+                    ((similarity(original[o], item), o) for o in available),
+                    default=(0, None), key=lambda candidate: candidate[0]
+                )
+                if score > 0:
+                    match(idx, best)
+        for idx in range(len(items)):
+            if matches[idx] is None and idx in available:
+                match(idx, idx)
+        return [original[o] if o is not None else None for o in matches]

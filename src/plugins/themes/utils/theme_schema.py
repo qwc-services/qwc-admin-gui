@@ -4,6 +4,7 @@ import requests
 
 from collections import OrderedDict
 from copy import deepcopy
+from jsonschema import Draft7Validator
 from urllib.parse import urljoin
 
 from json_schemas import SCHEMA_VERSIONS_PATH, schema_file_name, schema_urls
@@ -345,3 +346,24 @@ class ThemeSchema():
             if key not in properties
         )
         return defined, others
+
+    @staticmethod
+    def validation_errors(schema, theme):
+        """Return the messages of the errors of a theme item against a
+        bundled schema, prefixed by the path of the invalid value.
+
+        :param dict schema: Bundled schema
+        :param dict theme: Theme item
+        """
+        messages = []
+        errors = Draft7Validator(schema).iter_errors(theme)
+        for error in sorted(errors, key=lambda e: list(map(str, e.absolute_path))):
+            path = "".join(
+                "[%d]" % part if isinstance(part, int) else ".%s" % part
+                for part in error.absolute_path
+            )
+            messages.append(
+                "%s: %s" % (path.lstrip("."), error.message) if path
+                else error.message
+            )
+        return messages
