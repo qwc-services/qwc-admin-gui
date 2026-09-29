@@ -178,6 +178,8 @@ Set `FLASK_DEBUG=1` for additional debug output.
 Set `SKIP_LOGIN=1` if running without an authentication service (i.e. for development).
 
 Set `FLASK_RUN_PORT=<port>` to change the default port (default: `5000`).
+
+The theme form uses a prebuilt [react-jsonschema-form](https://github.com/rjsf-team/react-jsonschema-form) bundle, `src/static/js/schema-form.min.js`. To rebuild it after changing [js/schema-form](js/schema-form), run `npm ci && npm run build` in that folder.
     
 Docker usage
 ------------
