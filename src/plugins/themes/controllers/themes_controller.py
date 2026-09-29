@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from copy import deepcopy
 from flask import abort, flash, redirect, render_template, request, url_for
 from wtforms import ValidationError
 from sqlalchemy.exc import IntegrityError, InternalError
@@ -8,6 +9,10 @@ from qwc_services_core.config_models import ConfigModels
 from plugins.themes.forms import ThemeForm
 from plugins.themes.utils import ThemeUtils
 from utils import i18n
+
+
+class ThemesConfigSaveError(Exception):
+    """Saving the themes configuration failed"""
 
 
 class ThemesController:
@@ -184,7 +189,7 @@ class ThemesController:
                     i18n('plugins.themes.themes.create_theme_message_success'),form.title.data),
                       "success")
                 return redirect(url_for("themes"))
-            except ValidationError:
+            except (ValidationError, ThemesConfigSaveError):
                 flash("{0} {1}.".format(
                     i18n('plugins.themes.themes.create_theme_message_error'), form.title.data), "warning")
         else:
@@ -243,7 +248,7 @@ class ThemesController:
                         i18n('plugins.themes.themes.update_theme_message_success'), form.title.data), 
                         "success")
                     return redirect(url_for("themes"))
-                except ValidationError:
+                except (ValidationError, ThemesConfigSaveError):
                     flash("{0} {1}.".format(
                         i18n('plugins.themes.themes.update_theme_message_error'), form.title.data), 
                         "warning")
@@ -372,13 +377,21 @@ class ThemesController:
         return redirect(url_for("themes"))
 
     def save_themesconfig(self):
-        if ThemeUtils.save_themesconfig(self.themesconfig, self.app, self.handler):
+        self.write_themesconfig(self.themesconfig)
+        return redirect(url_for("themes"))
+
+    def write_themesconfig(self, themesconfig):
+        """Save themesconfig and flash the result, return whether it was saved.
+
+        :param dict themesconfig: Themes configuration
+        """
+        if ThemeUtils.save_themesconfig(themesconfig, self.app, self.handler):
             flash(i18n('plugins.themes.themes.save_theme_message_success'), "success")
+            return True
         else:
             flash(i18n('plugins.themes.themes.save_theme_message_error'),
                   "error")
-
-        return redirect(url_for("themes"))
+            return False
 
     def reset_themesconfig(self):
         self.themesconfig = ThemeUtils.load_themesconfig(self.app, self.handler)
@@ -530,8 +543,9 @@ class ThemesController:
                     form.backgroundLayers[i].layerName.data = layer["name"]
             qgis_search = [provider for provider in theme.get("searchProviders", []) if "provider" in provider and provider.get("provider") == "qgis"]
             if qgis_search :
-                for provider in qgis_search:
+                for i, provider in enumerate(qgis_search):
                     data = {
+                        "sourceIndex": i,
                         "title": "",
                         "featureCount": "",
                         "resultTitle": "",
@@ -561,11 +575,24 @@ class ThemesController:
 
             return form
 
-    def create_or_update_theme(self, theme, form, tid=None, gid=None):
-        """Create or update theme records in Themesconfig.
+    # Theme item keys edited by the theme form, other keys are kept on save
+    THEME_FORM_KEYS = [
+        "url", "title", "description", "disabled", "default", "tiled",
+        "mapTips", "thumbnail", "attribution", "attributionUrl", "format",
+        "mapCrs", "extent", "additionalMouseCrs", "searchProviders",
+        "minSearchScaleDenom", "tileSize", "scales", "printScales",
+        "printResolutions", "printLabelBlacklist", "extraPrintLayers", "flags",
+        "layerTreeHiddenSublayers", "extraPrintParameters",
+        "extraLegendParameters", "extraDxfParameters", "defaultPrintLayout",
+        "printLabelForSearchResult", "printLabelForAttribution",
+        "skipEmptyFeatureAttributes", "collapseLayerGroupsBelowLevel",
+        "backgroundLayers"
+    ]
 
-        :param object theme: Optional theme object
-                                (None for create)
+    @staticmethod
+    def theme_item_from_form(form):
+        """Return theme item built from the theme form.
+
         :param FlaskForm form: Form for theme
         """
         item = OrderedDict()
@@ -638,7 +665,6 @@ class ThemesController:
                     "params": {
                     "title": search["title"],
                     "featureCount": search["featureCount"],
-                    "resultTitle": search["resultTitle"],
                     "description": search["searchDescription"],
                     "default": search["defaultSearch"],
                     "group": search["group"],
@@ -749,16 +775,73 @@ class ThemesController:
         else:
             if "backgroundLayers" in item: del item["backgroundLayers"]
 
+        return item
+
+    @staticmethod
+    def merge_theme_item(existing, form_item, search_provider_choices,
+                         qgis_search_sources):
+        """Return the existing theme item updated with the theme form output.
+
+        :param dict existing: Theme item from themesConfig
+        :param dict form_item: Theme item built from the theme form
+        :param list search_provider_choices: Search providers selectable in
+                                             the theme form
+        :param list qgis_search_sources: Index of the existing qgis search
+                                         each qgis search in form_item was
+                                         loaded from, None for new searches
+        """
+        form_item = OrderedDict(form_item)
+
+        search_providers = ThemeUtils.merge_search_providers(
+            existing.get("searchProviders", []),
+            form_item.get("searchProviders", []), search_provider_choices,
+            qgis_search_sources
+        )
+        if search_providers:
+            form_item["searchProviders"] = search_providers
+
+        if "backgroundLayers" in form_item:
+            form_item["backgroundLayers"] = ThemeUtils.merge_background_layers(
+                existing.get("backgroundLayers", []), form_item["backgroundLayers"]
+            )
+
+        merged = OrderedDict()
+        for key, value in existing.items():
+            if key in form_item:
+                merged[key] = form_item[key]
+            elif key not in ThemesController.THEME_FORM_KEYS:
+                merged[key] = value
+        for key, value in form_item.items():
+            merged.setdefault(key, value)
+        return merged
+
+    def create_or_update_theme(self, theme, form, tid=None, gid=None):
+        """Create or update theme records in Themesconfig.
+
+        :param object theme: Optional theme object
+                                (None for create)
+        :param FlaskForm form: Form for theme
+        """
+        item = self.theme_item_from_form(form)
+        if theme:
+            qgis_search_sources = [
+                entry.sourceIndex.data for entry in form.qgisSearchProvider
+            ]
+            item = self.merge_theme_item(
+                theme, item, form.searchProviders.choices, qgis_search_sources)
+
+        # edit a copy, kept only once saved
+        themesconfig = deepcopy(self.themesconfig)
         new_name = form.url.data.split("/")[-1]
         with self.config_models.session() as session, session.begin():
             # edit theme
             if theme:
                 if gid is None:
-                    name = self.themesconfig["themes"]["items"][tid]["url"]
-                    self.themesconfig["themes"]["items"][tid] = item
+                    name = themesconfig["themes"]["items"][tid]["url"]
+                    themesconfig["themes"]["items"][tid] = item
                 else:
-                    name = self.themesconfig["themes"]["groups"][gid]["items"][tid]["url"]
-                    self.themesconfig["themes"]["groups"][gid]["items"][tid] = item
+                    name = themesconfig["themes"]["groups"][gid]["items"][tid]["url"]
+                    themesconfig["themes"]["groups"][gid]["items"][tid] = item
 
                 name = name.split("/")[-1]
                 resource = session.query(self.resources).filter_by(name=name).first()
@@ -780,12 +863,20 @@ class ThemesController:
                         "warning")
 
                 if gid is None:
-                    self.themesconfig["themes"]["items"].append(item)
+                    themesconfig["themes"]["items"].append(item)
                 else:
-                    self.themesconfig["themes"]["groups"][gid]["items"].append(
+                    themesconfig["themes"]["groups"][gid]["items"].append(
                         item)
 
-        self.save_themesconfig()
+            # save themes configuration before commit, so that the resource
+            # change is rolled back if saving fails (if the commit fails, the
+            # saved file is ahead of the ConfigDB)
+            session.flush()
+            if not self.write_themesconfig(themesconfig):
+                # rolls back the resource change, callers show the form again
+                raise ThemesConfigSaveError()
+
+        self.themesconfig = themesconfig
 
     def get_backgroundlayers(self):
         layers = []

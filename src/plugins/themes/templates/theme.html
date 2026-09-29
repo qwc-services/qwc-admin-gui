@@ -300,6 +300,7 @@
       <hr>
       {% for provider in form.qgisSearchProvider %}
       <div class="searchBlock">
+        {{ provider.sourceIndex() }}
         <button type="button" class="accordion" style="display:flex;justify-content:space-between;flex-direction:row;align-items: center;">
             {{provider.title.data}}
             <span class="glyphicon glyphicon-minus"></span>
