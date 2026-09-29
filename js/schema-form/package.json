@@ -1,0 +1,22 @@
+{
+  "name": "qwc-admin-gui-schema-form",
+  "private": true,
+  "description": "Builds src/static/js/schema-form.min.js, the react-jsonschema-form bundle used by the theme form",
+  "license": "MIT",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "@rjsf/core": "6.11.0",
+    "@rjsf/react-bootstrap": "6.11.0",
+    "@rjsf/utils": "6.11.0",
+    "@rjsf/validator-ajv8": "6.11.0",
+    "ajv-i18n": "4.2.0",
+    "react": "19.3.0",
+    "react-bootstrap": "2.10.10",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2"
+  }
+}
