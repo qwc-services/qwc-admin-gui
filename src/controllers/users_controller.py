@@ -80,7 +80,7 @@ class UsersController(Controller):
         # get custom user info fields
         user_info_fields = self.handler().config().get(
             "user_info_fields", [])
-        group_displayfield = handler().config().get(
+        group_displayfield = self.handler().config().get(
             'group_displayfield', 'name'
         )
         # make sure that all python strings
