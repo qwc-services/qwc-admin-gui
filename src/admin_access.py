@@ -41,6 +41,10 @@ ADMIN_ONLY_CAPABILITIES = {MANAGE_PERMISSIONS}
 
 ADMIN_ROLE_NAME = 'admin'
 
+# the resources that grant capabilities, whoever can edit them could grant
+# themselves any capability, so only for admins
+ADMIN_ONLY_RESOURCE_TYPES = {CAPABILITY_TYPE, SCOPE_TYPE}
+
 # declares a route open to every identity holding any admin capability
 ANY_CAPABILITY = 'any'
 
@@ -52,12 +56,21 @@ ROUTE_CAPABILITIES = {}
 def permits(grants, capability, subject_roles=None):
     """Return whether grants allow `capability` on a subject.
 
+    Subjects holding the admin role are only for admins, whatever the
+    scope. Other controllers rely on this, e.g. resources that grant
+    capabilities are treated as holding the admin role.
+
     :param dict grants: capability -> None (unscoped) or set of role names
     :param str capability: One of CAPABILITIES
     :param subject_roles: Names of the roles held by the subject acted on, or
                           None for actions without a role-scopable subject
     """
     if capability not in grants:
+        return False
+
+    if subject_roles and ADMIN_ROLE_NAME in subject_roles \
+            and not is_admin(grants):
+        # whatever holds the admin role is out of reach for everyone else
         return False
 
     scope = grants[capability]

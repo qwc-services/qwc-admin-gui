@@ -10,7 +10,8 @@ from sqlalchemy.exc import IntegrityError, InternalError
 from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
-from admin_access import MANAGE_RESOURCES
+from admin_access import ADMIN_ONLY_RESOURCE_TYPES, ADMIN_ROLE_NAME, \
+    MANAGE_RESOURCES, is_admin
 from .controller import Controller
 from forms import ImportResourceForm, ResourceForm
 from utils import i18n
@@ -94,6 +95,8 @@ class ResourcesController(Controller):
         if resource_type is not None:
             # filter by resource type
             query = query.filter(self.Resource.type == resource_type)
+
+        query = self.hide_admin_only_types(query, self.Resource.type)
 
         # eager load relations
         query = query.options(joinedload(self.Resource.parent))
@@ -221,6 +224,7 @@ class ResourcesController(Controller):
                 query = session.query(self.ResourceType) \
                     .filter(self.ResourceType.name.notin_(resource_blacklist)) \
                     .order_by(self.ResourceType.list_order, self.ResourceType.name)
+            query = self.hide_admin_only_types(query, self.ResourceType.name)
             for resource_type in query.all():
                 resource_types[resource_type.name] = resource_type.description
 
@@ -246,6 +250,41 @@ class ResourcesController(Controller):
         :param Session session: DB session
         """
         return session.query(self.Resource).filter_by(id=id).first()
+
+    # authorization
+
+    def subject_roles(self, resource=None, form=None):
+        """Treat resources that grant capabilities as holding the admin role.
+
+        Whoever can edit them could grant themselves any capability, so like
+        the admin role they are only for admins. This also covers turning
+        another resource into one.
+
+        :param object resource: Optional resource object (None for create)
+        :param FlaskForm form: Optional form for resource
+        """
+        types = set()
+        if resource is not None:
+            types.add(resource.type)
+        if form is not None:
+            types.add(form.type.data)
+
+        if types & ADMIN_ONLY_RESOURCE_TYPES:
+            return {ADMIN_ROLE_NAME}
+
+        return None
+
+    def hide_admin_only_types(self, query, type_column):
+        """Leave resources that grant capabilities out of lists and choices
+        for anyone but admins.
+
+        :param Query query: Query to filter
+        :param type_column: Column holding the resource type name
+        """
+        if is_admin(self.grants()):
+            return query
+
+        return query.filter(type_column.notin_(ADMIN_ONLY_RESOURCE_TYPES))
 
     def destroy_cascaded(self, id):
         """Delete existing resource and its children.
@@ -361,6 +400,7 @@ class ResourcesController(Controller):
                 query = session.query(self.ResourceType) \
                     .filter(self.ResourceType.name.notin_(resource_blacklist)) \
                     .order_by(self.ResourceType.list_order, self.ResourceType.name)
+            query = self.hide_admin_only_types(query, self.ResourceType.name)
             resource_types = query.all()
 
             # query resources

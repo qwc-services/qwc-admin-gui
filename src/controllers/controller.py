@@ -8,8 +8,9 @@ from wtforms import ValidationError
 
 from qwc_services_core.config_models import ConfigModels
 
-from admin_access import ASSIGN_ROLE_MEMBERSHIP, CAPABILITIES, \
-    ROUTE_CAPABILITIES, group_role_names, permits, user_role_names
+from admin_access import ADMIN_ROLE_NAME, ASSIGN_ROLE_MEMBERSHIP, \
+    CAPABILITIES, ROUTE_CAPABILITIES, group_role_names, is_admin, permits, \
+    user_role_names
 from utils import i18n
 
 
@@ -256,7 +257,7 @@ class Controller:
 
     def scope(self):
         """Return the role names this controller's capability is limited to,
-        or None if it is held unscoped.
+        or None if it is not limited at all (admins).
         """
         grants = self.grants()
         if self.capability not in grants:
@@ -264,7 +265,16 @@ class Controller:
             # anything still reaching a query is fully out of scope
             return set()
 
-        return grants[self.capability]
+        scope = grants[self.capability]
+        if scope is None and not is_admin(grants):
+            # an unscoped grant still never reaches the admin role
+            with self.session() as session:
+                scope = {
+                    name for (name, ) in session.query(self.Role.name)
+                    if name != ADMIN_ROLE_NAME
+                }
+
+        return scope
 
     def scope_filter(self, query):
         """Restrict a resources list query to the subjects within scope.
