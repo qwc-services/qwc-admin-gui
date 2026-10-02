@@ -65,7 +65,7 @@ class UsersController(Controller):
 
         return order_by
 
-    def find_resource(self, id, session):
+    def _find_resource(self, id, session):
         """Find user by ID.
 
         :param int id: User ID
@@ -124,7 +124,7 @@ class UsersController(Controller):
 
         return current ^ submitted
 
-    def create_form(self, resource=None, edit_form=False):
+    def _create_form(self, resource=None, edit_form=False):
         """Return form with fields loaded from DB.
 
         :param object resource: Optional user object
@@ -278,7 +278,7 @@ class UsersController(Controller):
         self.setup_models()
         # find user
         with self.session() as session, session.begin():
-            user = self.authorized_resource(id, session)
+            user = self.find_resource(id, session)
 
             if not user or not user.email:
                 flash(

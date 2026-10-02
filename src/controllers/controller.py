@@ -19,6 +19,20 @@ class Controller:
     Add routes for specific controller and provide generic RESTful actions.
     """
 
+    # methods that run the authorization checks, subclasses implement the
+    # underscored variants (_find_resource, _create_form) instead
+    CHECKED_METHODS = ('find_resource', 'create_form')
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        for name in Controller.CHECKED_METHODS:
+            if name in cls.__dict__:
+                raise TypeError(
+                    "%s overrides %s(), which would skip its authorization "
+                    "check - implement _%s() instead"
+                    % (cls.__name__, name, name)
+                )
+
     # available options for number of resources shown per page
     PER_PAGE_OPTIONS = [10, 25, 50, 100]
     # default number of resources shown per page
@@ -137,9 +151,9 @@ class Controller:
 
     # authorization
     #
-    # Three checks cover every request:
-    # A controller declares its capability in the constructor and for
-    # resources that can be scoped to a role, overrides scope_filter()
+    # Three checks cover every request but a controller calls none of them
+    # itself. A controller declares its capability in the constructor and
+    # for resources that can be scoped to a role, overrides scope_filter()
     # and subject_roles().
     #
     #   route check (server.assert_admin_role)
@@ -148,22 +162,23 @@ class Controller:
     #       aborts with 403. Routes nobody declared a capability for are
     #       only for admins.
     #
-    #   find_authorized_resource()
-    #       Is this subject within the granted scope? Replaces find_resource()
-    #       wherever a single resource is looked up by ID, and returns None for
-    #       an out of scope subject so that it reads as "not found".
+    #   find_resource()
+    #       Is this subject within the granted scope? Wraps the subclass's
+    #       _find_resource() lookup, and returns None for an out of scope
+    #       subject so that it reads as "not found".
     #
-    #   authorize_change()
+    #   create_form() -> authorize_change()
     #       Would the submitted form move the subject out of scope or change
-    #       role membership? Runs in create() and update() before anything is
-    #       written and aborts with 403.
+    #       role membership? Wraps the subclass's _create_form(), runs only
+    #       for submitted forms and aborts with 403 before anything is
+    #       written.
 
     def grants(self):
         """Return admin capability grants of the current identity."""
         return getattr(g, 'admin_grants', {})
 
-    def find_authorized_resource(self, id, session):
-        """Find a resource by ID  unless it is outside the granted scope.
+    def find_resource(self, id, session):
+        """Find a resource by ID, unless it is outside the granted scope.
 
         Out of scope subjects are reported as missing rather than forbidden,
         so that they are not discoverable by ID.
@@ -171,7 +186,7 @@ class Controller:
         :param int id: Resource ID
         :param Session session: DB session
         """
-        resource = self.find_resource(id, session)
+        resource = self._find_resource(id, session)
         if resource is None:
             return None
 
@@ -181,8 +196,25 @@ class Controller:
 
         return resource
 
+    def create_form(self, resource=None, edit_form=False):
+        """Return form for resource, checking it if it was submitted.
+
+        Forms that are only displayed are not checked, they carry no change
+        yet, and e.g. an empty new role form has no name to scope by.
+
+        :param object resource: Optional resource object
+        :param bool edit_form: Set if edit form
+        """
+        form = self._create_form(resource, edit_form)
+        if form.is_submitted():
+            self.authorize_change(resource, form)
+
+        return form
+
     def authorize_change(self, resource, form):
         """Abort unless the identity may save this form.
+
+        Called by create_form() for every submitted form.
 
         :param object resource: Resource being changed (None for create)
         :param FlaskForm form: Submitted form
@@ -238,7 +270,7 @@ class Controller:
         """Restrict a resources list query to the subjects within scope.
 
         Override in subclasses of scopable resources (users, groups, roles).
-        Single resources are filtered by find_authorized_resource() instead.
+        Single resources are filtered by find_resource() instead.
 
         :param Query query: Query for this controller's model
         """
@@ -389,7 +421,6 @@ class Controller:
         """Create new resource."""
         self.setup_models()
         form = self.create_form()
-        self.authorize_change(None, form)
         if form.validate_on_submit():
             try:
                 # create and commit resource
@@ -421,10 +452,10 @@ class Controller:
 
     # edit
 
-    def find_resource(self, id, session):
-        """Find resource by ID.
+    def _find_resource(self, id, session):
+        """Find resource by ID, without authorization check.
 
-        Implement in subclass
+        Implement in subclass, callers use find_resource()
 
         :param int id: Resource ID
         :param Session session: DB session
@@ -439,7 +470,7 @@ class Controller:
         self.setup_models()
         # find resource
         with self.session() as session:
-            resource = self.find_authorized_resource(id, session)
+            resource = self.find_resource(id, session)
 
             if resource is not None:
                 template = '%s/form.html' % self.templates_dir
@@ -465,11 +496,10 @@ class Controller:
         self.setup_models()
         # find resource
         with self.session() as session, session.begin():
-            resource = self.find_authorized_resource(id, session)
+            resource = self.find_resource(id, session)
 
             if resource is not None:
                 form = self.create_form(resource)
-                self.authorize_change(resource, form)
                 if form.validate_on_submit():
                     try:
                         # update and commit resource
@@ -520,7 +550,7 @@ class Controller:
         self.setup_models()
         # find resource
         with self.session() as session, session.begin():
-            resource = self.find_authorized_resource(id, session)
+            resource = self.find_resource(id, session)
 
             if resource is not None:
                 try:
@@ -553,10 +583,10 @@ class Controller:
         else:
             abort(405)
 
-    def create_form(self, resource=None, edit_form=False):
+    def _create_form(self, resource=None, edit_form=False):
         """Return form for resource with fields loaded from DB.
 
-        Implement in subclass
+        Implement in subclass, callers use create_form()
 
         :param object resource: Optional resource object
         :param bool edit_form: Set if edit form

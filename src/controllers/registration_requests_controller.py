@@ -93,7 +93,7 @@ class RegistrationRequestsController(Controller):
 
         return order_by
 
-    def find_resource(self, id, session):
+    def _find_resource(self, id, session):
         """Find registration request by ID.
 
         :param int id: Registration request ID
@@ -101,7 +101,7 @@ class RegistrationRequestsController(Controller):
         """
         return session.query(self.RegistrationRequest).filter_by(id=id).first()
 
-    def create_form(self, resource=None, edit_form=False):
+    def _create_form(self, resource=None, edit_form=False):
         """Return form with fields loaded from DB.
 
         :param object resource: Optional registration request object

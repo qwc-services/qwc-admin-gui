@@ -247,7 +247,7 @@ class PermissionsController(Controller):
             active_resource_type=active_resource_type, i18n = i18n
         )
 
-    def find_resource(self, id, session):
+    def _find_resource(self, id, session):
         """Find permission by ID.
 
         :param int id: Permission ID
@@ -255,7 +255,7 @@ class PermissionsController(Controller):
         """
         return session.query(self.Permission).filter_by(id=id).first()
 
-    def create_form(self, resource=None, edit_form=False):
+    def _create_form(self, resource=None, edit_form=False):
         """Return form with fields loaded from DB.
 
         :param object resource: Optional permission object

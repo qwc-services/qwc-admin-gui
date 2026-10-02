@@ -64,7 +64,7 @@ class RegistrableGroupsController(Controller):
 
         return order_by
 
-    def find_resource(self, id, session):
+    def _find_resource(self, id, session):
         """Find registrable group by ID.
 
         :param int id: Registrable group ID
@@ -72,7 +72,7 @@ class RegistrableGroupsController(Controller):
         """
         return session.query(self.RegistrableGroup).filter_by(id=id).first()
 
-    def create_form(self, resource=None, edit_form=False):
+    def _create_form(self, resource=None, edit_form=False):
         """Return form with fields loaded from DB.
 
         :param object resource: Optional registrable group object

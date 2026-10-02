@@ -54,7 +54,7 @@ class RolesController(Controller):
 
         return order_by
 
-    def find_resource(self, id, session):
+    def _find_resource(self, id, session):
         """Find role by ID.
 
         :param int id: Role ID
@@ -141,7 +141,7 @@ class RolesController(Controller):
             return self.roles_of_users(user_ids, session) \
                 | self.roles_of_groups(group_ids, session)
 
-    def create_form(self, resource=None, edit_form=False):
+    def _create_form(self, resource=None, edit_form=False):
         """Return form with fields loaded from DB.
 
         :param object resource: Optional role object

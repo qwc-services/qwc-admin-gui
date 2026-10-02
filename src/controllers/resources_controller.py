@@ -239,7 +239,7 @@ class ResourcesController(Controller):
             have_config_generator=have_config_generator, i18n=i18n
         )
 
-    def find_resource(self, id, session):
+    def _find_resource(self, id, session):
         """Find resource by ID.
 
         :param int id: Resource ID
@@ -262,7 +262,7 @@ class ResourcesController(Controller):
 
         # find resource
         with self.session() as session, session.begin():
-            resource = self.find_authorized_resource(id, session)
+            resource = self.find_resource(id, session)
 
             if resource is not None:
                 parent_id = resource.parent_id
@@ -320,7 +320,7 @@ class ResourcesController(Controller):
         with self.session() as session, session.begin():
             for id in selected_id_resources:
                 # find resource
-                resource = self.find_authorized_resource(id, session)
+                resource = self.find_resource(id, session)
 
                 if resource is not None:
                     try:
@@ -341,7 +341,7 @@ class ResourcesController(Controller):
         # redirect to resources list
         return redirect(url_for(self.base_route))
 
-    def create_form(self, resource=None, edit_form=False):
+    def _create_form(self, resource=None, edit_form=False):
         """Return form with fields loaded from DB.
 
         :param object resource: Optional resource object
@@ -485,7 +485,7 @@ class ResourcesController(Controller):
 
         # find resource
         with self.session() as session:
-            resource = self.find_authorized_resource(id, session)
+            resource = self.find_resource(id, session)
 
             if resource is not None:
                 # get root resource
@@ -724,7 +724,7 @@ class ResourcesController(Controller):
 
         # find resource
         with self.session() as session:
-            resource = self.find_authorized_resource(id, session)
+            resource = self.find_resource(id, session)
 
         if resource is not None:
             # get config generator URL
@@ -851,9 +851,7 @@ class ResourcesController(Controller):
             try:
                 # find resource
                 with self.session() as session:
-                    parent_resource = self.find_authorized_resource(
-                        id, session
-                    )
+                    parent_resource = self.find_resource(id, session)
                 if parent_resource is not None:
                     # get config generator URL
                     config_generator_service_url = self.handler().config().get(
