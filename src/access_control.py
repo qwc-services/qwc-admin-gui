@@ -1,6 +1,3 @@
-from sqlalchemy import distinct
-from sqlalchemy.sql import text as sql_text, exists
-
 from qwc_services_core.config_models import ConfigModels
 
 
@@ -19,6 +16,13 @@ class AccessControl:
         self.logger = logger
 
     def is_admin(self, identity):
+        return self.ADMIN_ROLE_NAME in self.role_names(identity)
+
+    def role_names(self, identity):
+        """Return names of all roles held by an identity.
+
+        :param dict|str identity: User identity
+        """
         db_engine = self.handler().db_engine()
         self.config_models = ConfigModels(
             db_engine, self.handler().conn_str(),
@@ -33,15 +37,15 @@ class AccessControl:
             username = identity
             groups = []
         with self.config_models.session() as session:
-            admin_role = self.admin_role_query(username, groups, session)
+            return {
+                role.name
+                for role in self.roles_query(username, groups, session).all()
+            }
 
-        return admin_role
+    def roles_query(self, username, groups, session):
+        """Create base query for all roles of a user and their groups.
 
-    def admin_role_query(self, username, groups, session):
-        """Create base query for all permissions of a user and group.
-
-        Combine permissions from roles of user and user groups, group roles and
-        public role.
+        Combine roles of user and user groups, and group roles.
 
         :param str username: User name
         :param list(str) groups: List of groups name
@@ -54,24 +58,19 @@ class AccessControl:
         # create query
         query = session.query(Role)
 
-        # query permissions from roles in user groups
+        # query roles from user groups
         groups_roles_query = query.join(Role.groups_collection) \
             .join(Group.users_collection) \
             .filter(User.name == username)
 
-        # query permissions from direct user roles
+        # query direct user roles
         user_roles_query = query.join(Role.users_collection) \
             .filter(User.name == username)
 
-        # query permissions from group roles
+        # query roles of groups from identity
         group_roles_query = query.join(Role.groups_collection) \
             .filter(Group.name.in_(groups))
 
         # combine queries
-        query = groups_roles_query.union(user_roles_query) \
-            .union(group_roles_query) \
-            .filter(Role.name == self.ADMIN_ROLE_NAME)
-
-        (admin_role, ), = session.query(query.exists())
-
-        return admin_role
+        return groups_roles_query.union(user_roles_query) \
+            .union(group_roles_query)

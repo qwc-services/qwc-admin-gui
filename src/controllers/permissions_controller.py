@@ -5,6 +5,7 @@ from flask import flash, render_template, request, session as flask_session
 from markupsafe import Markup
 from sqlalchemy.orm import joinedload
 
+from admin_access import MANAGE_PERMISSIONS
 from .controller import Controller
 from forms import PermissionForm
 from utils import i18n
@@ -12,6 +13,7 @@ from utils import i18n
 
 class PermissionsController(Controller):
     """Controller for permission model"""
+
 
     def __init__(self, app, handler):
         """Constructor
@@ -21,7 +23,7 @@ class PermissionsController(Controller):
         """
         super(PermissionsController, self).__init__(
             "Permission", 'permissions', 'permission', 'permissions', app,
-            handler
+            handler, MANAGE_PERMISSIONS
         )
 
     def resources_for_index_query(self, search_text, role, resource_type,
@@ -245,7 +247,7 @@ class PermissionsController(Controller):
             active_resource_type=active_resource_type, i18n = i18n
         )
 
-    def find_resource(self, id, session):
+    def _find_resource(self, id, session):
         """Find permission by ID.
 
         :param int id: Permission ID
@@ -253,7 +255,7 @@ class PermissionsController(Controller):
         """
         return session.query(self.Permission).filter_by(id=id).first()
 
-    def create_form(self, resource=None, edit_form=False):
+    def _create_form(self, resource=None, edit_form=False):
         """Return form with fields loaded from DB.
 
         :param object resource: Optional permission object
