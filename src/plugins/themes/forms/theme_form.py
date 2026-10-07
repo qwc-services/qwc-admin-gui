@@ -5,6 +5,7 @@ from wtforms import FieldList, FormField, SelectField, BooleanField, \
         SelectMultipleField, IntegerField, StringField, SubmitField, \
         TextAreaField
 from wtforms.validators import DataRequired, Optional, Regexp, URL
+from wtforms.widgets import HiddenInput
 from utils import i18n
 
 
@@ -19,16 +20,35 @@ class JSONField(TextAreaField):
             except ValueError:
                 raise ValueError('This field contains invalid JSON')
 
+class PrintLayerField(StringField):
+    """Layer name or JSON list of scale dependent print layers"""
+
+    def _value(self):
+        if isinstance(self.data, list):
+            return json.dumps(self.data)
+        return super()._value()
+
+    def process_formdata(self, valuelist):
+        super().process_formdata(valuelist)
+        value = (self.data or '').strip()
+        if value.startswith('[{'):
+            try:
+                self.data = json.loads(value)
+            except ValueError:
+                raise ValueError('This field contains invalid JSON')
+
 class BackgroundLayerForm(FlaskForm):
     """Subform for backgroundlayers"""
 
     layerName = SelectField(coerce=str, validators=[DataRequired()])
-    printLayer = StringField(validators=[Optional()])
+    printLayer = PrintLayerField(validators=[Optional()])
     visibility = BooleanField(validators=[Optional()])
 
 class QgisSearchForm(FlaskForm):
     """Subform for Qgis searches"""
 
+    # index of the qgis search this row was loaded from, empty for new rows
+    sourceIndex = IntegerField(widget=HiddenInput(), validators=[Optional()])
     title = StringField(
         "Title",
         description="Search provider name.",
@@ -89,7 +109,7 @@ class ThemeForm(FlaskForm):
         i18n('plugins.themes.theme.form_extent'),
         description=i18n('plugins.themes.theme.form_extent_description'),
         default=(""),
-        validators=[Optional(), Regexp(r'^(\d+(\.\d*)?)(,\s*\d+(\.\d*)?){3}$',
+        validators=[Optional(), Regexp(r'^(-?\d+(\.\d*)?)(,\s*-?\d+(\.\d*)?){3}$',
                     message=i18n('plugins.themes.theme.form_extent_message'))]
     )
     additionalMouseCrs = SelectMultipleField(
