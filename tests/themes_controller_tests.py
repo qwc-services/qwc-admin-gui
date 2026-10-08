@@ -1,363 +1,225 @@
 import unittest
 from collections import OrderedDict
-
-from flask import Flask
+from unittest.mock import patch
 
 from plugins.themes.controllers import ThemesController
-from plugins.themes.forms import ThemeForm
+from plugins.themes.utils import ThemeUtils
 
 
-app = Flask(__name__)
-app.config.update(SECRET_KEY="test", WTF_CSRF_ENABLED=False)
+SCHEMA = {
+    "type": "object",
+    "properties": {
+        "url": {"type": "string"},
+        "title": {"type": "string"},
+        "mapCrs": {"type": "string"},
+        "extent": {"type": "array", "items": {"type": "number"}, "minItems": 4, "maxItems": 4}
+    },
+    "required": ["url"]
+}
 
 
 class ThemeItemFromFormTestCase(unittest.TestCase):
-    """Test building a theme item from submitted theme form data"""
+    """Test building a theme item from the submitted theme form"""
 
-    def submit(self, data):
-        """Return the theme item built from the submitted form data."""
-        with app.test_request_context(method="POST", data=data):
-            return ThemesController.theme_item_from_form(ThemeForm())
+    def test_combines_form_data_and_other_settings_in_original_order(self):
+        existing = OrderedDict([
+            ("url", "/ows/demo"), ("custom", 1), ("title", "Demo"), ("mapCrs", "EPSG:3857")
+        ])
 
-    def test_saves_scale_dependent_print_layer_as_list(self):
-        item = self.submit({
-            "url": "/ows/qwc_demo",
-            "backgroundLayers-0-layerName": "mapnik",
-            "backgroundLayers-0-printLayer":
-                '[{"maxScale": 10000, "name": "osm_detail"},'
-                ' {"maxScale": null, "name": "osm_bg"}]',
-            "backgroundLayers-0-visibility": "y",
+        item, errors = ThemesController.theme_item_from_form(
+            existing, {"title": "Demo 2", "extent": [-1, -2, 3, 4], "url": "/ows/demo"},
+            {"custom": 2}, SCHEMA
+        )
+
+        self.assertEqual(errors, [])
+        self.assertEqual(list(item.items()), [
+            ("url", "/ows/demo"), ("custom", 2), ("title", "Demo 2"),
+            ("extent", [-1, -2, 3, 4])
+        ])
+
+    def test_removes_settings_missing_from_the_form(self):
+        existing = {"url": "/ows/demo", "mapCrs": "EPSG:3857", "custom": 1}
+
+        item, errors = ThemesController.theme_item_from_form(
+            existing, {"url": "/ows/demo"}, {}, SCHEMA
+        )
+
+        self.assertEqual(errors, [])
+        self.assertEqual(item, {"url": "/ows/demo"})
+
+    def test_removes_empty_values_left_by_the_form(self):
+        existing = {"url": "/ows/demo", "mapCrs": "", "extent": [0, 0, 1, 1]}
+
+        item, errors = ThemesController.theme_item_from_form(
+            existing, {"url": "/ows/demo", "mapCrs": "", "extent": [], "title": ""},
+            {}, SCHEMA
+        )
+
+        self.assertEqual(errors, [])
+        self.assertEqual(item, {"url": "/ows/demo", "mapCrs": ""})
+
+    def test_rejects_schema_settings_in_other_settings(self):
+        item, errors = ThemesController.theme_item_from_form(
+            {}, {"url": "/ows/demo"}, {"title": "Demo"}, SCHEMA
+        )
+
+        self.assertEqual(len(errors), 1)
+        self.assertIn("title", errors[0])
+        self.assertNotIn("title", item)
+
+    def test_rejects_other_settings_in_form_data(self):
+        item, errors = ThemesController.theme_item_from_form(
+            {}, {"url": "/ows/demo", "custom": 1}, {}, SCHEMA
+        )
+
+        self.assertEqual(len(errors), 1)
+        self.assertIn("custom", errors[0])
+        self.assertNotIn("custom", item)
+
+    def test_reports_schema_errors(self):
+        item, errors = ThemesController.theme_item_from_form(
+            {}, {"extent": [1, 2, 3]}, {}, SCHEMA
+        )
+
+        self.assertEqual(errors, [
+            "'url' is a required property",
+            "extent: [1, 2, 3] is too short"
+        ])
+
+
+class RestoreKeyOrderTestCase(unittest.TestCase):
+    """Test restoring the key order of a theme item edited in a form"""
+
+    def test_restores_nested_key_order_new_keys_last(self):
+        original = OrderedDict([
+            ("url", "/ows/demo"), ("title", "Demo"),
+            ("map3d", OrderedDict([("dtm", OrderedDict([("url", "/dtm.tif"), ("nodata", -500)]))])),
+            ("backgroundLayers", [OrderedDict([("name", "osm"), ("visibility", True)])])
+        ])
+        value = {
+            "backgroundLayers": [{"visibility": False, "name": "osm"}, {"name": "ortho"}],
+            "map3d": {"dtm": {"nodata": -500, "url": "/dtm.tif"}},
+            "mapCrs": "EPSG:2056",
+            "url": "/ows/demo"
+        }
+
+        result = ThemeUtils.restore_key_order(original, value)
+
+        self.assertEqual(list(result), ["url", "map3d", "backgroundLayers", "mapCrs"])
+        self.assertEqual(list(result["map3d"]["dtm"]), ["url", "nodata"])
+        self.assertEqual(
+            [list(layer) for layer in result["backgroundLayers"]],
+            [["name", "visibility"], ["name"]]
+        )
+        self.assertEqual(result, value)
+
+
+class PruneEmptyTestCase(unittest.TestCase):
+    """Test removing the empty values left by a form"""
+
+    def test_removes_nested_empty_values_not_in_the_original(self):
+        original = {"map3d": {"dtm": {"url": "/dtm.tif"}}, "flags": [], "printLayer": [{"maxScale": None}]}
+        value = {
+            "map3d": {"dtm": {"url": ""}, "objects": []},
+            "flags": [],
+            "printLayer": [{"maxScale": None, "name": "bg"}],
+            "searchProviders": [{"provider": "qgis", "params": {"title": "a", "group": ""}}]
+        }
+
+        result = ThemeUtils.prune_empty(original, value)
+
+        self.assertEqual(result, {
+            "flags": [],
+            "printLayer": [{"maxScale": None, "name": "bg"}],
+            "searchProviders": [{"provider": "qgis", "params": {"title": "a"}}]
         })
 
-        self.assertEqual(item["backgroundLayers"], [{
-            "name": "mapnik",
-            "printLayer": [
-                {"maxScale": 10000, "name": "osm_detail"},
-                {"maxScale": None, "name": "osm_bg"}
-            ],
-            "visibility": True
-        }])
+    def test_keeps_empty_values_of_moved_items(self):
+        original = [{"name": "osm", "thumbnail": ""}, {"name": "ortho"}]
+        value = [{"name": "ortho"}, {"name": "osm", "thumbnail": ""}]
 
-    def test_rejects_invalid_scale_dependent_print_layer(self):
-        data = {
-            "url": "/ows/qwc_demo",
-            "backgroundLayers-0-layerName": "mapnik",
-            "backgroundLayers-0-printLayer":
-                '[{"maxScale": 10000, "name": "osm_detail"}',
+        result = ThemeUtils.prune_empty(original, value)
+
+        self.assertEqual(result, value)
+
+
+class OriginalItemsTestCase(unittest.TestCase):
+    """Test matching edited list items with the original items"""
+
+    def test_matches_moved_edited_and_new_items(self):
+        original = [{"name": "osm", "visibility": True}, {"name": "ortho"}, "coordinates"]
+        items = [{"name": "ortho"}, {"name": "osm", "visibility": False}, "nominatim", "coordinates"]
+
+        result = ThemeUtils.original_items(original, items)
+
+        self.assertEqual(result, [
+            {"name": "ortho"}, {"name": "osm", "visibility": True}, None,
+            "coordinates"
+        ])
+
+
+class FormSchemaTestCase(unittest.TestCase):
+    """Test injecting the choices of the theme settings in the form schema"""
+
+    BASE_SCHEMA = {
+        "type": "object",
+        "definitions": {
+            "layer": {"type": "object", "properties": {"name": {"type": "string"}}},
+            "provider": {"oneOf": [
+                {"type": "object", "properties": {"provider": {"const": "qgis"}}},
+                {"type": "string"}
+            ]}
+        },
+        "properties": {
+            "url": {"type": "string"},
+            "thumbnail": {"type": "string"},
+            "format": {"type": "string"},
+            "mapCrs": {"type": "string"},
+            "defaultDisplayCrs": {"type": "string"},
+            "additionalMouseCrs": {"type": "array", "items": {"type": "string"}},
+            "backgroundLayers": {"type": "array", "items": {"$ref": "#/definitions/layer"}},
+            "searchProviders": {"type": "array", "items": {"$ref": "#/definitions/provider"}},
+            "startupView": {"type": "string", "enum": ["2d", "3d"]}
         }
-        with app.test_request_context(method="POST", data=data):
-            layer_form = ThemeForm().backgroundLayers[0].form
-            self.assertFalse(layer_form.printLayer.validate(layer_form))
+    }
 
-    def test_accepts_print_layer_name_in_brackets(self):
-        data = {
-            "url": "/ows/qwc_demo",
-            "backgroundLayers-0-layerName": "mapnik",
-            "backgroundLayers-0-printLayer": "[OSM] background",
+    def form_schema(self, theme):
+        controller = ThemesController.__new__(ThemesController)
+        controller.app = controller.handler = None
+        controller.themesconfig = {
+            "themes": {"backgroundLayers": [{"name": "osm"}]},
+            "defaultSearchProviders": ["coordinates", {"provider": "fulltext"}]
         }
-        with app.test_request_context(method="POST", data=data):
-            form = ThemeForm()
-            layer_form = form.backgroundLayers[0].form
-            self.assertTrue(layer_form.printLayer.validate(layer_form))
-            item = ThemesController.theme_item_from_form(form)
+        with patch.object(ThemeUtils, "get_projects", return_value=[("/ows/demo", "demo")]), \
+                patch.object(ThemeUtils, "get_mapthumbs", return_value=["", "demo.png"]), \
+                patch.object(ThemeUtils, "get_crs", return_value=(["EPSG:3857", "EPSG:3857"],)):
+            return controller.form_schema(self.BASE_SCHEMA, theme)
 
-        self.assertEqual(
-            item["backgroundLayers"][0]["printLayer"], "[OSM] background")
+    def options(self, node):
+        return [(option["const"], option["title"]) for option in node["oneOf"]]
 
-    def test_saves_indented_scale_dependent_print_layer_as_list(self):
-        item = self.submit({
-            "url": "/ows/qwc_demo",
-            "backgroundLayers-0-layerName": "mapnik",
-            "backgroundLayers-0-printLayer":
-                '\n [{"maxScale": null, "name": "osm_bg"}]',
+    def test_injects_choices_completed_with_theme_values(self):
+        schema = self.form_schema({
+            "url": "/ows/other", "thumbnail": "other.png", "mapCrs": "EPSG:2056",
+            "additionalMouseCrs": ["EPSG:3948"], "startupView": "oblique",
+            "backgroundLayers": [{"name": "ortho"}], "map3d": {"basemaps": [{"name": "dtm_bg"}]},
+            "searchProviders": ["nominatim", {"provider": "qgis"}]
         })
 
-        self.assertEqual(
-            item["backgroundLayers"][0]["printLayer"],
-            [{"maxScale": None, "name": "osm_bg"}])
+        properties = schema["properties"]
+        definitions = schema["definitions"]
+        self.assertEqual(self.options(properties["url"]), [("/ows/demo", "demo"), ("/ows/other", "/ows/other")])
+        self.assertEqual(self.options(properties["thumbnail"]), [("demo.png", "demo.png"), ("other.png", "other.png")])
+        self.assertEqual(self.options(properties["mapCrs"]), [("EPSG:3857", "EPSG:3857"), ("EPSG:2056", "EPSG:2056")])
+        self.assertEqual(self.options(properties["defaultDisplayCrs"]), [("EPSG:3857", "EPSG:3857")])
+        self.assertEqual(self.options(properties["additionalMouseCrs"]["items"]), [("EPSG:3857", "EPSG:3857"), ("EPSG:3948", "EPSG:3948")])
+        self.assertIn(("image/png", "image/png"), self.options(properties["format"]))
+        self.assertEqual(self.options(definitions["layer"]["properties"]["name"]), [("osm", "osm"), ("ortho", "ortho"), ("dtm_bg", "dtm_bg")])
+        self.assertEqual(self.options(definitions["provider"]["oneOf"][1]), [("coordinates", "coordinates"), ("nominatim", "nominatim")])
+        self.assertNotIn("oneOf", definitions["provider"]["oneOf"][0])
+        self.assertEqual(properties["startupView"]["enum"], ["2d", "3d", "oblique"])
 
-    def test_accepts_negative_extent(self):
-        data = {
-            "url": "/ows/qwc_demo",
-            "extent": "-1000000, 4000000, 3000000, 8000000.5",
-        }
-        with app.test_request_context(method="POST", data=data):
-            form = ThemeForm()
-            self.assertTrue(form.extent.validate(form), form.extent.errors)
-            item = ThemesController.theme_item_from_form(form)
+    def test_leaves_base_schema_unchanged(self):
+        self.form_schema({"mapCrs": "EPSG:2056"})
 
-        self.assertEqual(item["extent"], [-1000000, 4000000, 3000000, 8000000.5])
-
-    def test_reads_qgis_search_source_index(self):
-        data = {
-            "url": "/ows/qwc_demo",
-            "qgisSearchProvider-0-sourceIndex": "2",
-            "qgisSearchProvider-0-title": "Countries",
-            "qgisSearchProvider-3-title": "New",
-        }
-        with app.test_request_context(method="POST", data=data):
-            form = ThemeForm()
-            sources = [
-                entry.sourceIndex.data for entry in form.qgisSearchProvider
-            ]
-            self.assertTrue(all(
-                entry.sourceIndex.validate(entry.form)
-                for entry in form.qgisSearchProvider
-            ))
-
-        self.assertEqual(sources, [2, None])
-
-
-class MergeThemeItemTestCase(unittest.TestCase):
-    """Test merging theme form output onto the existing theme item"""
-
-    def test_keeps_keys_not_edited_by_form(self):
-        existing = OrderedDict([
-            ("id", "qwc_demo"),
-            ("url", "/ows/qwc_demo"),
-            ("title", "Demo"),
-            ("predefinedFilters", [{"id": "timefilter", "title": "Time"}]),
-            ("featureReport", {"countries": "Country"}),
-        ])
-        form_item = OrderedDict([
-            ("url", "/ows/qwc_demo"),
-            ("title", "Demo renamed"),
-        ])
-
-        merged = ThemesController.merge_theme_item(
-            existing, form_item, [], [])
-
-        self.assertEqual(merged, OrderedDict([
-            ("id", "qwc_demo"),
-            ("url", "/ows/qwc_demo"),
-            ("title", "Demo renamed"),
-            ("predefinedFilters", [{"id": "timefilter", "title": "Time"}]),
-            ("featureReport", {"countries": "Country"}),
-        ]))
-
-    def test_removes_keys_cleared_in_form(self):
-        existing = OrderedDict([
-            ("url", "/ows/qwc_demo"),
-            ("thumbnail", "qwc_demo.png"),
-            ("tileSize", [512, 512]),
-            ("predefinedFilters", []),
-        ])
-        form_item = OrderedDict([
-            ("url", "/ows/qwc_demo"),
-        ])
-
-        merged = ThemesController.merge_theme_item(
-            existing, form_item, [], [])
-
-        self.assertEqual(merged, OrderedDict([
-            ("url", "/ows/qwc_demo"),
-            ("predefinedFilters", []),
-        ]))
-
-    def test_keeps_search_providers_not_selectable_in_form(self):
-        fulltext = {"provider": "fulltext", "params": {"default": ["countries"]}}
-        existing = OrderedDict([
-            ("url", "/ows/qwc_demo"),
-            ("searchProviders", ["coordinates", "nominatim", fulltext]),
-        ])
-        form_item = OrderedDict([
-            ("url", "/ows/qwc_demo"),
-            ("searchProviders", ["coordinates"]),
-        ])
-
-        merged = ThemesController.merge_theme_item(
-            existing, form_item, ["coordinates"], [])
-
-        self.assertEqual(
-            merged["searchProviders"], ["coordinates", "nominatim", fulltext])
-
-    def test_keeps_qgis_search_params_not_edited_by_form(self):
-        existing = OrderedDict([
-            ("url", "/ows/qwc_demo"),
-            ("searchProviders", [{
-                "provider": "qgis",
-                "params": {
-                    "title": "Countries",
-                    "titlemsgid": "search.countries",
-                    "resultTitle": "{name}",
-                    "expression": {"countries": "\"name\" ILIKE '%$TEXT$%'"},
-                    "featuresearch": False
-                }
-            }]),
-        ])
-        form_item = OrderedDict([
-            ("url", "/ows/qwc_demo"),
-            ("searchProviders", [{
-                "provider": "qgis",
-                "params": {
-                    "title": "Countries",
-                    "featureCount": 10,
-                    "description": "",
-                    "default": False,
-                    "group": "",
-                    "expression": {"countries": "\"iso\" = '$TEXT$'"},
-                    "fields": None
-                }
-            }]),
-        ])
-
-        merged = ThemesController.merge_theme_item(
-            existing, form_item, [], [0])
-
-        self.assertEqual(merged["searchProviders"], [{
-            "provider": "qgis",
-            "params": {
-                "title": "Countries",
-                "titlemsgid": "search.countries",
-                "resultTitle": "{name}",
-                "expression": {"countries": "\"iso\" = '$TEXT$'"},
-                "featuresearch": False,
-                "featureCount": 10,
-                "description": "",
-                "default": False,
-                "group": "",
-                "fields": None
-            }
-        }])
-
-    def test_keeps_qgis_search_params_when_search_is_renamed(self):
-        existing = OrderedDict([
-            ("url", "/ows/qwc_demo"),
-            ("searchProviders", [{
-                "provider": "qgis",
-                "params": {"titlemsgid": "search.countries", "featuresearch": False}
-            }]),
-        ])
-        form_item = OrderedDict([
-            ("url", "/ows/qwc_demo"),
-            ("searchProviders", [{
-                "provider": "qgis", "params": {"title": "Countries"}
-            }]),
-        ])
-
-        merged = ThemesController.merge_theme_item(
-            existing, form_item, [], [0])
-
-        self.assertEqual(merged["searchProviders"], [{
-            "provider": "qgis",
-            "params": {
-                "titlemsgid": "search.countries",
-                "featuresearch": False,
-                "title": "Countries"
-            }
-        }])
-
-    def test_pairs_qgis_searches_with_the_search_they_were_loaded_from(self):
-        existing = OrderedDict([
-            ("url", "/ows/qwc_demo"),
-            ("searchProviders", [
-                {"provider": "qgis", "params": {"title": "Search", "group": "a"}},
-                {"provider": "qgis", "params": {"title": "Search", "group": "b"}},
-            ]),
-        ])
-        # first row removed, second row kept, new row added
-        form_item = OrderedDict([
-            ("url", "/ows/qwc_demo"),
-            ("searchProviders", [
-                {"provider": "qgis", "params": {"title": "Search"}},
-                {"provider": "qgis", "params": {"title": "New"}},
-            ]),
-        ])
-
-        merged = ThemesController.merge_theme_item(
-            existing, form_item, [], [1, None])
-
-        self.assertEqual(merged["searchProviders"], [
-            {"provider": "qgis", "params": {"title": "Search", "group": "b"}},
-            {"provider": "qgis", "params": {"title": "New"}},
-        ])
-
-    def test_does_not_pair_new_qgis_searches_with_removed_ones(self):
-        existing = OrderedDict([
-            ("url", "/ows/qwc_demo"),
-            ("searchProviders", [
-                {"provider": "qgis", "params": {"title": "A", "group": "a"}},
-                {"provider": "qgis", "params": {"title": "B", "group": "b"}},
-                {"provider": "qgis", "params": {"title": "C", "group": "c"}},
-            ]),
-        ])
-        # last two rows removed, new row added
-        form_item = OrderedDict([
-            ("url", "/ows/qwc_demo"),
-            ("searchProviders", [
-                {"provider": "qgis", "params": {"title": "A"}},
-                {"provider": "qgis", "params": {"title": "New"}},
-            ]),
-        ])
-
-        merged = ThemesController.merge_theme_item(
-            existing, form_item, [], [0, None])
-
-        self.assertEqual(merged["searchProviders"], [
-            {"provider": "qgis", "params": {"title": "A", "group": "a"}},
-            {"provider": "qgis", "params": {"title": "New"}},
-        ])
-
-    def test_keeps_default_search_provider_objects(self):
-        fulltext = {"provider": "fulltext", "params": {}}
-        existing = OrderedDict([
-            ("url", "/ows/qwc_demo"),
-            ("searchProviders", ["coordinates", fulltext]),
-        ])
-        form_item = OrderedDict([
-            ("url", "/ows/qwc_demo"),
-            ("searchProviders", ["coordinates"]),
-        ])
-
-        merged = ThemesController.merge_theme_item(
-            existing, form_item, ["coordinates", fulltext], [])
-
-        self.assertEqual(merged["searchProviders"], ["coordinates", fulltext])
-
-    def test_keeps_search_provider_order(self):
-        countries = {"provider": "qgis", "params": {"title": "Countries"}}
-        fulltext = {"provider": "fulltext", "params": {}}
-        existing = OrderedDict([
-            ("url", "/ows/qwc_demo"),
-            ("searchProviders", [
-                "coordinates", "nominatim", countries, fulltext, "places"
-            ]),
-        ])
-        form_item = OrderedDict([
-            ("url", "/ows/qwc_demo"),
-            ("searchProviders", ["coordinates", "places", countries]),
-        ])
-
-        merged = ThemesController.merge_theme_item(
-            existing, form_item, ["coordinates", "places"], [0])
-
-        self.assertEqual(merged["searchProviders"], [
-            "coordinates", "nominatim", countries, fulltext, "places"
-        ])
-
-    def test_keeps_background_layer_keys_not_edited_by_form(self):
-        existing = OrderedDict([
-            ("url", "/ows/qwc_demo"),
-            ("backgroundLayers", [
-                {"name": "bluemarble", "printLayer": "bluemarble_bg",
-                 "visibility": True, "overview": True},
-                {"name": "mapnik", "printLayer": "osm_bg"},
-            ]),
-        ])
-        form_item = OrderedDict([
-            ("url", "/ows/qwc_demo"),
-            ("backgroundLayers", [
-                {"name": "bluemarble", "printLayer": "bluemarble_bg",
-                 "visibility": False},
-                {"name": "mapnik", "printLayer": "osm_bg", "visibility": False},
-            ]),
-        ])
-
-        merged = ThemesController.merge_theme_item(
-            existing, form_item, [], [])
-
-        self.assertEqual(merged["backgroundLayers"], [
-            {"name": "bluemarble", "printLayer": "bluemarble_bg",
-             "visibility": False, "overview": True},
-            {"name": "mapnik", "printLayer": "osm_bg", "visibility": False},
-        ])
+        self.assertNotIn("oneOf", self.BASE_SCHEMA["properties"]["mapCrs"])

@@ -52,7 +52,8 @@ In addition, the following environment variables are supported:
 | `GROUP_REGISTRATION_ENABLED` | `True`        | Whether to allow registrable groups and group registration requests via [Registration GUI](https://github.com/qwc-services/qwc-registration-gui). |
 | `IDLE_TIMEOUT`               | `0`           | Idle timeout after which to automatically log out (`0` disables automatic logout).        |
 | `SKIP_LOGIN`                 | `False`       | Whether to skip redirect to the `auth_service_url` is user is not authenticated (for development). |
-| `DEFAULT_LOCALE`             | `en`          | Admin GUI language (see [src/translations](src/translations) for available languages).    |
+| `DEFAULT_LOCALE`             | `en`          | Admin GUI language (see [src/translations](src/translations) for available languages), strings missing in its translations are shown in English. |
+| `JSON_SCHEMAS_PATH`          | `/tmp/`       | Directory with the qwc2 themes configuration schemas used by the theme form, downloaded from the URLs in [src/schema-versions.json](src/schema-versions.json) if missing. |
 | `MAIL_SERVER`                | `localhost`   | Mailer setup, see [Flask-Mail](https://flask-mail.readthedocs.io/en/latest/#configuring). |
 | `MAIL_PORT`                  | `25`          | Mailer setup, see [Flask-Mail](https://flask-mail.readthedocs.io/en/latest/#configuring). |
 | `MAIL_USE_TLS`               | `False`       | Mailer setup, see [Flask-Mail](https://flask-mail.readthedocs.io/en/latest/#configuring). |
@@ -106,7 +107,7 @@ You can send invitation mails to users from the `Users` page. You will need to c
 
 ### Translations
 
-Translation strings are stored in a JSON file for each locale in `translations/<locale>.json` (e.g. `en.json`). Add any new languages as new JSON files. You can use the [updateTranslations.py](updateTranslations.py) helper script to update the translation files with all message ids from the source files.
+Translation strings are stored in a JSON file for each locale in `translations/<locale>.json` (e.g. `en.json`). Add any new languages as new JSON files. You can use the [updateTranslations.py](updateTranslations.py) helper script to update the translation files with all message ids from the source files. It also adds the titles and descriptions of the theme form schemas, read from `JSON_SCHEMAS_PATH` or downloaded, so run it in the project environment: `uv run updateTranslations.py`.
 
 Set the `DEFAULT_LOCALE` environment variable to choose the locale for the user notification mails (default: `en`).
 
@@ -177,6 +178,8 @@ Set `FLASK_DEBUG=1` for additional debug output.
 Set `SKIP_LOGIN=1` if running without an authentication service (i.e. for development).
 
 Set `FLASK_RUN_PORT=<port>` to change the default port (default: `5000`).
+
+The theme form uses a prebuilt [react-jsonschema-form](https://github.com/rjsf-team/react-jsonschema-form) bundle, `src/static/js/schema-form.min.js`. To rebuild it after changing [js/schema-form](js/schema-form), run `npm ci && npm run build` in that folder.
     
 Docker usage
 ------------

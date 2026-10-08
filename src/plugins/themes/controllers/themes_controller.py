@@ -1,14 +1,14 @@
+import json
 from collections import OrderedDict
 from copy import deepcopy
 from flask import abort, flash, redirect, render_template, request, url_for
-from wtforms import ValidationError
+from jinja2.utils import htmlsafe_json_dumps
 from sqlalchemy.exc import IntegrityError, InternalError
-from urllib.parse import urlparse
 from qwc_services_core.config_models import ConfigModels
 
-from plugins.themes.forms import ThemeForm
-from plugins.themes.utils import ThemeUtils
-from utils import i18n
+from plugins.themes.forms.theme_ui_schema import rjsf_translations, theme_ui_schema
+from plugins.themes.utils import ThemeSchema, ThemeUtils
+from utils import DEFAULT_LOCALE, i18n, lookup_translation
 
 
 class ThemesConfigSaveError(Exception):
@@ -133,6 +133,8 @@ class ThemesController:
             qwc_config_schema=current_handler.qwc_config_schema()
         )
         self.resources = self.config_models.model('resources')
+        self.theme_schema = ThemeSchema(app.logger)
+        self.base_form_schema = None
 
     def index(self):
         """Show theme list."""
@@ -169,42 +171,16 @@ class ThemesController:
 
     def new_theme(self, gid=None):
         """Show new theme form."""
-        form = self.create_form()
-        template = "%s/theme.html" % self.template_dir
-        title = i18n('plugins.themes.themes.create_theme_title')
-        action = url_for("create_theme", gid=gid)
-
-        return render_template(
-            template, title=title, form=form, action=action, gid=gid,
-            method="POST", i18n=i18n
+        return self.render_theme_form(
+            {}, i18n('plugins.themes.themes.create_theme_title'),
+            url_for("create_theme", gid=gid)
         )
 
     def create_theme(self, gid=None):
         """Create new theme."""
-        form = self.create_form()
-        if form.validate_on_submit():
-            try:
-                self.create_or_update_theme(None, form, gid=gid)
-                flash("{0}: {1}.".format(
-                    i18n('plugins.themes.themes.create_theme_message_success'),form.title.data),
-                      "success")
-                return redirect(url_for("themes"))
-            except (ValidationError, ThemesConfigSaveError):
-                flash("{0} {1}.".format(
-                    i18n('plugins.themes.themes.create_theme_message_error'), form.title.data), "warning")
-        else:
-            flash("{0} {1}.".format(
-                i18n('plugins.themes.themes.create_theme_message_error'), form.title.data),
-                  "warning")
-
-        # show validation errors
-        template = "%s/theme.html" % self.template_dir
-        title = i18n('plugins.themes.themes.title')
-        action = url_for("create_theme", gid=gid)
-
-        return render_template(
-            template, title=title, form=form, action=action, gid=gid,
-            method="POST", i18n=i18n
+        return self.save_theme_form(
+            None, i18n('plugins.themes.themes.create_theme_title'),
+            url_for("create_theme", gid=gid), gid=gid
         )
 
     def edit_theme(self, tid, gid=None):
@@ -216,14 +192,9 @@ class ThemesController:
         theme = self.find_theme(tid, gid)
 
         if theme is not None:
-            template = "%s/theme.html" % self.template_dir
-            form = self.create_form(theme)
-            title = i18n('plugins.themes.themes.edit_theme_title')
-            action = url_for("update_theme", tid=tid, gid=gid)
-
-            return render_template(
-                template, title=title, form=form, action=action, theme=theme,
-                tid=tid, gid=gid, method="POST", i18n=i18n
+            return self.render_theme_form(
+                theme, i18n('plugins.themes.themes.edit_theme_title'),
+                url_for("update_theme", tid=tid, gid=gid)
             )
         else:
             # theme not found
@@ -238,38 +209,88 @@ class ThemesController:
         theme = self.find_theme(tid, gid)
 
         if theme is not None:
-            form = self.create_form()
-
-            if form.validate_on_submit():
-                try:
-                    # update theme
-                    self.create_or_update_theme(theme, form, tid=tid, gid=gid)
-                    flash("{0} : {1}.".format(
-                        i18n('plugins.themes.themes.update_theme_message_success'), form.title.data), 
-                        "success")
-                    return redirect(url_for("themes"))
-                except (ValidationError, ThemesConfigSaveError):
-                    flash("{0} {1}.".format(
-                        i18n('plugins.themes.themes.update_theme_message_error'), form.title.data), 
-                        "warning")
-            else:
-                flash("{0} {1}.".format(
-                      i18n('plugins.themes.themes.update_theme_message_error'), form.title.data), 
-                      "warning")
-
-            # show validation errors
-            template = "%s/theme.html" % self.template_dir
-            title = i18n('plugins.themes.themes.update_theme_title')
-            action = url_for("update_theme", tid=tid, gid=gid)
-
-            return render_template(
-                template, title=title, form=form, action=action, tid=tid,
-                gid=gid, method="POST", i18n=i18n
+            return self.save_theme_form(
+                theme, i18n('plugins.themes.themes.update_theme_title'),
+                url_for("update_theme", tid=tid, gid=gid), tid=tid, gid=gid
             )
-
         else:
             # theme not found
             abort(404)
+
+    def save_theme_form(self, theme, title, action, tid=None, gid=None):
+        """Save the submitted theme form, or show it again with the errors.
+
+        :param dict theme: Edited theme item, None for a new theme
+        :param str title: Page title
+        :param str action: Form submit URL
+        :param int tid: Theme ID, None for a new theme
+        :param int gid: Theme group ID, None for a theme outside the groups
+        """
+        try:
+            form_data = json.loads(request.form.get("theme", ""))
+            other_settings = json.loads(request.form.get("other_settings", "{}"))
+        except ValueError:
+            form_data = other_settings = None
+        if not isinstance(form_data, dict) or not isinstance(other_settings, dict):
+            abort(400)
+
+        base_schema = self.load_base_form_schema()
+        if base_schema is None:
+            return redirect(url_for("themes"))
+        schema = self.form_schema(base_schema, theme or {})
+
+        item, errors = self.theme_item_from_form(
+            theme or {}, form_data, other_settings, schema
+        )
+        name = item.get("title") or item.get("url", "")
+        if theme is None:
+            success = i18n('plugins.themes.themes.create_theme_message_success')
+            failure = i18n('plugins.themes.themes.create_theme_message_error')
+        else:
+            success = i18n('plugins.themes.themes.update_theme_message_success')
+            failure = i18n('plugins.themes.themes.update_theme_message_error')
+
+        if not errors:
+            try:
+                self.create_or_update_theme(theme, item, tid=tid, gid=gid)
+                flash("{0}: {1}.".format(success, name), "success")
+                return redirect(url_for("themes"))
+            except ThemesConfigSaveError:
+                pass
+
+        flash("{0} {1}.".format(failure, name), "warning")
+        for error in errors:
+            flash(error, "warning")
+        return self.render_theme_form(
+            theme or {}, title, action, form_data=form_data,
+            other_settings=other_settings
+        )
+
+    @staticmethod
+    def theme_item_from_form(existing, form_data, other_settings, schema):
+        """Return the theme item built from the theme form and the errors
+        found in it.
+
+        :param dict existing: Edited theme item, empty for a new theme
+        :param dict form_data: Theme settings edited in the form
+        :param dict other_settings: Theme settings not defined by the schema
+        :param dict schema: Theme form schema
+        """
+        defined, _ = ThemeSchema.split_theme(schema, form_data)
+        _, others = ThemeSchema.split_theme(schema, other_settings)
+        errors = [
+            i18n('plugins.themes.theme.other_settings_defined_key', [key])
+            for key in other_settings if key not in others
+        ]
+        errors += [
+            i18n('plugins.themes.theme.form_undefined_key', [key])
+            for key in form_data if key not in defined
+        ]
+        # a form leaves empty values, e.g. a list whose items were all removed
+        defined = ThemeUtils.prune_empty(existing, defined)
+        item = ThemeUtils.restore_key_order(existing, {**defined, **others})
+        errors += ThemeSchema.validation_errors(schema, item)
+        return item, errors
 
     def delete_theme(self, tid, gid=None):
         if gid is None:
@@ -416,423 +437,134 @@ class ThemesController:
 
         return None
 
-    def create_form(self, theme=None):
-        """Return form with fields loaded from themesConfig.json.
+    def render_theme_form(self, theme, title, action, form_data=None,
+                          other_settings=None):
+        """Render the theme form.
 
-        :param object theme: Optional theme object
+        :param dict theme: Theme item, empty for a new theme
+        :param str title: Page title
+        :param str action: Form submit URL
+        :param dict form_data: Submitted form data, shown instead of the theme
+        :param dict other_settings: Submitted other settings
         """
-        form = ThemeForm()
-        if theme:
-            form = ThemeForm(url=theme["url"])
-
-        crslist = ThemeUtils.get_crs(self.app, self.handler)
-        defaultSearchProvidersList = self.themesconfig.get('defaultSearchProviders', [])
-
-        form.url.choices = [("", "---")] + ThemeUtils.get_projects(self.app, self.handler)
-        form.thumbnail.choices = ThemeUtils.get_mapthumbs(self.app, self.handler)
-        form.format.choices = ThemeUtils.get_format()
-        form.mapCrs.choices = crslist
-        form.additionalMouseCrs.choices = crslist
-        form.searchProviders.choices = defaultSearchProvidersList
-        form.backgroundLayersList = self.get_backgroundlayers()
-
-        if form.backgroundLayers.data:
-            for i in range(len(form.backgroundLayers.data)):
-                form.backgroundLayers[i].layerName.choices = self.get_backgroundlayers()
-
-        if theme is None:
-            return form
-        else:
-            current_handler = self.handler()
-            ogc_service_url = current_handler.config().get("ogc_service_url")
-            ows_prefix = current_handler.config().get("ows_prefix", urlparse(ogc_service_url).path)
-            if "url" in theme:
-                if theme["url"].startswith(ows_prefix):
-                    form.url.data = theme["url"]
-                else:
-                    form.url.data = ows_prefix.rstrip("/") + "/" + theme["url"]
-            else:
-                form.url.data = None
-            if "title" in theme:
-                form.title.data = theme["title"]
-            if "description" in theme:
-                form.description.data = theme["description"]
-            if "disabled" in theme:
-                form.disabled.data = theme["disabled"]
-            if "default" in theme:
-                form.default.data = theme["default"]
-            if "tiled" in theme:
-                form.tiled.data = theme["tiled"]
-            if "mapTips" in theme:
-                form.mapTips.data = theme["mapTips"]
-            if "thumbnail" in theme:
-                form.thumbnail.data = theme["thumbnail"]
-            if "attribution" in theme:
-                form.attribution.data = theme["attribution"]         
-            if "attributionUrl" in theme:
-               form.attributionUrl.data = theme["attributionUrl"]
-            if "format" in theme:
-                form.format.data = theme["format"]
-            if "mapCrs" in theme:
-                form.mapCrs.data = theme["mapCrs"]
-            if "extent" in theme:
-                form.extent.data = ", ".join(map(str, theme[
-                    "extent"]))
-            if "additionalMouseCrs" in theme:
-                form.additionalMouseCrs.data = theme["additionalMouseCrs"]
-            if "searchProviders" in theme:
-                form.searchProviders.data = theme["searchProviders"]
-            if "minSearchScaleDenom" in theme:
-                form.minSearchScaleDenom.data = theme["minSearchScaleDenom"]
-            if "tileSize" in theme:
-                form.tileSize.data = ", ".join(map(str, theme["tileSize"]))
-            if "scales" in theme:
-                form.scales.data = ", ".join(map(str, theme["scales"]))
-            if "printScales" in theme:
-                form.printScales.data = ", ".join(map(str, theme[
-                    "printScales"]))
-            if "printResolutions" in theme:
-                form.printResolutions.data = ", ".join(map(str, theme[
-                    "printResolutions"]))
-            if "printLabelBlacklist" in theme:
-                form.printLabelBlacklist.data = ", ".join(map(str, theme[
-                    "printLabelBlacklist"]))
-            if "extraPrintLayers" in theme:
-                form.extraPrintLayers.data = ", ".join(map(str, theme["extraPrintLayers"]))
-            if "flags" in theme:
-                form.flags.data = ", ".join(map(str, theme["flags"]))
-            if "layerTreeHiddenSublayers" in theme:
-                form.layerTreeHiddenSublayers.data = ", ".join(map(str, theme["layerTreeHiddenSublayers"]))
-            if "extraPrintParameters" in theme:
-                form.extraPrintParameters.data = ", ".join(theme["extraPrintParameters"].split('&'))
-            if "extraLegendParameters" in theme:
-                form.extraLegendParameters.data = ", ".join(theme["extraLegendParameters"].split('&'))
-            if "extraDxfParameters" in theme:
-                form.extraDxfParameters.data = ", ".join(theme["extraDxfParameters"].split('&'))
-            if "defaultPrintLayout" in theme:
-                form.defaultPrintLayout.data = theme["defaultPrintLayout"]
-            if "printLabelForSearchResult" in theme:
-                form.printLabelForSearchResult.data = theme["printLabelForSearchResult"]
-            if "printLabelForAttribution" in theme:
-                form.printLabelForAttribution.data = theme["printLabelForAttribution"]
-            if "skipEmptyFeatureAttributes" in theme:
-                form.skipEmptyFeatureAttributes.data = theme["skipEmptyFeatureAttributes"]
-            if "collapseLayerGroupsBelowLevel" in theme:
-                form.collapseLayerGroupsBelowLevel.data = theme["collapseLayerGroupsBelowLevel"]
-
-            if "backgroundLayers" in theme:
-                for i, layer in enumerate(theme["backgroundLayers"]):
-                    data = {
-                        "layerName": ("", ""),
-                        "printLayer": "",
-                        "visibility": False
-                    }
-
-                    for l in self.get_backgroundlayers():
-                        if layer["name"] == l[0]:
-                            data["layerName"] = l
-
-                    if "printLayer" in layer:
-                        data["printLayer"] = layer["printLayer"]
-
-                    if "visibility" in layer:
-                        data["visibility"] = layer["visibility"]
-
-                    form.backgroundLayers.append_entry(data)
-                    form.backgroundLayers[i].layerName.choices = self.get_backgroundlayers()
-                    form.backgroundLayers[i].layerName.data = layer["name"]
-            qgis_search = [provider for provider in theme.get("searchProviders", []) if "provider" in provider and provider.get("provider") == "qgis"]
-            if qgis_search :
-                for i, provider in enumerate(qgis_search):
-                    data = {
-                        "sourceIndex": i,
-                        "title": "",
-                        "featureCount": "",
-                        "resultTitle": "",
-                        "searchDescription" : "",
-                        "defaultSearch" : False,
-                        "group" : "",
-                        "expression":"",
-                        "fields": ""
-                    }
-                    if "title" in provider["params"]:
-                        data["title"] = provider["params"]["title"]
-                    if "featureCount" in provider["params"]:
-                        data["featureCount"] = provider["params"]["featureCount"]
-                    if "resultTitle" in provider["params"]:
-                        data["resultTitle"] = provider["params"]["resultTitle"]
-                    if "description"in provider["params"]:
-                        data["searchDescription"] = provider["params"]["description"]
-                    if "default" in provider["params"]:
-                        data["defaultSearch"] = provider["params"]["default"]
-                    if "group" in provider["params"]:
-                        data["group"] = provider["params"]["group"]
-                    if "expression" in provider["params"]:
-                        data["expression"] = provider["params"]["expression"]
-                    if "fields" in provider["params"]:
-                        data["fields"] = provider["params"]["fields"]
-                    form.qgisSearchProvider.append_entry(data)
-
-            return form
-
-    # Theme item keys edited by the theme form, other keys are kept on save
-    THEME_FORM_KEYS = [
-        "url", "title", "description", "disabled", "default", "tiled",
-        "mapTips", "thumbnail", "attribution", "attributionUrl", "format",
-        "mapCrs", "extent", "additionalMouseCrs", "searchProviders",
-        "minSearchScaleDenom", "tileSize", "scales", "printScales",
-        "printResolutions", "printLabelBlacklist", "extraPrintLayers", "flags",
-        "layerTreeHiddenSublayers", "extraPrintParameters",
-        "extraLegendParameters", "extraDxfParameters", "defaultPrintLayout",
-        "printLabelForSearchResult", "printLabelForAttribution",
-        "skipEmptyFeatureAttributes", "collapseLayerGroupsBelowLevel",
-        "backgroundLayers"
-    ]
-
-    @staticmethod
-    def theme_item_from_form(form):
-        """Return theme item built from the theme form.
-
-        :param FlaskForm form: Form for theme
-        """
-        item = OrderedDict()
-        item["url"] = form.url.data
-
-        if form.title.data:
-            item["title"] = form.title.data
-        else:
-            if "title" in item: del item["title"]
-
-        item["description"] = ""
-        if form.description.data:
-            item["description"] = form.description.data
-
-        item["disabled"] = False
-        if form.disabled.data:
-            item["disabled"] = True
-
-        item["default"] = False
-        if form.default.data:
-            item["default"] = True
-
-        item["tiled"] = False
-        if form.tiled.data:
-            item["tiled"] = True
-
-        item["mapTips"] = False
-        if form.mapTips.data:
-            item["mapTips"] = True
-
-        if form.thumbnail.data:
-            item["thumbnail"] = form.thumbnail.data
-
-        item["attribution"] = ""
-        if form.attribution.data:
-            item["attribution"] = form.attribution.data
-
-        item["attributionUrl"] = ""
-        if form.attributionUrl.data:
-            item["attributionUrl"] = form.attributionUrl.data
-
-        if form.format.data:
-            item["format"] = form.format.data
-        else:
-            if "format" in item: del item["format"]
-
-        if form.mapCrs.data:
-            item["mapCrs"] = form.mapCrs.data
-        else:
-            if item in "mapCrs": del item["mapCrs"]
-
-        if form.extent.data:
-            item["extent"] = list(map(
-                float, form.extent.data.replace(" ", "").split(",")))
-        else:
-            if "extent" in item: del item["extent"]
-
-        if form.additionalMouseCrs.data:
-            item["additionalMouseCrs"] = form.additionalMouseCrs.data
-        else:
-            if "additionalMouseCrs" in item: del item["additionalMouseCrs"]
-
-        item["searchProviders"] = []
-        if form.searchProviders.data:
-            item["searchProviders"] = form.searchProviders.data
-        if form.qgisSearchProvider.data:
-            for search in form.qgisSearchProvider.data:
-                item["searchProviders"].append({
-                    "provider": "qgis",
-                    "params": {
-                    "title": search["title"],
-                    "featureCount": search["featureCount"],
-                    "description": search["searchDescription"],
-                    "default": search["defaultSearch"],
-                    "group": search["group"],
-                    "expression": search["expression"],
-                    "fields": search["fields"]
-                    }
-                })
-        if not form.qgisSearchProvider.data and not form.searchProviders.data:
-            if "searchProviders" in item: del item["searchProviders"]
-
-        item["minSearchScaleDenom"] = ""
-        if form.minSearchScaleDenom.data:
-            item["minSearchScaleDenom"] = form.minSearchScaleDenom.data
-
-        if form.tileSize.data:
-            item["tileSize"] = list(map(
-                int, form.tileSize.data.replace(" ", "").split(",")))
-        else:
-            if "tileSize" in item: del item["tileSize"]
-
-        if form.scales.data:
-            item["scales"] = list(map(int, form.scales.data.replace(
-                " ", "").split(",")))
-        else:
-            if "scales" in item: del item["scales"]
-
-        if form.printScales.data:
-            item["printScales"] = list(map(int, form.printScales.data.replace(
-                " ", "").split(",")))
-        else:
-            if "printScales" in item: del item["printScales"]
-
-        if form.printResolutions.data:
-            item["printResolutions"] = list(map(
-                int, form.printResolutions.data.replace(" ", "").split(",")))
-        else:
-            if "printResolutions" in item: del item["printResolutions"]
-
-        if form.printLabelBlacklist.data:
-            item["printLabelBlacklist"] = list(map(
-                str, form.printLabelBlacklist.data.replace(" ", "").split(",")
-            ))
-        else:
-            if "printLabelBlacklist" in item: del item["printLabelBlacklist"]
-
-        if form.extraPrintLayers.data:
-            item["extraPrintLayers"] = list(map(
-                str, form.extraPrintLayers.data.replace(" ", "").split(",")))
-        else:
-            if "extraPrintLayers" in item: del item["extraPrintLayers"]
-
-        if form.flags.data:
-            item["flags"] = list(map(
-                str, form.flags.data.replace(" ", "").split(",")))
-        else:
-            if "flags" in item: del item["flags"]
-
-        if form.layerTreeHiddenSublayers.data:
-            item["layerTreeHiddenSublayers"] = list(map(
-                str, form.layerTreeHiddenSublayers.data.replace(" ", "").split(",")))
-        else:
-            if "layerTreeHiddenSublayers" in item: del item["layerTreeHiddenSublayers"]
-
-        item["extraPrintParameters"] = ""
-        if form.extraPrintParameters.data:
-            item["extraPrintParameters"] = "&".join(list(map(
-                str, form.extraPrintParameters.data.replace(" ", "").split(","))))
-
-        item["extraLegendParameters"] = ""
-        if form.extraLegendParameters.data:
-            item["extraLegendParameters"] = "&".join(list(map(
-                str, form.extraLegendParameters.data.replace(" ", "").split(","))))
-
-        item["extraDxfParameters"] = ""
-        if form.extraDxfParameters.data:
-            item["extraDxfParameters"] = "&".join(list(map(
-                str, form.extraDxfParameters.data.replace(" ", "").split(","))))
-
-        item["defaultPrintLayout"] = ""
-        if form.defaultPrintLayout.data:
-            item["defaultPrintLayout"] = form.defaultPrintLayout.data
-
-        item["printLabelForSearchResult"] = ""
-        if form.printLabelForSearchResult.data:
-            item["printLabelForSearchResult"] = form.printLabelForSearchResult.data
-
-        item["printLabelForAttribution"] = ""
-        if form.printLabelForAttribution.data:
-            item["printLabelForAttribution"] = form.printLabelForAttribution.data
-
-        item["skipEmptyFeatureAttributes"] = False
-        if form.skipEmptyFeatureAttributes.data:
-            item["skipEmptyFeatureAttributes"] = True
-
-        if form.collapseLayerGroupsBelowLevel.data:
-            item["collapseLayerGroupsBelowLevel"] = form.collapseLayerGroupsBelowLevel.data
-        else:
-            if "collapseLayerGroupsBelowLevel" in item: del item["collapseLayerGroupsBelowLevel"]
-
-        if form.backgroundLayers.data:
-            item["backgroundLayers"] = []
-            for layer in form.backgroundLayers.data:
-                item["backgroundLayers"].append({
-                    "name": layer["layerName"],
-                    "printLayer": layer["printLayer"],
-                    "visibility": layer["visibility"]
-                })
-        else:
-            if "backgroundLayers" in item: del item["backgroundLayers"]
-
-        return item
-
-    @staticmethod
-    def merge_theme_item(existing, form_item, search_provider_choices,
-                         qgis_search_sources):
-        """Return the existing theme item updated with the theme form output.
-
-        :param dict existing: Theme item from themesConfig
-        :param dict form_item: Theme item built from the theme form
-        :param list search_provider_choices: Search providers selectable in
-                                             the theme form
-        :param list qgis_search_sources: Index of the existing qgis search
-                                         each qgis search in form_item was
-                                         loaded from, None for new searches
-        """
-        form_item = OrderedDict(form_item)
-
-        search_providers = ThemeUtils.merge_search_providers(
-            existing.get("searchProviders", []),
-            form_item.get("searchProviders", []), search_provider_choices,
-            qgis_search_sources
+        base_schema = self.load_base_form_schema()
+        if base_schema is None:
+            return redirect(url_for("themes"))
+        schema = self.form_schema(base_schema, theme)
+        if form_data is None:
+            form_data, other_settings = ThemeSchema.split_theme(schema, theme)
+        form_options = {
+            "schema": schema,
+            "uiSchema": theme_ui_schema(),
+            "formData": form_data,
+            "locale": DEFAULT_LOCALE,
+            "translations": rjsf_translations()
+        }
+        # json.dumps keeps the key order, unlike the tojson filter
+        return render_template(
+            "%s/theme.html" % self.template_dir, title=title, action=action,
+            form_options=htmlsafe_json_dumps(form_options, dumps=json.dumps),
+            other_settings=htmlsafe_json_dumps(other_settings, dumps=json.dumps),
+            i18n=i18n
         )
-        if search_providers:
-            form_item["searchProviders"] = search_providers
 
-        if "backgroundLayers" in form_item:
-            form_item["backgroundLayers"] = ThemeUtils.merge_background_layers(
-                existing.get("backgroundLayers", []), form_item["backgroundLayers"]
+    def load_base_form_schema(self):
+        """Return the theme form schema without the choices of the edited
+        theme, loaded once. Return None and show an error if the schema
+        cannot be loaded.
+        """
+        if self.base_form_schema is None:
+            try:
+                documents = ThemeSchema.translate(
+                    self.theme_schema.load_documents(), lookup_translation
+                )
+                schema = ThemeSchema.bundle(documents)
+            except Exception:
+                self.app.logger.exception("Could not load the theme schema")
+                flash(i18n('plugins.themes.theme.schema_load_error'), "error")
+                return None
+            ThemeSchema.describe_defaults(
+                schema, i18n('plugins.themes.theme.schema_default')
             )
+            ThemeSchema.mark_constants_read_only(schema)
+            self.base_form_schema = schema
+        return self.base_form_schema
 
-        merged = OrderedDict()
-        for key, value in existing.items():
-            if key in form_item:
-                merged[key] = form_item[key]
-            elif key not in ThemesController.THEME_FORM_KEYS:
-                merged[key] = value
-        for key, value in form_item.items():
-            merged.setdefault(key, value)
-        return merged
+    def form_schema(self, base_schema, theme):
+        """Return the theme form schema, with the choices of the settings
+        selected from lists completed with the values of the theme.
 
-    def create_or_update_theme(self, theme, form, tid=None, gid=None):
+        :param dict base_schema: Theme form schema without choices
+        :param dict theme: Theme item, empty for a new theme
+        """
+        schema = deepcopy(base_schema)
+
+        def as_list(value):
+            return value if isinstance(value, list) else []
+
+        crs_choices = [
+            tuple(crs) for crs in ThemeUtils.get_crs(self.app, self.handler)
+        ]
+        map3d = theme.get("map3d")
+        background_layers = as_list(theme.get("backgroundLayers")) + (
+            as_list(map3d.get("basemaps")) if isinstance(map3d, dict) else []
+        )
+        search_providers = as_list(
+            self.themesconfig.get("defaultSearchProviders")
+        )
+        choices = [
+            (("url",), ThemeUtils.get_projects(self.app, self.handler),
+             [theme.get("url")]),
+            (("thumbnail",), [
+                (thumbnail, thumbnail)
+                for thumbnail in ThemeUtils.get_mapthumbs(self.app, self.handler)
+                if thumbnail
+            ], [theme.get("thumbnail")]),
+            (("format",), [
+                tuple(image_format) for image_format in ThemeUtils.get_format()
+                if image_format[0]
+            ], [theme.get("format")]),
+            (("mapCrs",), crs_choices, [theme.get("mapCrs")]),
+            (("defaultDisplayCrs",), crs_choices, [theme.get("defaultDisplayCrs")]),
+            (("additionalMouseCrs", "items"), crs_choices,
+             as_list(theme.get("additionalMouseCrs"))),
+            (("backgroundLayers", "items", "properties", "name"),
+             self.get_backgroundlayers(),
+             [layer.get("name") for layer in background_layers
+              if isinstance(layer, dict)]),
+        ]
+        # search providers given by their key
+        provider_variants = ThemeSchema.subschema(
+            schema, ("properties", "searchProviders", "items")
+        ).get("oneOf", [])
+        key_variant = next((
+            idx for idx, variant in enumerate(provider_variants)
+            if variant.get("type") == "string"
+        ), None)
+        if key_variant is not None:
+            choices.append((
+                ("searchProviders", "items", "oneOf", key_variant), [
+                    (provider, provider) for provider in search_providers
+                    if isinstance(provider, str)
+                ], as_list(theme.get("searchProviders"))
+            ))
+        for path, values, current_values in choices:
+            ThemeSchema.set_choices(
+                schema, ("properties",) + path, values, current_values
+            )
+        ThemeSchema.keep_enum_values(schema, theme)
+        return schema
+
+    def create_or_update_theme(self, theme, item, tid=None, gid=None):
         """Create or update theme records in Themesconfig.
 
         :param object theme: Optional theme object
                                 (None for create)
-        :param FlaskForm form: Form for theme
+        :param dict item: Theme item to save
         """
-        item = self.theme_item_from_form(form)
-        if theme:
-            qgis_search_sources = [
-                entry.sourceIndex.data for entry in form.qgisSearchProvider
-            ]
-            item = self.merge_theme_item(
-                theme, item, form.searchProviders.choices, qgis_search_sources)
-
         # edit a copy, kept only once saved
         themesconfig = deepcopy(self.themesconfig)
-        new_name = form.url.data.split("/")[-1]
+        new_name = item["url"].split("/")[-1]
         with self.config_models.session() as session, session.begin():
             # edit theme
             if theme:
