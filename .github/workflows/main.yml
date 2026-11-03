@@ -10,54 +10,36 @@ on:
 
 jobs:
 
-    test:
-      runs-on: ubuntu-latest
-      steps:
+  test:
+    uses: ./.github/workflows/test.yml
 
-      - uses: actions/checkout@master
+  build:
+    if: github.ref_type == 'tag'
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
 
-      - name: Setting up python 3.12
-        uses: actions/setup-python@v7
-        with:
-            python-version: '3.12'
+    - uses: actions/checkout@master
 
-      - name: Run unittests
-        run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements.txt
-          PYTHONPATH=$PWD/src python3 test.py
+    - name: Get version tag
+      id: get_tag
+      run: |
+        if [ ${{ endsWith(github.ref, '-lts') }} = true ]; then
+          echo "tag=latest-lts,latest-${GITHUB_REF:11:4}-lts,${GITHUB_REF:10}" >>$GITHUB_OUTPUT
+          echo "base_tag=latest-${GITHUB_REF:11:4}-lts" >>$GITHUB_OUTPUT
+        else
+          echo "tag=latest,${GITHUB_REF:10}" >>$GITHUB_OUTPUT
+          echo "base_tag=latest" >>$GITHUB_OUTPUT
+        fi
 
-      - name: Validate schema
-        run: |
-          python -m pip install check-jsonschema
-          check-jsonschema --check-metaschema schemas/qwc-admin-gui.json
-
-    build:
-      if: github.ref_type == 'tag'
-      needs: test
-      runs-on: ubuntu-latest
-      steps:
-
-      - uses: actions/checkout@master
-
-      - name: Get version tag
-        id: get_tag
-        run: |
-          if [ ${{ endsWith(github.ref, '-lts') }} = true ]; then
-            echo "tag=latest-lts,latest-${GITHUB_REF:11:4}-lts,${GITHUB_REF:10}" >>$GITHUB_OUTPUT
-            echo "base_tag=latest-${GITHUB_REF:11:4}-lts" >>$GITHUB_OUTPUT
-          else
-            echo "tag=latest,${GITHUB_REF:10}" >>$GITHUB_OUTPUT
-            echo "base_tag=latest" >>$GITHUB_OUTPUT
-          fi
-
-      - name: Build and publish docker image
-        uses: elgohr/Publish-Docker-Github-Action@v5
-        env:
-          BASE_TAG: ${{ steps.get_tag.outputs.base_tag }}
-        with:
-          name: sourcepole/${{ github.event.repository.name }}
-          username: ${{ secrets.DOCKER_HUB_USER }}
-          password: ${{ secrets.DOCKER_HUB_PASSWORD }}
-          tags: "${{ steps.get_tag.outputs.tag }}"
-          buildargs: BASE_TAG
+    - name: Build and publish docker image
+      uses: elgohr/Publish-Docker-Github-Action@v5
+      env:
+        BASE_TAG: ${{ steps.get_tag.outputs.base_tag }}
+        UPDATE_DEPS: ${{ startsWith(steps.get_tag.outputs.tag, 'latest') }}
+      with:
+        name: sourcepole/${{ github.event.repository.name }}
+        username: ${{ secrets.DOCKER_HUB_USER }}
+        password: ${{ secrets.DOCKER_HUB_PASSWORD }}
+        tags: "${{ steps.get_tag.outputs.tag }}"
+        buildargs: BASE_TAG,UPDATE_DEPS
