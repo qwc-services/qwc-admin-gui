@@ -18,7 +18,8 @@ dependencies = [
     "email_validator~=2.3.0",
     "qwc-services-core~=1.7.0",
     "python-i18n~=0.3.9",
-    "deepmerge~=2.0"
+    "deepmerge~=2.0",
+    "jsonschema~=4.25.0"
 ]
 
 [dependency-groups]

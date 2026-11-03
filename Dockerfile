@@ -16,3 +16,7 @@ RUN \
 ADD src /srv/qwc_service/
 
 ENV SERVICE_MOUNTPOINT=/qwc_admin
+
+# download JSON schemas of the theme form
+ENV JSON_SCHEMAS_PATH=/srv/qwc_service/schemas/
+RUN mkdir -p $JSON_SCHEMAS_PATH && uv run /srv/qwc_service/download_json_schemas.py

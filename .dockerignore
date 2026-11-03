@@ -1,2 +1,3 @@
 .git/
 .github/.venv
+js/schema-form/node_modules
