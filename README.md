@@ -152,6 +152,104 @@ services:
 
 The admin gui is extendable through plugins, which reside in the `plugins` folder. To enable them, list them in `plugins` in the admin gui configuration. See the JSON schema for details, and for configuration parameters which may be required by plugins shipped by default with `qwc-admin-gui`.
 
+#### Themes plugin
+
+The `themes` plugin adds the Themes page, which edits the theme definitions of `themesConfig.json` in a form instead of the JSON file.
+
+##### Setup
+
+Enable the plugin in the `config` block of the `adminGui` service in `tenantConfig.json`. A sample configuration is as follows:
+
+```json
+"plugins": ["themes"],
+"input_config_path": "/srv/qwc_service/config-in",
+"qwc2_path": "/qwc2",
+"qgs_resources_path": "/qgs-resources",
+"info_templates_path": "/info_templates",
+"ows_prefix": "/ows",
+"default_qgis_server_url": "http://qwc-qgis-server/ows/"
+```
+
+Mount the directories these paths point to in the `qwc-admin-gui` container, for example:
+
+```yaml
+- ./volumes/config-in:/srv/qwc_service/config-in:rw
+- ./volumes/qwc2:/qwc2
+- ./volumes/qgs-resources:/qgs-resources
+- ./volumes/info-templates:/info_templates
+```
+
+The theme form schemas are downloaded into `JSON_SCHEMAS_PATH` when the image is built, from the URLs in `src/schema-versions.json` (qwc2 `master`). A schema file missing at runtime is downloaded again. To use other schema files, mount a directory holding them at `JSON_SCHEMAS_PATH`.
+
+##### Form layout
+
+![Theme form](https://raw.githubusercontent.com/qwc-services/qwc-admin-gui/master/docs/images/theme-form-sections.png)
+
+The form is generated from the [qwc2 theme schemas](https://github.com/qgis/qwc2/tree/master/schemas), which also produce the theme definition table of the [manual theme configuration](https://qwc-services.github.io/master/configuration/ThemesConfiguration/#manual-theme-configuration). It covers every setting these schemas define:
+
+* The general settings come first: WMS URL, title, description, thumbnail, default theme and disabled.
+* The other settings are grouped in collapsible sections: Map (expanded), WMS, Background layers, Search options, Interface options, Print options, Filters, 3D and Advanced.
+* Required settings are marked with `*`. Each field shows the description from the schema, followed by the viewer default where there is one.
+* A setting added to the qwc2 schemas shows up below the general settings once the Docker image is rebuilt.
+* Titles and descriptions follow the Admin GUI language (`DEFAULT_LOCALE`). English and French are complete, other languages show English where a translation is missing.
+
+##### Choices
+
+These settings are selected from a list:
+
+| Setting | Choices |
+|---|---|
+| `url` | The QGIS projects below `qgs_resources_path` and the projects stored in the database |
+| `thumbnail` | The images in `assets/img/mapthumbs` of the viewer |
+| `format` | The common WMS image formats |
+| `mapCrs`, `defaultDisplayCrs`, `additionalMouseCrs` | `EPSG:3857` and the `projections` of the viewer `config.json` |
+| Background layer `name` | The names of the global `backgroundLayers` of `themesConfig.json` |
+| Search provider key | The provider keys of `defaultSearchProviders` |
+
+A current value missing from its list, for example a background layer removed from the global list, is added to the list and kept on save.
+
+##### Free-form settings
+
+Settings without a fixed structure are edited as JSON in a code editor, for example the `expression` and `fields` of a QGIS search provider, the `filter` of a predefined filter, `config`, `featureReport` and `editConfig`.
+
+![Search options](https://raw.githubusercontent.com/qwc-services/qwc-admin-gui/master/docs/images/theme-form-search.png)
+
+Invalid JSON blocks the save:
+
+![Invalid JSON](https://raw.githubusercontent.com/qwc-services/qwc-admin-gui/master/docs/images/theme-form-invalid-json.png)
+
+The `Other settings (JSON)` panel below the form holds the theme settings the schemas do not define, such as the settings of a custom plugin. They are kept as they are on save, and can be edited or added there. A setting the form defines is rejected in this panel.
+
+![Other settings](https://raw.githubusercontent.com/qwc-services/qwc-admin-gui/master/docs/images/theme-form-other-settings.png)
+
+##### Save rules
+
+* A cleared field is removed from the theme, so the viewer uses its default.
+* Removing every entry of `searchProviders`, `backgroundLayers` or `printScales` saves an empty list, which the viewer reads as "none". To restore the defaults (for example `defaultSearchProviders`), delete the key in `themesConfig.json`.
+* Other lists emptied in the form are removed. Empty values already in the file are kept.
+* The settings keep their order and their number spelling (`1.0` stays `1.0`).
+* The browser validates each field against the schema before sending the form. The server validates the whole theme again. On error, it shows the form again with the edits and the error messages, for example `extent: 'bad' is not of type 'array'`.
+* Creating a theme also creates its `map` [resource](https://qwc-services.github.io/master/configuration/ResourcesPermissions/#map-permissions), named after the project. Changing the WMS URL of a theme renames it.
+
+The Admin GUI saves `themesConfig.json` in `input_config_path`, or the `themesConfig` section of `tenantConfig.json` when the themes are defined inline. It first writes a backup of the file next to it, named for example `themesConfig.json-20261104-123600.bak`. It writes JSON indented with 2 spaces and escapes non-ASCII characters (`é` becomes `\u00e9`), so the first save reformats the whole file. Saving a theme without changes after that leaves the file identical.
+
+Saving does not publish the changes to the viewer. Press `Generate service configuration` on the Admin GUI home page to publish them, see [Generating the themes configuration](https://qwc-services.github.io/master/configuration/ThemesConfiguration/#generating-theme-configuration).
+
+##### Troubleshooting
+
+| Message | Cause |
+|---|---|
+| `Could not save theme configuration.` | The container cannot write the file, for example when `input_config_path` is not writable by the user set with `SERVICE_UID` / `SERVICE_GID`. Nothing is saved, and the form is shown again with the edits. |
+| `Could not load the theme schema.` | A schema file is missing from `JSON_SCHEMAS_PATH` and its download failed. The Admin GUI log names the file. The Admin GUI retries the download after a minute. |
+
+##### Known limitations
+
+* Fixed-size lists, such as `extent` or `tileSize`, are shown as lists of items to add and remove. Their length is checked on save.
+* The items of a list repeat the description of the list.
+* An optional checkbox cannot be reset to "not set" once saved: delete the key in `themesConfig.json`.
+* Settings nested in a known setting but missing from the schema, such as `map3d.dtm.nodata`, are kept on save but not shown.
+* The server validation messages are in English. The edits are lost if the schema cannot be loaded when saving.
+
 ### Proxy to internal services
 
 The route `/proxy?url=<url>` serves as a proxy for calling whitelisted internal services. This can be used e.g. to call other internal services from custom pages in the Admin GUI, without having to expose those services externally.
