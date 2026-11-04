@@ -10,6 +10,8 @@ from sqlalchemy.exc import IntegrityError, InternalError
 from sqlalchemy.orm import joinedload
 from sqlalchemy.ext.declarative import DeclarativeMeta
 
+from admin_access import ADMIN_ONLY_RESOURCE_TYPES, ADMIN_ROLE_NAME, \
+    MANAGE_RESOURCES, is_admin
 from .controller import Controller
 from forms import ImportResourceForm, ResourceForm
 from utils import i18n
@@ -17,6 +19,7 @@ from utils import i18n
 
 class ResourcesController(Controller):
     """Controller for resource model"""
+
 
     def __init__(self, app, handler):
         """Constructor
@@ -26,47 +29,47 @@ class ResourcesController(Controller):
         """
         super(ResourcesController, self).__init__(
             "Resource", 'resources', 'resource', 'resources', app,
-            handler
+            handler, MANAGE_RESOURCES
         )
 
         # add custom routes
         base_route = self.base_route
         suffix = self.endpoint_suffix
         # delete cascaded
-        app.add_url_rule(
+        self.add_url_rule(
             '/%s/<int:id>/cascaded' % base_route,
             'destroy_cascaded_%s' % suffix,
             self.destroy_cascaded, methods=['DELETE', 'POST']
         )
         # delete selected
-        app.add_url_rule(
+        self.add_url_rule(
             '/%s/delete_multiple' % base_route,
             'destroy_multiple_%s' % suffix,
             self.destroy_multiple, methods=['DELETE', 'POST']
         )
         # resource hierarchy
-        app.add_url_rule(
+        self.add_url_rule(
             '/%s/<int:id>/hierarchy' % base_route, 'hierarchy_%s' % suffix,
             self.hierarchy, methods=['GET']
         )
         # import maps
-        app.add_url_rule(
+        self.add_url_rule(
             '/%s/import_maps' % base_route, 'import_maps_%s' % suffix,
             self.import_maps, methods=['POST']
         )
         # import resource children
-        app.add_url_rule(
+        self.add_url_rule(
             '/%s/<int:id>/import_children' % base_route,
             'import_children_%s' % suffix,
             self.import_children, methods=['POST']
         )
         # import resources from parent map
-        app.add_url_rule(
+        self.add_url_rule(
             '/%s/<int:id>/import' % base_route,
             'import_%s' % suffix,
             self.import_resources, methods=['GET', 'POST']
         )
-        app.add_url_rule(
+        self.add_url_rule(
             '/%s/<int:id>/import_from_parent_map' % base_route,
             'import_%s_from_parent_map' % suffix,
             self.import_resources_from_parent_map, methods=['GET', 'POST']
@@ -92,6 +95,8 @@ class ResourcesController(Controller):
         if resource_type is not None:
             # filter by resource type
             query = query.filter(self.Resource.type == resource_type)
+
+        query = self.hide_admin_only_types(query, self.Resource.type)
 
         # eager load relations
         query = query.options(joinedload(self.Resource.parent))
@@ -219,6 +224,7 @@ class ResourcesController(Controller):
                 query = session.query(self.ResourceType) \
                     .filter(self.ResourceType.name.notin_(resource_blacklist)) \
                     .order_by(self.ResourceType.list_order, self.ResourceType.name)
+            query = self.hide_admin_only_types(query, self.ResourceType.name)
             for resource_type in query.all():
                 resource_types[resource_type.name] = resource_type.description
 
@@ -237,13 +243,48 @@ class ResourcesController(Controller):
             have_config_generator=have_config_generator, i18n=i18n
         )
 
-    def find_resource(self, id, session):
+    def _find_resource(self, id, session):
         """Find resource by ID.
 
         :param int id: Resource ID
         :param Session session: DB session
         """
         return session.query(self.Resource).filter_by(id=id).first()
+
+    # authorization
+
+    def subject_roles(self, resource=None, form=None):
+        """Treat resources that grant capabilities as holding the admin role.
+
+        Whoever can edit them could grant themselves any capability, so like
+        the admin role they are only for admins. This also covers turning
+        another resource into one.
+
+        :param object resource: Optional resource object (None for create)
+        :param FlaskForm form: Optional form for resource
+        """
+        types = set()
+        if resource is not None:
+            types.add(resource.type)
+        if form is not None:
+            types.add(form.type.data)
+
+        if types & ADMIN_ONLY_RESOURCE_TYPES:
+            return {ADMIN_ROLE_NAME}
+
+        return None
+
+    def hide_admin_only_types(self, query, type_column):
+        """Leave resources that grant capabilities out of lists and choices
+        for anyone but admins.
+
+        :param Query query: Query to filter
+        :param type_column: Column holding the resource type name
+        """
+        if is_admin(self.grants()):
+            return query
+
+        return query.filter(type_column.notin_(ADMIN_ONLY_RESOURCE_TYPES))
 
     def destroy_cascaded(self, id):
         """Delete existing resource and its children.
@@ -339,7 +380,7 @@ class ResourcesController(Controller):
         # redirect to resources list
         return redirect(url_for(self.base_route))
 
-    def create_form(self, resource=None, edit_form=False):
+    def _create_form(self, resource=None, edit_form=False):
         """Return form with fields loaded from DB.
 
         :param object resource: Optional resource object
@@ -359,6 +400,7 @@ class ResourcesController(Controller):
                 query = session.query(self.ResourceType) \
                     .filter(self.ResourceType.name.notin_(resource_blacklist)) \
                     .order_by(self.ResourceType.list_order, self.ResourceType.name)
+            query = self.hide_admin_only_types(query, self.ResourceType.name)
             resource_types = query.all()
 
             # query resources

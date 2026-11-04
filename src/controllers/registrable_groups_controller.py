@@ -1,12 +1,14 @@
 from sqlalchemy import or_
 from sqlalchemy.orm import joinedload
 
+from admin_access import MANAGE_REGISTRATIONS
 from .controller import Controller
 from forms import RegistrableGroupForm
 
 
 class RegistrableGroupsController(Controller):
     """Controller for registrable group model"""
+
 
     def __init__(self, app, handler):
         """Constructor
@@ -16,7 +18,7 @@ class RegistrableGroupsController(Controller):
         """
         super(RegistrableGroupsController, self).__init__(
             "Registrable Group", 'registrable_groups', 'registrable_group',
-            'registrable_groups', app, handler
+            'registrable_groups', app, handler, MANAGE_REGISTRATIONS
         )
 
     def resources_for_index_query(self, search_text, session):
@@ -62,7 +64,7 @@ class RegistrableGroupsController(Controller):
 
         return order_by
 
-    def find_resource(self, id, session):
+    def _find_resource(self, id, session):
         """Find registrable group by ID.
 
         :param int id: Registrable group ID
@@ -70,7 +72,7 @@ class RegistrableGroupsController(Controller):
         """
         return session.query(self.RegistrableGroup).filter_by(id=id).first()
 
-    def create_form(self, resource=None, edit_form=False):
+    def _create_form(self, resource=None, edit_form=False):
         """Return form with fields loaded from DB.
 
         :param object resource: Optional registrable group object

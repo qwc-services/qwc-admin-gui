@@ -3,6 +3,7 @@ from flask_mail import Message
 from sqlalchemy import or_
 from sqlalchemy.orm import joinedload
 
+from admin_access import MANAGE_REGISTRATIONS
 from .controller import Controller
 from forms import RegistrationRequestForm
 
@@ -11,6 +12,7 @@ from utils import i18n
 
 class RegistrationRequestsController(Controller):
     """Controller for registration request model"""
+
 
     def __init__(self, app, handler, mail):
         """Constructor
@@ -21,7 +23,8 @@ class RegistrationRequestsController(Controller):
         """
         super(RegistrationRequestsController, self).__init__(
             "Registration request", 'registration_requests',
-            'registration_request', 'registration_requests', app, handler
+            'registration_request', 'registration_requests', app, handler,
+            MANAGE_REGISTRATIONS
         )
 
         self.mail = mail
@@ -90,7 +93,7 @@ class RegistrationRequestsController(Controller):
 
         return order_by
 
-    def find_resource(self, id, session):
+    def _find_resource(self, id, session):
         """Find registration request by ID.
 
         :param int id: Registration request ID
@@ -98,7 +101,7 @@ class RegistrationRequestsController(Controller):
         """
         return session.query(self.RegistrationRequest).filter_by(id=id).first()
 
-    def create_form(self, resource=None, edit_form=False):
+    def _create_form(self, resource=None, edit_form=False):
         """Return form with fields loaded from DB.
 
         :param object resource: Optional registration request object

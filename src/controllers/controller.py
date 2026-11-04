@@ -1,13 +1,16 @@
 import datetime
 import math
 
-from flask import abort, flash, redirect, render_template, request, url_for
+from flask import abort, flash, g, redirect, render_template, request, url_for
 from markupsafe import Markup
 from sqlalchemy.exc import IntegrityError, InternalError
 from wtforms import ValidationError
 
 from qwc_services_core.config_models import ConfigModels
 
+from admin_access import ADMIN_ROLE_NAME, ASSIGN_ROLE_MEMBERSHIP, \
+    CAPABILITIES, ROUTE_CAPABILITIES, group_role_names, is_admin, permits, \
+    user_role_names
 from utils import i18n
 
 
@@ -17,13 +20,27 @@ class Controller:
     Add routes for specific controller and provide generic RESTful actions.
     """
 
+    # methods that run the authorization checks, subclasses implement the
+    # underscored variants (_find_resource, _create_form) instead
+    CHECKED_METHODS = ('find_resource', 'create_form')
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        for name in Controller.CHECKED_METHODS:
+            if name in cls.__dict__:
+                raise TypeError(
+                    "%s overrides %s(), which would skip its authorization "
+                    "check - implement _%s() instead"
+                    % (cls.__name__, name, name)
+                )
+
     # available options for number of resources shown per page
     PER_PAGE_OPTIONS = [10, 25, 50, 100]
     # default number of resources shown per page
     DEFAULT_PER_PAGE = 10
 
     def __init__(self, resource_name, base_route, endpoint_suffix,
-                 templates_dir, app, handler):
+                 templates_dir, app, handler, capability):
         """Constructor
 
         :param str resource_name: Visible name of resource (e.g. 'User')
@@ -32,7 +49,17 @@ class Controller:
         :param str templates_dir: Subdir for resource templates (e.g. 'users')
         :param Flask app: Flask application
         :param handler: Tenant config handler
+        :param str capability: Admin capability required for this controller
+                               (one of admin_access.CAPABILITIES)
         """
+        if capability not in CAPABILITIES:
+            raise ValueError(
+                "%s: '%s' is not an admin capability, every controller "
+                "must declare the one it requires"
+                % (type(self).__name__, capability)
+            )
+
+        self.capability = capability
         self.resource_name = i18n('interface.common.%s'% endpoint_suffix) or resource_name
         self.base_route = base_route
         self.endpoint_suffix = endpoint_suffix
@@ -41,50 +68,61 @@ class Controller:
         self.logger = app.logger
         self.handler = handler
 
-        self.add_routes(app)
+        self.add_routes()
 
-    def add_routes(self, app):
-        """Add routes for this controller.
-
-        :param Flask app: Flask application
-        """
+    def add_routes(self):
+        """Add routes for this controller."""
         base_route = self.base_route
         suffix = self.endpoint_suffix
 
         # index
-        app.add_url_rule(
+        self.add_url_rule(
             '/%s' % base_route, base_route, self.index, methods=['GET']
         )
         # new
-        app.add_url_rule(
+        self.add_url_rule(
             '/%s/new' % base_route, 'new_%s' % suffix, self.new,
             methods=['GET']
         )
         # create
-        app.add_url_rule(
+        self.add_url_rule(
             '/%s' % base_route, 'create_%s' % suffix, self.create,
             methods=['POST']
         )
         # edit
-        app.add_url_rule(
-            '/%s/<int:id>/edit' % base_route, 'edit_%s' % suffix, self.edit,
-            methods=['GET']
+        self.add_url_rule(
+            '/%s/<int:id>/edit' % base_route, 'edit_%s' % suffix,
+            self.edit, methods=['GET']
         )
         # update
-        app.add_url_rule(
-            '/%s/<int:id>' % base_route, 'update_%s' % suffix, self.update,
-            methods=['PUT']
+        self.add_url_rule(
+            '/%s/<int:id>' % base_route, 'update_%s' % suffix,
+            self.update, methods=['PUT']
         )
         # delete
-        app.add_url_rule(
-            '/%s/<int:id>' % base_route, 'destroy_%s' % suffix, self.destroy,
-            methods=['DELETE']
+        self.add_url_rule(
+            '/%s/<int:id>' % base_route, 'destroy_%s' % suffix,
+            self.destroy, methods=['DELETE']
         )
         # update or delete
-        app.add_url_rule(
-            '/%s/<int:id>' % base_route, 'modify_%s' % suffix, self.modify,
-            methods=['POST']
+        self.add_url_rule(
+            '/%s/<int:id>' % base_route, 'modify_%s' % suffix,
+            self.modify, methods=['POST']
         )
+
+    def add_url_rule(self, rule, endpoint, view_func, **options):
+        """Add a route for this controller, requiring its capability.
+
+        Use this instead of ``app.add_url_rule`` for every route a controller
+        adds, including custom ones. A route added directly on the app still
+        works, but only for the admin role.
+
+        :param str rule: URL rule
+        :param str endpoint: Endpoint name
+        :param view_func: View function
+        """
+        ROUTE_CAPABILITIES[endpoint] = self.capability
+        self.app.add_url_rule(rule, endpoint, view_func, **options)
 
     def setup_models(self):
         config_handler = self.handler()
@@ -111,6 +149,191 @@ class Controller:
     def resource_pkey(self):
         """Return primary key column name for resource table (default: 'id')"""
         return 'id'
+
+    # authorization
+    #
+    # Three checks cover every request but a controller calls none of them
+    # itself. A controller declares its capability in the constructor and
+    # for resources that can be scoped to a role, overrides scope_filter()
+    # and subject_roles().
+    #
+    #   route check (server.assert_admin_role)
+    #       Is the capability granted at all? Runs before every request,
+    #       against the capability add_url_rule() recorded for the route and
+    #       aborts with 403. Routes nobody declared a capability for are
+    #       only for admins.
+    #
+    #   find_resource()
+    #       Is this subject within the granted scope? Wraps the subclass's
+    #       _find_resource() lookup, and returns None for an out of scope
+    #       subject so that it reads as "not found".
+    #
+    #   create_form() -> authorize_change()
+    #       Would the submitted form move the subject out of scope or change
+    #       role membership? Wraps the subclass's _create_form(), runs only
+    #       for submitted forms and aborts with 403 before anything is
+    #       written.
+
+    def grants(self):
+        """Return admin capability grants of the current identity."""
+        return getattr(g, 'admin_grants', {})
+
+    def find_resource(self, id, session):
+        """Find a resource by ID, unless it is outside the granted scope.
+
+        Out of scope subjects are reported as missing rather than forbidden,
+        so that they are not discoverable by ID.
+
+        :param int id: Resource ID
+        :param Session session: DB session
+        """
+        resource = self._find_resource(id, session)
+        if resource is None:
+            return None
+
+        if not permits(self.grants(), self.capability,
+                       self.subject_roles(resource)):
+            return None
+
+        return resource
+
+    def create_form(self, resource=None, edit_form=False):
+        """Return form for resource, checking it if it was submitted.
+
+        Forms that are only displayed are not checked, they carry no change
+        yet, and e.g. an empty new role form has no name to scope by.
+
+        :param object resource: Optional resource object
+        :param bool edit_form: Set if edit form
+        """
+        form = self._create_form(resource, edit_form)
+        if form.is_submitted():
+            self.authorize_change(resource, form)
+
+        return form
+
+    def authorize_change(self, resource, form):
+        """Abort unless the identity may save this form.
+
+        Called by create_form() for every submitted form.
+
+        :param object resource: Resource being changed (None for create)
+        :param FlaskForm form: Submitted form
+        """
+        identity_grants = self.grants()
+        if not permits(identity_grants, self.capability,
+                       self.subject_roles(resource, form)):
+            abort(403)
+
+        membership_roles = self.membership_roles(resource, form)
+        if membership_roles and not permits(
+            identity_grants, ASSIGN_ROLE_MEMBERSHIP, membership_roles
+        ):
+            abort(403)
+
+    def subject_roles(self, resource=None, form=None):
+        """Return names of the roles held by the subject being changed, or
+        None if the subject cannot be scoped by role.
+
+        Override in subclasses of scopable resources (users, groups, roles).
+        Include the roles the form would add, not just the ones the subject
+        holds already.
+
+        :param object resource: Resource being changed (None for create)
+        :param FlaskForm form: Optional submitted form
+        """
+        return None
+
+    def membership_roles(self, resource=None, form=None):
+        """Return names of the roles whose user or group membership this
+        change adds to or removes from.
+
+        Override in subclasses where a form changes role membership.
+
+        :param object resource: Resource being changed (None for create)
+        :param FlaskForm form: Optional submitted form
+        """
+        return set()
+
+    def scope(self):
+        """Return the role names this controller's capability is limited to,
+        or None if it is not limited at all (admins).
+        """
+        grants = self.grants()
+        if self.capability not in grants:
+            # not granted at all - the route check rejects such requests, so
+            # anything still reaching a query is fully out of scope
+            return set()
+
+        scope = grants[self.capability]
+        if scope is None and not is_admin(grants):
+            # an unscoped grant still never reaches the admin role
+            with self.session() as session:
+                scope = {
+                    name for (name, ) in session.query(self.Role.name)
+                    if name != ADMIN_ROLE_NAME
+                }
+
+        return scope
+
+    def scope_filter(self, query):
+        """Restrict a resources list query to the subjects within scope.
+
+        Override in subclasses of scopable resources (users, groups, roles).
+        Single resources are filtered by find_resource() instead.
+
+        :param Query query: Query for this controller's model
+        """
+        return query
+
+    def roles_of_users(self, user_ids, session):
+        """Return names of all roles held by the users with the given IDs.
+
+        :param set(int) user_ids: User IDs
+        :param Session session: DB session
+        """
+        if not user_ids:
+            return set()
+
+        roles = set()
+        for user in session.query(self.User).filter(
+            self.User.id.in_(user_ids)
+        ):
+            roles |= user_role_names(user)
+
+        return roles
+
+    def roles_of_groups(self, group_ids, session):
+        """Return names of all roles held by the groups with the given IDs.
+
+        :param set(int) group_ids: Group IDs
+        :param Session session: DB session
+        """
+        if not group_ids:
+            return set()
+
+        roles = set()
+        for group in session.query(self.Group).filter(
+            self.Group.id.in_(group_ids)
+        ):
+            roles |= group_role_names(group)
+
+        return roles
+
+    def role_names_for_ids(self, role_ids, session):
+        """Return names of the roles with the given IDs.
+
+        :param list(int) role_ids: Role IDs
+        :param Session session: DB session
+        """
+        if not role_ids:
+            return set()
+
+        return {
+            name for (name, ) in session.query(self.Role.name).filter(
+                self.Role.id.in_(role_ids)
+            )
+        }
 
     # index
 
@@ -140,7 +363,9 @@ class Controller:
 
             # get resources query
             search_text = self.search_text_arg()
-            query = self.resources_for_index_query(search_text, session)
+            query = self.scope_filter(
+                self.resources_for_index_query(search_text, session)
+            )
 
             # order by sort args
             sort, sort_asc = self.sort_args()
@@ -238,10 +463,10 @@ class Controller:
 
     # edit
 
-    def find_resource(self, id, session):
-        """Find resource by ID.
+    def _find_resource(self, id, session):
+        """Find resource by ID, without authorization check.
 
-        Implement in subclass
+        Implement in subclass, callers use find_resource()
 
         :param int id: Resource ID
         :param Session session: DB session
@@ -369,10 +594,10 @@ class Controller:
         else:
             abort(405)
 
-    def create_form(self, resource=None, edit_form=False):
+    def _create_form(self, resource=None, edit_form=False):
         """Return form for resource with fields loaded from DB.
 
-        Implement in subclass
+        Implement in subclass, callers use create_form()
 
         :param object resource: Optional resource object
         :param bool edit_form: Set if edit form
