@@ -274,10 +274,1085 @@
         "upload_message_error": "No se pudo subir la miniatura",
         "upload_message_success": "Miniatura subida exitosamente"
       },
+      "schema": {
+        "map3d": {
+          "definitions": {
+            "entry": {
+              "properties": {
+                "name": {
+                  "description": "Nombre único, también usado en los permisos del objeto 3D.",
+                  "title": "Nombre"
+                },
+                "title": {
+                  "description": "Título. Si se omite, se usa el nombre.",
+                  "title": "Título"
+                },
+                "visibility": {
+                  "description": "Visibilidad inicial.",
+                  "title": "Visibilidad"
+                }
+              }
+            },
+            "gltf": {
+              "properties": {
+                "type": {
+                  "description": "Tipo de la entrada.",
+                  "title": "Tipo"
+                }
+              },
+              "title": "Objeto GLTF"
+            },
+            "gltfEntry": {
+              "properties": {
+                "snap": {
+                  "description": "Incluir el objeto entre los objetos de la escena ajustables al dibujar.",
+                  "title": "Ajuste"
+                },
+                "url": {
+                  "description": "URL del archivo GLTF.",
+                  "title": "URL del GLTF"
+                }
+              }
+            },
+            "group": {
+              "properties": {
+                "expanded": {
+                  "description": "Expandir el grupo inicialmente.",
+                  "title": "Expandido"
+                },
+                "items": {
+                  "description": "Entradas hijas.",
+                  "title": "Entradas hijas"
+                },
+                "mutuallyExclusive": {
+                  "description": "Permitir solo un hijo visible.",
+                  "title": "Mutuamente excluyente"
+                },
+                "type": {
+                  "description": "Tipo de la entrada.",
+                  "title": "Tipo"
+                }
+              },
+              "title": "Grupo"
+            },
+            "position": {
+              "description": "Posición como [x, y, z]."
+            },
+            "tileset": {
+              "properties": {
+                "type": {
+                  "description": "Tipo de la entrada.",
+                  "title": "Tipo"
+                }
+              },
+              "title": "Teselas 3D"
+            },
+            "tilesetEntry": {
+              "properties": {
+                "alphaAttr": {
+                  "description": "Atributo del elemento que guarda el alfa como entero entre 0 y 255.",
+                  "title": "Atributo de alfa"
+                },
+                "baseColor": {
+                  "description": "Color de reserva de los objetos del tileset, como color CSS. Blanco si hay definido otro atributo de estilo.",
+                  "title": "Color base"
+                },
+                "colorAttr": {
+                  "description": "Atributo del elemento que guarda el color como entero 0xRRGGBB.",
+                  "title": "Atributo de color"
+                },
+                "idAttr": {
+                  "description": "Atributo del elemento que guarda el ID del objeto.",
+                  "title": "Atributo de ID"
+                },
+                "infoAttrBlacklist": {
+                  "description": "Atributos del elemento omitidos en los resultados de identificación.",
+                  "title": "Atributos de información excluidos"
+                },
+                "labelAttr": {
+                  "description": "Atributo del elemento que guarda la etiqueta, mostrada sobre la geometría.",
+                  "title": "Atributo de etiqueta"
+                },
+                "snap": {
+                  "description": "Incluir el tileset entre los objetos de la escena ajustables al dibujar.",
+                  "title": "Ajuste"
+                },
+                "style": {
+                  "description": "Estilo del tileset activado por defecto. Si se omite, se usa el primero.",
+                  "title": "Estilo predeterminado"
+                },
+                "styles": {
+                  "description": "Estilos disponibles del tileset: URL del estilo indexada por el nombre. Tiene prioridad sobre colorAttr, alphaAttr y labelAttr.",
+                  "title": "Estilos"
+                },
+                "url": {
+                  "description": "URL de tileset.json.",
+                  "title": "URL del tileset"
+                }
+              }
+            }
+          },
+          "description": "Configuración de la vista 3D de un tema. Si está presente, se muestra un botón del mapa para cambiar a la vista 3D.",
+          "properties": {
+            "basemaps": {
+              "description": "Capas de fondo de la vista 3D.",
+              "title": "Capas de fondo"
+            },
+            "dtm": {
+              "description": "Modelo de terreno.",
+              "properties": {
+                "crs": {
+                  "description": "SRC del modelo de terreno.",
+                  "title": "SRC"
+                },
+                "max": {
+                  "description": "Elevación máxima, usada junto con min.",
+                  "title": "Elevación máxima"
+                },
+                "min": {
+                  "description": "Elevación mínima, usada junto con max.",
+                  "title": "Elevación mínima"
+                },
+                "url": {
+                  "description": "URL de un GeoTIFF optimizado para la nube.",
+                  "title": "URL del GeoTIFF"
+                }
+              },
+              "title": "Modelo de terreno"
+            },
+            "extent": {
+              "description": "Extensión de la vista 3D. Si se omite, se usa la extensión inicial del tema.",
+              "properties": {
+                "bounds": {
+                  "description": "Extensión como [xmin, ymin, xmax, ymax].",
+                  "title": "Límites"
+                },
+                "crs": {
+                  "description": "SRC de los límites.",
+                  "title": "SRC"
+                }
+              },
+              "title": "Extensión"
+            },
+            "initialView": {
+              "description": "Vista inicial de la vista 3D. Si no se define, la vista 3D sigue a la vista 2D.",
+              "properties": {
+                "camera": {
+                  "description": "Posición de la cámara como [x, y, z].",
+                  "title": "Posición de la cámara"
+                },
+                "personHeight": {
+                  "description": "Altura de la persona. Los valores mayores que 0 activan la vista en primera persona.",
+                  "title": "Altura de la persona"
+                },
+                "target": {
+                  "description": "Objetivo de la cámara como [x, y, z].",
+                  "title": "Objetivo de la cámara"
+                }
+              },
+              "title": "Vista inicial"
+            },
+            "objects": {
+              "description": "Objetos de la escena: teselas 3D, objetos GLTF y grupos.",
+              "title": "Objetos de la escena"
+            },
+            "objects3d": {
+              "description": "Obsoleto. Use entradas de objects de tipo object3d.",
+              "title": "Objetos 3D (obsoleto)"
+            },
+            "tiles3d": {
+              "description": "Obsoleto. Use entradas de objects de tipo tiles3d.",
+              "title": "Teselas 3D (obsoleto)"
+            }
+          },
+          "title": "Vista 3D del tema"
+        },
+        "predefinedFilter": {
+          "description": "Filtro predefinido del plugin MapFilter, tal como aparece en predefinedFilters de un tema.",
+          "properties": {
+            "defaultValues": {
+              "description": "Valores usados en los campos dejados vacíos, indexados por el ID del campo.",
+              "title": "Valores predeterminados"
+            },
+            "fields": {
+              "description": "Campos de entrada del filtro.",
+              "items": {
+                "description": "Campo de entrada.",
+                "properties": {
+                  "defaultValue": {
+                    "description": "Valor predeterminado.",
+                    "oneOf": {
+                      "0": {
+                        "title": "Texto"
+                      },
+                      "1": {
+                        "title": "Número"
+                      },
+                      "2": {
+                        "title": "Sí/no"
+                      },
+                      "3": {
+                        "title": "Ninguno"
+                      }
+                    },
+                    "title": "Valor predeterminado"
+                  },
+                  "id": {
+                    "description": "ID del campo, usado como marcador $<id>$ en las expresiones del filtro.",
+                    "title": "ID del campo"
+                  },
+                  "inputConfig": {
+                    "description": "Configuración de la entrada: cualquier propiedad de un elemento HTML input, por ejemplo {{\"type\": \"number\", \"min\": 0}}, con type select para una lista o datetime para fecha y hora.",
+                    "properties": {
+                      "options": {
+                        "description": "Opciones de un select: valores o pares valor/etiqueta.",
+                        "items": {
+                          "oneOf": {
+                            "0": {
+                              "title": "Valor de texto"
+                            },
+                            "1": {
+                              "title": "Valor numérico"
+                            },
+                            "2": {
+                              "properties": {
+                                "label": {
+                                  "description": "Etiqueta de la opción.",
+                                  "title": "Etiqueta"
+                                },
+                                "labelmsgid": {
+                                  "description": "ID del mensaje de traducción de la etiqueta de la opción, alternativa a label.",
+                                  "title": "ID del mensaje de la etiqueta"
+                                },
+                                "value": {
+                                  "description": "Valor de la opción.",
+                                  "oneOf": {
+                                    "0": {
+                                      "title": "Texto"
+                                    },
+                                    "1": {
+                                      "title": "Número"
+                                    }
+                                  },
+                                  "title": "Valor"
+                                }
+                              },
+                              "title": "Valor y etiqueta"
+                            }
+                          }
+                        },
+                        "title": "Opciones"
+                      },
+                      "type": {
+                        "description": "Tipo de input HTML, o select, o datetime.",
+                        "title": "Tipo de entrada"
+                      }
+                    },
+                    "title": "Configuración de la entrada"
+                  },
+                  "title": {
+                    "description": "Título del campo.",
+                    "title": "Título"
+                  },
+                  "titlemsgid": {
+                    "description": "ID del mensaje de traducción del título del campo, alternativa a title.",
+                    "title": "ID del mensaje del título"
+                  }
+                }
+              },
+              "title": "Campos"
+            },
+            "filter": {
+              "description": "Expresión de filtro del servicio de datos por nombre de capa, donde los marcadores $<field_id>$ se sustituyen por los valores de los campos, por ejemplo [\"<name>\", \"<op>\", \"$<field_id>$\"] o [[...], \"and\", [...]].",
+              "title": "Expresión de filtro"
+            },
+            "id": {
+              "description": "ID del filtro, también usado en el parámetro de URL f.",
+              "title": "ID del filtro"
+            },
+            "title": {
+              "description": "Título del filtro.",
+              "title": "Título"
+            },
+            "titlemsgid": {
+              "description": "ID del mensaje de traducción del título del filtro, alternativa a title.",
+              "title": "ID del mensaje del título"
+            }
+          },
+          "title": "Filtro predefinido"
+        },
+        "searchProvider": {
+          "definitions": {
+            "legacyProvider": {
+              "description": "Entrada obsoleta identificada por key sin provider, como en las aplicaciones antiguas. Los proveedores de búsqueda estándar la ignoran.",
+              "properties": {
+                "key": {
+                  "description": "Clave del proveedor.",
+                  "title": "Clave"
+                },
+                "label": {
+                  "description": "Etiqueta del proveedor.",
+                  "title": "Etiqueta"
+                }
+              },
+              "title": "Entrada heredada"
+            },
+            "otherProvider": {
+              "properties": {
+                "params": {
+                  "description": "Parámetros del proveedor. Para fulltext: default (facetas de búsqueda activadas por defecto) y layers (faceta activada cuando una capa del tema está visible, indexada por el nombre de la capa). Para nominatim: parámetros adicionales de la API Nominatim, por ejemplo countrycodes.",
+                  "title": "Parámetros"
+                },
+                "provider": {
+                  "description": "Clave del proveedor, por ejemplo fulltext, nominatim o la clave de un proveedor personalizado.",
+                  "title": "Proveedor"
+                }
+              },
+              "title": "Otro proveedor"
+            },
+            "providerEntry": {
+              "properties": {
+                "key": {
+                  "description": "Clave para distinguir varias configuraciones del mismo tipo de proveedor.",
+                  "title": "Clave"
+                },
+                "label": {
+                  "description": "Etiqueta del proveedor mostrada en el menú de selección.",
+                  "title": "Etiqueta"
+                },
+                "labelmsgid": {
+                  "description": "ID del mensaje de traducción de la etiqueta del proveedor, alternativa a label.",
+                  "title": "ID del mensaje de la etiqueta"
+                }
+              }
+            },
+            "qgisSearch": {
+              "properties": {
+                "params": {
+                  "description": "Parámetros de la búsqueda de elementos de QGIS.",
+                  "properties": {
+                    "default": {
+                      "description": "Seleccionar esta búsqueda por defecto en el plugin FeatureSearch.",
+                      "title": "Búsqueda predeterminada"
+                    },
+                    "description": {
+                      "description": "Texto mostrado sobre los campos de búsqueda en el plugin FeatureSearch.",
+                      "title": "Descripción"
+                    },
+                    "expression": {
+                      "additionalProperties": {
+                        "oneOf": {
+                          "0": {
+                            "title": "Expresión de filtro WMS"
+                          },
+                          "1": {
+                            "title": "Expresión de filtro del servicio de datos"
+                          }
+                        }
+                      },
+                      "description": "Expresión de filtro por nombre de capa: una expresión FILTER de WMS GetFeatureInfo con marcadores $TEXT$ o $<FIELD>$, o una expresión de filtro del servicio de datos.",
+                      "title": "Expresión de filtro"
+                    },
+                    "featureCount": {
+                      "description": "Número máximo de elementos devueltos.",
+                      "title": "Número de elementos"
+                    },
+                    "featuresearch": {
+                      "description": "Incluir la búsqueda en el plugin FeatureSearch.",
+                      "title": "Incluir en FeatureSearch"
+                    },
+                    "fields": {
+                      "additionalProperties": {
+                        "description": "Campo de entrada.",
+                        "properties": {
+                          "label": {
+                            "description": "Etiqueta del campo.",
+                            "title": "Etiqueta"
+                          },
+                          "label_field": {
+                            "description": "Propiedad del elemento usada como etiqueta de la opción cuando options_query devuelve elementos.",
+                            "title": "Campo de la etiqueta"
+                          },
+                          "labelmsgid": {
+                            "description": "ID del mensaje de traducción de la etiqueta del campo, alternativa a label.",
+                            "title": "ID del mensaje de la etiqueta"
+                          },
+                          "options": {
+                            "description": "Para campos select, la lista de valores o de pares valor/etiqueta. Para los demás, atributos HTML adicionales de la entrada, por ejemplo min y max.",
+                            "oneOf": {
+                              "0": {
+                                "title": "Opciones del select"
+                              },
+                              "1": {
+                                "title": "Atributos de la entrada"
+                              }
+                            },
+                            "title": "Opciones"
+                          },
+                          "options_query": {
+                            "description": "URL que devuelve las opciones de un campo select, donde los marcadores $<FIELD>$ se sustituyen por los valores actuales del formulario.",
+                            "title": "URL de la consulta de opciones"
+                          },
+                          "order": {
+                            "description": "Posición del campo en el formulario de búsqueda.",
+                            "title": "Orden"
+                          },
+                          "type": {
+                            "description": "Tipo de input HTML, select para una lista o checkbox para sí/no.",
+                            "title": "Tipo de entrada"
+                          },
+                          "value_field": {
+                            "description": "Propiedad del elemento usada como valor de la opción cuando options_query devuelve elementos.",
+                            "title": "Campo del valor"
+                          }
+                        }
+                      },
+                      "description": "Campos de entrada del formulario del plugin FeatureSearch, indexados por el nombre del marcador.",
+                      "title": "Campos"
+                    },
+                    "group": {
+                      "description": "Nombre del grupo de la búsqueda en la selección de FeatureSearch.",
+                      "title": "Grupo"
+                    },
+                    "resultTitle": {
+                      "description": "Texto de formato del título del resultado, con marcadores {{layername}} y {{<fieldname>}}.",
+                      "title": "Título del resultado"
+                    },
+                    "title": {
+                      "description": "Nombre de la búsqueda, también usado como título del grupo de resultados y para ordenar en el plugin FeatureSearch.",
+                      "title": "Nombre de la búsqueda"
+                    },
+                    "titlemsgid": {
+                      "description": "ID del mensaje de traducción del nombre de la búsqueda, alternativa a title.",
+                      "title": "ID del mensaje del nombre de la búsqueda"
+                    }
+                  },
+                  "title": "Parámetros"
+                },
+                "provider": {
+                  "description": "Clave del proveedor.",
+                  "title": "Proveedor"
+                }
+              },
+              "title": "Búsqueda de elementos de QGIS"
+            }
+          },
+          "description": "Entrada de proveedor de búsqueda, tal como aparece en searchProviders de un tema: una clave de proveedor, una búsqueda de elementos de QGIS u otro proveedor con parámetros.",
+          "oneOf": {
+            "0": {
+              "description": "Clave del proveedor, por ejemplo coordinates, nominatim o la clave de un proveedor personalizado.",
+              "title": "Clave del proveedor"
+            }
+          },
+          "title": "Proveedor de búsqueda"
+        },
+        "theme": {
+          "definitions": {
+            "bbox": {
+              "description": "Extensión como [xmin, ymin, xmax, ymax]."
+            },
+            "labelProfiles": {
+              "additionalProperties": {
+                "description": "Perfiles de la capa.",
+                "items": {
+                  "properties": {
+                    "expression": {
+                      "description": "Expresión de la etiqueta, en la sintaxis de expresiones de QGIS.",
+                      "title": "Expresión"
+                    },
+                    "name": {
+                      "description": "Nombre del perfil.",
+                      "title": "Nombre"
+                    },
+                    "size": {
+                      "description": "Tamaño de la etiqueta.",
+                      "title": "Tamaño"
+                    },
+                    "title": {
+                      "description": "Título del perfil. Si se omite, se usa el nombre.",
+                      "title": "Título"
+                    }
+                  }
+                }
+              },
+              "description": "Perfiles de etiquetado del plugin Redlining, indexados por el nombre de la capa."
+            },
+            "printGrid": {
+              "description": "Intervalos de cuadrícula dependientes de la escala para la impresión, en orden descendente del denominador de escala: una entrada vale para las escalas entre su propio denominador y el de la entrada siguiente.",
+              "items": {
+                "properties": {
+                  "s": {
+                    "description": "Denominador de escala.",
+                    "title": "Denominador de escala"
+                  },
+                  "x": {
+                    "description": "Intervalo de la cuadrícula en la dirección x.",
+                    "title": "Intervalo X"
+                  },
+                  "y": {
+                    "description": "Intervalo de la cuadrícula en la dirección y.",
+                    "title": "Intervalo Y"
+                  }
+                }
+              }
+            }
+          },
+          "description": "Definición del tema, tal como aparece en los elementos de temas y grupos de temas. Un tema corresponde a un proyecto QGIS publicado como WMS por QGIS Server.",
+          "properties": {
+            "additionalMouseCrs": {
+              "description": "Proyecciones adicionales para mostrar la posición del ratón, como códigos EPSG. WGS84 y mapCrs están disponibles por defecto; las demás proyecciones deben estar definidas en config.json.",
+              "title": "SRC adicionales del ratón"
+            },
+            "attribution": {
+              "description": "Atribución mostrada en la esquina inferior derecha del mapa.",
+              "title": "Atribución"
+            },
+            "attributionUrl": {
+              "description": "Enlace de la atribución.",
+              "title": "URL de la atribución"
+            },
+            "backgroundLayers": {
+              "description": "Capas de fondo disponibles. Si se omiten, se usa defaultBackgroundLayers.",
+              "title": "Capas de fondo"
+            },
+            "collapseLayerGroupsBelowLevel": {
+              "description": "Nivel del árbol de capas por debajo del cual los grupos empiezan contraídos. Por defecto el árbol está completamente expandido.",
+              "title": "Contraer grupos por debajo del nivel"
+            },
+            "config": {
+              "description": "Configuración del visor que sustituye las entradas globales de config.json para este tema, incluidas desktop, mobile y plugins.",
+              "title": "Configuración del visor"
+            },
+            "default": {
+              "description": "Usar este tema como tema predeterminado.",
+              "title": "Tema predeterminado"
+            },
+            "defaultDisplayCrs": {
+              "description": "SRC predeterminado de las coordenadas en la barra inferior y en las mediciones. Si se omite, se usa mapCrs.",
+              "title": "SRC de visualización predeterminado"
+            },
+            "defaultPrintLayout": {
+              "description": "Nombre del diseño de impresión seleccionado por defecto.",
+              "title": "Diseño de impresión predeterminado"
+            },
+            "description": {
+              "description": "Descripción adicional, mostrada bajo el título del tema.",
+              "title": "Descripción"
+            },
+            "disabled": {
+              "description": "Omitir este tema al generar la configuración de temas.",
+              "title": "Desactivado"
+            },
+            "editConfig": {
+              "description": "Configuración de edición, indexada por el nombre de la capa, o la ruta de un archivo que la contenga. Normalmente la genera el generador de configuración.",
+              "oneOf": {
+                "0": {
+                  "title": "Configuración"
+                },
+                "1": {
+                  "title": "Ruta del archivo"
+                }
+              },
+              "title": "Configuración de edición"
+            },
+            "extent": {
+              "description": "Extensión inicial como [xmin, ymin, xmax, ymax] en mapCrs. Sustituye la extensión anunciada por el WMS.",
+              "title": "Extensión inicial"
+            },
+            "externalLayers": {
+              "description": "Capas externas que sustituyen capas internas del proyecto.",
+              "items": {
+                "properties": {
+                  "internalLayer": {
+                    "description": "Nombre de la capa del proyecto que se sustituye.",
+                    "title": "Capa interna"
+                  },
+                  "name": {
+                    "description": "Nombre de la definición de capa externa correspondiente en themes.externalLayers.",
+                    "title": "Nombre de la capa externa"
+                  }
+                }
+              },
+              "title": "Capas externas"
+            },
+            "extraLegendParameters": {
+              "description": "Parámetros de consulta adicionales de las peticiones GetLegendGraphic, en formato KEY=VALUE&KEY2=VALUE2.",
+              "title": "Parámetros adicionales de la leyenda"
+            },
+            "extraPrintLayers": {
+              "description": "Capas adicionales marcadas como capas internas de impresión, omitidas del árbol de capas.",
+              "title": "Capas adicionales de impresión"
+            },
+            "extraPrintParameters": {
+              "description": "Parámetros de consulta adicionales de las peticiones GetPrint, en formato KEY=VALUE&KEY2=VALUE2 (QGIS Server 3.32 o posterior).",
+              "title": "Parámetros adicionales de impresión"
+            },
+            "extraPrintTemplates": {
+              "description": "Rutas de plantillas de impresión adicionales del tema, relativas al directorio de diseños de impresión.",
+              "title": "Plantillas de impresión adicionales"
+            },
+            "featureInfoUrl": {
+              "description": "URL base de las peticiones GetFeatureInfo, usada solo por los scripts de qwc2.",
+              "title": "URL de información del elemento"
+            },
+            "featureReport": {
+              "additionalProperties": {
+                "oneOf": {
+                  "0": {
+                    "title": "Nombre de la plantilla"
+                  },
+                  "1": {
+                    "items": {
+                      "properties": {
+                        "format": {
+                          "description": "Formato del informe, por ejemplo pdf, html, csv, docx, ods, odt, pptx, rtf, xlsx o xml.",
+                          "title": "Formato"
+                        },
+                        "single_report": {
+                          "description": "Generar un único informe para todos los elementos en lugar de un informe por elemento.",
+                          "title": "Informe único"
+                        },
+                        "template": {
+                          "description": "Nombre de la plantilla del informe.",
+                          "title": "Plantilla"
+                        },
+                        "title": {
+                          "description": "Título del informe.",
+                          "title": "Título"
+                        }
+                      }
+                    },
+                    "title": "Informes"
+                  }
+                }
+              },
+              "description": "Plantillas de informe de elemento del servicio de documentos, indexadas por el nombre de la subcapa.",
+              "title": "Informes de elemento"
+            },
+            "filter": {
+              "description": "Filtro fijo aplicado al tema.",
+              "properties": {
+                "layerfilter": {
+                  "description": "Expresión de filtro por nombre de capa, en el formato del plugin MapFilter.",
+                  "title": "Filtros de capa"
+                }
+              },
+              "title": "Filtro fijo"
+            },
+            "flags": {
+              "description": "Marcadores arbitrarios, usados para mostrar u ocultar elementos de menú, de la barra de herramientas y botones del mapa.",
+              "title": "Marcadores"
+            },
+            "format": {
+              "description": "Formato de imagen de las peticiones WMS GetMap.",
+              "title": "Formato de la imagen"
+            },
+            "hidden_in_ows_landing_page": {
+              "description": "Ocultar el servicio de la página de inicio de los servicios OGC.",
+              "title": "Oculto en la página de inicio OGC"
+            },
+            "id": {
+              "description": "Identificador del tema, usado en el parámetro de URL t del visor. Se genera si no se indica.",
+              "title": "ID del tema"
+            },
+            "labelProfiles": {
+              "title": "Perfiles de etiqueta"
+            },
+            "layerTreeHiddenSublayers": {
+              "description": "Subcapas omitidas del árbol de capas, pero que se siguen mostrando en el mapa.",
+              "title": "Subcapas ocultas"
+            },
+            "legendUrl": {
+              "description": "URL base de las peticiones GetLegendGraphic, usada solo por los scripts de qwc2.",
+              "title": "URL de la leyenda"
+            },
+            "lockedVisibilityPreset": {
+              "description": "Predefinición de visibilidad (tema de mapa de QGIS) cuyos estilos de capa quedan bloqueados.",
+              "title": "Predefinición de visibilidad bloqueada"
+            },
+            "map3d": {
+              "title": "Vista 3D"
+            },
+            "mapCrs": {
+              "description": "Proyección del mapa como código EPSG. Si se omite, se usa la proyección del proyecto. La proyección debe estar definida en config.json.",
+              "title": "SRC del mapa"
+            },
+            "mapExtent": {
+              "description": "Extensión máxima permitida del mapa como [xmin, ymin, xmax, ymax] en mapCrs.",
+              "title": "Extensión máxima del mapa"
+            },
+            "mapTips": {
+              "description": "Si los consejos del mapa están activados por defecto. Si es null o no está definido, se aplica defaultMapTips.",
+              "title": "Consejos del mapa"
+            },
+            "minSearchScaleDenom": {
+              "description": "Denominador de escala mínimo al acercar los resultados de la búsqueda. Sustituye el valor de config.json.",
+              "title": "Denominador mínimo de la escala de búsqueda"
+            },
+            "obliqueDatasets": {
+              "description": "Conjuntos de imágenes aéreas oblicuas.",
+              "items": {
+                "properties": {
+                  "backgroundLayer": {
+                    "description": "Nombre de la capa de fondo mostrada con el conjunto.",
+                    "title": "Capa de fondo"
+                  },
+                  "backgroundOpacity": {
+                    "description": "Opacidad de la capa de fondo, de 0 (transparente) a 255 (opaca).",
+                    "title": "Opacidad del fondo"
+                  },
+                  "dataset": {
+                    "description": "Conjunto configurado en el servicio obliqueImagery.",
+                    "title": "Conjunto de datos"
+                  },
+                  "default": {
+                    "description": "Mostrar este conjunto por defecto. En caso contrario, se usa el primero.",
+                    "title": "Conjunto predeterminado"
+                  },
+                  "title": {
+                    "description": "Título en el selector de conjuntos. Si se omite, se usa el conjunto.",
+                    "title": "Título"
+                  },
+                  "titleMsgId": {
+                    "description": "ID del mensaje de traducción del título, alternativa a title.",
+                    "title": "ID del mensaje del título"
+                  }
+                }
+              },
+              "title": "Conjuntos de imágenes oblicuas"
+            },
+            "pluginData": {
+              "additionalProperties": {
+                "description": "Nombres de los recursos de datos del plugin."
+              },
+              "description": "Datos pasados a plugins personalizados: nombres de los recursos de datos correspondientes en themes.pluginData, indexados por el nombre del plugin.",
+              "title": "Datos del plugin"
+            },
+            "predefinedFilters": {
+              "description": "Filtros predefinidos del plugin MapFilter.",
+              "title": "Filtros predefinidos"
+            },
+            "printGrid": {
+              "title": "Cuadrícula de impresión"
+            },
+            "printLabelBlacklist": {
+              "description": "IDs de las etiquetas del diseño de impresión que no aparecen en el diálogo de impresión.",
+              "title": "Etiquetas de impresión ocultas"
+            },
+            "printLabelConfig": {
+              "additionalProperties": {
+                "description": "Configuración de la entrada de la etiqueta, con cualquier propiedad adicional de textarea, por ejemplo maxLength, rows o placeholder.",
+                "properties": {
+                  "defaultValue": {
+                    "description": "Valor predeterminado. Puede contener los marcadores `{{username}}` y `{{user_infos.<field>}}`, sustituidos por los datos del usuario conectado.",
+                    "title": "Valor predeterminado"
+                  },
+                  "hidden": {
+                    "description": "Ocultar el campo al usuario y enviar el valor predeterminado.",
+                    "title": "Oculto"
+                  },
+                  "options": {
+                    "description": "Opciones de una lista, mostrada en lugar de un campo de texto.",
+                    "title": "Opciones"
+                  }
+                }
+              },
+              "description": "Configuración de las entradas de las etiquetas del diseño de impresión, indexada por el ID de la etiqueta.",
+              "title": "Configuración de las etiquetas de impresión"
+            },
+            "printLabelForAttribution": {
+              "description": "ID de la etiqueta del diseño de impresión que recibe la atribución actual al imprimir.",
+              "title": "Etiqueta de impresión de la atribución"
+            },
+            "printLabelForSearchResult": {
+              "description": "ID de la etiqueta del diseño de impresión que recibe el resultado de búsqueda actual al imprimir.",
+              "title": "Etiqueta de impresión del resultado de búsqueda"
+            },
+            "printResolutions": {
+              "description": "Resoluciones de impresión disponibles en DPI. Si se omiten, se usa defaultPrintResolutions. Si está vacío, la resolución se puede elegir libremente.",
+              "title": "Resoluciones de impresión"
+            },
+            "printScales": {
+              "description": "Denominadores de escala de impresión permitidos. Si se omiten, se usa defaultPrintScales.",
+              "title": "Escalas de impresión"
+            },
+            "printTemplateBlacklist": {
+              "description": "Plantillas de impresión que se ignoran.",
+              "title": "Plantillas de impresión excluidas"
+            },
+            "printUrl": {
+              "description": "URL base de las peticiones GetPrint, usada solo por los scripts de qwc2.",
+              "title": "URL de impresión"
+            },
+            "scales": {
+              "description": "Denominadores de escala del mapa permitidos. Si se omiten, se usa defaultScales.",
+              "title": "Escalas del mapa"
+            },
+            "searchProviders": {
+              "description": "Proveedores de búsqueda. Si se omiten, se usa defaultSearchProviders.",
+              "title": "Proveedores de búsqueda"
+            },
+            "skipEmptyFeatureAttributes": {
+              "description": "Omitir atributos vacíos en los resultados de identificación.",
+              "title": "Omitir atributos vacíos"
+            },
+            "snapping": {
+              "description": "Configuración de ajuste.",
+              "properties": {
+                "featureCount": {
+                  "description": "Número máximo de geometrías de ajuste obtenidas para la extensión actual del mapa.",
+                  "title": "Número máximo de elementos"
+                },
+                "snaplayers": {
+                  "description": "Capas usadas en el ajuste.",
+                  "items": {
+                    "properties": {
+                      "max": {
+                        "description": "Denominador de escala máximo en el que el ajuste está activo.",
+                        "title": "Denominador de escala máximo"
+                      },
+                      "min": {
+                        "description": "Denominador de escala mínimo en el que el ajuste está activo.",
+                        "title": "Denominador de escala mínimo"
+                      },
+                      "name": {
+                        "description": "Nombre de la subcapa que proporciona las geometrías de ajuste.",
+                        "title": "Nombre de la subcapa"
+                      }
+                    }
+                  },
+                  "title": "Capas de ajuste"
+                },
+                "wfsMaxScale": {
+                  "description": "Denominador de escala por debajo del cual las capas WFS cargadas se usan para el ajuste.",
+                  "title": "Denominador de escala máximo del WFS"
+                }
+              },
+              "title": "Ajuste"
+            },
+            "startupView": {
+              "description": "Modo de vista en el que se muestra inicialmente el tema.",
+              "title": "Vista inicial"
+            },
+            "themeInfoLinks": {
+              "description": "Enlaces mostrados como menú junto al tema en el selector de temas.",
+              "properties": {
+                "entries": {
+                  "description": "Nombres de las definiciones de enlace correspondientes en themes.themeInfoLinks.",
+                  "title": "Entradas"
+                },
+                "title": {
+                  "description": "Título del menú.",
+                  "title": "Título del menú"
+                },
+                "titleMsgId": {
+                  "description": "ID del mensaje de traducción del título del menú, alternativa a title.",
+                  "title": "ID del mensaje del título del menú"
+                }
+              },
+              "title": "Enlaces de información del tema"
+            },
+            "thumbnail": {
+              "description": "Archivo de imagen en assets/img/mapthumbs. Si se omite, se usa <project_basename>.png si existe; si no, la miniatura se genera con un WMS GetMap.",
+              "title": "Miniatura"
+            },
+            "tileSize": {
+              "description": "Ancho y alto de la tesela WMS.",
+              "title": "Tamaño de la tesela"
+            },
+            "tiled": {
+              "description": "Usar peticiones WMS en teselas.",
+              "title": "En teselas"
+            },
+            "title": {
+              "description": "Título del tema. Sustituye el título del WMS.",
+              "title": "Título"
+            },
+            "url": {
+              "description": "URL del WMS servido por QGIS Server. Con qwc-docker, /ows/<ruta>, donde <ruta> es la ruta del proyecto QGIS bajo qgs-resources, sin extensión.",
+              "title": "URL del WMS"
+            },
+            "version": {
+              "description": "Versión del WMS. Sustituye defaultWMSVersion.",
+              "title": "Versión del WMS"
+            },
+            "visibilityPresetsBlacklist": {
+              "description": "Predefiniciones de visibilidad (temas de mapa de QGIS) que se excluyen. * corresponde a cualquier carácter.",
+              "title": "Predefiniciones de visibilidad excluidas"
+            },
+            "watermark": {
+              "description": "Marca de agua añadida a las imágenes de exportación ráster. Cada entrada se envía como parámetro WATERMARK_<KEY> de la petición de exportación.",
+              "properties": {
+                "backgroundcolor": {
+                  "description": "Color de fondo del marco, en formato #RRGGBB.",
+                  "title": "Color de fondo"
+                },
+                "fontcolor": {
+                  "description": "Color de la fuente, en formato #RRGGBB.",
+                  "title": "Color de la fuente"
+                },
+                "fontfamily": {
+                  "description": "Familia de la fuente.",
+                  "title": "Familia de la fuente"
+                },
+                "fontsize": {
+                  "description": "Tamaño de la fuente.",
+                  "oneOf": {
+                    "0": {
+                      "title": "Número"
+                    },
+                    "1": {
+                      "title": "Texto"
+                    }
+                  },
+                  "title": "Tamaño de la fuente"
+                },
+                "framecolor": {
+                  "description": "Color del marco, en formato #RRGGBB.",
+                  "title": "Color del marco"
+                },
+                "framewidth": {
+                  "description": "Ancho del marco.",
+                  "oneOf": {
+                    "0": {
+                      "title": "Número"
+                    },
+                    "1": {
+                      "title": "Texto"
+                    }
+                  },
+                  "title": "Ancho del marco"
+                },
+                "texpadding": {
+                  "description": "Espacio entre el texto y el marco, en puntos.",
+                  "oneOf": {
+                    "0": {
+                      "title": "Número"
+                    },
+                    "1": {
+                      "title": "Texto"
+                    }
+                  },
+                  "title": "Espaciado del texto"
+                },
+                "text": {
+                  "description": "Texto.",
+                  "title": "Texto"
+                }
+              },
+              "title": "Marca de agua"
+            },
+            "wmsBasicAuth": {
+              "description": "Credenciales de autenticación HTTP básica de QGIS Server, usadas solo al generar la configuración de temas con los scripts de qwc2 y no guardadas en themes.json.",
+              "properties": {
+                "password": {
+                  "description": "Contraseña.",
+                  "title": "Contraseña"
+                },
+                "username": {
+                  "description": "Nombre de usuario.",
+                  "title": "Nombre de usuario"
+                }
+              },
+              "title": "Autenticación básica del WMS"
+            },
+            "wmsOnly": {
+              "description": "Configurar la entrada solo como WMS, no como tema.",
+              "title": "Solo WMS"
+            }
+          },
+          "title": "Tema"
+        },
+        "themeBackgroundLayer": {
+          "description": "Referencia a una definición de capa de fondo, tal como aparece en backgroundLayers de un tema.",
+          "properties": {
+            "name": {
+              "description": "Nombre de la definición de capa de fondo correspondiente en themes.backgroundLayers.",
+              "title": "Nombre"
+            },
+            "omitFromCycle": {
+              "description": "Excluir la capa al alternar entre las capas de fondo.",
+              "title": "Omitir de la alternancia"
+            },
+            "omitFromSelect": {
+              "description": "Ocultar la capa de la selección de capas de fondo.",
+              "title": "Omitir de la selección"
+            },
+            "overview": {
+              "description": "Definir la capa como capa del mapa de visión general: se muestra en el mapa de visión general con independencia de la capa de fondo visible en el mapa principal.",
+              "title": "Capa del mapa de visión general"
+            },
+            "printLayer": {
+              "description": "Nombre de la capa QGIS o cadena de recurso de la capa usada como capa de fondo correspondiente al imprimir. Como alternativa, una lista de capas por escala, en orden ascendente de maxScale, cuya última entrada tiene maxScale nulo y se usa para las escalas restantes. Si se omite, no se imprime fondo, salvo que la capa sea de tipo wms y printExternalLayers sea true en la configuración del plugin Print.",
+              "oneOf": {
+                "0": {
+                  "title": "Nombre de la capa"
+                },
+                "1": {
+                  "items": {
+                    "properties": {
+                      "maxScale": {
+                        "description": "Denominador de escala hasta el cual se usa esta capa. Null u omitido en la última entrada.",
+                        "title": "Denominador de escala máximo"
+                      },
+                      "name": {
+                        "description": "Nombre de la capa QGIS o cadena de recurso de la capa.",
+                        "title": "Nombre de la capa"
+                      }
+                    }
+                  },
+                  "title": "Capas por escala"
+                }
+              },
+              "title": "Capa de impresión"
+            },
+            "visibility": {
+              "description": "Visibilidad inicial de la capa cuando se carga el tema.",
+              "title": "Visibilidad"
+            }
+          },
+          "title": "Capa de fondo del tema"
+        }
+      },
       "theme": {
-        "options_interface": "Interface options",
-        "options_print": "Print options",
-        "options_search": "Search options"
+        "form_undefined_key": "Configuración desconocida {} en el formulario.",
+        "options_interface": "Opciones de interfaz",
+        "options_print": "Opciones de impresión",
+        "options_search": "Opciones de búsqueda",
+        "other_settings": "Otras configuraciones (JSON)",
+        "other_settings_defined_key": "La configuración {} se edita en el formulario, no en las otras configuraciones.",
+        "other_settings_description": "Configuraciones del tema que el formulario anterior no cubre y que se conservan tal cual al guardar.",
+        "other_settings_error": "Las otras configuraciones deben ser un objeto JSON.",
+        "rjsf_add": "Añadir",
+        "rjsf_add_item": "Añadir elemento",
+        "rjsf_copy": "Copiar",
+        "rjsf_deprecated": "%1 (obsoleto)",
+        "rjsf_empty_array": "Aún no hay elementos. Use el botón de abajo para añadir.",
+        "rjsf_errors": "Errores",
+        "rjsf_invalid_json": "JSON no válido",
+        "rjsf_item": "Elemento",
+        "rjsf_key": "Clave de %1",
+        "rjsf_move_down": "Mover hacia abajo",
+        "rjsf_move_up": "Mover hacia arriba",
+        "rjsf_new_value": "Nuevo valor",
+        "rjsf_no": "No",
+        "rjsf_option": "Opción %1",
+        "rjsf_optional_add": "Añadir datos del campo opcional",
+        "rjsf_optional_empty": "Sin datos en el campo opcional",
+        "rjsf_optional_remove": "Quitar los datos del campo opcional",
+        "rjsf_remove": "Quitar",
+        "rjsf_title_option": "Opción %2 de %1",
+        "rjsf_type": "Tipo",
+        "rjsf_value": "Valor",
+        "rjsf_yes": "Sí",
+        "schema_default": "Predeterminado:",
+        "schema_load_error": "No se pudo cargar el esquema del tema.",
+        "section_3d": "3D",
+        "section_advanced": "Avanzado",
+        "section_background_layers": "Capas de fondo",
+        "section_filters": "Filtros",
+        "section_map": "Mapa",
+        "section_wms": "WMS"
       },
       "themes": {
         "confirm_message_delete_theme": "¿Realmente eliminar tema?",

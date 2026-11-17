@@ -4,7 +4,8 @@
     "de",
     "en",
     "fr",
-    "es"
+    "es",
+    "pt"
   ],
   "extra_strings": [
     "interface.common.permission"

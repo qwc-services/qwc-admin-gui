@@ -1,0 +1,1418 @@
+{
+  "locale": "pt",
+  "interface": {
+    "common": {
+      "add": "Adicionar",
+      "all": "Todos",
+      "assigned_groups": "Grupos atribuídos",
+      "assigned_roles": "Funções atribuídas",
+      "assigned_users": "Usuários atribuídos",
+      "confirm_message_remove": "Remover o recurso?",
+      "delete": "Excluir",
+      "description": "Descrição",
+      "edit": "Editar",
+      "form_cancel": "Cancelar",
+      "form_name_error": "Este nome já está em uso.",
+      "form_priority": "Prioridade",
+      "form_priority_message": "A prioridade deve ser maior ou igual a 0",
+      "form_submit": "Salvar",
+      "group": "Grupo",
+      "group_members": "Membros do grupo",
+      "groups": "Grupos",
+      "id": "ID",
+      "import_resources": "Importar recursos",
+      "message_required": "Este campo é obrigatório.",
+      "name": "Nome",
+      "new": "Novo",
+      "new_permission": "Nova permissão",
+      "ph_search": "Pesquisar",
+      "registrable_group": "Grupo registrável",
+      "remove": "Remover",
+      "resource": "Recurso",
+      "role": "Função",
+      "roles": "Funções",
+      "title": "Título",
+      "type": "Tipo",
+      "url": "URL",
+      "user": "Usuário",
+      "users": "Usuários",
+      "permission": "Permissão"
+    },
+    "groups": {
+      "confirm_message_delete": "Remover o grupo?",
+      "new_group": "Novo grupo",
+      "title": "Grupos"
+    },
+    "main": {
+      "access_denied": "Acesso negado",
+      "access_denied_detail": "O usuário não tem permissão para acessar a administração.",
+      "delete_resource_message_success": "{} foi excluído.",
+      "force_readonly_datasets": "Tornar somente leitura todos os conjuntos de dados editáveis",
+      "force_readonly_datasets_help": "Remove as permissões de escrita ao gerar as permissões dos conjuntos de dados. Útil para deixar todos os conjuntos somente leitura de uma vez.",
+      "generate_configs": "Gerar configuração dos serviços",
+      "generate_configs_cancel": "Cancelar a geração da configuração",
+      "home_title": "Início",
+      "login": "Entrar como administrador",
+      "logout": "Sair",
+      "new_resource_message_error": "Não foi possível criar {}.",
+      "new_resource_message_success": "{} foi criado.",
+      "next": "Próxima",
+      "page_navigation": "Navegação de páginas",
+      "per_page": "por página",
+      "previous": "Anterior",
+      "qgis_server_log_lines": "Número de linhas",
+      "read_qgis_server_logs": "Ler logs do QGIS Server",
+      "registration_title": "Cadastro",
+      "subtitle": "Ferramenta de administração dos serviços QWC",
+      "timeout_error": "A geração da configuração demorou demais. Causas prováveis:\n- Há um problema de conectividade de rede\n- A leitura das Capabilities demorou demais (temas demais / camadas demais / camadas remotas lentas)\n- O 'proxy_read_timeout' do qwc-api-gateway está baixo demais",
+      "title": "QWC Admin",
+      "update_resource_message_error": "Não foi possível atualizar {}.",
+      "update_resource_message_success": "{} foi atualizado.",
+      "use_cached_project_metadata": "Usar metadados em cache do projeto, se existirem",
+      "use_cached_project_metadata_help": "Usa as capabilities WMS/WMTS em cache para temas e camadas externas, se existirem, e não regenera as miniaturas dos temas. Útil para regenerar a configuração rapidamente quando só mudaram permissões ou a configuração dos serviços, sem alterações nos projetos."
+    },
+    "permissions": {
+      "confirm_message_delete": "Remover a permissão?",
+      "ph_select_resource": "Selecione um recurso",
+      "priority": "Prioridade",
+      "resource_type": "Tipo de recurso",
+      "role_filter": "Filtro de função",
+      "title": "Permissões",
+      "type_filter": "Filtro de tipo",
+      "write": "Escrita"
+    },
+    "registrable_groups": {
+      "confirm_message_delete": "Remover o grupo registrável?",
+      "new_registrable_group": "Novo grupo registrável",
+      "title": "Grupos registráveis"
+    },
+    "registration_requests": {
+      "accept": "Aceitar",
+      "add_to_group": "Adicionar ao grupo",
+      "confirm_message_delete": "Remover a solicitação de cadastro?",
+      "created_at": "Criado em",
+      "email": "E-mail",
+      "form_action": "Ação",
+      "form_submit": "Atualizar participação nos grupos",
+      "group": "Grupo registrável solicitado",
+      "registration_requests": "Solicitações de cadastro",
+      "reject": "Recusar",
+      "reject_request": "Recusar solicitação",
+      "remove_from_group": "Remover do grupo",
+      "send_message_error": "Falha ao enviar a notificação ao usuário:",
+      "send_message_success": "O usuário foi notificado das atualizações da solicitação de cadastro.",
+      "skip": "Ignorar",
+      "title": "Solicitações de cadastro pendentes"
+    },
+    "resources": {
+      "add_layers_map_message_error": "Nenhuma camada encontrada para este mapa.",
+      "add_layers_message_success": "novas camadas foram adicionadas.",
+      "add_maps_message_error": "Nenhum mapa adicional encontrado.",
+      "add_maps_message_success": "novos mapas foram adicionados.",
+      "add_permissions_message_error": "Nenhuma permissão adicional encontrada.",
+      "add_permissions_message_success": "novas permissões foram adicionadas.",
+      "add_resource_message_error": "Não foi possível adicionar o recurso {}",
+      "add_resources_message_error": "Nenhum recurso adicional encontrado.",
+      "add_resources_message_success": "novos recursos foram adicionados.",
+      "check_unused": "Verificar não utilizados",
+      "confirm_message_delete": "Remover o recurso?",
+      "confirm_message_remove_cascaded": "Remover o recurso e os filhos?",
+      "confirm_message_remove_selected": "Remover os ${} recursos selecionados?",
+      "form_import_type": "Tipo de recursos a importar do mapa",
+      "form_role": "Permissão de função dos recursos a importar do mapa",
+      "form_write": "Escrita",
+      "hierarchy_title": "Hierarquia de recursos",
+      "import_children_message_error": "A importação de filhos não é suportada para este tipo de recurso.",
+      "import_layer_message_error": "Não foi possível importar a camada {}",
+      "import_layers": "Importar camadas",
+      "import_layers_message_error": "Não foi possível importar as camadas:",
+      "import_maps": "Importar mapas",
+      "import_maps_message_error": "Não foi possível importar os mapas:",
+      "import_resources": "Importar recursos",
+      "import_resources_message_error": "Não foi possível importar os recursos:",
+      "import_resources_title": "Importar",
+      "message_import_layers": "Importando camadas...",
+      "message_import_maps": "Importando mapas...",
+      "message_not_referenced": "O recurso não foi encontrado em nenhuma configuração de serviço",
+      "new_resource": "Novo recurso",
+      "parent": "Pai",
+      "parent_resource": "Recurso pai",
+      "permissions": "Permissões",
+      "remove_cascaded": "Remover em cascata",
+      "remove_selected": "Remover selecionados",
+      "resource": "recurso",
+      "resource_hierarchy_title": "Hierarquia de recursos",
+      "resource_permissions": "Permissões do recurso",
+      "title": "Recursos",
+      "type_filter": "Filtro de tipo"
+    },
+    "roles": {
+      "confirm_message_delete": "Remover a função?",
+      "new_role": "Nova função",
+      "title": "Funções"
+    },
+    "users": {
+      "authentication": "Autenticação",
+      "confirm_message_delete": "Remover o usuário?",
+      "confirm_sendmail": "A senha será redefinida e um e-mail de convite será enviado para {}. Continuar?",
+      "force_password_change": "Exigir troca de senha no próximo acesso",
+      "form_email": "E-mail",
+      "form_email_error": "Use outro endereço de e-mail.",
+      "form_failed_login": "Tentativas de acesso malsucedidas",
+      "form_failed_login_message": "O número deve ser maior ou igual a 0",
+      "form_last_sign_in": "Último acesso",
+      "form_name": "Nome de usuário",
+      "form_password": "Senha",
+      "form_password_repeat": "Repetir senha",
+      "form_totp": "Segredo TOTP",
+      "groups_roles": "Grupos e funções",
+      "mail_subject": "Seu acesso a {}",
+      "new_user": "Novo usuário",
+      "no_mail_config": "Nenhum e-mail de remetente está configurado. Não é possível enviar o convite.",
+      "no_user_email": "Não há e-mail cadastrado para o usuário. Não é possível enviar o e-mail.",
+      "save_and_send": "Salvar e enviar convite",
+      "send_mail_failure": "Falha ao enviar o e-mail de convite.",
+      "send_mail_success": "E-mail de convite enviado.",
+      "sendmail": "Enviar convite",
+      "set_random_password_send_invite": "Definir senha aleatória e enviar e-mail de convite",
+      "title": "Usuários",
+      "user_info": "Dados do usuário"
+    }
+  },
+  "plugins": {
+    "config_editor": {
+      "edit_message_error": "Não foi possível ler",
+      "json_message_error": "JSON inválido",
+      "save_message_error": "Não foi possível salvar",
+      "subtitle": "Editar configurações de entrada",
+      "title": "Editor de configuração",
+      "update_message_success": "foi atualizado"
+    },
+    "themes": {
+      "backgroundlayers": {
+        "action_created": "criada",
+        "action_updated": "atualizada",
+        "create_message_error": "Não foi possível criar a camada de fundo",
+        "create_title": "Adicionar camada de fundo",
+        "delete_message_error": "Não foi possível excluir a camada de fundo.",
+        "delete_message_success": "Camada de fundo excluída.",
+        "edit_layer": "Editar camada",
+        "edit_title": "Editar camada de fundo",
+        "new_wms_layer": "Nova camada WMS",
+        "new_wmts_layer": "Nova camada WMTS",
+        "new_xyz_layer": "Nova camada XYZ",
+        "save_action_message_error": "Não foi possível salvar a camada de fundo",
+        "save_action_message_success": "Camada de fundo",
+        "title": "Camadas de fundo",
+        "update_message_error": "Não foi possível atualizar a camada de fundo"
+      },
+      "common": {
+        "confirm_message_delete_layer": "Excluir mesmo a camada {}?",
+        "connect": "Conectar",
+        "crs": "SRC",
+        "delete_layer": "Excluir camada",
+        "form_attribution": "Atribuição",
+        "form_submit": "Salvar",
+        "form_thumbnail": "Miniatura",
+        "format": "Formato",
+        "layer": "Camada",
+        "title": "Temas"
+      },
+      "files": {
+        "confirm_message_delete_project": "Excluir mesmo {}?",
+        "delete_project": "Excluir projeto",
+        "file_delete_message_error": "Não foi possível excluir o arquivo.",
+        "file_extract_message_success": "e extraído",
+        "file_save_message_error": "Não foi possível salvar o arquivo.",
+        "file_upload_message_error": "Não foi possível enviar o arquivo",
+        "file_upload_message_success": "Arquivo enviado",
+        "form_layer_allowed": "Use apenas arquivos geoespaciais",
+        "form_layer_file": "Camada geoespacial",
+        "form_project_allowed": "Use apenas projetos QGS!",
+        "form_project_file": "Projeto QGIS",
+        "form_submit": "Enviar",
+        "form_template_file": "Modelo HTML",
+        "geospatial_file": "Arquivos geoespaciais",
+        "project": "Projeto",
+        "project_delete_message_error": "Não foi possível excluir o projeto.",
+        "project_save_message_error": "Não foi possível salvar o projeto.",
+        "project_upload_message_error": "Não foi possível enviar o projeto",
+        "project_upload_message_success": "Projeto enviado",
+        "qgis_projects": "Projetos QGIS",
+        "template_delete_message_error": "Não foi possível excluir o arquivo.",
+        "template_delete_title": "Excluir modelos",
+        "template_save_message_error": "Não foi possível salvar o modelo.",
+        "template_upload_message_error": "Não foi possível enviar o modelo",
+        "template_upload_message_success": "Modelo enviado",
+        "template_upload_title": "Enviar modelos",
+        "title": "Enviar arquivos"
+      },
+      "info_templates": {
+        "confirm_message_delete_template": "Excluir mesmo {}?",
+        "create_message_warning": "Não foi possível criar o modelo.",
+        "create_title": "Adicionar modelo",
+        "delete_message_warning": "Não foi possível excluir o recurso do modelo",
+        "delete_template": "Excluir modelo",
+        "edit_message_warning": "Não foi possível atualizar o modelo.",
+        "edit_title": "Editar modelo",
+        "project": "Projeto",
+        "save_message_error": "Não foi possível salvar a configuração do modelo.",
+        "save_message_succes": "A configuração do modelo foi salva.",
+        "template": "Modelo",
+        "title": "Modelos HTML",
+        "update_message_resource_warning": "Já existe um recurso para featureInfoLayer",
+        "update_message_template_warning": "Já existe um modelo para esta camada"
+      },
+      "mapthumbs": {
+        "confirm_message_delete_mapthumb": "Excluir mesmo {}?",
+        "delete_mapthumb": "Excluir miniatura",
+        "delete_message_error": "Não foi possível excluir a miniatura.",
+        "form_allowed": "Use apenas jpg ou png!",
+        "form_file": "Imagem",
+        "save_message_error": "Não foi possível salvar a miniatura.",
+        "title": "Miniaturas do mapa",
+        "upload_message_error": "Não foi possível enviar a miniatura",
+        "upload_message_success": "Miniatura enviada"
+      },
+      "schema": {
+        "map3d": {
+          "definitions": {
+            "entry": {
+              "properties": {
+                "name": {
+                  "description": "Nome único, também usado nas permissões do objeto 3D.",
+                  "title": "Nome"
+                },
+                "title": {
+                  "description": "Título. Se omitido, usa o nome.",
+                  "title": "Título"
+                },
+                "visibility": {
+                  "description": "Visibilidade inicial.",
+                  "title": "Visibilidade"
+                }
+              }
+            },
+            "gltf": {
+              "properties": {
+                "type": {
+                  "description": "Tipo da entrada.",
+                  "title": "Tipo"
+                }
+              },
+              "title": "Objeto GLTF"
+            },
+            "gltfEntry": {
+              "properties": {
+                "snap": {
+                  "description": "Incluir o objeto entre os objetos da cena ajustáveis ao desenhar.",
+                  "title": "Ajuste"
+                },
+                "url": {
+                  "description": "URL do arquivo GLTF.",
+                  "title": "URL do GLTF"
+                }
+              }
+            },
+            "group": {
+              "properties": {
+                "expanded": {
+                  "description": "Expandir o grupo inicialmente.",
+                  "title": "Expandido"
+                },
+                "items": {
+                  "description": "Entradas filhas.",
+                  "title": "Entradas filhas"
+                },
+                "mutuallyExclusive": {
+                  "description": "Permitir apenas um filho visível.",
+                  "title": "Mutuamente exclusivo"
+                },
+                "type": {
+                  "description": "Tipo da entrada.",
+                  "title": "Tipo"
+                }
+              },
+              "title": "Grupo"
+            },
+            "position": {
+              "description": "Posição como [x, y, z]."
+            },
+            "tileset": {
+              "properties": {
+                "type": {
+                  "description": "Tipo da entrada.",
+                  "title": "Tipo"
+                }
+              },
+              "title": "Tiles 3D"
+            },
+            "tilesetEntry": {
+              "properties": {
+                "alphaAttr": {
+                  "description": "Atributo da feição que guarda o alfa como inteiro entre 0 e 255.",
+                  "title": "Atributo de alfa"
+                },
+                "baseColor": {
+                  "description": "Cor de reserva dos objetos do tileset, como cor CSS. Branco se outro atributo de estilo estiver definido.",
+                  "title": "Cor base"
+                },
+                "colorAttr": {
+                  "description": "Atributo da feição que guarda a cor como inteiro 0xRRGGBB.",
+                  "title": "Atributo de cor"
+                },
+                "idAttr": {
+                  "description": "Atributo da feição que guarda o ID do objeto.",
+                  "title": "Atributo de ID"
+                },
+                "infoAttrBlacklist": {
+                  "description": "Atributos da feição omitidos nos resultados de identificação.",
+                  "title": "Atributos de informação excluídos"
+                },
+                "labelAttr": {
+                  "description": "Atributo da feição que guarda o rótulo, exibido acima da geometria.",
+                  "title": "Atributo de rótulo"
+                },
+                "snap": {
+                  "description": "Incluir o tileset entre os objetos da cena ajustáveis ao desenhar.",
+                  "title": "Ajuste"
+                },
+                "style": {
+                  "description": "Estilo do tileset ativado por padrão. Se omitido, usa o primeiro estilo.",
+                  "title": "Estilo padrão"
+                },
+                "styles": {
+                  "description": "Estilos disponíveis do tileset: URL do estilo indexada pelo nome. Tem prioridade sobre colorAttr, alphaAttr e labelAttr.",
+                  "title": "Estilos"
+                },
+                "url": {
+                  "description": "URL do tileset.json.",
+                  "title": "URL do tileset"
+                }
+              }
+            }
+          },
+          "description": "Configuração da vista 3D de um tema. Quando presente, aparece um botão no mapa para alternar para a vista 3D.",
+          "properties": {
+            "basemaps": {
+              "description": "Camadas de fundo da vista 3D.",
+              "title": "Camadas de fundo"
+            },
+            "dtm": {
+              "description": "Modelo de terreno.",
+              "properties": {
+                "crs": {
+                  "description": "SRC do modelo de terreno.",
+                  "title": "SRC"
+                },
+                "max": {
+                  "description": "Elevação máxima, usada junto com min.",
+                  "title": "Elevação máxima"
+                },
+                "min": {
+                  "description": "Elevação mínima, usada junto com max.",
+                  "title": "Elevação mínima"
+                },
+                "url": {
+                  "description": "URL de um GeoTIFF otimizado para nuvem.",
+                  "title": "URL do GeoTIFF"
+                }
+              },
+              "title": "Modelo de terreno"
+            },
+            "extent": {
+              "description": "Extensão da vista 3D. Se omitida, usa a extensão inicial do tema.",
+              "properties": {
+                "bounds": {
+                  "description": "Extensão como [xmin, ymin, xmax, ymax].",
+                  "title": "Limites"
+                },
+                "crs": {
+                  "description": "SRC dos limites.",
+                  "title": "SRC"
+                }
+              },
+              "title": "Extensão"
+            },
+            "initialView": {
+              "description": "Vista inicial da vista 3D. Se não for definida, a vista 3D acompanha a vista 2D.",
+              "properties": {
+                "camera": {
+                  "description": "Posição da câmera como [x, y, z].",
+                  "title": "Posição da câmera"
+                },
+                "personHeight": {
+                  "description": "Altura da pessoa. Valores maiores que 0 ativam a vista em primeira pessoa.",
+                  "title": "Altura da pessoa"
+                },
+                "target": {
+                  "description": "Alvo da câmera como [x, y, z].",
+                  "title": "Alvo da câmera"
+                }
+              },
+              "title": "Vista inicial"
+            },
+            "objects": {
+              "description": "Objetos da cena: tiles 3D, objetos GLTF e grupos.",
+              "title": "Objetos da cena"
+            },
+            "objects3d": {
+              "description": "Obsoleto. Use entradas de objects do tipo object3d.",
+              "title": "Objetos 3D (obsoleto)"
+            },
+            "tiles3d": {
+              "description": "Obsoleto. Use entradas de objects do tipo tiles3d.",
+              "title": "Tiles 3D (obsoleto)"
+            }
+          },
+          "title": "Vista 3D do tema"
+        },
+        "predefinedFilter": {
+          "description": "Filtro predefinido do plugin MapFilter, como listado em predefinedFilters de um tema.",
+          "properties": {
+            "defaultValues": {
+              "description": "Valores usados nos campos deixados vazios, indexados pelo ID do campo.",
+              "title": "Valores padrão"
+            },
+            "fields": {
+              "description": "Campos de entrada do filtro.",
+              "items": {
+                "description": "Campo de entrada.",
+                "properties": {
+                  "defaultValue": {
+                    "description": "Valor padrão.",
+                    "oneOf": {
+                      "0": {
+                        "title": "Texto"
+                      },
+                      "1": {
+                        "title": "Número"
+                      },
+                      "2": {
+                        "title": "Sim/não"
+                      },
+                      "3": {
+                        "title": "Nenhum"
+                      }
+                    },
+                    "title": "Valor padrão"
+                  },
+                  "id": {
+                    "description": "ID do campo, usado como marcador $<id>$ nas expressões do filtro.",
+                    "title": "ID do campo"
+                  },
+                  "inputConfig": {
+                    "description": "Configuração da entrada: qualquer propriedade de um elemento HTML input, por exemplo {{\"type\": \"number\", \"min\": 0}}, com type select para uma lista ou datetime para data e hora.",
+                    "properties": {
+                      "options": {
+                        "description": "Opções de um select: valores ou pares valor/rótulo.",
+                        "items": {
+                          "oneOf": {
+                            "0": {
+                              "title": "Valor de texto"
+                            },
+                            "1": {
+                              "title": "Valor numérico"
+                            },
+                            "2": {
+                              "properties": {
+                                "label": {
+                                  "description": "Rótulo da opção.",
+                                  "title": "Rótulo"
+                                },
+                                "labelmsgid": {
+                                  "description": "ID da mensagem de tradução do rótulo da opção, alternativa a label.",
+                                  "title": "ID da mensagem do rótulo"
+                                },
+                                "value": {
+                                  "description": "Valor da opção.",
+                                  "oneOf": {
+                                    "0": {
+                                      "title": "Texto"
+                                    },
+                                    "1": {
+                                      "title": "Número"
+                                    }
+                                  },
+                                  "title": "Valor"
+                                }
+                              },
+                              "title": "Valor e rótulo"
+                            }
+                          }
+                        },
+                        "title": "Opções"
+                      },
+                      "type": {
+                        "description": "Tipo de input HTML, ou select, ou datetime.",
+                        "title": "Tipo de entrada"
+                      }
+                    },
+                    "title": "Configuração da entrada"
+                  },
+                  "title": {
+                    "description": "Título do campo.",
+                    "title": "Título"
+                  },
+                  "titlemsgid": {
+                    "description": "ID da mensagem de tradução do título do campo, alternativa a title.",
+                    "title": "ID da mensagem do título"
+                  }
+                }
+              },
+              "title": "Campos"
+            },
+            "filter": {
+              "description": "Expressão de filtro do serviço de dados por nome de camada, em que os marcadores $<field_id>$ são substituídos pelos valores dos campos, por exemplo [\"<name>\", \"<op>\", \"$<field_id>$\"] ou [[...], \"and\", [...]].",
+              "title": "Expressão de filtro"
+            },
+            "id": {
+              "description": "ID do filtro, também usado no parâmetro de URL f.",
+              "title": "ID do filtro"
+            },
+            "title": {
+              "description": "Título do filtro.",
+              "title": "Título"
+            },
+            "titlemsgid": {
+              "description": "ID da mensagem de tradução do título do filtro, alternativa a title.",
+              "title": "ID da mensagem do título"
+            }
+          },
+          "title": "Filtro predefinido"
+        },
+        "searchProvider": {
+          "definitions": {
+            "legacyProvider": {
+              "description": "Entrada obsoleta identificada por key sem provider, como nas aplicações antigas. Os provedores de pesquisa padrão a ignoram.",
+              "properties": {
+                "key": {
+                  "description": "Chave do provedor.",
+                  "title": "Chave"
+                },
+                "label": {
+                  "description": "Rótulo do provedor.",
+                  "title": "Rótulo"
+                }
+              },
+              "title": "Entrada legada"
+            },
+            "otherProvider": {
+              "properties": {
+                "params": {
+                  "description": "Parâmetros do provedor. Para fulltext: default (facetas de pesquisa ativadas por padrão) e layers (faceta ativada quando uma camada do tema está visível, indexada pelo nome da camada). Para nominatim: parâmetros adicionais da API Nominatim, por exemplo countrycodes.",
+                  "title": "Parâmetros"
+                },
+                "provider": {
+                  "description": "Chave do provedor, por exemplo fulltext, nominatim ou a chave de um provedor personalizado.",
+                  "title": "Provedor"
+                }
+              },
+              "title": "Outro provedor"
+            },
+            "providerEntry": {
+              "properties": {
+                "key": {
+                  "description": "Chave para distinguir várias configurações do mesmo tipo de provedor.",
+                  "title": "Chave"
+                },
+                "label": {
+                  "description": "Rótulo do provedor exibido no menu de seleção.",
+                  "title": "Rótulo"
+                },
+                "labelmsgid": {
+                  "description": "ID da mensagem de tradução do rótulo do provedor, alternativa a label.",
+                  "title": "ID da mensagem do rótulo"
+                }
+              }
+            },
+            "qgisSearch": {
+              "properties": {
+                "params": {
+                  "description": "Parâmetros da pesquisa de feições do QGIS.",
+                  "properties": {
+                    "default": {
+                      "description": "Selecionar esta pesquisa por padrão no plugin FeatureSearch.",
+                      "title": "Pesquisa padrão"
+                    },
+                    "description": {
+                      "description": "Texto exibido acima dos campos de pesquisa no plugin FeatureSearch.",
+                      "title": "Descrição"
+                    },
+                    "expression": {
+                      "additionalProperties": {
+                        "oneOf": {
+                          "0": {
+                            "title": "Expressão de filtro WMS"
+                          },
+                          "1": {
+                            "title": "Expressão de filtro do serviço de dados"
+                          }
+                        }
+                      },
+                      "description": "Expressão de filtro por nome de camada: uma expressão FILTER do WMS GetFeatureInfo com marcadores $TEXT$ ou $<FIELD>$, ou uma expressão de filtro do serviço de dados.",
+                      "title": "Expressão de filtro"
+                    },
+                    "featureCount": {
+                      "description": "Número máximo de feições retornadas.",
+                      "title": "Número de feições"
+                    },
+                    "featuresearch": {
+                      "description": "Incluir a pesquisa no plugin FeatureSearch.",
+                      "title": "Incluir no FeatureSearch"
+                    },
+                    "fields": {
+                      "additionalProperties": {
+                        "description": "Campo de entrada.",
+                        "properties": {
+                          "label": {
+                            "description": "Rótulo do campo.",
+                            "title": "Rótulo"
+                          },
+                          "label_field": {
+                            "description": "Propriedade da feição usada como rótulo da opção quando options_query devolve feições.",
+                            "title": "Campo do rótulo"
+                          },
+                          "labelmsgid": {
+                            "description": "ID da mensagem de tradução do rótulo do campo, alternativa a label.",
+                            "title": "ID da mensagem do rótulo"
+                          },
+                          "options": {
+                            "description": "Para campos select, a lista de valores ou de pares valor/rótulo. Para os demais, atributos HTML adicionais da entrada, por exemplo min e max.",
+                            "oneOf": {
+                              "0": {
+                                "title": "Opções do select"
+                              },
+                              "1": {
+                                "title": "Atributos da entrada"
+                              }
+                            },
+                            "title": "Opções"
+                          },
+                          "options_query": {
+                            "description": "URL que devolve as opções de um campo select, em que os marcadores $<FIELD>$ são substituídos pelos valores atuais do formulário.",
+                            "title": "URL da consulta de opções"
+                          },
+                          "order": {
+                            "description": "Posição do campo no formulário de pesquisa.",
+                            "title": "Ordem"
+                          },
+                          "type": {
+                            "description": "Tipo de input HTML, select para uma lista ou checkbox para sim/não.",
+                            "title": "Tipo de entrada"
+                          },
+                          "value_field": {
+                            "description": "Propriedade da feição usada como valor da opção quando options_query devolve feições.",
+                            "title": "Campo do valor"
+                          }
+                        }
+                      },
+                      "description": "Campos de entrada do formulário do plugin FeatureSearch, indexados pelo nome do marcador.",
+                      "title": "Campos"
+                    },
+                    "group": {
+                      "description": "Nome do grupo da pesquisa na seleção do FeatureSearch.",
+                      "title": "Grupo"
+                    },
+                    "resultTitle": {
+                      "description": "Texto de formato do título do resultado, com marcadores {{layername}} e {{<fieldname>}}.",
+                      "title": "Título do resultado"
+                    },
+                    "title": {
+                      "description": "Nome da pesquisa, também usado como título do grupo de resultados e para ordenar no plugin FeatureSearch.",
+                      "title": "Nome da pesquisa"
+                    },
+                    "titlemsgid": {
+                      "description": "ID da mensagem de tradução do nome da pesquisa, alternativa a title.",
+                      "title": "ID da mensagem do nome da pesquisa"
+                    }
+                  },
+                  "title": "Parâmetros"
+                },
+                "provider": {
+                  "description": "Chave do provedor.",
+                  "title": "Provedor"
+                }
+              },
+              "title": "Pesquisa de feições do QGIS"
+            }
+          },
+          "description": "Entrada de provedor de pesquisa, como listada em searchProviders de um tema: uma chave de provedor, uma pesquisa de feições do QGIS ou outro provedor com parâmetros.",
+          "oneOf": {
+            "0": {
+              "description": "Chave do provedor, por exemplo coordinates, nominatim ou a chave de um provedor personalizado.",
+              "title": "Chave do provedor"
+            }
+          },
+          "title": "Provedor de pesquisa"
+        },
+        "theme": {
+          "definitions": {
+            "bbox": {
+              "description": "Extensão como [xmin, ymin, xmax, ymax]."
+            },
+            "labelProfiles": {
+              "additionalProperties": {
+                "description": "Perfis da camada.",
+                "items": {
+                  "properties": {
+                    "expression": {
+                      "description": "Expressão do rótulo, na sintaxe de expressões do QGIS.",
+                      "title": "Expressão"
+                    },
+                    "name": {
+                      "description": "Nome do perfil.",
+                      "title": "Nome"
+                    },
+                    "size": {
+                      "description": "Tamanho do rótulo.",
+                      "title": "Tamanho"
+                    },
+                    "title": {
+                      "description": "Título do perfil. Se omitido, usa o nome.",
+                      "title": "Título"
+                    }
+                  }
+                }
+              },
+              "description": "Perfis de rotulagem do plugin Redlining, indexados pelo nome da camada."
+            },
+            "printGrid": {
+              "description": "Intervalos de grade dependentes da escala para impressão, em ordem decrescente do denominador de escala: uma entrada vale para as escalas entre o próprio denominador e o da entrada seguinte.",
+              "items": {
+                "properties": {
+                  "s": {
+                    "description": "Denominador de escala.",
+                    "title": "Denominador de escala"
+                  },
+                  "x": {
+                    "description": "Intervalo da grade na direção x.",
+                    "title": "Intervalo X"
+                  },
+                  "y": {
+                    "description": "Intervalo da grade na direção y.",
+                    "title": "Intervalo Y"
+                  }
+                }
+              }
+            }
+          },
+          "description": "Definição do tema, como listada nos itens de temas e grupos de temas. Um tema corresponde a um projeto QGIS publicado como WMS pelo QGIS Server.",
+          "properties": {
+            "additionalMouseCrs": {
+              "description": "Projeções adicionais para exibir a posição do mouse, como códigos EPSG. WGS84 e mapCrs estão disponíveis por padrão; as demais projeções precisam estar definidas em config.json.",
+              "title": "SRC adicionais do mouse"
+            },
+            "attribution": {
+              "description": "Atribuição exibida no canto inferior direito do mapa.",
+              "title": "Atribuição"
+            },
+            "attributionUrl": {
+              "description": "Link da atribuição.",
+              "title": "URL da atribuição"
+            },
+            "backgroundLayers": {
+              "description": "Camadas de fundo disponíveis. Se omitidas, usa defaultBackgroundLayers.",
+              "title": "Camadas de fundo"
+            },
+            "collapseLayerGroupsBelowLevel": {
+              "description": "Nível da árvore de camadas abaixo do qual os grupos começam recolhidos. Por padrão a árvore fica toda expandida.",
+              "title": "Recolher grupos abaixo do nível"
+            },
+            "config": {
+              "description": "Configuração do visualizador que substitui as entradas globais de config.json para este tema, inclusive desktop, mobile e plugins.",
+              "title": "Configuração do visualizador"
+            },
+            "default": {
+              "description": "Usar este tema como tema padrão.",
+              "title": "Tema padrão"
+            },
+            "defaultDisplayCrs": {
+              "description": "SRC padrão das coordenadas na barra inferior e nas medições. Se omitido, usa mapCrs.",
+              "title": "SRC padrão de exibição"
+            },
+            "defaultPrintLayout": {
+              "description": "Nome do layout de impressão selecionado por padrão.",
+              "title": "Layout de impressão padrão"
+            },
+            "description": {
+              "description": "Descrição adicional, exibida abaixo do título do tema.",
+              "title": "Descrição"
+            },
+            "disabled": {
+              "description": "Ignorar este tema ao gerar a configuração de temas.",
+              "title": "Desativado"
+            },
+            "editConfig": {
+              "description": "Configuração de edição, indexada pelo nome da camada, ou o caminho de um arquivo que a contenha. Em geral é gerada pelo gerador de configuração.",
+              "oneOf": {
+                "0": {
+                  "title": "Configuração"
+                },
+                "1": {
+                  "title": "Caminho do arquivo"
+                }
+              },
+              "title": "Configuração de edição"
+            },
+            "extent": {
+              "description": "Extensão inicial como [xmin, ymin, xmax, ymax] em mapCrs. Substitui a extensão anunciada pelo WMS.",
+              "title": "Extensão inicial"
+            },
+            "externalLayers": {
+              "description": "Camadas externas que substituem camadas internas do projeto.",
+              "items": {
+                "properties": {
+                  "internalLayer": {
+                    "description": "Nome da camada do projeto a substituir.",
+                    "title": "Camada interna"
+                  },
+                  "name": {
+                    "description": "Nome da definição de camada externa correspondente em themes.externalLayers.",
+                    "title": "Nome da camada externa"
+                  }
+                }
+              },
+              "title": "Camadas externas"
+            },
+            "extraLegendParameters": {
+              "description": "Parâmetros de consulta adicionais das requisições GetLegendGraphic, no formato KEY=VALUE&KEY2=VALUE2.",
+              "title": "Parâmetros adicionais da legenda"
+            },
+            "extraPrintLayers": {
+              "description": "Camadas adicionais marcadas como camadas internas de impressão, omitidas da árvore de camadas.",
+              "title": "Camadas adicionais de impressão"
+            },
+            "extraPrintParameters": {
+              "description": "Parâmetros de consulta adicionais das requisições GetPrint, no formato KEY=VALUE&KEY2=VALUE2 (QGIS Server 3.32 ou posterior).",
+              "title": "Parâmetros adicionais de impressão"
+            },
+            "extraPrintTemplates": {
+              "description": "Caminhos de modelos de impressão adicionais do tema, relativos ao diretório de layouts de impressão.",
+              "title": "Modelos de impressão adicionais"
+            },
+            "featureInfoUrl": {
+              "description": "URL base das requisições GetFeatureInfo, usada apenas pelos scripts do qwc2.",
+              "title": "URL de informações da feição"
+            },
+            "featureReport": {
+              "additionalProperties": {
+                "oneOf": {
+                  "0": {
+                    "title": "Nome do modelo"
+                  },
+                  "1": {
+                    "items": {
+                      "properties": {
+                        "format": {
+                          "description": "Formato do relatório, por exemplo pdf, html, csv, docx, ods, odt, pptx, rtf, xlsx ou xml.",
+                          "title": "Formato"
+                        },
+                        "single_report": {
+                          "description": "Gerar um único relatório para todas as feições em vez de um relatório por feição.",
+                          "title": "Relatório único"
+                        },
+                        "template": {
+                          "description": "Nome do modelo do relatório.",
+                          "title": "Modelo"
+                        },
+                        "title": {
+                          "description": "Título do relatório.",
+                          "title": "Título"
+                        }
+                      }
+                    },
+                    "title": "Relatórios"
+                  }
+                }
+              },
+              "description": "Modelos de relatório de feição do serviço de documentos, indexados pelo nome da subcamada.",
+              "title": "Relatórios de feição"
+            },
+            "filter": {
+              "description": "Filtro fixo aplicado ao tema.",
+              "properties": {
+                "layerfilter": {
+                  "description": "Expressão de filtro por nome de camada, no formato do plugin MapFilter.",
+                  "title": "Filtros de camada"
+                }
+              },
+              "title": "Filtro fixo"
+            },
+            "flags": {
+              "description": "Marcadores arbitrários, usados para mostrar ou ocultar itens de menu, da barra de ferramentas e botões do mapa.",
+              "title": "Marcadores"
+            },
+            "format": {
+              "description": "Formato de imagem das requisições WMS GetMap.",
+              "title": "Formato da imagem"
+            },
+            "hidden_in_ows_landing_page": {
+              "description": "Ocultar o serviço da página inicial dos serviços OGC.",
+              "title": "Oculto na página inicial OGC"
+            },
+            "id": {
+              "description": "Identificador do tema, usado no parâmetro de URL t do visualizador. É gerado se não for informado.",
+              "title": "ID do tema"
+            },
+            "labelProfiles": {
+              "title": "Perfis de rótulo"
+            },
+            "layerTreeHiddenSublayers": {
+              "description": "Subcamadas omitidas da árvore de camadas, mas ainda exibidas no mapa.",
+              "title": "Subcamadas ocultas"
+            },
+            "legendUrl": {
+              "description": "URL base das requisições GetLegendGraphic, usada apenas pelos scripts do qwc2.",
+              "title": "URL da legenda"
+            },
+            "lockedVisibilityPreset": {
+              "description": "Predefinição de visibilidade (tema de mapa do QGIS) cujos estilos de camada ficam bloqueados.",
+              "title": "Predefinição de visibilidade bloqueada"
+            },
+            "map3d": {
+              "title": "Vista 3D"
+            },
+            "mapCrs": {
+              "description": "Projeção do mapa como código EPSG. Se omitida, usa a projeção do projeto. A projeção precisa estar definida em config.json.",
+              "title": "SRC do mapa"
+            },
+            "mapExtent": {
+              "description": "Extensão máxima permitida do mapa como [xmin, ymin, xmax, ymax] em mapCrs.",
+              "title": "Extensão máxima do mapa"
+            },
+            "mapTips": {
+              "description": "Se as dicas do mapa ficam ativadas por padrão. Se for null ou não estiver definido, vale defaultMapTips.",
+              "title": "Dicas do mapa"
+            },
+            "minSearchScaleDenom": {
+              "description": "Denominador de escala mínimo ao aproximar os resultados da pesquisa. Substitui o valor de config.json.",
+              "title": "Denominador mínimo da escala de pesquisa"
+            },
+            "obliqueDatasets": {
+              "description": "Conjuntos de imagens aéreas oblíquas.",
+              "items": {
+                "properties": {
+                  "backgroundLayer": {
+                    "description": "Nome da camada de fundo exibida com o conjunto.",
+                    "title": "Camada de fundo"
+                  },
+                  "backgroundOpacity": {
+                    "description": "Opacidade da camada de fundo, de 0 (transparente) a 255 (opaca).",
+                    "title": "Opacidade do fundo"
+                  },
+                  "dataset": {
+                    "description": "Conjunto configurado no serviço obliqueImagery.",
+                    "title": "Conjunto de dados"
+                  },
+                  "default": {
+                    "description": "Exibir este conjunto por padrão. Caso contrário, usa o primeiro.",
+                    "title": "Conjunto padrão"
+                  },
+                  "title": {
+                    "description": "Título no seletor de conjuntos. Se omitido, usa o conjunto.",
+                    "title": "Título"
+                  },
+                  "titleMsgId": {
+                    "description": "ID da mensagem de tradução do título, alternativa a title.",
+                    "title": "ID da mensagem do título"
+                  }
+                }
+              },
+              "title": "Conjuntos de imagens oblíquas"
+            },
+            "pluginData": {
+              "additionalProperties": {
+                "description": "Nomes dos recursos de dados do plugin."
+              },
+              "description": "Dados passados a plugins personalizados: nomes dos recursos de dados correspondentes em themes.pluginData, indexados pelo nome do plugin.",
+              "title": "Dados do plugin"
+            },
+            "predefinedFilters": {
+              "description": "Filtros predefinidos do plugin MapFilter.",
+              "title": "Filtros predefinidos"
+            },
+            "printGrid": {
+              "title": "Grade de impressão"
+            },
+            "printLabelBlacklist": {
+              "description": "IDs dos rótulos do layout de impressão que não aparecem no diálogo de impressão.",
+              "title": "Rótulos de impressão ocultos"
+            },
+            "printLabelConfig": {
+              "additionalProperties": {
+                "description": "Configuração da entrada do rótulo, com qualquer propriedade adicional de textarea, por exemplo maxLength, rows ou placeholder.",
+                "properties": {
+                  "defaultValue": {
+                    "description": "Valor padrão. Pode conter os marcadores `{{username}}` e `{{user_infos.<field>}}`, substituídos pelos dados do usuário conectado.",
+                    "title": "Valor padrão"
+                  },
+                  "hidden": {
+                    "description": "Ocultar o campo do usuário e enviar o valor padrão.",
+                    "title": "Oculto"
+                  },
+                  "options": {
+                    "description": "Opções de uma lista, exibida no lugar de um campo de texto.",
+                    "title": "Opções"
+                  }
+                }
+              },
+              "description": "Configuração das entradas dos rótulos do layout de impressão, indexada pelo ID do rótulo.",
+              "title": "Configuração dos rótulos de impressão"
+            },
+            "printLabelForAttribution": {
+              "description": "ID do rótulo do layout de impressão que recebe a atribuição atual ao imprimir.",
+              "title": "Rótulo de impressão da atribuição"
+            },
+            "printLabelForSearchResult": {
+              "description": "ID do rótulo do layout de impressão que recebe o resultado de pesquisa atual ao imprimir.",
+              "title": "Rótulo de impressão do resultado de pesquisa"
+            },
+            "printResolutions": {
+              "description": "Resoluções de impressão disponíveis em DPI. Se omitidas, usa defaultPrintResolutions. Se estiver vazio, a resolução pode ser escolhida livremente.",
+              "title": "Resoluções de impressão"
+            },
+            "printScales": {
+              "description": "Denominadores de escala de impressão permitidos. Se omitidos, usa defaultPrintScales.",
+              "title": "Escalas de impressão"
+            },
+            "printTemplateBlacklist": {
+              "description": "Modelos de impressão a ignorar.",
+              "title": "Modelos de impressão excluídos"
+            },
+            "printUrl": {
+              "description": "URL base das requisições GetPrint, usada apenas pelos scripts do qwc2.",
+              "title": "URL de impressão"
+            },
+            "scales": {
+              "description": "Denominadores de escala do mapa permitidos. Se omitidos, usa defaultScales.",
+              "title": "Escalas do mapa"
+            },
+            "searchProviders": {
+              "description": "Provedores de pesquisa. Se omitidos, usa defaultSearchProviders.",
+              "title": "Provedores de pesquisa"
+            },
+            "skipEmptyFeatureAttributes": {
+              "description": "Omitir atributos vazios nos resultados de identificação.",
+              "title": "Omitir atributos vazios"
+            },
+            "snapping": {
+              "description": "Configuração de ajuste.",
+              "properties": {
+                "featureCount": {
+                  "description": "Número máximo de geometrias de ajuste obtidas para a extensão atual do mapa.",
+                  "title": "Número máximo de feições"
+                },
+                "snaplayers": {
+                  "description": "Camadas usadas no ajuste.",
+                  "items": {
+                    "properties": {
+                      "max": {
+                        "description": "Denominador de escala máximo em que o ajuste fica ativo.",
+                        "title": "Denominador de escala máximo"
+                      },
+                      "min": {
+                        "description": "Denominador de escala mínimo em que o ajuste fica ativo.",
+                        "title": "Denominador de escala mínimo"
+                      },
+                      "name": {
+                        "description": "Nome da subcamada que fornece as geometrias de ajuste.",
+                        "title": "Nome da subcamada"
+                      }
+                    }
+                  },
+                  "title": "Camadas de ajuste"
+                },
+                "wfsMaxScale": {
+                  "description": "Denominador de escala abaixo do qual as camadas WFS carregadas são usadas no ajuste.",
+                  "title": "Denominador de escala máximo do WFS"
+                }
+              },
+              "title": "Ajuste"
+            },
+            "startupView": {
+              "description": "Modo de vista em que o tema é exibido inicialmente.",
+              "title": "Vista inicial"
+            },
+            "themeInfoLinks": {
+              "description": "Links exibidos como menu ao lado do tema no seletor de temas.",
+              "properties": {
+                "entries": {
+                  "description": "Nomes das definições de link correspondentes em themes.themeInfoLinks.",
+                  "title": "Entradas"
+                },
+                "title": {
+                  "description": "Título do menu.",
+                  "title": "Título do menu"
+                },
+                "titleMsgId": {
+                  "description": "ID da mensagem de tradução do título do menu, alternativa a title.",
+                  "title": "ID da mensagem do título do menu"
+                }
+              },
+              "title": "Links de informação do tema"
+            },
+            "thumbnail": {
+              "description": "Arquivo de imagem em assets/img/mapthumbs. Se omitido, usa <project_basename>.png quando existir; caso contrário, a miniatura é gerada com um WMS GetMap.",
+              "title": "Miniatura"
+            },
+            "tileSize": {
+              "description": "Largura e altura do tile WMS.",
+              "title": "Tamanho do tile"
+            },
+            "tiled": {
+              "description": "Usar requisições WMS em tiles.",
+              "title": "Em tiles"
+            },
+            "title": {
+              "description": "Título do tema. Substitui o título do WMS.",
+              "title": "Título"
+            },
+            "url": {
+              "description": "URL do WMS servido pelo QGIS Server. Com o qwc-docker, /ows/<caminho>, em que <caminho> é o caminho do projeto QGIS abaixo de qgs-resources, sem extensão.",
+              "title": "URL do WMS"
+            },
+            "version": {
+              "description": "Versão do WMS. Substitui defaultWMSVersion.",
+              "title": "Versão do WMS"
+            },
+            "visibilityPresetsBlacklist": {
+              "description": "Predefinições de visibilidade (temas de mapa do QGIS) a excluir. * corresponde a quaisquer caracteres.",
+              "title": "Predefinições de visibilidade excluídas"
+            },
+            "watermark": {
+              "description": "Marca d'água adicionada às imagens de exportação raster. Cada entrada é enviada como parâmetro WATERMARK_<KEY> da requisição de exportação.",
+              "properties": {
+                "backgroundcolor": {
+                  "description": "Cor de fundo da moldura, no formato #RRGGBB.",
+                  "title": "Cor de fundo"
+                },
+                "fontcolor": {
+                  "description": "Cor da fonte, no formato #RRGGBB.",
+                  "title": "Cor da fonte"
+                },
+                "fontfamily": {
+                  "description": "Família da fonte.",
+                  "title": "Família da fonte"
+                },
+                "fontsize": {
+                  "description": "Tamanho da fonte.",
+                  "oneOf": {
+                    "0": {
+                      "title": "Número"
+                    },
+                    "1": {
+                      "title": "Texto"
+                    }
+                  },
+                  "title": "Tamanho da fonte"
+                },
+                "framecolor": {
+                  "description": "Cor da moldura, no formato #RRGGBB.",
+                  "title": "Cor da moldura"
+                },
+                "framewidth": {
+                  "description": "Largura da moldura.",
+                  "oneOf": {
+                    "0": {
+                      "title": "Número"
+                    },
+                    "1": {
+                      "title": "Texto"
+                    }
+                  },
+                  "title": "Largura da moldura"
+                },
+                "texpadding": {
+                  "description": "Espaço entre o texto e a moldura, em pontos.",
+                  "oneOf": {
+                    "0": {
+                      "title": "Número"
+                    },
+                    "1": {
+                      "title": "Texto"
+                    }
+                  },
+                  "title": "Espaçamento do texto"
+                },
+                "text": {
+                  "description": "Texto.",
+                  "title": "Texto"
+                }
+              },
+              "title": "Marca d'água"
+            },
+            "wmsBasicAuth": {
+              "description": "Credenciais de autenticação HTTP básica do QGIS Server, usadas apenas ao gerar a configuração de temas com os scripts do qwc2 e não gravadas em themes.json.",
+              "properties": {
+                "password": {
+                  "description": "Senha.",
+                  "title": "Senha"
+                },
+                "username": {
+                  "description": "Nome de usuário.",
+                  "title": "Nome de usuário"
+                }
+              },
+              "title": "Autenticação básica do WMS"
+            },
+            "wmsOnly": {
+              "description": "Configurar a entrada apenas como WMS, não como tema.",
+              "title": "Somente WMS"
+            }
+          },
+          "title": "Tema"
+        },
+        "themeBackgroundLayer": {
+          "description": "Referência a uma definição de camada de fundo, como listada em backgroundLayers de um tema.",
+          "properties": {
+            "name": {
+              "description": "Nome da definição de camada de fundo correspondente em themes.backgroundLayers.",
+              "title": "Nome"
+            },
+            "omitFromCycle": {
+              "description": "Excluir a camada ao alternar entre as camadas de fundo.",
+              "title": "Omitir da alternância"
+            },
+            "omitFromSelect": {
+              "description": "Ocultar a camada da seleção de camadas de fundo.",
+              "title": "Omitir da seleção"
+            },
+            "overview": {
+              "description": "Definir a camada como camada do mapa de visão geral: ela é exibida no mapa de visão geral independentemente da camada de fundo visível no mapa principal.",
+              "title": "Camada do mapa de visão geral"
+            },
+            "printLayer": {
+              "description": "Nome da camada QGIS ou cadeia de recurso da camada usada como camada de fundo correspondente na impressão. Como alternativa, uma lista de camadas por escala, em ordem crescente de maxScale, cuja última entrada tem maxScale nulo e vale para as escalas restantes. Se omitido, nenhum fundo é impresso, a menos que a camada seja do tipo wms e printExternalLayers seja true na configuração do plugin Print.",
+              "oneOf": {
+                "0": {
+                  "title": "Nome da camada"
+                },
+                "1": {
+                  "items": {
+                    "properties": {
+                      "maxScale": {
+                        "description": "Denominador de escala até o qual esta camada é usada. Null ou omitido na última entrada.",
+                        "title": "Denominador de escala máximo"
+                      },
+                      "name": {
+                        "description": "Nome da camada QGIS ou cadeia de recurso da camada.",
+                        "title": "Nome da camada"
+                      }
+                    }
+                  },
+                  "title": "Camadas por escala"
+                }
+              },
+              "title": "Camada de impressão"
+            },
+            "visibility": {
+              "description": "Visibilidade inicial da camada quando o tema é carregado.",
+              "title": "Visibilidade"
+            }
+          },
+          "title": "Camada de fundo do tema"
+        }
+      },
+      "theme": {
+        "form_undefined_key": "Configuração desconhecida {} no formulário.",
+        "options_interface": "Opções da interface",
+        "options_print": "Opções de impressão",
+        "options_search": "Opções de pesquisa",
+        "other_settings": "Outras configurações (JSON)",
+        "other_settings_defined_key": "A configuração {} é editada no formulário, não nas outras configurações.",
+        "other_settings_description": "Configurações do tema que o formulário acima não cobre, mantidas como estão ao salvar.",
+        "other_settings_error": "As outras configurações precisam ser um objeto JSON.",
+        "rjsf_add": "Adicionar",
+        "rjsf_add_item": "Adicionar item",
+        "rjsf_copy": "Copiar",
+        "rjsf_deprecated": "%1 (obsoleto)",
+        "rjsf_empty_array": "Ainda não há itens. Use o botão abaixo para adicionar.",
+        "rjsf_errors": "Erros",
+        "rjsf_invalid_json": "JSON inválido",
+        "rjsf_item": "Item",
+        "rjsf_key": "Chave de %1",
+        "rjsf_move_down": "Mover para baixo",
+        "rjsf_move_up": "Mover para cima",
+        "rjsf_new_value": "Novo valor",
+        "rjsf_no": "Não",
+        "rjsf_option": "Opção %1",
+        "rjsf_optional_add": "Adicionar dados do campo opcional",
+        "rjsf_optional_empty": "Sem dados no campo opcional",
+        "rjsf_optional_remove": "Remover dados do campo opcional",
+        "rjsf_remove": "Remover",
+        "rjsf_title_option": "Opção %2 de %1",
+        "rjsf_type": "Tipo",
+        "rjsf_value": "Valor",
+        "rjsf_yes": "Sim",
+        "schema_default": "Padrão:",
+        "schema_load_error": "Não foi possível carregar o esquema do tema.",
+        "section_3d": "3D",
+        "section_advanced": "Avançado",
+        "section_background_layers": "Camadas de fundo",
+        "section_filters": "Filtros",
+        "section_map": "Mapa",
+        "section_wms": "WMS"
+      },
+      "themes": {
+        "confirm_message_delete_theme": "Excluir mesmo o tema?",
+        "copy_url": "Copiar URL para a área de transferência",
+        "create_theme_message_error": "Não foi possível criar o tema",
+        "create_theme_message_integrity_error": "Já existe um recurso para este mapa",
+        "create_theme_message_success": "Este tema foi criado",
+        "create_theme_title": "Criar tema",
+        "delete_theme": "Excluir tema",
+        "delete_theme_message_error": "Não foi possível excluir o recurso do mapa",
+        "disabled": "Desativado",
+        "edit_theme": "Editar tema",
+        "edit_theme_title": "Editar tema",
+        "group_confirm_message_delete": "Excluir mesmo o grupo de temas?",
+        "group_delete": "Excluir grupo de temas",
+        "group_move_down": "Mover o grupo de temas para baixo",
+        "group_move_up": "Mover o grupo de temas para cima",
+        "group_title": "Título",
+        "group_title_edit": "Editar título",
+        "move_down": "Mover o tema para baixo",
+        "move_theme_to_group": "Mover o tema para o grupo",
+        "move_up": "Mover o tema para cima",
+        "new_group": "Novo grupo de temas",
+        "new_theme": "Novo tema",
+        "reload_theme_message": "Configuração de temas recarregada do disco.",
+        "save_theme_message_error": "Não foi possível salvar a configuração do tema.",
+        "save_theme_message_success": "A configuração do tema foi salva.",
+        "theme": "Tema",
+        "theme_groups": "Grupos de temas",
+        "themes": "Temas",
+        "title": "Configuração de temas",
+        "update_theme_message_error": "Não foi possível atualizar o tema",
+        "update_theme_message_success": "Este tema foi atualizado",
+        "update_theme_title": "Atualizar tema"
+      },
+      "wmslayer": {
+        "add": "Adicionar camada de fundo WMS",
+        "capabilities_url": "URL das Capabilities WMS",
+        "form_tiled": "em tiles"
+      },
+      "wmtslayer": {
+        "add": "Adicionar camada de fundo WMTS",
+        "capabilities_url": "URL das Capabilities WMTS",
+        "form_with_capabilities": "Salvar as capabilities? (Necessário apenas para WMTS do QGIS Server!)",
+        "style": "Estilo",
+        "tilematrix": "Matriz de tiles"
+      },
+      "xyzlayer": {
+        "add": "Adicionar camada de fundo XYZ"
+      }
+    }
+  },
+  "registration_requests": {
+    "user_notification": {
+      "footer": "",
+      "salutation": "Olá %(username)s",
+      "subject": "Atualizações de cadastro em grupos",
+      "user_added_to_groups": "Você foi adicionado aos seguintes grupos:",
+      "user_removed_from_groups": "Você foi removido dos seguintes grupos:",
+      "user_requests_declined": "Seus pedidos de participação nos seguintes grupos foram recusados:"
+    }
+  }
+}
