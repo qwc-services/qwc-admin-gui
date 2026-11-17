@@ -1,343 +1,1418 @@
 {
-    "locale": "ca",
-    "interface": {
-      "common": {
-        "add": "Afegeix",
-        "all": "Tots",
-        "assigned_groups": "Grups assignats",
-        "assigned_roles": "Rols assignats",
-        "assigned_users": "Usuaris assignats",
-        "confirm_message_remove": "Vols eliminar el recurs?",
-        "delete": "Elimina",
-        "description": "Descripció",
-        "edit": "Edita",
-        "form_cancel": "Cancel·la",
-        "form_name_error": "El nom ja està en ús.",
-        "form_priority": "Prioritat",
-        "form_priority_message": "La prioritat ha de ser igual o superior a 0",
-        "form_submit": "Desa",
-        "group": "Grup",
-        "group_members": "Membres del grup",
-        "groups": "Grups",
-        "id": "ID",
-        "import_resources": "Importa recursos",
-        "message_required": "Aquest camp és obligatori.",
-        "name": "Nom",
-        "new": "Nou",
-        "new_permission": "Nova permís",
-        "ph_search": "Cerca",
-        "registrable_group": "Grup registrable",
-        "remove": "Elimina",
-        "resource": "Recurs",
-        "role": "Rol",
-        "roles": "Rols",
-        "title": "Títol",
-        "type": "Tipus",
-        "url": "URL",
-        "user": "Usuari",
-        "users": "Usuaris",
-        "permission": "Permís"
-      },
-      "groups": {
-        "confirm_message_delete": "Vols eliminar el grup?",
-        "new_group": "Nou grup",
-        "title": "Grups"
-      },
-      "main": {
-        "access_denied": "Accés denegat",
-        "access_denied_detail": "L'usuari no té permís per accedir al backend d'administració.",
-        "delete_resource_message_success": "{} ha estat eliminat.",
-        "force_readonly_datasets": "Fes tots els conjunts d'edició només de lectura",
-        "force_readonly_datasets_help": "Suprimeix qualsevol permís d'escriptura en generar permisos de conjunt de dades. Útil per posar ràpidament tots els conjunts de dades en només lectura.",
-        "generate_configs": "Genera la configuració del servei",
-        "generate_configs_cancel": "Interromp la configuració del servei",
-        "home_title": "Inici",
-        "login": "Inicia sessió com a administrador",
-        "logout": "Tanca sessió",
-        "new_resource_message_error": "No s'ha pogut crear {}.",
-        "new_resource_message_success": "{} ha estat creat.",
-        "next": "Següent",
-        "page_navigation": "Navegació de pàgina",
-        "per_page": "per pàgina",
-        "previous": "Anterior",
-        "qgis_server_log_lines": "Nombre de línies",
-        "read_qgis_server_logs": "Llegeix els registres del servidor QGIS",
-        "registration_title": "Registre",
-        "subtitle": "Eina d'administració per als serveis QWC",
-        "timeout_error": "La generació de la configuració ha trigat massa. Possibles causes:\n- Hi ha un problema de connectivitat de xarxa\n- La recuperació de les capacitats ha trigat massa (massa temes / massa capes / capes remotes lentes)\n- El 'proxy_read_timeout' del qwc-api-gateway és massa baix",
-        "title": "QWC Admin",
-        "update_resource_message_error": "No s'ha pogut actualitzar {}.",
-        "update_resource_message_success": "{} ha estat actualitzat.",
-        "use_cached_project_metadata": "Utilitza les metadades del projecte en memòria cau si estan disponibles",
-        "use_cached_project_metadata_help": "Utilitza les capacitats WMS/WMTS en memòria cau per a temes i capes externes, si estan disponibles, i omet la regeneració de les miniatures dels temes. Útil per regenerar ràpidament la configuració si només s'han fet canvis de permisos o configuració de serveis però no s'han fet canvis als fitxers de projecte."
-      },
-      "permissions": {
-        "confirm_message_delete": "Vols eliminar el permís?",
-        "ph_select_resource": "Selecciona un recurs",
-        "priority": "Prioritat",
-        "resource_type": "Tipus de recurs",
-        "role_filter": "Filtre de rol",
-        "title": "Permisos",
-        "type_filter": "Filtre de tipus",
-        "write": "Escriptura"
-      },
-      "registrable_groups": {
-        "confirm_message_delete": "Vols eliminar el grup registrable?",
-        "new_registrable_group": "Nou grup registrable",
-        "title": "Grups registrables"
-      },
-      "registration_requests": {
-        "accept": "Accepta",
-        "add_to_group": "Afegeix al grup",
-        "confirm_message_delete": "Vols eliminar la sol·licitud de registre?",
-        "created_at": "Creat el",
-        "email": "Correu electrònic",
-        "form_action": "Acció",
-        "form_submit": "Actualitza membres del grup",
-        "group": "Grup registrable sol·licitat",
-        "registration_requests": "Sol·licituds de registre",
-        "reject": "Rebutja",
-        "reject_request": "Rebutja la sol·licitud",
-        "remove_from_group": "Elimina del grup",
-        "send_message_error": "No s'ha pogut enviar la notificació a l'usuari:",
-        "send_message_success": "L'usuari ha estat notificat de les actualitzacions de la sol·licitud de registre.",
-        "skip": "Omet",
-        "title": "Sol·licituds de registre pendents"
-      },
-      "resources": {
-        "add_layers_map_message_error": "No s'han trobat capes per a aquest mapa.",
-        "add_layers_message_success": "S'han afegit capes noves.",
-        "add_maps_message_error": "No s'han trobat mapes addicionals.",
-        "add_maps_message_success": "S'han afegit mapes nous.",
-        "add_permissions_message_error": "No s'han trobat permisos addicionals.",
-        "add_permissions_message_success": "S'han afegit permisos nous.",
-        "add_resource_message_error": "No s'ha pogut afegir el recurs {}",
-        "add_resources_message_error": "No s'han trobat recursos addicionals.",
-        "add_resources_message_success": "S'han afegit recursos nous.",
-        "check_unused": "Comprova els no utilitzats",
-        "confirm_message_delete": "Vols eliminar el recurs?",
-        "confirm_message_remove_cascaded": "Vols eliminar el recurs i els seus fills?",
-        "confirm_message_remove_selected": "Vols eliminar els recursos seleccionats ${}?",
-        "form_import_type": "Tipus de recursos a importar del mapa",
-        "form_role": "Permisos de rol dels recursos a importar del mapa",
-        "form_write": "Escriptura",
-        "hierarchy_title": "Jerarquia de recursos",
-        "import_children_message_error": "La importació d'arxius fills no està suportada per aquest tipus de recurs.",
-        "import_layer_message_error": "No s'ha pogut importar la capa {}",
-        "import_layers": "Importa capes",
-        "import_layers_message_error": "No s'han pogut importar capes:",
-        "import_maps": "Importa mapes",
-        "import_maps_message_error": "No s'han pogut importar mapes:",
-        "import_resources": "Importa recursos",
-        "import_resources_message_error": "No s'han pogut importar recursos:",
-        "import_resources_title": "Importa",
-        "message_import_layers": "Important capes...",
-        "message_import_maps": "Important mapes...",
-        "message_not_referenced": "El recurs no s'ha trobat en cap configuració de servei",
-        "new_resource": "Nou recurs",
-        "parent": "Pare",
-        "parent_resource": "Recurs pare",
-        "permissions": "Permisos",
-        "remove_cascaded": "Elimina en cascada",
-        "remove_selected": "Elimina seleccionats",
-        "resource": "recurs",
-        "resource_hierarchy_title": "Jerarquia de recursos",
-        "resource_permissions": "Permisos de recursos",
-        "title": "Recursos",
-        "type_filter": "Filtre de tipus"
-      },
-      "roles": {
-        "confirm_message_delete": "Vols eliminar el rol?",
-        "new_role": "Nou rol",
-        "title": "Rols"
-      },
-      "users": {
-        "authentication": "Autenticació",
-        "confirm_message_delete": "Vols eliminar l'usuari?",
-        "confirm_sendmail": "La contrasenya es restablirà i s'enviarà un correu d'invitació a {}, vols continuar?",
-        "force_password_change": "Força el canvi de contrasenya a la propera connexió",
-        "form_email": "Correu electrònic",
-        "form_email_error": "Si us plau, utilitza una adreça de correu electrònic diferent.",
-        "form_failed_login": "Intents d'inici de sessió fallits",
-        "form_failed_login_message": "El nombre ha de ser igual o superior a 0",
-        "form_last_sign_in": "Última connexió",
-        "form_name": "Nom d'usuari",
-        "form_password": "Contrasenya",
-        "form_password_repeat": "Repeteix la contrasenya",
-        "form_totp": "Secret TOTP",
-        "groups_roles": "Grups i rols",
-        "mail_subject": "El teu accés a {}",
-        "new_user": "Nou usuari",
-        "no_mail_config": "No s'ha configurat el correu electrònic d'enviament, no es pot enviar el correu d'invitació.",
-        "no_user_email": "No s'ha desat correu electrònic per a l'usuari, no es pot enviar el correu electrònic.",
-        "save_and_send": "Desa i envia invitació",
-        "send_mail_failure": "No s'ha pogut enviar el correu d'invitació.",
-        "send_mail_success": "Correu d'invitació enviat correctament.",
-        "sendmail": "Envia invitació",
-        "set_random_password_send_invite": "Estableix contrasenya aleatòria i envia invitació per correu",
-        "title": "Usuaris",
-        "user_info": "Informació de l'usuari"
-      }
+  "locale": "ca",
+  "interface": {
+    "common": {
+      "add": "Afegeix",
+      "all": "Tots",
+      "assigned_groups": "Grups assignats",
+      "assigned_roles": "Rols assignats",
+      "assigned_users": "Usuaris assignats",
+      "confirm_message_remove": "Vols eliminar el recurs?",
+      "delete": "Elimina",
+      "description": "Descripció",
+      "edit": "Edita",
+      "form_cancel": "Cancel·la",
+      "form_name_error": "El nom ja està en ús.",
+      "form_priority": "Prioritat",
+      "form_priority_message": "La prioritat ha de ser igual o superior a 0",
+      "form_submit": "Desa",
+      "group": "Grup",
+      "group_members": "Membres del grup",
+      "groups": "Grups",
+      "id": "ID",
+      "import_resources": "Importa recursos",
+      "message_required": "Aquest camp és obligatori.",
+      "name": "Nom",
+      "new": "Nou",
+      "new_permission": "Nova permís",
+      "ph_search": "Cerca",
+      "registrable_group": "Grup registrable",
+      "remove": "Elimina",
+      "resource": "Recurs",
+      "role": "Rol",
+      "roles": "Rols",
+      "title": "Títol",
+      "type": "Tipus",
+      "url": "URL",
+      "user": "Usuari",
+      "users": "Usuaris",
+      "permission": "Permís"
     },
-    "plugins": {
-      "config_editor": {
-        "edit_message_error": "No s'ha pogut llegir",
-        "json_message_error": "JSON invàlid",
-        "save_message_error": "No s'ha pogut desar",
-        "subtitle": "Edita les configuracions d'entrada",
-        "title": "Editor de Configuracions",
-        "update_message_success": "ha estat actualitzat"
-      },
-      "themes": {
-        "backgroundlayers": {
-          "action_created": "creat",
-          "action_updated": "actualitzat",
-          "create_message_error": "No s'ha pogut crear la capa d'enfosc",
-          "create_title": "Afegeix la capa d'enfosc",
-          "delete_message_error": "No s'ha pogut eliminar la capa d'enfosc.",
-          "delete_message_success": "La capa d'enfosc s'ha eliminat.",
-          "edit_layer": "Edita la capa",
-          "edit_title": "Edita la capa d'enfosc",
-          "new_wms_layer": "Nova capa WMS",
-          "new_wmts_layer": "Nova capa WMTS",
-          "new_xyz_layer": "Nova capa XYZ",
-          "save_action_message_error": "No s'ha pogut desar la capa d'enfosc",
-          "save_action_message_success": "La capa d'enfosc",
-          "title": "Capes d'enfosc",
-          "update_message_error": "No s'ha pogut actualitzar la capa d'enfosc"
-        },
-        "common": {
-          "confirm_message_delete_layer": "Realment vols eliminar la capa {}?",
-          "connect": "Connecta",
-          "crs": "CRS",
-          "delete_layer": "Elimina la capa",
-          "form_attribution": "Atribució",
-          "form_submit": "Desa",
-          "form_thumbnail": "Miniatura",
-          "format": "Format",
-          "layer": "Capa",
-          "title": "Temes"
-        },
-        "files": {
-          "confirm_message_delete_project": "Realment vols eliminar {}?",
-          "delete_project": "Elimina el projecte",
-          "file_delete_message_error": "El fitxer no s'ha pogut eliminar.",
-          "file_extract_message_success": "i s'ha extret",
-          "file_save_message_error": "El fitxer no s'ha pogut desar.",
-          "file_upload_message_error": "El fitxer no s'ha pogut pujar",
-          "file_upload_message_success": "El fitxer s'ha pujat correctament",
-          "form_layer_allowed": "Si us plau, només utilitza fitxers geoespacials",
-          "form_layer_file": "Capa geoespacial",
-          "form_project_allowed": "Si us plau, només utilitza projectes QGS !",
-          "form_project_file": "Projecte QGIS",
-          "form_submit": "Puja",
-          "form_template_file": "Plantilla HTML",
-          "geospatial_file": "Fitxers geoespacials",
-          "project": "Projecte",
-          "project_delete_message_error": "El projecte no s'ha pogut eliminar.",
-          "project_save_message_error": "El projecte no s'ha pogut desar.",
-          "project_upload_message_error": "El projecte no s'ha pogut pujar",
-          "project_upload_message_success": "El projecte s'ha pujat correctament",
-          "qgis_projects": "Projectes QGIS",
-          "template_delete_message_error": "El fitxer no s'ha pogut eliminar.",
-          "template_delete_title": "Elimina plantilles",
-          "template_save_message_error": "La plantilla no s'ha pogut desar.",
-          "template_upload_message_error": "La plantilla no s'ha pogut pujar",
-          "template_upload_message_success": "La plantilla s'ha pujat correctament",
-          "template_upload_title": "Puja plantilles",
-          "title": "Puja fitxers"
-        },
-        "info_templates": {
-          "confirm_message_delete_template": "Realment vols eliminar {}?",
-          "create_message_warning": "No s'ha pogut crear la plantilla.",
-          "create_title": "Afegeix plantilla",
-          "delete_message_warning": "No s'ha pogut eliminar el recurs per a la plantilla",
-          "delete_template": "Elimina la plantilla",
-          "edit_message_warning": "No s'ha pogut actualitzar la plantilla.",
-          "edit_title": "Edita la plantilla",
-          "project": "Projecte",
-          "save_message_error": "No s'ha pogut desar la configuració de la plantilla.",
-          "save_message_succes": "La configuració de la plantilla s'ha desat.",
-          "template": "Plantilla",
-          "title": "Plantilles HTML",
-          "update_message_resource_warning": "El recurs per a featureInfoLayer ja existeix",
-          "update_message_template_warning": "Ja existeix una plantilla per a aquesta capa"
-        },
-        "mapthumbs": {
-          "confirm_message_delete_mapthumb": "Realment vols eliminar {}?",
-          "delete_mapthumb": "Elimina la miniatura",
-          "delete_message_error": "La miniatura no s'ha pogut eliminar.",
-          "form_allowed": "Si us plau, només utilitza jpg o png!",
-          "form_file": "Imatge",
-          "save_message_error": "La miniatura no s'ha pogut desar.",
-          "title": "Miniatures de mapes",
-          "upload_message_error": "La miniatura no s'ha pogut pujar",
-          "upload_message_success": "La miniatura s'ha pujat correctament"
-        },
-        "theme": {
-          "options_interface": "Opcions d'interfície",
-          "options_print": "Opcions d'impressió",
-          "options_search": "Opcions de cerca"
-        },
-        "themes": {
-          "confirm_message_delete_theme": "Realment vols eliminar el tema?",
-          "copy_url": "Copia l'URL al porta-retalls",
-          "create_theme_message_error": "No s'ha pogut crear el tema",
-          "create_theme_message_integrity_error": "El recurs per a aquest mapa ja existeix",
-          "create_theme_message_success": "Aquest tema s'ha creat",
-          "create_theme_title": "Crea tema",
-          "delete_theme": "Elimina el tema",
-          "delete_theme_message_error": "No s'ha pogut eliminar el recurs per a mapa",
-          "disabled": "Desactivat",
-          "edit_theme": "Edita el tema",
-          "edit_theme_title": "Edita el tema",
-          "group_confirm_message_delete": "Realment vols eliminar el grup de temes?",
-          "group_delete": "Elimina el grup de temes",
-          "group_move_down": "Mou el grup de temes cap avall",
-          "group_move_up": "Mou el grup de temes cap amunt",
-          "group_title": "Títol",
-          "group_title_edit": "Edita el títol",
-          "move_down": "Mou el tema cap avall",
-          "move_theme_to_group": "Mou el tema al grup",
-          "move_up": "Mou el tema cap amunt",
-          "new_group": "Nou grup de temes",
-          "new_theme": "Nou tema",
-          "reload_theme_message": "La configuració del tema s'ha recarregat des del disc.",
-          "save_theme_message_error": "No s'ha pogut desar la configuració del tema.",
-          "save_theme_message_success": "La configuració del tema s'ha desat.",
-          "theme": "Tema",
-          "theme_groups": "Grups de temes",
-          "themes": "Temes",
-          "title": "Configuració del tema",
-          "update_theme_message_error": "No s'ha pogut actualitzar el tema",
-          "update_theme_message_success": "Aquest tema s'ha actualitzat",
-          "update_theme_title": "Actualitza tema"
-        },
-        "wmslayer": {
-          "add": "Afegeix capa d'enfosc WMS",
-          "capabilities_url": "URL de capacitats WMS",
-          "form_tiled": "tilat"
-        },
-        "wmtslayer": {
-          "add": "Afegeix capa d'enfosc WMTS",
-          "capabilities_url": "URL de capacitats WMTS",
-          "form_with_capabilities": "Desa les capacitats? (Només necessari per a QGIS Server WMTS!)",
-          "style": "Estil",
-          "tilematrix": "Matriu de tessel·lació"
-        },
-        "xyzlayer": {
-          "add": "Afegeix capa d'enfosc XYZ"
-        }
-      }
+    "groups": {
+      "confirm_message_delete": "Vols eliminar el grup?",
+      "new_group": "Nou grup",
+      "title": "Grups"
+    },
+    "main": {
+      "access_denied": "Accés denegat",
+      "access_denied_detail": "L'usuari no té permís per accedir al backend d'administració.",
+      "delete_resource_message_success": "{} ha estat eliminat.",
+      "force_readonly_datasets": "Fes tots els conjunts d'edició només de lectura",
+      "force_readonly_datasets_help": "Suprimeix qualsevol permís d'escriptura en generar permisos de conjunt de dades. Útil per posar ràpidament tots els conjunts de dades en només lectura.",
+      "generate_configs": "Genera la configuració del servei",
+      "generate_configs_cancel": "Interromp la configuració del servei",
+      "home_title": "Inici",
+      "login": "Inicia sessió com a administrador",
+      "logout": "Tanca sessió",
+      "new_resource_message_error": "No s'ha pogut crear {}.",
+      "new_resource_message_success": "{} ha estat creat.",
+      "next": "Següent",
+      "page_navigation": "Navegació de pàgina",
+      "per_page": "per pàgina",
+      "previous": "Anterior",
+      "qgis_server_log_lines": "Nombre de línies",
+      "read_qgis_server_logs": "Llegeix els registres del servidor QGIS",
+      "registration_title": "Registre",
+      "subtitle": "Eina d'administració per als serveis QWC",
+      "timeout_error": "La generació de la configuració ha trigat massa. Possibles causes:\n- Hi ha un problema de connectivitat de xarxa\n- La recuperació de les capacitats ha trigat massa (massa temes / massa capes / capes remotes lentes)\n- El 'proxy_read_timeout' del qwc-api-gateway és massa baix",
+      "title": "QWC Admin",
+      "update_resource_message_error": "No s'ha pogut actualitzar {}.",
+      "update_resource_message_success": "{} ha estat actualitzat.",
+      "use_cached_project_metadata": "Utilitza les metadades del projecte en memòria cau si estan disponibles",
+      "use_cached_project_metadata_help": "Utilitza les capacitats WMS/WMTS en memòria cau per a temes i capes externes, si estan disponibles, i omet la regeneració de les miniatures dels temes. Útil per regenerar ràpidament la configuració si només s'han fet canvis de permisos o configuració de serveis però no s'han fet canvis als fitxers de projecte."
+    },
+    "permissions": {
+      "confirm_message_delete": "Vols eliminar el permís?",
+      "ph_select_resource": "Selecciona un recurs",
+      "priority": "Prioritat",
+      "resource_type": "Tipus de recurs",
+      "role_filter": "Filtre de rol",
+      "title": "Permisos",
+      "type_filter": "Filtre de tipus",
+      "write": "Escriptura"
+    },
+    "registrable_groups": {
+      "confirm_message_delete": "Vols eliminar el grup registrable?",
+      "new_registrable_group": "Nou grup registrable",
+      "title": "Grups registrables"
     },
     "registration_requests": {
-      "user_notification": {
-        "footer": "",
-        "salutation": "Hola %(username)s",
-        "subject": "Actualitzacions de registre de grup",
-        "user_added_to_groups": "T'has afegit als següents grups:",
-        "user_removed_from_groups": "T'has eliminat dels següents grups:",
-        "user_requests_declined": "Les sol·licituds de registre de membres per als següents grups han estat rebutjades:"
+      "accept": "Accepta",
+      "add_to_group": "Afegeix al grup",
+      "confirm_message_delete": "Vols eliminar la sol·licitud de registre?",
+      "created_at": "Creat el",
+      "email": "Correu electrònic",
+      "form_action": "Acció",
+      "form_submit": "Actualitza membres del grup",
+      "group": "Grup registrable sol·licitat",
+      "registration_requests": "Sol·licituds de registre",
+      "reject": "Rebutja",
+      "reject_request": "Rebutja la sol·licitud",
+      "remove_from_group": "Elimina del grup",
+      "send_message_error": "No s'ha pogut enviar la notificació a l'usuari:",
+      "send_message_success": "L'usuari ha estat notificat de les actualitzacions de la sol·licitud de registre.",
+      "skip": "Omet",
+      "title": "Sol·licituds de registre pendents"
+    },
+    "resources": {
+      "add_layers_map_message_error": "No s'han trobat capes per a aquest mapa.",
+      "add_layers_message_success": "S'han afegit capes noves.",
+      "add_maps_message_error": "No s'han trobat mapes addicionals.",
+      "add_maps_message_success": "S'han afegit mapes nous.",
+      "add_permissions_message_error": "No s'han trobat permisos addicionals.",
+      "add_permissions_message_success": "S'han afegit permisos nous.",
+      "add_resource_message_error": "No s'ha pogut afegir el recurs {}",
+      "add_resources_message_error": "No s'han trobat recursos addicionals.",
+      "add_resources_message_success": "S'han afegit recursos nous.",
+      "check_unused": "Comprova els no utilitzats",
+      "confirm_message_delete": "Vols eliminar el recurs?",
+      "confirm_message_remove_cascaded": "Vols eliminar el recurs i els seus fills?",
+      "confirm_message_remove_selected": "Vols eliminar els recursos seleccionats ${}?",
+      "form_import_type": "Tipus de recursos a importar del mapa",
+      "form_role": "Permisos de rol dels recursos a importar del mapa",
+      "form_write": "Escriptura",
+      "hierarchy_title": "Jerarquia de recursos",
+      "import_children_message_error": "La importació d'arxius fills no està suportada per aquest tipus de recurs.",
+      "import_layer_message_error": "No s'ha pogut importar la capa {}",
+      "import_layers": "Importa capes",
+      "import_layers_message_error": "No s'han pogut importar capes:",
+      "import_maps": "Importa mapes",
+      "import_maps_message_error": "No s'han pogut importar mapes:",
+      "import_resources": "Importa recursos",
+      "import_resources_message_error": "No s'han pogut importar recursos:",
+      "import_resources_title": "Importa",
+      "message_import_layers": "Important capes...",
+      "message_import_maps": "Important mapes...",
+      "message_not_referenced": "El recurs no s'ha trobat en cap configuració de servei",
+      "new_resource": "Nou recurs",
+      "parent": "Pare",
+      "parent_resource": "Recurs pare",
+      "permissions": "Permisos",
+      "remove_cascaded": "Elimina en cascada",
+      "remove_selected": "Elimina seleccionats",
+      "resource": "recurs",
+      "resource_hierarchy_title": "Jerarquia de recursos",
+      "resource_permissions": "Permisos de recursos",
+      "title": "Recursos",
+      "type_filter": "Filtre de tipus"
+    },
+    "roles": {
+      "confirm_message_delete": "Vols eliminar el rol?",
+      "new_role": "Nou rol",
+      "title": "Rols"
+    },
+    "users": {
+      "authentication": "Autenticació",
+      "confirm_message_delete": "Vols eliminar l'usuari?",
+      "confirm_sendmail": "La contrasenya es restablirà i s'enviarà un correu d'invitació a {}, vols continuar?",
+      "force_password_change": "Força el canvi de contrasenya a la propera connexió",
+      "form_email": "Correu electrònic",
+      "form_email_error": "Si us plau, utilitza una adreça de correu electrònic diferent.",
+      "form_failed_login": "Intents d'inici de sessió fallits",
+      "form_failed_login_message": "El nombre ha de ser igual o superior a 0",
+      "form_last_sign_in": "Última connexió",
+      "form_name": "Nom d'usuari",
+      "form_password": "Contrasenya",
+      "form_password_repeat": "Repeteix la contrasenya",
+      "form_totp": "Secret TOTP",
+      "groups_roles": "Grups i rols",
+      "mail_subject": "El teu accés a {}",
+      "new_user": "Nou usuari",
+      "no_mail_config": "No s'ha configurat el correu electrònic d'enviament, no es pot enviar el correu d'invitació.",
+      "no_user_email": "No s'ha desat correu electrònic per a l'usuari, no es pot enviar el correu electrònic.",
+      "save_and_send": "Desa i envia invitació",
+      "send_mail_failure": "No s'ha pogut enviar el correu d'invitació.",
+      "send_mail_success": "Correu d'invitació enviat correctament.",
+      "sendmail": "Envia invitació",
+      "set_random_password_send_invite": "Estableix contrasenya aleatòria i envia invitació per correu",
+      "title": "Usuaris",
+      "user_info": "Informació de l'usuari"
+    }
+  },
+  "plugins": {
+    "config_editor": {
+      "edit_message_error": "No s'ha pogut llegir",
+      "json_message_error": "JSON invàlid",
+      "save_message_error": "No s'ha pogut desar",
+      "subtitle": "Edita les configuracions d'entrada",
+      "title": "Editor de Configuracions",
+      "update_message_success": "ha estat actualitzat"
+    },
+    "themes": {
+      "backgroundlayers": {
+        "action_created": "creat",
+        "action_updated": "actualitzat",
+        "create_message_error": "No s'ha pogut crear la capa d'enfosc",
+        "create_title": "Afegeix la capa d'enfosc",
+        "delete_message_error": "No s'ha pogut eliminar la capa d'enfosc.",
+        "delete_message_success": "La capa d'enfosc s'ha eliminat.",
+        "edit_layer": "Edita la capa",
+        "edit_title": "Edita la capa d'enfosc",
+        "new_wms_layer": "Nova capa WMS",
+        "new_wmts_layer": "Nova capa WMTS",
+        "new_xyz_layer": "Nova capa XYZ",
+        "save_action_message_error": "No s'ha pogut desar la capa d'enfosc",
+        "save_action_message_success": "La capa d'enfosc",
+        "title": "Capes d'enfosc",
+        "update_message_error": "No s'ha pogut actualitzar la capa d'enfosc"
+      },
+      "common": {
+        "confirm_message_delete_layer": "Realment vols eliminar la capa {}?",
+        "connect": "Connecta",
+        "crs": "CRS",
+        "delete_layer": "Elimina la capa",
+        "form_attribution": "Atribució",
+        "form_submit": "Desa",
+        "form_thumbnail": "Miniatura",
+        "format": "Format",
+        "layer": "Capa",
+        "title": "Temes"
+      },
+      "files": {
+        "confirm_message_delete_project": "Realment vols eliminar {}?",
+        "delete_project": "Elimina el projecte",
+        "file_delete_message_error": "El fitxer no s'ha pogut eliminar.",
+        "file_extract_message_success": "i s'ha extret",
+        "file_save_message_error": "El fitxer no s'ha pogut desar.",
+        "file_upload_message_error": "El fitxer no s'ha pogut pujar",
+        "file_upload_message_success": "El fitxer s'ha pujat correctament",
+        "form_layer_allowed": "Si us plau, només utilitza fitxers geoespacials",
+        "form_layer_file": "Capa geoespacial",
+        "form_project_allowed": "Si us plau, només utilitza projectes QGS !",
+        "form_project_file": "Projecte QGIS",
+        "form_submit": "Puja",
+        "form_template_file": "Plantilla HTML",
+        "geospatial_file": "Fitxers geoespacials",
+        "project": "Projecte",
+        "project_delete_message_error": "El projecte no s'ha pogut eliminar.",
+        "project_save_message_error": "El projecte no s'ha pogut desar.",
+        "project_upload_message_error": "El projecte no s'ha pogut pujar",
+        "project_upload_message_success": "El projecte s'ha pujat correctament",
+        "qgis_projects": "Projectes QGIS",
+        "template_delete_message_error": "El fitxer no s'ha pogut eliminar.",
+        "template_delete_title": "Elimina plantilles",
+        "template_save_message_error": "La plantilla no s'ha pogut desar.",
+        "template_upload_message_error": "La plantilla no s'ha pogut pujar",
+        "template_upload_message_success": "La plantilla s'ha pujat correctament",
+        "template_upload_title": "Puja plantilles",
+        "title": "Puja fitxers"
+      },
+      "info_templates": {
+        "confirm_message_delete_template": "Realment vols eliminar {}?",
+        "create_message_warning": "No s'ha pogut crear la plantilla.",
+        "create_title": "Afegeix plantilla",
+        "delete_message_warning": "No s'ha pogut eliminar el recurs per a la plantilla",
+        "delete_template": "Elimina la plantilla",
+        "edit_message_warning": "No s'ha pogut actualitzar la plantilla.",
+        "edit_title": "Edita la plantilla",
+        "project": "Projecte",
+        "save_message_error": "No s'ha pogut desar la configuració de la plantilla.",
+        "save_message_succes": "La configuració de la plantilla s'ha desat.",
+        "template": "Plantilla",
+        "title": "Plantilles HTML",
+        "update_message_resource_warning": "El recurs per a featureInfoLayer ja existeix",
+        "update_message_template_warning": "Ja existeix una plantilla per a aquesta capa"
+      },
+      "mapthumbs": {
+        "confirm_message_delete_mapthumb": "Realment vols eliminar {}?",
+        "delete_mapthumb": "Elimina la miniatura",
+        "delete_message_error": "La miniatura no s'ha pogut eliminar.",
+        "form_allowed": "Si us plau, només utilitza jpg o png!",
+        "form_file": "Imatge",
+        "save_message_error": "La miniatura no s'ha pogut desar.",
+        "title": "Miniatures de mapes",
+        "upload_message_error": "La miniatura no s'ha pogut pujar",
+        "upload_message_success": "La miniatura s'ha pujat correctament"
+      },
+      "schema": {
+        "map3d": {
+          "definitions": {
+            "entry": {
+              "properties": {
+                "name": {
+                  "description": "Nom únic, també utilitzat als permisos de l'objecte 3D.",
+                  "title": "Nom"
+                },
+                "title": {
+                  "description": "Títol. Si s'omet, s'utilitza el nom.",
+                  "title": "Títol"
+                },
+                "visibility": {
+                  "description": "Visibilitat inicial.",
+                  "title": "Visibilitat"
+                }
+              }
+            },
+            "gltf": {
+              "properties": {
+                "type": {
+                  "description": "Tipus de l'entrada.",
+                  "title": "Tipus"
+                }
+              },
+              "title": "Objecte GLTF"
+            },
+            "gltfEntry": {
+              "properties": {
+                "snap": {
+                  "description": "Inclou l'objecte entre els objectes de l'escena ajustables en dibuixar.",
+                  "title": "Ajust"
+                },
+                "url": {
+                  "description": "URL del fitxer GLTF.",
+                  "title": "URL del GLTF"
+                }
+              }
+            },
+            "group": {
+              "properties": {
+                "expanded": {
+                  "description": "Expandeix el grup inicialment.",
+                  "title": "Expandit"
+                },
+                "items": {
+                  "description": "Entrades filles.",
+                  "title": "Entrades filles"
+                },
+                "mutuallyExclusive": {
+                  "description": "Permet només un fill visible.",
+                  "title": "Mútuament excloent"
+                },
+                "type": {
+                  "description": "Tipus de l'entrada.",
+                  "title": "Tipus"
+                }
+              },
+              "title": "Grup"
+            },
+            "position": {
+              "description": "Posició com a [x, y, z]."
+            },
+            "tileset": {
+              "properties": {
+                "type": {
+                  "description": "Tipus de l'entrada.",
+                  "title": "Tipus"
+                }
+              },
+              "title": "Tessel·les 3D"
+            },
+            "tilesetEntry": {
+              "properties": {
+                "alphaAttr": {
+                  "description": "Atribut de l'element que desa l'alfa com a enter entre 0 i 255.",
+                  "title": "Atribut d'alfa"
+                },
+                "baseColor": {
+                  "description": "Color de reserva dels objectes del tileset, com a color CSS. Blanc si hi ha definit un altre atribut d'estil.",
+                  "title": "Color base"
+                },
+                "colorAttr": {
+                  "description": "Atribut de l'element que desa el color com a enter 0xRRGGBB.",
+                  "title": "Atribut de color"
+                },
+                "idAttr": {
+                  "description": "Atribut de l'element que desa l'ID de l'objecte.",
+                  "title": "Atribut d'ID"
+                },
+                "infoAttrBlacklist": {
+                  "description": "Atributs de l'element omesos als resultats d'identificació.",
+                  "title": "Atributs d'informació exclosos"
+                },
+                "labelAttr": {
+                  "description": "Atribut de l'element que desa l'etiqueta, mostrada sobre la geometria.",
+                  "title": "Atribut d'etiqueta"
+                },
+                "snap": {
+                  "description": "Inclou el tileset entre els objectes de l'escena ajustables en dibuixar.",
+                  "title": "Ajust"
+                },
+                "style": {
+                  "description": "Estil del tileset activat per defecte. Si s'omet, s'utilitza el primer.",
+                  "title": "Estil per defecte"
+                },
+                "styles": {
+                  "description": "Estils disponibles del tileset: URL de l'estil indexada pel nom. Té prioritat sobre colorAttr, alphaAttr i labelAttr.",
+                  "title": "Estils"
+                },
+                "url": {
+                  "description": "URL de tileset.json.",
+                  "title": "URL del tileset"
+                }
+              }
+            }
+          },
+          "description": "Configuració de la vista 3D d'un tema. Si és present, es mostra un botó del mapa per canviar a la vista 3D.",
+          "properties": {
+            "basemaps": {
+              "description": "Capes de fons de la vista 3D.",
+              "title": "Capes de fons"
+            },
+            "dtm": {
+              "description": "Model de terreny.",
+              "properties": {
+                "crs": {
+                  "description": "SRC del model de terreny.",
+                  "title": "SRC"
+                },
+                "max": {
+                  "description": "Elevació màxima, utilitzada juntament amb min.",
+                  "title": "Elevació màxima"
+                },
+                "min": {
+                  "description": "Elevació mínima, utilitzada juntament amb max.",
+                  "title": "Elevació mínima"
+                },
+                "url": {
+                  "description": "URL d'un GeoTIFF optimitzat per al núvol.",
+                  "title": "URL del GeoTIFF"
+                }
+              },
+              "title": "Model de terreny"
+            },
+            "extent": {
+              "description": "Extensió de la vista 3D. Si s'omet, s'utilitza l'extensió inicial del tema.",
+              "properties": {
+                "bounds": {
+                  "description": "Extensió com a [xmin, ymin, xmax, ymax].",
+                  "title": "Límits"
+                },
+                "crs": {
+                  "description": "SRC dels límits.",
+                  "title": "SRC"
+                }
+              },
+              "title": "Extensió"
+            },
+            "initialView": {
+              "description": "Vista inicial de la vista 3D. Si no es defineix, la vista 3D segueix la vista 2D.",
+              "properties": {
+                "camera": {
+                  "description": "Posició de la càmera com a [x, y, z].",
+                  "title": "Posició de la càmera"
+                },
+                "personHeight": {
+                  "description": "Alçada de la persona. Els valors més grans que 0 activen la vista en primera persona.",
+                  "title": "Alçada de la persona"
+                },
+                "target": {
+                  "description": "Objectiu de la càmera com a [x, y, z].",
+                  "title": "Objectiu de la càmera"
+                }
+              },
+              "title": "Vista inicial"
+            },
+            "objects": {
+              "description": "Objectes de l'escena: tessel·les 3D, objectes GLTF i grups.",
+              "title": "Objectes de l'escena"
+            },
+            "objects3d": {
+              "description": "Obsolet. Feu servir entrades d'objects de tipus object3d.",
+              "title": "Objectes 3D (obsolet)"
+            },
+            "tiles3d": {
+              "description": "Obsolet. Feu servir entrades d'objects de tipus tiles3d.",
+              "title": "Tessel·les 3D (obsolet)"
+            }
+          },
+          "title": "Vista 3D del tema"
+        },
+        "predefinedFilter": {
+          "description": "Filtre predefinit del connector MapFilter, tal com apareix a predefinedFilters d'un tema.",
+          "properties": {
+            "defaultValues": {
+              "description": "Valors utilitzats als camps deixats buits, indexats per l'ID del camp.",
+              "title": "Valors per defecte"
+            },
+            "fields": {
+              "description": "Camps d'entrada del filtre.",
+              "items": {
+                "description": "Camp d'entrada.",
+                "properties": {
+                  "defaultValue": {
+                    "description": "Valor per defecte.",
+                    "oneOf": {
+                      "0": {
+                        "title": "Text"
+                      },
+                      "1": {
+                        "title": "Nombre"
+                      },
+                      "2": {
+                        "title": "Sí/no"
+                      },
+                      "3": {
+                        "title": "Cap"
+                      }
+                    },
+                    "title": "Valor per defecte"
+                  },
+                  "id": {
+                    "description": "ID del camp, utilitzat com a marcador $<id>$ a les expressions del filtre.",
+                    "title": "ID del camp"
+                  },
+                  "inputConfig": {
+                    "description": "Configuració de l'entrada: qualsevol propietat d'un element HTML input, per exemple {{\"type\": \"number\", \"min\": 0}}, amb type select per a una llista o datetime per a data i hora.",
+                    "properties": {
+                      "options": {
+                        "description": "Opcions d'un select: valors o parells valor/etiqueta.",
+                        "items": {
+                          "oneOf": {
+                            "0": {
+                              "title": "Valor de text"
+                            },
+                            "1": {
+                              "title": "Valor numèric"
+                            },
+                            "2": {
+                              "properties": {
+                                "label": {
+                                  "description": "Etiqueta de l'opció.",
+                                  "title": "Etiqueta"
+                                },
+                                "labelmsgid": {
+                                  "description": "ID del missatge de traducció de l'etiqueta de l'opció, alternativa a label.",
+                                  "title": "ID del missatge de l'etiqueta"
+                                },
+                                "value": {
+                                  "description": "Valor de l'opció.",
+                                  "oneOf": {
+                                    "0": {
+                                      "title": "Text"
+                                    },
+                                    "1": {
+                                      "title": "Nombre"
+                                    }
+                                  },
+                                  "title": "Valor"
+                                }
+                              },
+                              "title": "Valor i etiqueta"
+                            }
+                          }
+                        },
+                        "title": "Opcions"
+                      },
+                      "type": {
+                        "description": "Tipus d'input HTML, o select, o datetime.",
+                        "title": "Tipus d'entrada"
+                      }
+                    },
+                    "title": "Configuració de l'entrada"
+                  },
+                  "title": {
+                    "description": "Títol del camp.",
+                    "title": "Títol"
+                  },
+                  "titlemsgid": {
+                    "description": "ID del missatge de traducció del títol del camp, alternativa a title.",
+                    "title": "ID del missatge del títol"
+                  }
+                }
+              },
+              "title": "Camps"
+            },
+            "filter": {
+              "description": "Expressió de filtre del servei de dades per nom de capa, on els marcadors $<field_id>$ se substitueixen pels valors dels camps, per exemple [\"<name>\", \"<op>\", \"$<field_id>$\"] o [[...], \"and\", [...]].",
+              "title": "Expressió de filtre"
+            },
+            "id": {
+              "description": "ID del filtre, també utilitzat al paràmetre d'URL f.",
+              "title": "ID del filtre"
+            },
+            "title": {
+              "description": "Títol del filtre.",
+              "title": "Títol"
+            },
+            "titlemsgid": {
+              "description": "ID del missatge de traducció del títol del filtre, alternativa a title.",
+              "title": "ID del missatge del títol"
+            }
+          },
+          "title": "Filtre predefinit"
+        },
+        "searchProvider": {
+          "definitions": {
+            "legacyProvider": {
+              "description": "Entrada obsoleta identificada per key sense provider, com a les aplicacions antigues. Els proveïdors de cerca estàndard la ignoren.",
+              "properties": {
+                "key": {
+                  "description": "Clau del proveïdor.",
+                  "title": "Clau"
+                },
+                "label": {
+                  "description": "Etiqueta del proveïdor.",
+                  "title": "Etiqueta"
+                }
+              },
+              "title": "Entrada heretada"
+            },
+            "otherProvider": {
+              "properties": {
+                "params": {
+                  "description": "Paràmetres del proveïdor. Per a fulltext: default (facetes de cerca activades per defecte) i layers (faceta activada quan una capa del tema és visible, indexada pel nom de la capa). Per a nominatim: paràmetres addicionals de l'API Nominatim, per exemple countrycodes.",
+                  "title": "Paràmetres"
+                },
+                "provider": {
+                  "description": "Clau del proveïdor, per exemple fulltext, nominatim o la clau d'un proveïdor personalitzat.",
+                  "title": "Proveïdor"
+                }
+              },
+              "title": "Un altre proveïdor"
+            },
+            "providerEntry": {
+              "properties": {
+                "key": {
+                  "description": "Clau per distingir diverses configuracions del mateix tipus de proveïdor.",
+                  "title": "Clau"
+                },
+                "label": {
+                  "description": "Etiqueta del proveïdor mostrada al menú de selecció.",
+                  "title": "Etiqueta"
+                },
+                "labelmsgid": {
+                  "description": "ID del missatge de traducció de l'etiqueta del proveïdor, alternativa a label.",
+                  "title": "ID del missatge de l'etiqueta"
+                }
+              }
+            },
+            "qgisSearch": {
+              "properties": {
+                "params": {
+                  "description": "Paràmetres de la cerca d'elements del QGIS.",
+                  "properties": {
+                    "default": {
+                      "description": "Selecciona aquesta cerca per defecte al connector FeatureSearch.",
+                      "title": "Cerca per defecte"
+                    },
+                    "description": {
+                      "description": "Text mostrat sobre els camps de cerca al connector FeatureSearch.",
+                      "title": "Descripció"
+                    },
+                    "expression": {
+                      "additionalProperties": {
+                        "oneOf": {
+                          "0": {
+                            "title": "Expressió de filtre WMS"
+                          },
+                          "1": {
+                            "title": "Expressió de filtre del servei de dades"
+                          }
+                        }
+                      },
+                      "description": "Expressió de filtre per nom de capa: una expressió FILTER de WMS GetFeatureInfo amb marcadors $TEXT$ o $<FIELD>$, o una expressió de filtre del servei de dades.",
+                      "title": "Expressió de filtre"
+                    },
+                    "featureCount": {
+                      "description": "Nombre màxim d'elements retornats.",
+                      "title": "Nombre d'elements"
+                    },
+                    "featuresearch": {
+                      "description": "Inclou la cerca al connector FeatureSearch.",
+                      "title": "Inclou a FeatureSearch"
+                    },
+                    "fields": {
+                      "additionalProperties": {
+                        "description": "Camp d'entrada.",
+                        "properties": {
+                          "label": {
+                            "description": "Etiqueta del camp.",
+                            "title": "Etiqueta"
+                          },
+                          "label_field": {
+                            "description": "Propietat de l'element utilitzada com a etiqueta de l'opció quan options_query retorna elements.",
+                            "title": "Camp de l'etiqueta"
+                          },
+                          "labelmsgid": {
+                            "description": "ID del missatge de traducció de l'etiqueta del camp, alternativa a label.",
+                            "title": "ID del missatge de l'etiqueta"
+                          },
+                          "options": {
+                            "description": "Per a camps select, la llista de valors o de parells valor/etiqueta. Per a la resta, atributs HTML addicionals de l'entrada, per exemple min i max.",
+                            "oneOf": {
+                              "0": {
+                                "title": "Opcions del select"
+                              },
+                              "1": {
+                                "title": "Atributs de l'entrada"
+                              }
+                            },
+                            "title": "Opcions"
+                          },
+                          "options_query": {
+                            "description": "URL que retorna les opcions d'un camp select, on els marcadors $<FIELD>$ se substitueixen pels valors actuals del formulari.",
+                            "title": "URL de la consulta d'opcions"
+                          },
+                          "order": {
+                            "description": "Posició del camp al formulari de cerca.",
+                            "title": "Ordre"
+                          },
+                          "type": {
+                            "description": "Tipus d'input HTML, select per a una llista o checkbox per a sí/no.",
+                            "title": "Tipus d'entrada"
+                          },
+                          "value_field": {
+                            "description": "Propietat de l'element utilitzada com a valor de l'opció quan options_query retorna elements.",
+                            "title": "Camp del valor"
+                          }
+                        }
+                      },
+                      "description": "Camps d'entrada del formulari del connector FeatureSearch, indexats pel nom del marcador.",
+                      "title": "Camps"
+                    },
+                    "group": {
+                      "description": "Nom del grup de la cerca a la selecció de FeatureSearch.",
+                      "title": "Grup"
+                    },
+                    "resultTitle": {
+                      "description": "Text de format del títol del resultat, amb marcadors {{layername}} i {{<fieldname>}}.",
+                      "title": "Títol del resultat"
+                    },
+                    "title": {
+                      "description": "Nom de la cerca, també utilitzat com a títol del grup de resultats i per ordenar al connector FeatureSearch.",
+                      "title": "Nom de la cerca"
+                    },
+                    "titlemsgid": {
+                      "description": "ID del missatge de traducció del nom de la cerca, alternativa a title.",
+                      "title": "ID del missatge del nom de la cerca"
+                    }
+                  },
+                  "title": "Paràmetres"
+                },
+                "provider": {
+                  "description": "Clau del proveïdor.",
+                  "title": "Proveïdor"
+                }
+              },
+              "title": "Cerca d'elements del QGIS"
+            }
+          },
+          "description": "Entrada de proveïdor de cerca, tal com apareix a searchProviders d'un tema: una clau de proveïdor, una cerca d'elements del QGIS o un altre proveïdor amb paràmetres.",
+          "oneOf": {
+            "0": {
+              "description": "Clau del proveïdor, per exemple coordinates, nominatim o la clau d'un proveïdor personalitzat.",
+              "title": "Clau del proveïdor"
+            }
+          },
+          "title": "Proveïdor de cerca"
+        },
+        "theme": {
+          "definitions": {
+            "bbox": {
+              "description": "Extensió com a [xmin, ymin, xmax, ymax]."
+            },
+            "labelProfiles": {
+              "additionalProperties": {
+                "description": "Perfils de la capa.",
+                "items": {
+                  "properties": {
+                    "expression": {
+                      "description": "Expressió de l'etiqueta, en la sintaxi d'expressions del QGIS.",
+                      "title": "Expressió"
+                    },
+                    "name": {
+                      "description": "Nom del perfil.",
+                      "title": "Nom"
+                    },
+                    "size": {
+                      "description": "Mida de l'etiqueta.",
+                      "title": "Mida"
+                    },
+                    "title": {
+                      "description": "Títol del perfil. Si s'omet, s'utilitza el nom.",
+                      "title": "Títol"
+                    }
+                  }
+                }
+              },
+              "description": "Perfils d'etiquetatge del connector Redlining, indexats pel nom de la capa."
+            },
+            "printGrid": {
+              "description": "Intervals de graella dependents de l'escala per a la impressió, en ordre descendent del denominador d'escala: una entrada val per a les escales entre el seu denominador i el de l'entrada següent.",
+              "items": {
+                "properties": {
+                  "s": {
+                    "description": "Denominador d'escala.",
+                    "title": "Denominador d'escala"
+                  },
+                  "x": {
+                    "description": "Interval de la graella en la direcció x.",
+                    "title": "Interval X"
+                  },
+                  "y": {
+                    "description": "Interval de la graella en la direcció y.",
+                    "title": "Interval Y"
+                  }
+                }
+              }
+            }
+          },
+          "description": "Definició del tema, tal com apareix als elements de temes i grups de temes. Un tema correspon a un projecte QGIS publicat com a WMS pel QGIS Server.",
+          "properties": {
+            "additionalMouseCrs": {
+              "description": "Projeccions addicionals per mostrar la posició del ratolí, com a codis EPSG. WGS84 i mapCrs estan disponibles per defecte; la resta de projeccions han d'estar definides a config.json.",
+              "title": "SRC addicionals del ratolí"
+            },
+            "attribution": {
+              "description": "Atribució mostrada a la cantonada inferior dreta del mapa.",
+              "title": "Atribució"
+            },
+            "attributionUrl": {
+              "description": "Enllaç de l'atribució.",
+              "title": "URL de l'atribució"
+            },
+            "backgroundLayers": {
+              "description": "Capes de fons disponibles. Si s'ometen, s'utilitza defaultBackgroundLayers.",
+              "title": "Capes de fons"
+            },
+            "collapseLayerGroupsBelowLevel": {
+              "description": "Nivell de l'arbre de capes per sota del qual els grups comencen contrets. Per defecte l'arbre està completament expandit.",
+              "title": "Contrau els grups per sota del nivell"
+            },
+            "config": {
+              "description": "Configuració del visor que substitueix les entrades globals de config.json per a aquest tema, incloses desktop, mobile i plugins.",
+              "title": "Configuració del visor"
+            },
+            "default": {
+              "description": "Utilitza aquest tema com a tema per defecte.",
+              "title": "Tema per defecte"
+            },
+            "defaultDisplayCrs": {
+              "description": "SRC per defecte de les coordenades a la barra inferior i a les mesures. Si s'omet, s'utilitza mapCrs.",
+              "title": "SRC de visualització per defecte"
+            },
+            "defaultPrintLayout": {
+              "description": "Nom del disseny d'impressió seleccionat per defecte.",
+              "title": "Disseny d'impressió per defecte"
+            },
+            "description": {
+              "description": "Descripció addicional, mostrada sota el títol del tema.",
+              "title": "Descripció"
+            },
+            "disabled": {
+              "description": "Omet aquest tema en generar la configuració de temes.",
+              "title": "Desactivat"
+            },
+            "editConfig": {
+              "description": "Configuració d'edició, indexada pel nom de la capa, o el camí d'un fitxer que la contingui. Normalment la genera el generador de configuració.",
+              "oneOf": {
+                "0": {
+                  "title": "Configuració"
+                },
+                "1": {
+                  "title": "Camí del fitxer"
+                }
+              },
+              "title": "Configuració d'edició"
+            },
+            "extent": {
+              "description": "Extensió inicial com a [xmin, ymin, xmax, ymax] en mapCrs. Substitueix l'extensió anunciada pel WMS.",
+              "title": "Extensió inicial"
+            },
+            "externalLayers": {
+              "description": "Capes externes que substitueixen capes internes del projecte.",
+              "items": {
+                "properties": {
+                  "internalLayer": {
+                    "description": "Nom de la capa del projecte que se substitueix.",
+                    "title": "Capa interna"
+                  },
+                  "name": {
+                    "description": "Nom de la definició de capa externa corresponent a themes.externalLayers.",
+                    "title": "Nom de la capa externa"
+                  }
+                }
+              },
+              "title": "Capes externes"
+            },
+            "extraLegendParameters": {
+              "description": "Paràmetres de consulta addicionals de les peticions GetLegendGraphic, en format KEY=VALUE&KEY2=VALUE2.",
+              "title": "Paràmetres addicionals de la llegenda"
+            },
+            "extraPrintLayers": {
+              "description": "Capes addicionals marcades com a capes internes d'impressió, omeses de l'arbre de capes.",
+              "title": "Capes addicionals d'impressió"
+            },
+            "extraPrintParameters": {
+              "description": "Paràmetres de consulta addicionals de les peticions GetPrint, en format KEY=VALUE&KEY2=VALUE2 (QGIS Server 3.32 o posterior).",
+              "title": "Paràmetres addicionals d'impressió"
+            },
+            "extraPrintTemplates": {
+              "description": "Camins de plantilles d'impressió addicionals del tema, relatius al directori de dissenys d'impressió.",
+              "title": "Plantilles d'impressió addicionals"
+            },
+            "featureInfoUrl": {
+              "description": "URL base de les peticions GetFeatureInfo, utilitzada només pels scripts de qwc2.",
+              "title": "URL d'informació de l'element"
+            },
+            "featureReport": {
+              "additionalProperties": {
+                "oneOf": {
+                  "0": {
+                    "title": "Nom de la plantilla"
+                  },
+                  "1": {
+                    "items": {
+                      "properties": {
+                        "format": {
+                          "description": "Format de l'informe, per exemple pdf, html, csv, docx, ods, odt, pptx, rtf, xlsx o xml.",
+                          "title": "Format"
+                        },
+                        "single_report": {
+                          "description": "Genera un únic informe per a tots els elements en lloc d'un informe per element.",
+                          "title": "Informe únic"
+                        },
+                        "template": {
+                          "description": "Nom de la plantilla de l'informe.",
+                          "title": "Plantilla"
+                        },
+                        "title": {
+                          "description": "Títol de l'informe.",
+                          "title": "Títol"
+                        }
+                      }
+                    },
+                    "title": "Informes"
+                  }
+                }
+              },
+              "description": "Plantilles d'informe d'element del servei de documents, indexades pel nom de la subcapa.",
+              "title": "Informes d'element"
+            },
+            "filter": {
+              "description": "Filtre fix aplicat al tema.",
+              "properties": {
+                "layerfilter": {
+                  "description": "Expressió de filtre per nom de capa, en el format del connector MapFilter.",
+                  "title": "Filtres de capa"
+                }
+              },
+              "title": "Filtre fix"
+            },
+            "flags": {
+              "description": "Marcadors arbitraris, utilitzats per mostrar o amagar elements de menú, de la barra d'eines i botons del mapa.",
+              "title": "Marcadors"
+            },
+            "format": {
+              "description": "Format d'imatge de les peticions WMS GetMap.",
+              "title": "Format de la imatge"
+            },
+            "hidden_in_ows_landing_page": {
+              "description": "Amaga el servei de la pàgina d'inici dels serveis OGC.",
+              "title": "Ocult a la pàgina d'inici OGC"
+            },
+            "id": {
+              "description": "Identificador del tema, utilitzat al paràmetre d'URL t del visor. Es genera si no s'indica.",
+              "title": "ID del tema"
+            },
+            "labelProfiles": {
+              "title": "Perfils d'etiqueta"
+            },
+            "layerTreeHiddenSublayers": {
+              "description": "Subcapes omeses de l'arbre de capes, però que es continuen mostrant al mapa.",
+              "title": "Subcapes ocultes"
+            },
+            "legendUrl": {
+              "description": "URL base de les peticions GetLegendGraphic, utilitzada només pels scripts de qwc2.",
+              "title": "URL de la llegenda"
+            },
+            "lockedVisibilityPreset": {
+              "description": "Predefinició de visibilitat (tema de mapa del QGIS) els estils de capa de la qual queden bloquejats.",
+              "title": "Predefinició de visibilitat bloquejada"
+            },
+            "map3d": {
+              "title": "Vista 3D"
+            },
+            "mapCrs": {
+              "description": "Projecció del mapa com a codi EPSG. Si s'omet, s'utilitza la projecció del projecte. La projecció ha d'estar definida a config.json.",
+              "title": "SRC del mapa"
+            },
+            "mapExtent": {
+              "description": "Extensió màxima permesa del mapa com a [xmin, ymin, xmax, ymax] en mapCrs.",
+              "title": "Extensió màxima del mapa"
+            },
+            "mapTips": {
+              "description": "Si els consells del mapa estan activats per defecte. Si és null o no està definit, s'aplica defaultMapTips.",
+              "title": "Consells del mapa"
+            },
+            "minSearchScaleDenom": {
+              "description": "Denominador d'escala mínim en apropar els resultats de la cerca. Substitueix el valor de config.json.",
+              "title": "Denominador mínim de l'escala de cerca"
+            },
+            "obliqueDatasets": {
+              "description": "Conjunts d'imatges aèries obliqües.",
+              "items": {
+                "properties": {
+                  "backgroundLayer": {
+                    "description": "Nom de la capa de fons mostrada amb el conjunt.",
+                    "title": "Capa de fons"
+                  },
+                  "backgroundOpacity": {
+                    "description": "Opacitat de la capa de fons, de 0 (transparent) a 255 (opaca).",
+                    "title": "Opacitat del fons"
+                  },
+                  "dataset": {
+                    "description": "Conjunt configurat al servei obliqueImagery.",
+                    "title": "Conjunt de dades"
+                  },
+                  "default": {
+                    "description": "Mostra aquest conjunt per defecte. En cas contrari, s'utilitza el primer.",
+                    "title": "Conjunt per defecte"
+                  },
+                  "title": {
+                    "description": "Títol al selector de conjunts. Si s'omet, s'utilitza el conjunt.",
+                    "title": "Títol"
+                  },
+                  "titleMsgId": {
+                    "description": "ID del missatge de traducció del títol, alternativa a title.",
+                    "title": "ID del missatge del títol"
+                  }
+                }
+              },
+              "title": "Conjunts d'imatges obliqües"
+            },
+            "pluginData": {
+              "additionalProperties": {
+                "description": "Noms dels recursos de dades del connector."
+              },
+              "description": "Dades passades a connectors personalitzats: noms dels recursos de dades corresponents a themes.pluginData, indexats pel nom del connector.",
+              "title": "Dades del connector"
+            },
+            "predefinedFilters": {
+              "description": "Filtres predefinits del connector MapFilter.",
+              "title": "Filtres predefinits"
+            },
+            "printGrid": {
+              "title": "Graella d'impressió"
+            },
+            "printLabelBlacklist": {
+              "description": "IDs de les etiquetes del disseny d'impressió que no apareixen al diàleg d'impressió.",
+              "title": "Etiquetes d'impressió ocultes"
+            },
+            "printLabelConfig": {
+              "additionalProperties": {
+                "description": "Configuració de l'entrada de l'etiqueta, amb qualsevol propietat addicional de textarea, per exemple maxLength, rows o placeholder.",
+                "properties": {
+                  "defaultValue": {
+                    "description": "Valor per defecte. Pot contenir els marcadors `{{username}}` i `{{user_infos.<field>}}`, substituïts per les dades de l'usuari connectat.",
+                    "title": "Valor per defecte"
+                  },
+                  "hidden": {
+                    "description": "Amaga el camp a l'usuari i envia el valor per defecte.",
+                    "title": "Ocult"
+                  },
+                  "options": {
+                    "description": "Opcions d'una llista, mostrada en lloc d'un camp de text.",
+                    "title": "Opcions"
+                  }
+                }
+              },
+              "description": "Configuració de les entrades de les etiquetes del disseny d'impressió, indexada per l'ID de l'etiqueta.",
+              "title": "Configuració de les etiquetes d'impressió"
+            },
+            "printLabelForAttribution": {
+              "description": "ID de l'etiqueta del disseny d'impressió que rep l'atribució actual en imprimir.",
+              "title": "Etiqueta d'impressió de l'atribució"
+            },
+            "printLabelForSearchResult": {
+              "description": "ID de l'etiqueta del disseny d'impressió que rep el resultat de cerca actual en imprimir.",
+              "title": "Etiqueta d'impressió del resultat de cerca"
+            },
+            "printResolutions": {
+              "description": "Resolucions d'impressió disponibles en DPI. Si s'ometen, s'utilitza defaultPrintResolutions. Si és buit, la resolució es pot triar lliurement.",
+              "title": "Resolucions d'impressió"
+            },
+            "printScales": {
+              "description": "Denominadors d'escala d'impressió permesos. Si s'ometen, s'utilitza defaultPrintScales.",
+              "title": "Escales d'impressió"
+            },
+            "printTemplateBlacklist": {
+              "description": "Plantilles d'impressió que s'ignoren.",
+              "title": "Plantilles d'impressió excloses"
+            },
+            "printUrl": {
+              "description": "URL base de les peticions GetPrint, utilitzada només pels scripts de qwc2.",
+              "title": "URL d'impressió"
+            },
+            "scales": {
+              "description": "Denominadors d'escala del mapa permesos. Si s'ometen, s'utilitza defaultScales.",
+              "title": "Escales del mapa"
+            },
+            "searchProviders": {
+              "description": "Proveïdors de cerca. Si s'ometen, s'utilitza defaultSearchProviders.",
+              "title": "Proveïdors de cerca"
+            },
+            "skipEmptyFeatureAttributes": {
+              "description": "Omet els atributs buits als resultats d'identificació.",
+              "title": "Omet els atributs buits"
+            },
+            "snapping": {
+              "description": "Configuració d'ajust.",
+              "properties": {
+                "featureCount": {
+                  "description": "Nombre màxim de geometries d'ajust obtingudes per a l'extensió actual del mapa.",
+                  "title": "Nombre màxim d'elements"
+                },
+                "snaplayers": {
+                  "description": "Capes utilitzades en l'ajust.",
+                  "items": {
+                    "properties": {
+                      "max": {
+                        "description": "Denominador d'escala màxim en què l'ajust està actiu.",
+                        "title": "Denominador d'escala màxim"
+                      },
+                      "min": {
+                        "description": "Denominador d'escala mínim en què l'ajust està actiu.",
+                        "title": "Denominador d'escala mínim"
+                      },
+                      "name": {
+                        "description": "Nom de la subcapa que proporciona les geometries d'ajust.",
+                        "title": "Nom de la subcapa"
+                      }
+                    }
+                  },
+                  "title": "Capes d'ajust"
+                },
+                "wfsMaxScale": {
+                  "description": "Denominador d'escala per sota del qual les capes WFS carregades s'utilitzen per a l'ajust.",
+                  "title": "Denominador d'escala màxim del WFS"
+                }
+              },
+              "title": "Ajust"
+            },
+            "startupView": {
+              "description": "Mode de vista en què es mostra inicialment el tema.",
+              "title": "Vista inicial"
+            },
+            "themeInfoLinks": {
+              "description": "Enllaços mostrats com a menú al costat del tema al selector de temes.",
+              "properties": {
+                "entries": {
+                  "description": "Noms de les definicions d'enllaç corresponents a themes.themeInfoLinks.",
+                  "title": "Entrades"
+                },
+                "title": {
+                  "description": "Títol del menú.",
+                  "title": "Títol del menú"
+                },
+                "titleMsgId": {
+                  "description": "ID del missatge de traducció del títol del menú, alternativa a title.",
+                  "title": "ID del missatge del títol del menú"
+                }
+              },
+              "title": "Enllaços d'informació del tema"
+            },
+            "thumbnail": {
+              "description": "Fitxer d'imatge a assets/img/mapthumbs. Si s'omet, s'utilitza <project_basename>.png si existeix; si no, la miniatura es genera amb un WMS GetMap.",
+              "title": "Miniatura"
+            },
+            "tileSize": {
+              "description": "Amplada i alçada de la tessel·la WMS.",
+              "title": "Mida de la tessel·la"
+            },
+            "tiled": {
+              "description": "Utilitza peticions WMS en tessel·les.",
+              "title": "En tessel·les"
+            },
+            "title": {
+              "description": "Títol del tema. Substitueix el títol del WMS.",
+              "title": "Títol"
+            },
+            "url": {
+              "description": "URL del WMS servit pel QGIS Server. Amb qwc-docker, /ows/<camí>, on <camí> és el camí del projecte QGIS sota qgs-resources, sense extensió.",
+              "title": "URL del WMS"
+            },
+            "version": {
+              "description": "Versió del WMS. Substitueix defaultWMSVersion.",
+              "title": "Versió del WMS"
+            },
+            "visibilityPresetsBlacklist": {
+              "description": "Predefinicions de visibilitat (temes de mapa del QGIS) que s'exclouen. * correspon a qualsevol caràcter.",
+              "title": "Predefinicions de visibilitat excloses"
+            },
+            "watermark": {
+              "description": "Marca d'aigua afegida a les imatges d'exportació ràster. Cada entrada s'envia com a paràmetre WATERMARK_<KEY> de la petició d'exportació.",
+              "properties": {
+                "backgroundcolor": {
+                  "description": "Color de fons del marc, en format #RRGGBB.",
+                  "title": "Color de fons"
+                },
+                "fontcolor": {
+                  "description": "Color de la lletra, en format #RRGGBB.",
+                  "title": "Color de la lletra"
+                },
+                "fontfamily": {
+                  "description": "Família de la lletra.",
+                  "title": "Família de la lletra"
+                },
+                "fontsize": {
+                  "description": "Mida de la lletra.",
+                  "oneOf": {
+                    "0": {
+                      "title": "Nombre"
+                    },
+                    "1": {
+                      "title": "Text"
+                    }
+                  },
+                  "title": "Mida de la lletra"
+                },
+                "framecolor": {
+                  "description": "Color del marc, en format #RRGGBB.",
+                  "title": "Color del marc"
+                },
+                "framewidth": {
+                  "description": "Amplada del marc.",
+                  "oneOf": {
+                    "0": {
+                      "title": "Nombre"
+                    },
+                    "1": {
+                      "title": "Text"
+                    }
+                  },
+                  "title": "Amplada del marc"
+                },
+                "texpadding": {
+                  "description": "Espai entre el text i el marc, en punts.",
+                  "oneOf": {
+                    "0": {
+                      "title": "Nombre"
+                    },
+                    "1": {
+                      "title": "Text"
+                    }
+                  },
+                  "title": "Espaiat del text"
+                },
+                "text": {
+                  "description": "Text.",
+                  "title": "Text"
+                }
+              },
+              "title": "Marca d'aigua"
+            },
+            "wmsBasicAuth": {
+              "description": "Credencials d'autenticació HTTP bàsica del QGIS Server, usades només en generar la configuració de temes amb els scripts de qwc2 i no desades a themes.json.",
+              "properties": {
+                "password": {
+                  "description": "Contrasenya.",
+                  "title": "Contrasenya"
+                },
+                "username": {
+                  "description": "Nom d'usuari.",
+                  "title": "Nom d'usuari"
+                }
+              },
+              "title": "Autenticació bàsica del WMS"
+            },
+            "wmsOnly": {
+              "description": "Configura l'entrada només com a WMS, no com a tema.",
+              "title": "Només WMS"
+            }
+          },
+          "title": "Tema"
+        },
+        "themeBackgroundLayer": {
+          "description": "Referència a una definició de capa de fons, tal com apareix a backgroundLayers d'un tema.",
+          "properties": {
+            "name": {
+              "description": "Nom de la definició de capa de fons corresponent a themes.backgroundLayers.",
+              "title": "Nom"
+            },
+            "omitFromCycle": {
+              "description": "Exclou la capa en alternar entre les capes de fons.",
+              "title": "Omet de l'alternança"
+            },
+            "omitFromSelect": {
+              "description": "Amaga la capa de la selecció de capes de fons.",
+              "title": "Omet de la selecció"
+            },
+            "overview": {
+              "description": "Defineix la capa com a capa del mapa de visió general: es mostra al mapa de visió general independentment de la capa de fons visible al mapa principal.",
+              "title": "Capa del mapa de visió general"
+            },
+            "printLayer": {
+              "description": "Nom de la capa QGIS o cadena de recurs de la capa utilitzada com a capa de fons corresponent en imprimir. Com a alternativa, una llista de capes per escala, en ordre ascendent de maxScale, l'última entrada de la qual té maxScale nul i s'utilitza per a les escales restants. Si s'omet, no s'imprimeix fons, tret que la capa sigui de tipus wms i printExternalLayers sigui true a la configuració del connector Print.",
+              "oneOf": {
+                "0": {
+                  "title": "Nom de la capa"
+                },
+                "1": {
+                  "items": {
+                    "properties": {
+                      "maxScale": {
+                        "description": "Denominador d'escala fins al qual s'utilitza aquesta capa. Null o omès a l'última entrada.",
+                        "title": "Denominador d'escala màxim"
+                      },
+                      "name": {
+                        "description": "Nom de la capa QGIS o cadena de recurs de la capa.",
+                        "title": "Nom de la capa"
+                      }
+                    }
+                  },
+                  "title": "Capes per escala"
+                }
+              },
+              "title": "Capa d'impressió"
+            },
+            "visibility": {
+              "description": "Visibilitat inicial de la capa quan es carrega el tema.",
+              "title": "Visibilitat"
+            }
+          },
+          "title": "Capa de fons del tema"
+        }
+      },
+      "theme": {
+        "form_undefined_key": "Configuració desconeguda {} al formulari.",
+        "options_interface": "Opcions d'interfície",
+        "options_print": "Opcions d'impressió",
+        "options_search": "Opcions de cerca",
+        "other_settings": "Altres configuracions (JSON)",
+        "other_settings_defined_key": "La configuració {} s'edita al formulari, no a les altres configuracions.",
+        "other_settings_description": "Configuracions del tema que el formulari anterior no cobreix i que es conserven tal qual en desar.",
+        "other_settings_error": "Les altres configuracions han de ser un objecte JSON.",
+        "rjsf_add": "Afegeix",
+        "rjsf_add_item": "Afegeix element",
+        "rjsf_copy": "Copia",
+        "rjsf_deprecated": "%1 (obsolet)",
+        "rjsf_empty_array": "Encara no hi ha elements. Feu servir el botó de sota per afegir-ne.",
+        "rjsf_errors": "Errors",
+        "rjsf_invalid_json": "JSON no vàlid",
+        "rjsf_item": "Element",
+        "rjsf_key": "Clau de %1",
+        "rjsf_move_down": "Mou avall",
+        "rjsf_move_up": "Mou amunt",
+        "rjsf_new_value": "Valor nou",
+        "rjsf_no": "No",
+        "rjsf_option": "Opció %1",
+        "rjsf_optional_add": "Afegeix dades del camp opcional",
+        "rjsf_optional_empty": "Sense dades al camp opcional",
+        "rjsf_optional_remove": "Treu les dades del camp opcional",
+        "rjsf_remove": "Treu",
+        "rjsf_title_option": "Opció %2 de %1",
+        "rjsf_type": "Tipus",
+        "rjsf_value": "Valor",
+        "rjsf_yes": "Sí",
+        "schema_default": "Per defecte:",
+        "schema_load_error": "No s'ha pogut carregar l'esquema del tema.",
+        "section_3d": "3D",
+        "section_advanced": "Avançat",
+        "section_background_layers": "Capes de fons",
+        "section_filters": "Filtres",
+        "section_map": "Mapa",
+        "section_wms": "WMS"
+      },
+      "themes": {
+        "confirm_message_delete_theme": "Realment vols eliminar el tema?",
+        "copy_url": "Copia l'URL al porta-retalls",
+        "create_theme_message_error": "No s'ha pogut crear el tema",
+        "create_theme_message_integrity_error": "El recurs per a aquest mapa ja existeix",
+        "create_theme_message_success": "Aquest tema s'ha creat",
+        "create_theme_title": "Crea tema",
+        "delete_theme": "Elimina el tema",
+        "delete_theme_message_error": "No s'ha pogut eliminar el recurs per a mapa",
+        "disabled": "Desactivat",
+        "edit_theme": "Edita el tema",
+        "edit_theme_title": "Edita el tema",
+        "group_confirm_message_delete": "Realment vols eliminar el grup de temes?",
+        "group_delete": "Elimina el grup de temes",
+        "group_move_down": "Mou el grup de temes cap avall",
+        "group_move_up": "Mou el grup de temes cap amunt",
+        "group_title": "Títol",
+        "group_title_edit": "Edita el títol",
+        "move_down": "Mou el tema cap avall",
+        "move_theme_to_group": "Mou el tema al grup",
+        "move_up": "Mou el tema cap amunt",
+        "new_group": "Nou grup de temes",
+        "new_theme": "Nou tema",
+        "reload_theme_message": "La configuració del tema s'ha recarregat des del disc.",
+        "save_theme_message_error": "No s'ha pogut desar la configuració del tema.",
+        "save_theme_message_success": "La configuració del tema s'ha desat.",
+        "theme": "Tema",
+        "theme_groups": "Grups de temes",
+        "themes": "Temes",
+        "title": "Configuració del tema",
+        "update_theme_message_error": "No s'ha pogut actualitzar el tema",
+        "update_theme_message_success": "Aquest tema s'ha actualitzat",
+        "update_theme_title": "Actualitza tema"
+      },
+      "wmslayer": {
+        "add": "Afegeix capa d'enfosc WMS",
+        "capabilities_url": "URL de capacitats WMS",
+        "form_tiled": "tilat"
+      },
+      "wmtslayer": {
+        "add": "Afegeix capa d'enfosc WMTS",
+        "capabilities_url": "URL de capacitats WMTS",
+        "form_with_capabilities": "Desa les capacitats? (Només necessari per a QGIS Server WMTS!)",
+        "style": "Estil",
+        "tilematrix": "Matriu de tessel·lació"
+      },
+      "xyzlayer": {
+        "add": "Afegeix capa d'enfosc XYZ"
       }
     }
+  },
+  "registration_requests": {
+    "user_notification": {
+      "footer": "",
+      "salutation": "Hola %(username)s",
+      "subject": "Actualitzacions de registre de grup",
+      "user_added_to_groups": "T'has afegit als següents grups:",
+      "user_removed_from_groups": "T'has eliminat dels següents grups:",
+      "user_requests_declined": "Les sol·licituds de registre de membres per als següents grups han estat rebutjades:"
+    }
   }
+}
